@@ -161,8 +161,7 @@ model SupervisorHandoverWarm {
 @doc("""
   A box running a turn whose harness started. The milliseconds are what was left of the turn's
   budget and of its first-line budget at the handover; `error` is the error result the harness
-  printed so far, and `succeeded` is true once it printed a successful result. A record from an
-  older supervisor lacks `succeeded`, and the new binary completes its turn at a clean exit.
+  printed so far.
   """)
 model SupervisorHandoverTurn {
   kind: "Turn";
@@ -172,7 +171,6 @@ model SupervisorHandoverTurn {
   repositoryReady: boolean;
   seenLine: boolean;
   error?: SupervisorHandoverTurnError;
-  succeeded?: boolean;
 }
 
 model SupervisorHandoverTurnError {

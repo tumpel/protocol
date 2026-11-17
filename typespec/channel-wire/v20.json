@@ -2218,8 +2218,7 @@
         "ImageNotReleased",
         "ImageFetchFailed",
         "ImageFetchTimedOut",
-        "HostUpdating",
-        "HandoverLost"
+        "HostUpdating"
       ],
       "description": "Why a turn ended Failed. Each reason names the phase the turn stopped in."
     },

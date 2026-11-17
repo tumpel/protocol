@@ -369,9 +369,6 @@ enum TurnFailureReason {
 
   @doc("The host was handing its boxes to a new supervisor binary when the offer arrived, so it took no turn; the control plane offers the turn to another host at once, or keeps it Offered and offers it again once the host is back, so no turn fails HostUpdating.")
   HostUpdating: "HostUpdating",
-
-  @doc("The host handed its boxes to a new supervisor binary while the turn ran, and the box running it did not survive the handover; the detail names what failed.")
-  HandoverLost: "HandoverLost",
 }
 
 @doc("Why the box could not clone the session's repository.")
