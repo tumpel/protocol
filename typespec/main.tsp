@@ -10,6 +10,7 @@ import "./lib/config.tsp";
 import "./lib/github.tsp";
 import "./lib/release.tsp";
 import "./lib/prebuild.tsp";
+import "./lib/prebuild-template.tsp";
 import "./lib/build-provider.tsp";
 import "./lib/claude-setup.tsp";
 import "./lib/openrouter.tsp";

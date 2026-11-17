@@ -4,6 +4,7 @@ import "./github.tsp";
 import "./release.tsp";
 import "./issuer.tsp";
 import "./prebuild.tsp";
+import "./prebuild-template.tsp";
 import "./build-provider.tsp";
 import "./config.tsp";
 import "./claude-setup.tsp";
@@ -129,6 +130,18 @@ enum ProblemCode {
 
   @doc("The tenant's metrics store has no metric of that name.")
   MetricNotFound: "MetricNotFound",
+
+  @doc("No shipped template has that id, or the template has no such version; the detail lists the valid ones.")
+  PrebuildTemplateNotFound: "PrebuildTemplateNotFound",
+
+  @doc("The repository's default branch holds neither .devcontainer/devcontainer.json nor .devcontainer.json; the fix names the templates.")
+  DevcontainerMissing: "DevcontainerMissing",
+
+  @doc("The repository's default branch already holds a devcontainer.json and the request does not ask to replace it; the detail names the file.")
+  DevcontainerExists: "DevcontainerExists",
+
+  @doc("GitHub refused a call the operation makes, such as creating a branch or a pull request; the detail quotes GitHub's message.")
+  GitHubRefused: "GitHubRefused",
 }
 
 @doc("Every refusal: what failed and what fixes it.")
@@ -1130,8 +1143,8 @@ namespace V1 {
       own path starts the run, and reads the inputs at that commit; otherwise it reads them at the
       branch's head and dispatches the caller workflow there with no inputs. The prebuild records
       the commit it read; the run is picked up by that commit, from its workflow_run events or from
-      its call to prebuildInputs.read. A repository without a devcontainer.json builds with the
-      default config, and the prebuild records configSource Default. A CircleCI start runs the binding's pipeline
+      its call to prebuildInputs.read. Refused DevcontainerMissing, after the provider check, when the
+      default branch holds neither .devcontainer/devcontainer.json nor .devcontainer.json. A CircleCI start runs the binding's pipeline
       definition with config and checkout on the default branch and the parameters
       tumpel_prebuild_id, tumpel_tenant_id, tumpel_api_origin, tumpel_rootfs_url and
       tumpel_image_digest, records the pipeline and answers it Building.
@@ -1148,6 +1161,21 @@ namespace V1 {
     @get
     listLatest(): Prebuild[] | ProblemResponse;
 
+    @doc("""
+      Reads what a prebuild of a repository's default branch would run, without starting one or
+      storing anything: the config source, the commands in run order, containerEnv, the input digest
+      and the findings a build would refuse or fail on, each worded as the build words it. With
+      source Supplied it reads the supplied text as the repository's .devcontainer/devcontainer.json.
+      It compares rust-toolchain.toml, .nvmrc and .python-version with the guest image of the
+      persona's harness version. Each GitHub call answers within 10 s. Refused DevcontainerMissing
+      when the repository holds no devcontainer.json and none is supplied, RepositoryUnreadable when
+      GitHub refuses to show the repository or no token reads it, HarnessNotInCatalog, NoRelease and
+      ImageNotReleased as a start is.
+      """)
+    @route("/preview")
+    @post
+    preview(@body body: PrebuildPreviewRequest): PrebuildPreview | ProblemResponse;
+
     @doc("Reads one prebuild; its state is Dispatched, Building, Converting, Done or Failed.")
     @route("/{prebuildId}")
     @get
@@ -1157,6 +1185,45 @@ namespace V1 {
     @route("/{prebuildId}/failure")
     @get
     getFailure(...PrebuildPath): PrebuildFailure | ProblemResponse;
+  }
+
+  @route("/prebuild-templates")
+  interface PrebuildTemplates {
+    @doc("Lists every devcontainer.json template the control plane ships, by id, each with its versions newest first and the toolchains each version pins.")
+    @get
+    list(): PrebuildTemplate[] | ProblemResponse;
+
+    @doc("Reads one template version with its devcontainer.json text. Refused PrebuildTemplateNotFound, listing the valid ids or versions, for an unknown template or version.")
+    @route("/{prebuildTemplateId}/versions/{prebuildTemplateVersion}")
+    @get
+    get(...PrebuildTemplateVersionPath): PrebuildTemplateVersion | ProblemResponse;
+
+    @doc("""
+      Commits a template version's devcontainer.json as .devcontainer/devcontainer.json on the
+      branch tumpel/prebuild-template, cut from the default branch's head, and opens a pull request
+      to the default branch with the installation of the tenant's GitHub App on the repository's
+      owner. When that branch already has an open pull request, the branch moves to the new commit
+      and the answer is that pull request. With replace true, an existing devcontainer.json is
+      replaced and the pull request says so. Each GitHub call answers within 10 s. Refused
+      PrebuildTemplateNotFound for an unknown template or version, GitHubAppMissing while the stage
+      has no App, GitHubNotConnected when no installation of the tenant is on the owner,
+      DevcontainerExists naming the file when the default branch holds a devcontainer.json and
+      replace is false, and GitHubRefused quoting GitHub when it refuses a read, the branch, the file
+      or the pull request.
+      """)
+    @route("/pull-request")
+    @post
+    openPullRequest(@body body: PrebuildTemplatePullRequestOpen): PrebuildTemplatePullRequest | ProblemResponse;
+
+    @doc("""
+      Reads the newest pull request from the repository's branch tumpel/prebuild-template, with the
+      installation of the tenant's GitHub App on the repository's owner: Open, Merged or Closed.
+      Refused NotFound when the branch has no pull request, GitHubAppMissing, GitHubNotConnected and
+      GitHubRefused as openPullRequest is.
+      """)
+    @route("/pull-request")
+    @get
+    getPullRequest(...PrebuildTemplatePullRequestQuery): PrebuildTemplatePullRequest | ProblemResponse;
   }
 
   @doc("""
