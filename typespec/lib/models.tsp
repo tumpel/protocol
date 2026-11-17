@@ -544,6 +544,10 @@ model Session {
   @visibility(Lifecycle.Read)
   lastTurn: Turn;
 
+  @doc("What the latest turn's box boots from. Present once the control plane offered the latest turn.")
+  @visibility(Lifecycle.Read)
+  lastTurnBoot?: TurnBoot;
+
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
@@ -595,6 +599,10 @@ model TurnBase {
   @doc("How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.")
   @visibility(Lifecycle.Read)
   lineCount: Sequence;
+
+  @doc("What the turn's box boots from, recorded when the control plane offers the turn. A turn the control plane has not offered yet, or offered before it recorded boots, has none.")
+  @visibility(Lifecycle.Read)
+  boot?: TurnBoot;
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
@@ -648,6 +656,60 @@ model TurnFailure {
 
   failedAt: offsetDateTime;
   createdAt: int64;
+}
+
+@doc("Why a box boots without a prebuild's layer.")
+enum PrebuildLayerAbsence {
+  @doc("The session builds a prebuild, so its box starts from the guest image alone.")
+  BuildsPrebuild: "BuildsPrebuild",
+
+  @doc("The host is not Amd64, and prebuilds build on Amd64 alone.")
+  HostNotAmd64: "HostNotAmd64",
+
+  @doc("The control plane could not read the current release, so it could not name the guest image a prebuild must match.")
+  ReleaseUnreadable: "ReleaseUnreadable",
+
+  @doc("The current release carries no Amd64 guest image for the session's harness version, the image prebuilds build on.")
+  NoAmd64Image: "NoAmd64Image",
+
+  @doc("The repository has no stored prebuild.")
+  NoPrebuild: "NoPrebuild",
+
+  @doc("The repository's stored prebuilds are built on another guest image, and a layer fits only the image it was built on.")
+  OtherGuestImage: "OtherGuestImage",
+}
+
+@doc("The box's files start from a stored prebuild's layer.")
+model TurnBootPrebuild {
+  layer: "Prebuild";
+  prebuildId: EntityId;
+
+  @doc("The digest the prebuild's read names for its layer.")
+  layerDigest: Sha256Digest;
+}
+
+@doc("The box's files start from the guest image alone. `detail` states why and what fixes it.")
+model TurnBootNoPrebuild {
+  layer: "None";
+  reason: PrebuildLayerAbsence;
+  detail: string;
+}
+
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "layer" })
+union TurnBootLayer {
+  Prebuild: TurnBootPrebuild,
+  None: TurnBootNoPrebuild,
+}
+
+@doc("""
+  What a turn's box boots from. A turn that restores the session's own snapshot names the layer of
+  the turn whose box stored that snapshot, since the snapshot holds the files that layer started.
+  """)
+model TurnBoot {
+  @doc("The digest of the image the turn's offer names: the full guest image, or the base image of a layered boot.")
+  guestImageDigest: Sha256Digest;
+
+  layer: TurnBootLayer;
 }
 
 @doc("""
