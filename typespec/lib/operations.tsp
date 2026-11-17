@@ -585,7 +585,7 @@ model PersonaCreate is Create<Persona> {
   files?: PersonaFileWrite[];
 }
 
-@doc("Replaces the persona's name, secret set and whole file set: a file the update leaves out is deleted. The harness is fixed at create.")
+@doc("Replaces the persona's name, secret set, box memory and whole file set: a file the update leaves out is deleted, and a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib. The harness is fixed at create.")
 model PersonaUpdate is Update<Persona> {
   files: PersonaFileWrite[];
 }
