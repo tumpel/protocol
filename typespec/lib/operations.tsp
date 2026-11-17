@@ -485,6 +485,15 @@ model SessionListQuery {
   lastTurnBefore?: offsetDateTime;
 }
 
+model SessionStopQuery {
+  @doc("""
+    Also end the turn in flight at once: it fails Cancelled, the host stops its harness, then
+    snapshots and frees the box as a plain stop does. Left out, a stop is refused while a turn is in flight.
+    """)
+  @query
+  cancelTurn?: boolean;
+}
+
 model TurnSend is Create<TurnBase>;
 
 model MetricWindow {
@@ -958,7 +967,7 @@ namespace V1 {
       """)
     @route("/{sessionId}/stop")
     @post
-    stop(...SessionPath, @body body?: SessionStop): Session | ProblemResponse;
+    stop(...SessionPath, ...SessionStopQuery): Session | ProblemResponse;
 
     @doc("""
       Archives an idle, stopped or failed session: discards an idle session's box without a snapshot,

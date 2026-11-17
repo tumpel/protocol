@@ -616,14 +616,6 @@ enum StopFailureReason {
   NotAnswered: "NotAnswered",
 }
 
-model SessionStop {
-  @doc("""
-    Also end the turn in flight at once: it fails Cancelled, the host stops its harness, then
-    snapshots and frees the box as a plain stop does. Left out, a stop is refused while a turn is in flight.
-    """)
-  cancelTurn?: boolean;
-}
-
 @doc("A stop that failed and returned its session to Idle with its box kept.")
 model StopFailure {
   @key stopFailureId: EntityId;
