@@ -35,7 +35,7 @@ scalar Prompt extends string;
 
 @doc("A condition the harness keeps working toward until it holds.")
 @minLength(1)
-@maxLength(4000)
+@maxLength(100000)
 scalar Goal extends string;
 
 @minValue(0)
