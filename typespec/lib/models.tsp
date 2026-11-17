@@ -538,6 +538,10 @@ model Session {
   @doc("A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.")
   repository: RepositoryUrl;
 
+  @doc("The issue the session was started from with Sessions_startFromIssue. A session started with a prompt has none.")
+  @visibility(Lifecycle.Read)
+  issue?: SessionIssue;
+
   @visibility(Lifecycle.Read) harness: Harness;
   @visibility(Lifecycle.Read) harnessVersion: string;
   `model`: ModelName;
@@ -979,8 +983,29 @@ model PersonaFile {
   path: PersonaFilePath;
   digest: Sha256Digest;
   sizeBytes: PersonaFileSize;
+  bytes: PersonaFileBytes;
   createdAt: int64;
   updatedAt: int64;
+}
+
+@doc("The bytes of a persona file of at most PersonaFileLimit.InlineFileBytes, base64.")
+model InlinePersonaFileBytes {
+  source: PersonaFileSource.Inline;
+  content: PersonaFileContent;
+}
+
+@doc("A presigned GET of the bytes of a persona file larger than PersonaFileLimit.InlineFileBytes, valid until `downloadExpiresAt`. The bytes hash to the file's digest.")
+model StoredPersonaFileBytes {
+  source: PersonaFileSource.Stored;
+  downloadUrl: url;
+  downloadExpiresAt: offsetDateTime;
+}
+
+@doc("A persona file's bytes as a read returns them: Inline when the file fits PersonaFileLimit.InlineFileBytes, Stored as a download URL when it is larger.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "source" })
+union PersonaFileBytes {
+  Inline: InlinePersonaFileBytes,
+  Stored: StoredPersonaFileBytes,
 }
 
 @doc("A persona's harness, its config files and the secret set its sessions run on.")
