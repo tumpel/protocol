@@ -538,9 +538,9 @@ model Session {
   @doc("A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.")
   repository: RepositoryUrl;
 
-  @doc("The issue the session was started from with Sessions_startFromIssue. A session started with a prompt has none.")
+  @doc("What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.")
   @visibility(Lifecycle.Read)
-  issue?: SessionIssue;
+  origin: SessionOrigin;
 
   @visibility(Lifecycle.Read) harness: Harness;
   @visibility(Lifecycle.Read) harnessVersion: string;
@@ -585,6 +585,23 @@ model SessionIssue {
   title: string;
   htmlUrl: url;
   branch: string;
+}
+
+@doc("The session started with a prompt sent with Sessions_start.")
+model SessionPromptOrigin {
+  kind: "Prompt";
+}
+
+@doc("The session started from a GitHub issue with Sessions_startFromIssue, with the branch its first prompt asks for.")
+model SessionIssueOrigin {
+  kind: "Issue";
+  ...OmitProperties<SessionIssue, "sessionId">;
+}
+
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union SessionOrigin {
+  Prompt: SessionPromptOrigin,
+  Issue: SessionIssueOrigin,
 }
 
 @doc("Why a stop returned its session to Idle with its box kept.")
@@ -975,39 +992,6 @@ model EffectiveHarnessVersion {
   pinned: boolean;
 }
 
-@doc("""
-  One config file of a persona, at a path relative to the harness home in the box. Its bytes live
-  in the store under their sha256 digest; the box receives the path and digest of each file.
-  """)
-model PersonaFile {
-  path: PersonaFilePath;
-  digest: Sha256Digest;
-  sizeBytes: PersonaFileSize;
-  bytes: PersonaFileBytes;
-  createdAt: int64;
-  updatedAt: int64;
-}
-
-@doc("The bytes of a persona file of at most PersonaFileLimit.InlineFileBytes, base64.")
-model InlinePersonaFileBytes {
-  source: PersonaFileSource.Inline;
-  content: PersonaFileContent;
-}
-
-@doc("A presigned GET of the bytes of a persona file larger than PersonaFileLimit.InlineFileBytes, valid until `downloadExpiresAt`. The bytes hash to the file's digest.")
-model StoredPersonaFileBytes {
-  source: PersonaFileSource.Stored;
-  downloadUrl: url;
-  downloadExpiresAt: offsetDateTime;
-}
-
-@doc("A persona file's bytes as a read returns them: Inline when the file fits PersonaFileLimit.InlineFileBytes, Stored as a download URL when it is larger.")
-@discriminated(#{ envelope: "none", discriminatorPropertyName: "source" })
-union PersonaFileBytes {
-  Inline: InlinePersonaFileBytes,
-  Stored: StoredPersonaFileBytes,
-}
-
 @doc("A persona's harness, its config files and the secret set its sessions run on.")
 model Persona {
   @key @visibility(Lifecycle.Read) personaId: EntityId;
@@ -1064,6 +1048,36 @@ model StoredPersonaFile {
 union PersonaFileWrite {
   Inline: InlinePersonaFile,
   Stored: StoredPersonaFile,
+}
+
+@doc("A persona file of at most PersonaFileLimit.InlineFileBytes as a read returns it: the Inline write with the digest and size of its bytes.")
+model InlinePersonaFileRead {
+  ...InlinePersonaFile;
+  digest: Sha256Digest;
+  sizeBytes: PersonaFileSize;
+  createdAt: int64;
+  updatedAt: int64;
+}
+
+@doc("A persona file larger than PersonaFileLimit.InlineFileBytes as a read returns it: the Stored write with a presigned GET of its bytes, valid until `downloadExpiresAt`.")
+model StoredPersonaFileRead {
+  ...StoredPersonaFile;
+  downloadUrl: url;
+  downloadExpiresAt: offsetDateTime;
+  createdAt: int64;
+  updatedAt: int64;
+}
+
+@doc("""
+  One config file of a persona, at a path relative to the harness home in the box. Its bytes live
+  in the store under their sha256 digest; the box receives the path and digest of each file. Each
+  variant is the matching PersonaFileWrite with fields the server adds, so a read without them
+  is a valid write.
+  """)
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "source" })
+union PersonaFile {
+  Inline: InlinePersonaFileRead,
+  Stored: StoredPersonaFileRead,
 }
 
 @doc("""
