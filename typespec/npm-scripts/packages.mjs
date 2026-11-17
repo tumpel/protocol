@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -26,6 +26,15 @@ const packages = {
       "./frozen/*": { types: "./frozen/*.d.ts", default: "./frozen/*.js" },
     },
   },
+  api: {
+    name: "@tumpel/api",
+    files: ["constants.js", "constants.d.ts", "credentials.js", "credentials.d.ts"],
+    exports: {
+      "./constants": { types: "./constants.d.ts", default: "./constants.js" },
+      "./credentials": { types: "./credentials.d.ts", default: "./credentials.js" },
+    },
+    peerDependencies: { "@tumpel/schemas": version, zod: "^4.6.7" },
+  },
 };
 
 for (const [dir, { name, ...rest }] of Object.entries(packages)) {
@@ -37,5 +46,6 @@ for (const [dir, { name, ...rest }] of Object.entries(packages)) {
     type: "module",
     ...rest,
   };
+  mkdirSync(join(build, dir), { recursive: true });
   writeFileSync(join(build, dir, "package.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 }
