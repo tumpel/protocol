@@ -101,11 +101,6 @@ model SupervisorHandoverBox {
   image: SupervisorHandoverImage;
   dirty: boolean;
   credentialFile?: string;
-
-  @doc("The guest protocol version the box's guest named in GuestHello; a record from a supervisor older than guest protocol 12 lacks it, and the new binary then sends the box no GuestWipPush.")
-  @minValue(1)
-  guestProtocolVersion?: int32;
-
   state: SupervisorHandoverBoxState;
   queued: SupervisorHandoverCommand[];
 }
@@ -546,35 +541,6 @@ union GuestInput {
   TurnStart: GuestTurnStart,
   ClaudeSetupStart: GuestClaudeSetupStart,
   ClaudeSetupCode: GuestClaudeSetupCode,
-  WipPush: GuestWipPush,
-}
-
-@doc("""
-  Asks the guest to push the working tree of the failed turn `turnId` to `branch` with that turn's
-  repository credential: the commit HEAD names plus one commit on top that holds every uncommitted
-  change. The guest leaves HEAD, the index and the working tree as they are and answers
-  GuestWipPushed or GuestWipPushFailed. The supervisor sends it after the box's snapshot is stored,
-  and only to a guest that speaks guest protocol 12 or newer.
-  """)
-model GuestWipPush {
-  type: "WipPush";
-  turnId: EntityId;
-  @minLength(1) branch: string;
-}
-
-@doc("The guest pushed the work in progress of turn `turnId` as `commitSha` to `branch`.")
-model GuestWipPushed {
-  type: "WipPushed";
-  turnId: EntityId;
-  branch: string;
-  @pattern("^[0-9a-f]{40}$") commitSha: string;
-}
-
-@doc("The guest did not push the work in progress of turn `turnId`. `detail` states what failed.")
-model GuestWipPushFailed {
-  type: "WipPushFailed";
-  turnId: EntityId;
-  detail: string;
 }
 
 @doc("The setup's `claude setup-token` or `codex login --device-auth` printed the URL where the person signs in, and Codex the one-time code to enter there.")
@@ -628,8 +594,6 @@ union GuestMessage {
   ClaudeSetupUrl: GuestClaudeSetupUrl,
   ClaudeSetupStored: GuestClaudeSetupStored,
   ClaudeSetupFailed: GuestClaudeSetupFailed,
-  WipPushed: GuestWipPushed,
-  WipPushFailed: GuestWipPushFailed,
 }
 
 @doc("""

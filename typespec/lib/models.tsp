@@ -82,7 +82,7 @@ const DigestsPerPart = 500;
 scalar GuestProtocol extends int32;
 
 const GuestProtocolOldest = 9;
-const GuestProtocolVersion = 12;
+const GuestProtocolVersion = 11;
 
 @doc("""
   The contract between the base image's stub init and the guest drive's init: the base writes it to
