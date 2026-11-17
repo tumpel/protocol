@@ -987,7 +987,7 @@ namespace V1 {
 
     @doc("""
       Waits until one of the turns is Completed or Failed, or until timeoutSeconds pass, then reads
-      every turn in the order asked; answers at once when one has already ended. Refused TurnNotFound,
+      every turn in the order asked; answers at once when one has already ended. Refused NotFound,
       naming the turn, when a turnId names no turn of the tenant.
       """)
     @route("/turns/wait")
