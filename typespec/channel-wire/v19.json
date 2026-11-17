@@ -1811,6 +1811,13 @@
         "gitAuthorEmail": {
           "$ref": "#/components/schemas/EmailAddress"
         },
+        "boxMemoryMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 128,
+          "maximum": 65536,
+          "description": "The memory in MiB the box boots with: the persona's boxMemoryMib, or BoxMemoryLimit.DefaultMib. A box\nthat is already warm keeps the memory it booted with. A supervisor given an offer without it boots\nthe box with memoryMib of its runtime config."
+        },
         "prebuildCommitSha": {
           "type": "string",
           "pattern": "^[0-9a-f]{40}$",

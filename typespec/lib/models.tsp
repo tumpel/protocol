@@ -103,6 +103,15 @@ enum PersonaFileLimit {
   PersonaBytes: 262144,
 }
 
+@doc("""
+  The memory of a box in MiB. A persona that names no boxMemoryMib runs its boxes with DefaultMib;
+  one that names it may ask for up to MaxMib.
+  """)
+enum BoxMemoryLimit {
+  DefaultMib: 4096,
+  MaxMib: 65536,
+}
+
 @doc("A path relative to the harness home in the box, such as .claude/settings.json. The harness catalog lists the paths each harness accepts.")
 @pattern("^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$")
 @maxLength(200)
@@ -326,7 +335,7 @@ enum TurnFailureReason {
   SnapshotUnreadable: "SnapshotUnreadable",
   HarnessExited: "HarnessExited",
 
-  @doc("The box ran out of memory and the kernel killed the harness and everything it started; the detail names the box memory and the process the kernel picked, so the persona can run lighter builds or the host can give boxes more memoryMib.")
+  @doc("The box ran out of memory and the kernel killed the harness and everything it started; the detail names the box memory and the process the kernel picked, so the persona can run lighter builds or ask for more boxMemoryMib.")
   HarnessOutOfMemory: "HarnessOutOfMemory",
 
   TurnTimedOut: "TurnTimedOut",
@@ -845,6 +854,15 @@ model Persona {
 
   @doc("The secret set every session of the persona runs on; its members are all a turn's box receives.")
   secretSetId: EntityId;
+
+  @doc("""
+    The memory in MiB of each box the persona's sessions boot, from BoxMemoryLimit.DefaultMib up to
+    BoxMemoryLimit.MaxMib; left out, the boxes get BoxMemoryLimit.DefaultMib. A session is placed only on a host
+    whose available memory holds it, and a box already running keeps the memory it booted with.
+    """)
+  @minValue(4096)
+  @maxValue(65536)
+  boxMemoryMib?: int32;
 
   @doc("The harness's own config files, written under the harness home in the box before the harness starts.")
   @visibility(Lifecycle.Read)

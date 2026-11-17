@@ -300,6 +300,15 @@ model TurnOffer {
   gitAuthorEmail: EmailAddress;
 
   @doc("""
+    The memory in MiB the box boots with: the persona's boxMemoryMib, or BoxMemoryLimit.DefaultMib. A box
+    that is already warm keeps the memory it booted with. A supervisor given an offer without it boots
+    the box with memoryMib of its runtime config.
+    """)
+  @minValue(128)
+  @maxValue(65536)
+  boxMemoryMib?: int32;
+
+  @doc("""
     Set when the turn builds a prebuild: the box clones the repository at this commit and runs the
     repository's setup step, /opt/tumpel/prebuild.mjs run, in place of the harness, its output lines
     being the turn's lines. The credential then holds only a GITHUB_TOKEN that reads the

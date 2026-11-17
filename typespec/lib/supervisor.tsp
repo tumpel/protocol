@@ -353,6 +353,7 @@ model BoxBudgets {
   `boxCapacity` is the size of the TAP pool `tumpel-supervisor install` makes: devices tumpel0 up to
   tumpel<boxCapacity - 1>, device k with gateway 172.16.<k>.1/30 and guest 172.16.<k>.2. Each box
   claims one device and returns it at teardown; a turn past the pool fails PoolExhausted.
+  `memoryMib` is the memory of a box whose TurnOffer names no boxMemoryMib, 4096 by default.
   `warmWindowSeconds` is how long a box stays paused after a turn, 900 by default. A turn for the
   session inside the window resumes it; once the window ends and the box's last completed turn is
   in a snapshot, the box is torn down and its drive deleted.
