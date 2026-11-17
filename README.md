@@ -4,11 +4,12 @@ The TypeSpec for the tumpel API, the host channel between a supervisor and the c
 
 ## Artifacts
 
-Each `vX.Y.Z` tag publishes three artifacts at the same version:
+Each `vX.Y.Z` tag publishes four artifacts at the same version:
 
 - `tumpel-api` on crates.io: Rust types and a typed client.
 - `@tumpel/schemas`: zod schemas, as an npm tarball on the GitHub release.
 - `@tumpel/openapi`: `openapi.json`, the `paths` types and the frozen channel types, as an npm tarball on the GitHub release.
+- `@tumpel/api`: the credential checks and constants that clients share, over `@tumpel/schemas`, as an npm tarball on the GitHub release. It names `@tumpel/schemas` and `zod` as peer dependencies, so install the `@tumpel/schemas` tarball of the same version next to it.
 
 Pin each exactly. Every release is a minor version, because an added field breaks Rust callers.
 

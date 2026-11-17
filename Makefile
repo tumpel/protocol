@@ -21,7 +21,7 @@ $(ROOT_MODULES): package.json package-lock.json
 
 # The install is order-only: a fresh install in a job that downloaded build/ must not mark it stale.
 build/.typespec: $(TYPESPEC_SOURCES) Cargo.toml | $(TYPESPEC_MODULES)
-	rm -rf build/.typespec build/schemas build/openapi build/json-schema
+	rm -rf build/.typespec build/schemas build/openapi build/api build/json-schema
 	typespec/node_modules/.bin/tsp compile typespec
 	node typespec/npm-scripts/whole-numbers.mjs
 	node typespec/npm-scripts/enum-names.mjs
@@ -41,6 +41,7 @@ build/.rust: build/.typespec $(XTASK_SOURCES) Cargo.lock
 pack: build/.typespec | $(ROOT_MODULES)
 	rm -rf dist
 	mkdir -p dist
+	cp packages/api/*.ts build/api/
 	node_modules/.bin/tsc -p tsconfig.json
-	npm pack ./build/schemas ./build/openapi --pack-destination dist
+	npm pack ./build/schemas ./build/openapi ./build/api --pack-destination dist
 	cd dist && for tarball in *.tgz; do sha256sum "$$tarball" > "$$tarball.sha256"; done
