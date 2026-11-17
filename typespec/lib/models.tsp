@@ -321,7 +321,12 @@ enum TurnState {
 
 @doc("Why a turn ended Failed. Each reason names the phase the turn stopped in.")
 enum TurnFailureReason {
+  @doc("The host's own: the control plane did not answer the host's TurnClaim in time, so the harness never started. The control plane never fails a turn NotClaimed; a turn no host claims stays Offered and fails Undelivered.")
   NotClaimed: "NotClaimed",
+
+  @doc("The dead letter: no host claimed the turn within turnTotalBudgetSeconds of its offer, though the control plane kept it Offered and offered it again at every reconnect of the host. The turn never ran; the detail names the host and whether it is online.")
+  Undelivered: "Undelivered",
+
   NoFirstOutput: "NoFirstOutput",
   HostOffline: "HostOffline",
   CredentialRefused: "CredentialRefused",
@@ -1202,7 +1207,7 @@ model ControlPlaneSettings {
   @minValue(1)
   snapshotDeadlineSeconds: int32;
 
-  @doc("How long the host may take to claim an offered turn before it fails NotClaimed.")
+  @doc("How long the offer's credential, restore URLs and image URLs stay valid for the host to claim the turn after each send of the offer, plus turnImageFetchBudgetSeconds for the image. A slow claim never fails the turn: it stays Offered until turnTotalBudgetSeconds, then fails Undelivered.")
   @minValue(1)
   turnClaimBudgetSeconds: int32;
 
@@ -1214,7 +1219,7 @@ model ControlPlaneSettings {
   @minValue(1)
   turnFirstLineBudgetSeconds: int32;
 
-  @doc("How long a turn may take from offer to completion before it fails TurnTimedOut.")
+  @doc("How long a turn may take from offer to completion before it fails TurnTimedOut, or Undelivered when no host claimed it.")
   @minValue(1)
   turnTotalBudgetSeconds: int32;
 

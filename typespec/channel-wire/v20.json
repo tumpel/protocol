@@ -2198,6 +2198,7 @@
       "type": "string",
       "enum": [
         "NotClaimed",
+        "Undelivered",
         "NoFirstOutput",
         "HostOffline",
         "CredentialRefused",
