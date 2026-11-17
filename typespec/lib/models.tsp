@@ -544,9 +544,18 @@ model Session {
   @visibility(Lifecycle.Read)
   lastTurn: Turn;
 
-  @doc("What the latest turn's box boots from. Present once the control plane offered the latest turn.")
+  @doc("The image the latest turn's box boots. Present once the control plane offered the latest turn.")
   @visibility(Lifecycle.Read)
-  lastTurnBoot?: TurnBoot;
+  lastTurnImage?: TurnImage;
+
+  @doc("""
+    The prebuild layer the session's files start from, or why they start without one. The control
+    plane records it for each box it boots while the session holds no snapshot of its own; once a
+    snapshot exists, every box restores that snapshot and the layer stays. Present once the control
+    plane offered the session's first turn.
+    """)
+  @visibility(Lifecycle.Read)
+  prebuildLayer?: SessionPrebuildLayer;
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
@@ -600,9 +609,9 @@ model TurnBase {
   @visibility(Lifecycle.Read)
   lineCount: Sequence;
 
-  @doc("What the turn's box boots from, recorded when the control plane offers the turn. A turn the control plane has not offered yet, or offered before it recorded boots, has none.")
+  @doc("The image the turn's box boots, recorded when the control plane offers the turn. A turn not yet offered has none.")
   @visibility(Lifecycle.Read)
-  boot?: TurnBoot;
+  image?: TurnImage;
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
@@ -658,16 +667,13 @@ model TurnFailure {
   createdAt: int64;
 }
 
-@doc("Why a box boots without a prebuild's layer.")
+@doc("Why a session's files start without a prebuild's layer.")
 enum PrebuildLayerAbsence {
   @doc("The session builds a prebuild, so its box starts from the guest image alone.")
   BuildsPrebuild: "BuildsPrebuild",
 
-  @doc("The host is not Amd64, and prebuilds build on Amd64 alone.")
+  @doc("The session's host is not Amd64, and prebuilds build on Amd64 alone.")
   HostNotAmd64: "HostNotAmd64",
-
-  @doc("The control plane could not read the current release, so it could not name the guest image a prebuild must match.")
-  ReleaseUnreadable: "ReleaseUnreadable",
 
   @doc("The current release carries no Amd64 guest image for the session's harness version, the image prebuilds build on.")
   NoAmd64Image: "NoAmd64Image",
@@ -677,10 +683,13 @@ enum PrebuildLayerAbsence {
 
   @doc("The repository's stored prebuilds are built on another guest image, and a layer fits only the image it was built on.")
   OtherGuestImage: "OtherGuestImage",
+
+  @doc("The session's first box booted before the control plane recorded the layer, so it does not know which layer that box restored.")
+  NotRecorded: "NotRecorded",
 }
 
-@doc("The box's files start from a stored prebuild's layer.")
-model TurnBootPrebuild {
+@doc("The session's files start from a stored prebuild's layer.")
+model SessionPrebuildLayerStored {
   layer: "Prebuild";
   prebuildId: EntityId;
 
@@ -688,28 +697,37 @@ model TurnBootPrebuild {
   layerDigest: Sha256Digest;
 }
 
-@doc("The box's files start from the guest image alone. `detail` states why and what fixes it.")
-model TurnBootNoPrebuild {
+@doc("The session's files start without a prebuild's layer. `detail` states why and what fixes it.")
+model SessionPrebuildLayerAbsent {
   layer: "None";
   reason: PrebuildLayerAbsence;
   detail: string;
 }
 
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "layer" })
-union TurnBootLayer {
-  Prebuild: TurnBootPrebuild,
-  None: TurnBootNoPrebuild,
+union SessionPrebuildLayer {
+  Prebuild: SessionPrebuildLayerStored,
+  None: SessionPrebuildLayerAbsent,
 }
 
-@doc("""
-  What a turn's box boots from. A turn that restores the session's own snapshot names the layer of
-  the turn whose box stored that snapshot, since the snapshot holds the files that layer started.
-  """)
-model TurnBoot {
-  @doc("The digest of the image the turn's offer names: the full guest image, or the base image of a layered boot.")
+@doc("The turn's box boots a full guest image. `guestImageDigest` names the same image as a prebuild's guestImageDigest.")
+model TurnFullImage {
+  kind: "Full";
   guestImageDigest: Sha256Digest;
+}
 
-  layer: TurnBootLayer;
+@doc("The turn's box boots a base image with the harness layer of the session's harness version.")
+model TurnLayeredImage {
+  kind: "Layered";
+  baseImageDigest: Sha256Digest;
+  harnessLayerDigest: Sha256Digest;
+}
+
+@doc("The image a turn's box boots.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union TurnImage {
+  Full: TurnFullImage,
+  Layered: TurnLayeredImage,
 }
 
 @doc("""
