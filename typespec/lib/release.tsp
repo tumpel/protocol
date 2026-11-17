@@ -12,9 +12,9 @@ enum ImageHarness {
 }
 
 @doc("""
-  One supervisor binary of a release, stored in the release bucket under
-  `supervisor/<arch>/<sha256>`, where `<arch>` is the architecture in lower case. Releases build
-  amd64 only until an arm64 host passes the proof. The bucket is private, so the control plane answers presigned GETs of it.
+  One supervisor binary of a release, an asset of the supervisor release `supervisorVersion`.
+  Releases carry amd64 only until an arm64 host passes the proof. The control plane redirects
+  downloads to `downloadUrl`.
   """)
 model ReleaseSupervisor {
   architecture: HostArchitecture;
@@ -24,6 +24,9 @@ model ReleaseSupervisor {
   @doc("The version of the supervisor release this binary comes from, the one it reports in Hello.")
   @minLength(1)
   supervisorVersion: string;
+
+  @doc("The URL of the release asset that holds this binary, written by the publisher; the binary there has `sha256` and `sizeBytes`.")
+  downloadUrl: url;
 
   @doc("The GuestProtocol.Version the supervisor and the guest drive inside it speak; a release that keeps this supervisor refuses to publish from a commit whose GuestProtocol.Oldest to GuestProtocol.Version leaves it out.")
   @minValue(1)
@@ -53,14 +56,21 @@ model SupervisorReleaseBinary {
 }
 
 @doc("""
-  One `tumpel` CLI binary of a release, built with the same static target as the supervisor and
-  stored in the release bucket under `cli/<arch>/<sha256>`, where `<arch>` is the architecture in
-  lower case. Releases build amd64 only until an arm64 host passes the proof.
+  One `tumpel` CLI binary of a release, an asset of the CLI release `cliVersion`. Releases carry
+  amd64 only until an arm64 host passes the proof. The control plane redirects downloads to
+  `downloadUrl`.
   """)
 model ReleaseCli {
   architecture: HostArchitecture;
   sha256: Sha256Digest;
   @minValue(1) sizeBytes: int64;
+
+  @doc("The version of the CLI release this binary comes from, the one `tumpel --version` prints.")
+  @minLength(1)
+  cliVersion: string;
+
+  @doc("The URL of the release asset that holds this binary, written by the publisher; the binary there has `sha256` and `sizeBytes`.")
+  downloadUrl: url;
 }
 
 @doc("""
@@ -204,7 +214,7 @@ model ReleaseSupervisorPath {
   @path architecture: HostArchitecture;
 }
 
-@doc("The current supervisor binary: `location` is a presigned GET valid for five minutes.")
+@doc("The current supervisor binary: `location` is the `downloadUrl` of its ReleaseSupervisor.")
 model SupervisorDownload {
   @statusCode statusCode: 302;
   @header location: string;
@@ -214,7 +224,7 @@ model ReleaseCliPath {
   @path architecture: HostArchitecture;
 }
 
-@doc("The current CLI binary: `location` is a presigned GET valid for five minutes.")
+@doc("The current CLI binary: `location` is the `downloadUrl` of its ReleaseCli.")
 model CliDownload {
   @statusCode statusCode: 302;
   @header location: string;
