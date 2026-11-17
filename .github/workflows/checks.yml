@@ -25,33 +25,55 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Detect a docs-only pull request
+        id: changes
+        run: |
+          code=true
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
+            changed=$(git diff --name-only HEAD^1 HEAD)
+            grep -qvE '^(docs?/.*|.*\.md|LICENSE|\.github/ISSUE_TEMPLATE/.*)$' <<<"$changed" || code=false
+          fi
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+
       - uses: actions/setup-node@v7
         with:
           node-version: 24
 
-      - name: Install the pinned Rust toolchain
+      - if: steps.changes.outputs.code == 'true'
+        name: Install the pinned Rust toolchain
         run: rustup toolchain install
 
-      - uses: Swatinem/rust-cache@v2
+      - if: steps.changes.outputs.code == 'true'
+        uses: Swatinem/rust-cache@v2
 
       - run: npm ci --no-audit --no-fund
 
-      - name: Generate the TypeSpec output and the tumpel-api sources
+      - if: steps.changes.outputs.code == 'false'
+        name: Run Biome and the comments and secrets checks
+        run: npm run lint && npm run comments:check && npm run secrets:check
+
+      - if: steps.changes.outputs.code == 'true'
+        name: Generate the TypeSpec output and the tumpel-api sources
         run: make generate
 
-      - name: Fail on an uncommitted rewrite of the channel wire lock
+      - if: steps.changes.outputs.code == 'true'
+        name: Fail on an uncommitted rewrite of the channel wire lock
         run: git diff --exit-code typespec/channel-wire
 
-      - run: npm run check
+      - if: steps.changes.outputs.code == 'true'
+        run: npm run check
 
-      - run: npm test
+      - if: steps.changes.outputs.code == 'true'
+        run: npm test
 
-      - name: Package tumpel-api from the generated sources
+      - if: steps.changes.outputs.code == 'true'
+        name: Package tumpel-api from the generated sources
         run: |
           git diff --exit-code
           cargo package -p tumpel-api --allow-dirty
 
-      - name: Build the npm tarballs and import them with plain node
+      - if: steps.changes.outputs.code == 'true'
+        name: Build the npm tarballs and import them with plain node
         run: |
           make pack
           npm run pack:check
