@@ -951,13 +951,14 @@ namespace V1 {
     get(...SessionPath): Session | ProblemResponse;
 
     @doc("""
-      Stops a session with no turn in flight: its host snapshots the session and tears its box down,
-      and the next send boots a fresh box from the snapshots. Answers Stopping before the box is gone;
-      refused while a turn runs or while the session's host is offline.
+      Stops a session: its host snapshots the session and tears its box down, and the next send boots
+      a fresh box from the snapshots. Answers Stopping before the box is gone; refused TurnInFlight
+      while a turn is in flight unless cancelTurn is true, which fails that turn Cancelled first, and
+      refused while the session's host is offline.
       """)
     @route("/{sessionId}/stop")
     @post
-    stop(...SessionPath): Session | ProblemResponse;
+    stop(...SessionPath, @body body?: SessionStop): Session | ProblemResponse;
 
     @doc("""
       Archives an idle, stopped or failed session: discards an idle session's box without a snapshot,

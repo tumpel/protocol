@@ -417,6 +417,17 @@ model TurnFailed {
 }
 
 @doc("""
+  Asks the host to end turn `turnId` at once, which the control plane already failed Cancelled: the
+  host pauses the box running it, which stops the harness mid-step, keeps the box and reports
+  nothing more for the turn. The SnapshotRequest and BoxTeardown that follow then snapshot and free
+  the box. A host that runs no such turn does nothing.
+  """)
+model TurnCancel {
+  type: "TurnCancel";
+  turnId: EntityId;
+}
+
+@doc("""
   Asks the host to store the upper directory of a box as a SnapshotRoot under `storageKey`. The
   host sends the chunk digests its files hold that the box's previous snapshot did not in
   SnapshotChunks parts, packs the ones the tenant lacks together with the chunks of its encoded
@@ -748,6 +759,7 @@ union ControlMessage {
   TurnOffer: TurnOffer,
   TurnWithdrawn: TurnWithdrawn,
   TurnClaimed: TurnClaimed,
+  TurnCancel: TurnCancel,
   SnapshotRequest: SnapshotRequest,
   SnapshotChunksHeld: SnapshotChunksHeld,
   SnapshotPackUploads: SnapshotPackUploads,

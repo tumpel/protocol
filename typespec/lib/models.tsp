@@ -382,6 +382,9 @@ enum TurnFailureReason {
 
   @doc("The host's first Heartbeat after it reconnected named no box for the turn's session, for example after its supervisor restarted, so the turn's work since its last snapshot is gone; the detail names the host.")
   BoxLost: "BoxLost",
+
+  @doc("A person stopped the session with cancelTurn while the turn was in flight; the detail names who.")
+  Cancelled: "Cancelled",
 }
 
 @doc("Why the box could not clone the session's repository.")
@@ -611,6 +614,14 @@ enum StopFailureReason {
 
   @doc("The control plane's own: the host did not answer the teardown within snapshotDeadlineSeconds.")
   NotAnswered: "NotAnswered",
+}
+
+model SessionStop {
+  @doc("""
+    Also end the turn in flight at once: it fails Cancelled, the host stops its harness, then
+    snapshots and frees the box as a plain stop does. Left out, a stop is refused while a turn is in flight.
+    """)
+  cancelTurn?: boolean;
 }
 
 @doc("A stop that failed and returned its session to Idle with its box kept.")
