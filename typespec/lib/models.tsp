@@ -59,7 +59,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 19;
+const ChannelProtocolVersion = 20;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -82,7 +82,7 @@ const DigestsPerPart = 500;
 scalar GuestProtocol extends int32;
 
 const GuestProtocolOldest = 9;
-const GuestProtocolVersion = 11;
+const GuestProtocolVersion = 12;
 
 @doc("""
   The contract between the base image's stub init and the guest drive's init: the base writes it to
@@ -335,8 +335,11 @@ enum TurnFailureReason {
   SnapshotUnreadable: "SnapshotUnreadable",
   HarnessExited: "HarnessExited",
 
-  @doc("The box ran out of memory and the kernel killed the harness and everything it started; the detail names the box memory and the process the kernel picked, so the persona can run lighter builds or ask for more boxMemoryMib.")
+  @doc("The box ran out of memory and the kernel killed the harness; the detail names the box memory and the process the kernel picked, so the persona can run lighter builds or ask for more boxMemoryMib.")
   HarnessOutOfMemory: "HarnessOutOfMemory",
+
+  @doc("The harness exited without printing a successful result, so the turn did not finish its work; the detail carries the tail of the harness's standard error.")
+  HarnessExitedWithoutResult: "HarnessExitedWithoutResult",
 
   TurnTimedOut: "TurnTimedOut",
 
@@ -366,6 +369,9 @@ enum TurnFailureReason {
 
   @doc("The host was handing its boxes to a new supervisor binary when the offer arrived, so it took no turn; the control plane offers the turn to another host at once, or keeps it Offered and offers it again once the host is back, so no turn fails HostUpdating.")
   HostUpdating: "HostUpdating",
+
+  @doc("The host handed its boxes to a new supervisor binary while the turn ran, and the box running it did not survive the handover; the detail names what failed.")
+  HandoverLost: "HandoverLost",
 }
 
 @doc("Why the box could not clone the session's repository.")
@@ -537,6 +543,10 @@ model Session {
   @visibility(Lifecycle.Read)
   lastTurnAt: offsetDateTime;
 
+  @doc("Why the latest turn ended Failed. Present only when lastTurnState is Failed.")
+  @visibility(Lifecycle.Read)
+  lastTurnFailure?: TurnFailure;
+
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
@@ -589,6 +599,10 @@ model Turn {
   @doc("How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.")
   @visibility(Lifecycle.Read)
   lineCount: Sequence;
+
+  @doc("Why the turn ended Failed. Present only when state is Failed.")
+  @visibility(Lifecycle.Read)
+  failure?: TurnFailure;
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
