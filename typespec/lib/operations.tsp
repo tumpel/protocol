@@ -479,6 +479,10 @@ model StartedSessionFromIssue {
 model SessionListQuery {
   @query state?: SessionState;
   @query hostId?: EntityId;
+
+  @doc("Keep only the sessions whose latest turn last changed state at or before this time.")
+  @query
+  lastTurnBefore?: offsetDateTime;
 }
 
 model TurnSend is Create<TurnBase>;
@@ -937,7 +941,7 @@ namespace V1 {
     @post
     startFromIssue(@body body: SessionStartFromIssue): StartedSessionFromIssue | ProblemResponse;
 
-    @doc("Lists the tenant's sessions, optionally only those in one state or on one host.")
+    @doc("Lists the tenant's sessions, optionally only those in one state, on one host or with no turn since a time.")
     @get
     list(...SessionListQuery): Session[] | ProblemResponse;
 
@@ -956,8 +960,10 @@ namespace V1 {
     stop(...SessionPath): Session | ProblemResponse;
 
     @doc("""
-      Archives a stopped or failed session: deletes its snapshots, keeps its transcript readable and refuses
-      every later send. An archive is final.
+      Archives an idle, stopped or failed session: discards an idle session's box without a snapshot,
+      deletes its snapshots, keeps its transcript readable and refuses every later send. An archive is
+      final, and archiving an archived session answers it as it is. Refused SessionNotStopped while a
+      turn runs or the session stops, and HostOffline when an idle session's host is offline.
       """)
     @route("/{sessionId}/archive")
     @post
