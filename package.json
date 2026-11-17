@@ -1,0 +1,36 @@
+{
+  "name": "tumpel-protocol",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "generate": "make generate",
+    "pack": "make pack",
+    "channel:bump": "node typespec/npm-scripts/channel-wire-bump.mjs",
+    "channel:drop": "node typespec/npm-scripts/channel-wire-drop.mjs",
+    "lint": "biome check .",
+    "fix": "biome check --write . && cargo fmt --all",
+    "comments:check": "node npm-scripts/comments-check.mjs",
+    "secrets:check": "node npm-scripts/secrets-check.mjs",
+    "preconventions:check": "make generate-ts",
+    "conventions:check": "node typespec/npm-scripts/conventions.mjs",
+    "preclippy": "make generate",
+    "clippy": "cargo clippy --workspace --all-targets -- -D warnings",
+    "prefmt:check": "make generate",
+    "fmt:check": "cargo fmt --all --check",
+    "precheck": "make generate",
+    "check": "npm run lint && npm run comments:check && npm run secrets:check && npm run conventions:check && npm run clippy && npm run fmt:check",
+    "pretest": "make generate",
+    "test": "node --test --test-timeout=30000 npm-scripts/*.test.mjs && cargo test --workspace",
+    "prepare": "git config core.hooksPath .githooks",
+    "pack:check": "node npm-scripts/pack-check.mjs"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.7",
+    "typescript": "^5.9.3",
+    "zod": "^4.6.7"
+  }
+}

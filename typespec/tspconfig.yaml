@@ -1,0 +1,16 @@
+emit:
+  - "@typespec/openapi3"
+  - "@kattebak/typespec-zod-emitter"
+  - "@typespec/json-schema"
+options:
+  "@typespec/openapi3":
+    file-type: json
+    output-file: openapi.json
+    emitter-output-dir: "{cwd}/build/openapi"
+  "@kattebak/typespec-zod-emitter":
+    output-file: schemas.ts
+    emit-middleware: false
+    emitter-output-dir: "{cwd}/build/schemas"
+  "@typespec/json-schema":
+    file-type: json
+    emitter-output-dir: "{cwd}/build/json-schema"

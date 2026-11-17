@@ -1,0 +1,34 @@
+[workspace]
+resolver = "2"
+members = ["crates/tumpel-api", "crates/xtask"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+publish = false
+license = "Apache-2.0"
+repository = "https://github.com/tumpel/protocol"
+
+[workspace.dependencies]
+chrono = { version = "0.4.45", features = ["serde"] }
+openapiv3 = "2.2.0"
+prettyplease = "0.3.0"
+proc-macro2 = "1.0.107"
+progenitor-client = "0.16.0"
+progenitor-impl = "0.16.0"
+quote = "1.0.47"
+regress = "0.12.0"
+reqwest = { version = "0.13.4", features = ["json"] }
+schemars = "0.8.22"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+syn = "3.0.2"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+missing_errors_doc = "allow"
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"

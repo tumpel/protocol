@@ -1,0 +1,57 @@
+name: checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: never
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Install the pinned Rust toolchain
+        run: rustup toolchain install
+
+      - uses: Swatinem/rust-cache@v2
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Generate the TypeSpec output and the tumpel-api sources
+        run: make generate
+
+      - name: Fail on an uncommitted rewrite of the channel wire lock
+        run: git diff --exit-code typespec/channel-wire
+
+      - run: npm run check
+
+      - run: npm test
+
+      - name: Package tumpel-api from the generated sources
+        run: |
+          git diff --exit-code
+          cargo package -p tumpel-api --allow-dirty
+
+      - name: Build the npm tarballs and import them with plain node
+        run: |
+          make pack
+          npm run pack:check

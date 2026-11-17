@@ -1,0 +1,62 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: never
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Install the pinned Rust toolchain
+        run: rustup toolchain install
+
+      - name: Check that the tag matches the workspace version
+        run: |
+          version=$(sed -n 's/^version = "\(.*\)"$/\1/p' Cargo.toml)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "the tag is $GITHUB_REF_NAME but Cargo.toml names version $version; set [workspace.package] version to match and tag again" >&2
+            exit 1
+          fi
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Generate the TypeSpec output and the tumpel-api sources
+        run: make generate
+
+      - name: Fail when generation rewrote a tracked file, such as a channel wire lock
+        run: git diff --exit-code
+
+      - name: Build the npm tarballs and import them with plain node
+        run: |
+          make pack
+          npm run pack:check
+
+      - name: Create the GitHub release with the tarballs and their sha256
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --verify-tag --title "$GITHUB_REF_NAME" --generate-notes
+
+      - name: Publish tumpel-api to crates.io
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish -p tumpel-api --allow-dirty

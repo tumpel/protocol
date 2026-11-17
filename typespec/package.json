@@ -1,0 +1,19 @@
+{
+  "name": "tumpel-typespec",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "description": "Generation-only dependencies: this installs before the root workspaces exist.",
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@kattebak/typespec-zod-emitter": "^2.5.0",
+    "@typespec/compiler": "^1.17.0",
+    "@typespec/http": "^1.17.0",
+    "@typespec/json-schema": "^1.18.0",
+    "@typespec/openapi": "^1.17.0",
+    "@typespec/openapi3": "^1.17.0",
+    "openapi-typescript": "^7.13.0"
+  }
+}
