@@ -359,6 +359,9 @@ model BoxBudgets {
   `heartbeatIntervalSeconds` is how often the supervisor sends a Heartbeat after Welcome, 10 by
   default; it matches heartbeatIntervalSeconds of the control plane, whose heartbeatDeadlineSeconds
   stays above it.
+  `updateGraceSeconds` is how long a supervisor told of a new release waits while a box runs a turn,
+  600 by default. It updates at once when no box runs a turn, and when the wait ends it hands its
+  boxes to the new supervisor anyway.
   """)
 model SupervisorRuntime {
   @minLength(1) firecrackerPath: string;
@@ -372,6 +375,7 @@ model SupervisorRuntime {
   @minValue(1) layerCacheMib: int32;
   budgets: BoxBudgets;
   @minValue(1) @maxValue(300) heartbeatIntervalSeconds: int32;
+  @minValue(0) updateGraceSeconds: int32;
 }
 
 @doc("""
