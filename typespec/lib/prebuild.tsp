@@ -28,7 +28,7 @@ enum PrebuildConfigSource {
   @doc("The repository's .devcontainer/devcontainer.json or .devcontainer.json.")
   RepositoryFile: "RepositoryFile",
 
-  @doc("The repository holds neither file, so the build ran the default config: npm ci when the root holds package-lock.json or npm-shrinkwrap.json, as npm is the one package manager the guest image carries. A session that commits a devcontainer.json replaces it.")
+  @doc("The repository held neither file, so the build ran the default config: npm ci when the root held package-lock.json or npm-shrinkwrap.json. A start refuses such a repository now, so only a stored prebuild carries Default; pick a template to replace it.")
   Default: "Default",
 }
 
@@ -235,4 +235,118 @@ model PrebuildUploadGrant {
 @doc("Tells the control plane the job uploaded the layer its start recorded.")
 model PrebuildUploadComplete {
   tenantId: EntityId;
+}
+
+@doc("Where the devcontainer.json a preview reads came from.")
+enum PrebuildPreviewSource {
+  @doc("The repository's .devcontainer/devcontainer.json or .devcontainer.json on its default branch.")
+  RepositoryFile: "RepositoryFile",
+
+  @doc("The text the request supplied, read as the repository's .devcontainer/devcontainer.json.")
+  Supplied: "Supplied",
+}
+
+@doc("Previews the repository's own devcontainer.json.")
+model PrebuildPreviewOfRepository {
+  source: PrebuildPreviewSource.RepositoryFile;
+
+  @doc("A GitHub repository, such as https://github.com/acme/app.git or acme/app.")
+  repository: RepositoryUrl;
+
+  @doc("The persona whose secret set's GITHUB_TOKEN reads the repository when the tenant's GitHub App installation does not cover it, and whose harness version picks the guest image.")
+  personaId: EntityId;
+}
+
+@doc("Previews a supplied devcontainer.json as if the repository held it.")
+model PrebuildPreviewOfSupplied {
+  source: PrebuildPreviewSource.Supplied;
+
+  @doc("A GitHub repository, such as https://github.com/acme/app.git or acme/app.")
+  repository: RepositoryUrl;
+
+  @doc("The persona whose secret set's GITHUB_TOKEN reads the repository when the tenant's GitHub App installation does not cover it, and whose harness version picks the guest image.")
+  personaId: EntityId;
+
+  @doc("The devcontainer.json text, JSON with comments.")
+  @maxLength(65536)
+  devcontainer: string;
+}
+
+@doc("What a preview reads: the repository's devcontainer.json, or a supplied one.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "source" })
+union PrebuildPreviewRequest {
+  RepositoryFile: PrebuildPreviewOfRepository,
+  Supplied: PrebuildPreviewOfSupplied,
+}
+
+@doc("A devcontainer.json lifecycle command a prebuild runs.")
+enum PrebuildLifecycleCommand {
+  @doc("onCreateCommand, run by the build.")
+  OnCreateCommand: "OnCreateCommand",
+
+  @doc("updateContentCommand, run by the build.")
+  UpdateContentCommand: "UpdateContentCommand",
+
+  @doc("postCreateCommand, run by the build.")
+  PostCreateCommand: "PostCreateCommand",
+
+  @doc("postStartCommand, run on a session's first turn in a box restored from the prebuild.")
+  PostStartCommand: "PostStartCommand",
+}
+
+@doc("One command a prebuild runs.")
+model PrebuildPreviewCommand {
+  lifecycle: PrebuildLifecycleCommand;
+
+  @doc("The command's name in the file: the lifecycle field, or <field>.<key> for an entry of an object-form command.")
+  label: string;
+
+  @doc("The program and its arguments; a string command runs as /bin/sh -c <command>.")
+  argv: string[];
+}
+
+@doc("What a preview finds wrong with a config.")
+enum PrebuildFindingCode {
+  @doc("The file is not JSON with comments, not an object, or a field holds the wrong type.")
+  DevcontainerInvalid: "DevcontainerInvalid",
+
+  @doc("The file names image, build, dockerFile or dockerComposeFile; a prebuild builds on the tumpel guest image.")
+  PrebuildImageUnsupported: "PrebuildImageUnsupported",
+
+  @doc("The file names features.")
+  PrebuildFeaturesUnsupported: "PrebuildFeaturesUnsupported",
+
+  @doc("rust-toolchain.toml, .nvmrc or .python-version pins another version than the guest image carries.")
+  ToolchainMismatch: "ToolchainMismatch",
+}
+
+@doc("One problem a build would hit, worded as the build words it.")
+model PrebuildFinding {
+  code: PrebuildFindingCode;
+
+  @doc("The field or file the finding is about.")
+  field: string;
+
+  detail: string;
+  fix: string;
+}
+
+@doc("What a prebuild of the repository would run, read without starting one.")
+model PrebuildPreview {
+  @doc("The repository as https://github.com/<owner>/<name> in lower case.")
+  repository: RepositoryUrl;
+
+  configSource: PrebuildPreviewSource;
+
+  @doc("Every command in run order: onCreateCommand, updateContentCommand, postCreateCommand, then postStartCommand; the entries of one object-form command run at once.")
+  commands: PrebuildPreviewCommand[];
+
+  @doc("The containerEnv the commands run with, as the file writes it.")
+  containerEnv: Record<string>;
+
+  @doc("The input digest a start would record now, over the default branch's files; a supplied config counts as .devcontainer/devcontainer.json.")
+  inputDigest: Sha256Digest;
+
+  @doc("What a build would refuse or fail on; empty when the config is ready to build.")
+  findings: PrebuildFinding[];
 }
