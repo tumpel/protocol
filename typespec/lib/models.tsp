@@ -64,7 +64,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 27;
+const ChannelProtocolVersion = 28;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -125,6 +125,18 @@ enum BoxMemoryLimit {
 enum BoxDiskLimit {
   DefaultMib: 32768,
   MaxMib: 262144,
+}
+
+@doc("What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode.")
+enum BoxRetention {
+  @doc("The control plane snapshots the box and tears it down as soon as the turn ends; the session reads Stopped, and its next turn boots a fresh box from the snapshot.")
+  Off: "Off",
+
+  @doc("The box stays paused until a person stops or archives the session. Placement never evicts it.")
+  Warm: "Warm",
+
+  @doc("The box stays paused until placement evicts it to free room for another session's turn; the eviction snapshots the box when needed, tears it down and leaves the session Stopped.")
+  Auto: "Auto",
 }
 
 @doc("A path relative to the harness home in the box, such as .claude/settings.json. The harness catalog lists the paths each harness accepts.")
@@ -266,7 +278,7 @@ enum HostArchitecture {
 
 @doc("""
   What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts
-  the paused boxes in their warm window, `loadAverage` is the one-minute load average of the host,
+  the paused boxes it holds, `loadAverage` is the one-minute load average of the host,
   and `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the
   host gives box disks: the free disk under its dataDir and what its boxes already wrote, less the
   headroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host
@@ -289,7 +301,8 @@ model HostUsage {
 @doc("""
   A host's box slots and its last reported usage, kept by its tenant from the host's Hello and
   Heartbeats. `boxCapacity` comes from Hello. `boxesRunning` counts the tenant's Offered and
-  Running turns on the host. A slot that neither a running nor a warm box holds is free.
+  Running turns on the host. Placement counts the boxes a host holds from the tenant's own
+  sessions, never from the reported `boxesWarm`, which lags by a Heartbeat.
   `channelProtocol` is the protocol version the host's latest Hello negotiated; the control plane
   closes the connection with UnsupportedVersion instead of sending a frame of a newer version,
   and resends it once the host reconnects on a version that speaks it. A host that has not connected since it enrolled has none.
@@ -603,6 +616,10 @@ model Session {
     """)
   @visibility(Lifecycle.Read)
   prebuildLayer?: SessionPrebuildLayer;
+
+  @doc("What happens to the session's box after each turn, fixed when the session starts.")
+  @visibility(Lifecycle.Read)
+  boxRetention: BoxRetention;
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
@@ -1059,6 +1076,10 @@ model Persona {
   @minValue(32768)
   @maxValue(262144)
   boxDiskMib?: int32;
+
+  @doc("What happens to the box of each of the persona's sessions after each turn, unless the start names another mode.")
+  @visibility(Lifecycle.Read)
+  boxRetention: BoxRetention;
 
   @doc("The harness's own config files, written under the harness home in the box before the harness starts.")
   @visibility(Lifecycle.Read)

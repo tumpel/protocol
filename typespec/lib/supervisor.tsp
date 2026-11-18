@@ -78,7 +78,7 @@ model SupervisorUpdatePending {
   this file, renames update-pending.json to update-trial.json and execs the new binary with
   `run --handover` in its own process, so each Firecracker process stays its child and every
   descriptor named here stays open. The new binary reads the file as it starts, adopts each box
-  whose process is still its child, resumes its turn or its warm window, fails the turn of a box
+  whose process is still its child, resumes its turn or keeps it paused, fails the turn of a box
   whose process ended, and deletes the file once it reaches Welcome. A binary started without
   `--handover`, such as the previous one systemd puts back, fails the turns the file names and
   deletes it. A box handed over keeps no snapshot base, so its next snapshot reads
@@ -141,7 +141,7 @@ model SupervisorHandoverLayeredImage {
   layerPath: string;
 }
 
-@doc("What a handed box was doing: paused in its warm window, or running a turn.")
+@doc("What a handed box was doing: paused, or running a turn.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union SupervisorHandoverBoxState {
   Warm: SupervisorHandoverWarm,
@@ -149,8 +149,8 @@ union SupervisorHandoverBoxState {
 }
 
 @doc("""
-  A paused box. `warmMilliseconds` is what was left of its warm window at the handover; `expired`
-  says the window ran out while the box held a turn no snapshot holds, so it waits for that snapshot.
+  A paused box. It stays paused until BoxTeardown or BoxDiscard names it. A supervisor writes
+  `warmMilliseconds` as 0 and `expired` as false and ignores both on read.
   """)
 model SupervisorHandoverWarm {
   kind: "Warm";
@@ -359,9 +359,8 @@ model BoxBudgets {
   `memoryMib` is the memory of a box whose TurnOffer names no boxMemoryMib, 4096 by default.
   `overlayMib` is the disk of a box whose TurnOffer names no boxDiskMib, 32768 by default; the drive
   is a sparse file, so the host's disk holds only what the box wrote.
-  `warmWindowSeconds` is how long a box stays paused after a turn, 900 by default. A turn for the
-  session inside the window resumes it; once the window ends and the box's last completed turn is
-  in a snapshot, the box is torn down and its drive deleted.
+  A paused box stays until BoxTeardown or BoxDiscard names it, and a box that does not fit is
+  refused PoolExhausted without touching another box.
   `heartbeatIntervalSeconds` is how often the supervisor sends a Heartbeat after Welcome, 10 by
   default; it matches heartbeatIntervalSeconds of the control plane, whose heartbeatDeadlineSeconds
   stays above it.
@@ -374,7 +373,6 @@ model SupervisorRuntime {
   @minLength(1) imageCacheDir: string;
   @minLength(1) dataDir: string;
   @minValue(1) @maxValue(256) boxCapacity: int32;
-  @minValue(1) warmWindowSeconds: int32;
   @minValue(1) vcpuCount: int32;
   @minValue(128) memoryMib: int32;
   @minValue(64) overlayMib: int32;
