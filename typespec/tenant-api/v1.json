@@ -188,6 +188,201 @@
       },
       "description": "The host's supervisor update from the binary `fromSha256` to `toSha256` entered `phase`. The new\nbinary sends Online once it reaches Welcome after the swap."
     },
+    "Connector": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/StaticConnector"
+        },
+        {
+          "$ref": "#/components/schemas/OAuthConnector"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "auth",
+        "mapping": {
+          "Static": "#/components/schemas/StaticConnector",
+          "OAuth": "#/components/schemas/OAuthConnector"
+        }
+      },
+      "description": "A connector of either credential kind."
+    },
+    "ConnectorAccessToken": {
+      "type": "object",
+      "required": [
+        "accessToken"
+      ],
+      "properties": {
+        "accessToken": {
+          "$ref": "#/components/schemas/SecretText"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "An access token for one connector of one running turn. The forwarder sends it upstream until\nfewer than 30 seconds remain before expiresAt, then fetches another. A token without expiresAt is\nfetched once."
+    },
+    "ConnectorAuth": {
+      "type": "string",
+      "enum": [
+        "Static",
+        "OAuth"
+      ],
+      "description": "How a connector's upstream credential is held: one static token, or an OAuth grant."
+    },
+    "ConnectorAuthorization": {
+      "type": "object",
+      "required": [
+        "connectorAuthorizationId",
+        "connectorId",
+        "authorizeUrl",
+        "callbackDueAt"
+      ],
+      "properties": {
+        "connectorAuthorizationId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "connectorId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "authorizeUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "The provider's authorization page, with the control plane's callback, this authorization's PKCE S256 challenge, its signed state and the resource."
+        },
+        "callbackDueAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the callback must arrive by, or the connector reads AuthorizationFailed AuthorizationExpired."
+        }
+      },
+      "description": "One OAuth authorization of a connector. Open authorizeUrl in a browser; the provider sends the\nbrowser back to the control plane's callback, which stores the grant. Connectors_get reads the\noutcome. A newer authorization of the same connector replaces this one."
+    },
+    "ConnectorAuthorizationFailed": {
+      "type": "object",
+      "required": [
+        "state",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "AuthorizationFailed"
+          ]
+        },
+        "reason": {
+          "$ref": "#/components/schemas/ConnectorAuthorizationFailureReason"
+        },
+        "detail": {
+          "type": "string",
+          "description": "What failed and what fixes it, with the provider's answer sanitized; it never quotes a token response."
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ConnectorAuthorizationFailureReason": {
+      "type": "string",
+      "enum": [
+        "AuthorizationDenied",
+        "AuthorizationExpired",
+        "TokenExchangeFailed",
+        "RefreshRefused"
+      ],
+      "description": "Why an OAuth connector's authorization or refresh failed after authorize answered. Each reason names the phase it stopped in."
+    },
+    "ConnectorConnected": {
+      "type": "object",
+      "required": [
+        "state",
+        "connectedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Connected"
+          ]
+        },
+        "connectedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ConnectorDisconnected": {
+      "type": "object",
+      "required": [
+        "state",
+        "disconnectedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Disconnected"
+          ]
+        },
+        "disconnectedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ConnectorNotConnected": {
+      "type": "object",
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "NotConnected"
+          ]
+        }
+      }
+    },
+    "ConnectorStatus": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/ConnectorNotConnected"
+        },
+        {
+          "$ref": "#/components/schemas/ConnectorConnected"
+        },
+        {
+          "$ref": "#/components/schemas/ConnectorDisconnected"
+        },
+        {
+          "$ref": "#/components/schemas/ConnectorAuthorizationFailed"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "state",
+        "mapping": {
+          "NotConnected": "#/components/schemas/ConnectorNotConnected",
+          "Connected": "#/components/schemas/ConnectorConnected",
+          "Disconnected": "#/components/schemas/ConnectorDisconnected",
+          "AuthorizationFailed": "#/components/schemas/ConnectorAuthorizationFailed"
+        }
+      },
+      "description": "Whether a connector serves new turns, with when it connected, when it was disconnected, or why its authorization failed."
+    },
+    "ConnectorUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "pattern": "^https://[^/@?#\\s]+(/[^?#\\s]*)?$",
+      "description": "The HTTPS address of a remote MCP server that speaks Streamable HTTP. It carries no user info, no\nquery and no fragment, so it never holds a credential."
+    },
     "CredentialFileKey": {
       "type": "object",
       "required": [
@@ -368,6 +563,69 @@
         "Google",
         "OpenRouter"
       ]
+    },
+    "OAuthConnector": {
+      "type": "object",
+      "required": [
+        "auth",
+        "connectorId",
+        "tenantId",
+        "name",
+        "url",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "auth": {
+          "type": "string",
+          "enum": [
+            "OAuth"
+          ],
+          "readOnly": true
+        },
+        "connectorId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "url": {
+          "$ref": "#/components/schemas/ConnectorUrl"
+        },
+        "status": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ConnectorStatus"
+            }
+          ],
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        }
+      },
+      "description": "A remote MCP server the tenant connects once through OAuth. An Owner authorizes it in a browser,\nthe control plane holds the grant sealed and refreshes it, and every session in the tenant whose\npersona lists it reaches it through the box's loopback forwarder. The URL is fixed at create."
     },
     "PersonaFilePath": {
       "type": "string",
@@ -645,6 +903,69 @@
       "type": "string",
       "pattern": "^[0-9a-f]{64}$",
       "description": "A lower-case hex SHA-256 digest: the name of a file in the image cache, or of a persona file blob."
+    },
+    "StaticConnector": {
+      "type": "object",
+      "required": [
+        "auth",
+        "connectorId",
+        "tenantId",
+        "name",
+        "url",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "auth": {
+          "type": "string",
+          "enum": [
+            "Static"
+          ],
+          "readOnly": true
+        },
+        "connectorId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "url": {
+          "$ref": "#/components/schemas/ConnectorUrl"
+        },
+        "status": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ConnectorStatus"
+            }
+          ],
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        }
+      },
+      "description": "A remote MCP server the tenant connects once with one static token. Every session in the tenant\nwhose persona lists it reaches it through the box's loopback forwarder, which sends the token as\nAuthorization: Bearer. The URL is fixed at create; the token is write-only."
     },
     "SubscriptionTokenKey": {
       "type": "object",
@@ -1008,6 +1329,77 @@
         }
       }
     },
+    "TenantApi.ClearConnectorCredentialInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "connectorId",
+        "updatedAt",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "connectorId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ClearConnectorCredentialRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "clearConnectorCredential"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ClearConnectorCredentialInput"
+        }
+      }
+    },
+    "TenantApi.ClearConnectorCredentialResult": {
+      "type": "object",
+      "required": [
+        "written"
+      ],
+      "properties": {
+        "written": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorWrittenOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNameTaken"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorChanged"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.ConfigApplied": {
       "type": "object",
       "required": [
@@ -1100,6 +1492,519 @@
         }
       },
       "description": "One write of a config apply, which the tenant Durable Object commits with the others in one transaction."
+    },
+    "TenantApi.ConnectorAuthorizeStartedOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "authorization"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Started"
+          ]
+        },
+        "authorization": {
+          "$ref": "#/components/schemas/ConnectorAuthorization"
+        }
+      }
+    },
+    "TenantApi.ConnectorCallbackCode": {
+      "type": "object",
+      "required": [
+        "kind",
+        "code",
+        "issuer"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Code"
+          ]
+        },
+        "code": {
+          "type": "string"
+        },
+        "issuer": {
+          "type": "string",
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.ConnectorCallbackConnected": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Connected"
+          ]
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ConnectorCallbackError": {
+      "type": "object",
+      "required": [
+        "kind",
+        "error"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Error"
+          ]
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ConnectorCallbackInput": {
+      "type": "object",
+      "required": [
+        "claims",
+        "stateHash",
+        "callback",
+        "initiatorIsOwner",
+        "now"
+      ],
+      "properties": {
+        "claims": {
+          "$ref": "#/components/schemas/TenantApi.ConnectorStateClaims"
+        },
+        "stateHash": {
+          "type": "string"
+        },
+        "callback": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorCallbackCode"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorCallbackError"
+            }
+          ]
+        },
+        "initiatorIsOwner": {
+          "type": "boolean"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ConnectorCallbackNotConnected": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotConnected"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ConnectorCallbackRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "connectorCallback"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ConnectorCallbackInput"
+        }
+      }
+    },
+    "TenantApi.ConnectorCallbackResult": {
+      "type": "object",
+      "required": [
+        "settled"
+      ],
+      "properties": {
+        "settled": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorCallbackConnected"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorCallbackNotConnected"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.ConnectorChanged": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Changed"
+          ]
+        }
+      }
+    },
+    "TenantApi.ConnectorDeletedOk": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Deleted"
+          ]
+        }
+      }
+    },
+    "TenantApi.ConnectorDiscoveryFailed": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "DiscoveryFailed"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ConnectorInUse": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "InUse"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ConnectorNameTaken": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NameTaken"
+          ]
+        }
+      }
+    },
+    "TenantApi.ConnectorNoCredential": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NoCredential"
+          ]
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ConnectorNotFound": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotFound"
+          ]
+        }
+      }
+    },
+    "TenantApi.ConnectorRefreshFailed": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "RefreshFailed"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ConnectorRegistrationUnsupported": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "RegistrationUnsupported"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ConnectorStateClaims": {
+      "type": "object",
+      "required": [
+        "purpose",
+        "tenantId",
+        "connectorId",
+        "connectorAuthorizationId",
+        "principalId"
+      ],
+      "properties": {
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "ConnectorAuthorization"
+          ]
+        },
+        "tenantId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "connectorId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "connectorAuthorizationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The signed state of a connector authorization, as the callback reads it back."
+    },
+    "TenantApi.ConnectorTokenRefused": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Refused"
+          ]
+        }
+      }
+    },
+    "TenantApi.ConnectorTokenServedOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "token"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Served"
+          ]
+        },
+        "token": {
+          "$ref": "#/components/schemas/ConnectorAccessToken"
+        }
+      }
+    },
+    "TenantApi.ConnectorTurnNotRunning": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotRunning"
+          ]
+        }
+      }
+    },
+    "TenantApi.ConnectorWrittenOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "connector"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Written"
+          ]
+        },
+        "connector": {
+          "$ref": "#/components/schemas/Connector"
+        }
+      }
+    },
+    "TenantApi.ConnectorWrittenResult": {
+      "type": "object",
+      "required": [
+        "written"
+      ],
+      "properties": {
+        "written": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorWrittenOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNameTaken"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorChanged"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.CreateConnectorInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "auth",
+        "name",
+        "url",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "auth": {
+          "$ref": "#/components/schemas/ConnectorAuth"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.CreateConnectorRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "createConnector"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CreateConnectorInput"
+        }
+      }
+    },
+    "TenantApi.CreateConnectorResult": {
+      "type": "object",
+      "required": [
+        "written"
+      ],
+      "properties": {
+        "written": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorWrittenOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNameTaken"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorChanged"
+            }
+          ]
+        }
+      }
     },
     "TenantApi.CreatePersonaInput": {
       "type": "object",
@@ -1281,6 +2186,68 @@
         }
       }
     },
+    "TenantApi.DeleteConnectorInput": {
+      "type": "object",
+      "required": [
+        "connectorId",
+        "updatedAt"
+      ],
+      "properties": {
+        "connectorId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.DeleteConnectorRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "deleteConnector"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.DeleteConnectorInput"
+        }
+      }
+    },
+    "TenantApi.DeleteConnectorResult": {
+      "type": "object",
+      "required": [
+        "deleted"
+      ],
+      "properties": {
+        "deleted": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorDeletedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorChanged"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorInUse"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.DeletePersonaInput": {
       "type": "object",
       "required": [
@@ -1429,6 +2396,64 @@
         }
       }
     },
+    "TenantApi.GetConnectorInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "connectorId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "connectorId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.GetConnectorRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getConnector"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetConnectorInput"
+        }
+      }
+    },
+    "TenantApi.GetConnectorResult": {
+      "type": "object",
+      "required": [
+        "connector"
+      ],
+      "properties": {
+        "connector": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Connector"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
     "TenantApi.GetPersonaInput": {
       "type": "object",
       "required": [
@@ -1557,6 +2582,58 @@
         }
       },
       "description": "The GitHub account a repository token secret acts as, when the set holds one."
+    },
+    "TenantApi.ListConnectorsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ListConnectorsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listConnectors"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListConnectorsInput"
+        }
+      }
+    },
+    "TenantApi.ListConnectorsResult": {
+      "type": "object",
+      "required": [
+        "connectors"
+      ],
+      "properties": {
+        "connectors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Connector"
+          }
+        }
+      }
     },
     "TenantApi.ListPersonasInput": {
       "type": "object",
@@ -2065,6 +3142,81 @@
         }
       }
     },
+    "TenantApi.RenameConnectorInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "connectorId",
+        "updatedAt",
+        "name",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "connectorId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.RenameConnectorRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "renameConnector"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.RenameConnectorInput"
+        }
+      }
+    },
+    "TenantApi.RenameConnectorResult": {
+      "type": "object",
+      "required": [
+        "written"
+      ],
+      "properties": {
+        "written": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorWrittenOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNameTaken"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorChanged"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.RewriteSecretSetWrite": {
       "type": "object",
       "required": [
@@ -2374,6 +3526,75 @@
         }
       }
     },
+    "TenantApi.ServeConnectorTokenInput": {
+      "type": "object",
+      "required": [
+        "turnId",
+        "connectorId",
+        "now"
+      ],
+      "properties": {
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "connectorId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ServeConnectorTokenRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "serveConnectorToken"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ServeConnectorTokenInput"
+        }
+      }
+    },
+    "TenantApi.ServeConnectorTokenResult": {
+      "type": "object",
+      "required": [
+        "served"
+      ],
+      "properties": {
+        "served": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorTokenServedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorTokenRefused"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorTurnNotRunning"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNoCredential"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorRefreshFailed"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.SetSecretMemberInput": {
       "type": "object",
       "required": [
@@ -2449,6 +3670,163 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.SecretSetUnreadable"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.SetStaticTokenInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "connectorId",
+        "updatedAt",
+        "value",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "connectorId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "value": {
+          "type": "string"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.SetStaticTokenRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "setStaticToken"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.SetStaticTokenInput"
+        }
+      }
+    },
+    "TenantApi.SetStaticTokenResult": {
+      "type": "object",
+      "required": [
+        "written"
+      ],
+      "properties": {
+        "written": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorWrittenOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNameTaken"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorChanged"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.StartConnectorAuthorizationInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "principalId",
+        "connectorId",
+        "updatedAt",
+        "controlPlaneOrigin",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "connectorId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "controlPlaneOrigin": {
+          "type": "string"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.StartConnectorAuthorizationRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "startConnectorAuthorization"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.StartConnectorAuthorizationInput"
+        }
+      }
+    },
+    "TenantApi.StartConnectorAuthorizationResult": {
+      "type": "object",
+      "required": [
+        "started"
+      ],
+      "properties": {
+        "started": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorAuthorizeStartedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorChanged"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorDiscoveryFailed"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConnectorRegistrationUnsupported"
             }
           ]
         }
@@ -2811,6 +4189,39 @@
         },
         {
           "$ref": "#/components/schemas/TenantApi.UnpinRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListConnectorsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetConnectorRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CreateConnectorRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.RenameConnectorRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DeleteConnectorRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.SetStaticTokenRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ClearConnectorCredentialRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.StartConnectorAuthorizationRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ConnectorCallbackRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ServeConnectorTokenRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UnknownConnectorsRequest"
         }
       ],
       "discriminator": {
@@ -2834,7 +4245,18 @@
           "applyConfig": "#/components/schemas/TenantApi.ApplyConfigRequest",
           "listPins": "#/components/schemas/TenantApi.ListPinsRequest",
           "pin": "#/components/schemas/TenantApi.PinRequest",
-          "unpin": "#/components/schemas/TenantApi.UnpinRequest"
+          "unpin": "#/components/schemas/TenantApi.UnpinRequest",
+          "listConnectors": "#/components/schemas/TenantApi.ListConnectorsRequest",
+          "getConnector": "#/components/schemas/TenantApi.GetConnectorRequest",
+          "createConnector": "#/components/schemas/TenantApi.CreateConnectorRequest",
+          "renameConnector": "#/components/schemas/TenantApi.RenameConnectorRequest",
+          "deleteConnector": "#/components/schemas/TenantApi.DeleteConnectorRequest",
+          "setStaticToken": "#/components/schemas/TenantApi.SetStaticTokenRequest",
+          "clearConnectorCredential": "#/components/schemas/TenantApi.ClearConnectorCredentialRequest",
+          "startConnectorAuthorization": "#/components/schemas/TenantApi.StartConnectorAuthorizationRequest",
+          "connectorCallback": "#/components/schemas/TenantApi.ConnectorCallbackRequest",
+          "serveConnectorToken": "#/components/schemas/TenantApi.ServeConnectorTokenRequest",
+          "unknownConnectors": "#/components/schemas/TenantApi.UnknownConnectorsRequest"
         }
       },
       "description": "One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation."
@@ -2864,6 +4286,56 @@
         }
       },
       "description": "The input fails the operation's schema: a caller bug, which the caller fails as a 500."
+    },
+    "TenantApi.UnknownConnectorsInput": {
+      "type": "object",
+      "required": [
+        "connectorIds"
+      ],
+      "properties": {
+        "connectorIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        }
+      }
+    },
+    "TenantApi.UnknownConnectorsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "unknownConnectors"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.UnknownConnectorsInput"
+        }
+      }
+    },
+    "TenantApi.UnknownConnectorsResult": {
+      "type": "object",
+      "required": [
+        "unknownConnectorIds"
+      ],
+      "properties": {
+        "unknownConnectorIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        }
+      }
     },
     "TenantApi.UnpinInput": {
       "type": "object",
