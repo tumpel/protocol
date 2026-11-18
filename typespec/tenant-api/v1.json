@@ -3481,8 +3481,8 @@
       "required": [
         "type",
         "workflow",
-        "pipeline",
-        "project"
+        "pipelineId",
+        "projectId"
       ],
       "properties": {
         "type": {
@@ -3508,27 +3508,11 @@
             "url"
           ]
         },
-        "pipeline": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id"
-          ]
+        "pipelineId": {
+          "type": "string"
         },
-        "project": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id"
-          ]
+        "projectId": {
+          "type": "string"
         }
       }
     },
