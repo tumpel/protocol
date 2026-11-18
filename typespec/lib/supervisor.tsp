@@ -171,6 +171,9 @@ model SupervisorHandoverTurn {
   repositoryReady: boolean;
   seenLine: boolean;
   error?: SupervisorHandoverTurnError;
+
+  @doc("The control plane cancelled the turn, so the successor sends the guest TurnCancel when it resumes the turn.")
+  cancelled?: boolean;
 }
 
 model SupervisorHandoverTurnError {
@@ -460,6 +463,9 @@ enum GuestTurnEndReason {
 
   @doc("The kernel ran out of memory and killed the harness tree; the detail names the box memory and the process the kernel picked.")
   HarnessOutOfMemory: "HarnessOutOfMemory",
+
+  @doc("The host sent TurnCancel for the turn and the guest killed the harness; a guest older than guest protocol 12 never sends it.")
+  Cancelled: "Cancelled",
 }
 
 @doc("The guest could not clone the session's repository and did not start the harness. `detail` carries what git reported.")
@@ -533,10 +539,23 @@ model GuestClaudeSetupCode {
   mintBudgetSeconds: int32;
 }
 
+@doc("""
+  The host ends turn `turnId`: the guest reads its connection while a turn runs, kills the harness
+  and every process it started, whatever the harness protocol, and sends TurnEnd Cancelled with the
+  turn's credential file. A guest that runs no such turn
+  ignores it. A guest older than guest protocol 12 reads nothing mid-turn, so the host's cancel
+  budget runs out and the host ends the turn by closing the connection.
+  """)
+model GuestTurnCancel {
+  type: "TurnCancel";
+  turnId: EntityId;
+}
+
 @doc("One frame from the host to the guest.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "type" })
 union GuestInput {
   TurnStart: GuestTurnStart,
+  TurnCancel: GuestTurnCancel,
   ClaudeSetupStart: GuestClaudeSetupStart,
   ClaudeSetupCode: GuestClaudeSetupCode,
 }
