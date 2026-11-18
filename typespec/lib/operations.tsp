@@ -142,6 +142,33 @@ enum ProblemCode {
 
   @doc("GitHub refused a call the operation makes, such as creating a branch or a pull request; the detail quotes GitHub's message.")
   GitHubRefused: "GitHubRefused",
+
+  @doc("A persona lists the connector or a Running turn uses it; the detail names them.")
+  ConnectorInUse: "ConnectorInUse",
+
+  @doc("The connector's protected-resource or authorization-server metadata could not be read within 10 seconds, or named a non-HTTPS, private or loopback address, or no S256 support; the detail names the server.")
+  ConnectorDiscoveryFailed: "ConnectorDiscoveryFailed",
+
+  @doc("The connector's authorization server advertises no dynamic client registration endpoint, or refused the registration; connect it with a static token if the server takes one.")
+  ConnectorRegistrationUnsupported: "ConnectorRegistrationUnsupported",
+
+  @doc("The session's persona lists a connector that is Disconnected, NotConnected or AuthorizationFailed; reconnect it, or choose a persona without it.")
+  ConnectorDisconnected: "ConnectorDisconnected",
+
+  @doc("The connector's provider refused the refresh or did not answer within 10 seconds; the tool call failed and the turn goes on. On invalid_grant the connector reads AuthorizationFailed until an Owner authorizes it again.")
+  ConnectorRefreshFailed: "ConnectorRefreshFailed",
+
+  @doc("The box asked for a connector while its turn is not Running.")
+  ConnectorTurnNotRunning: "ConnectorTurnNotRunning",
+
+  @doc("The ConnectorTurnToken is missing, or does not name this tenant, turn and connector.")
+  ConnectorTurnTokenRefused: "ConnectorTurnTokenRefused",
+
+  @doc("The connector's server answered 401 or 403, or its token expired with no refresh token; the tool call failed and the turn goes on. Reconnect the connector.")
+  ConnectorAuthRefused: "ConnectorAuthRefused",
+
+  @doc("The connector's server could not be reached, or sent no first byte within 10 seconds; the tool call failed and the turn goes on.")
+  ConnectorUnreachable: "ConnectorUnreachable",
 }
 
 @doc("Every refusal: what failed and what fixes it.")
@@ -625,7 +652,7 @@ model PersonaCreate is Create<Persona> {
   files?: PersonaFileWrite[];
 }
 
-@doc("Replaces the persona's name, secret set, box memory and whole file set: a file the update leaves out is deleted, and a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib. The harness is fixed at create.")
+@doc("Replaces the persona's name, secret set, connectors, box memory and whole file set: a file the update leaves out is deleted, and a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib. The harness is fixed at create.")
 model PersonaUpdate is Update<Persona> {
   files: PersonaFileWrite[];
 }
@@ -1106,7 +1133,7 @@ namespace V1 {
     @get
     get(...PersonaPath): Persona | ProblemResponse;
 
-    @doc("Replaces a persona's name, secret set and whole file set; its harness is fixed at create.")
+    @doc("Replaces a persona's name, secret set, connectors and whole file set; its harness is fixed at create. Sessions already started keep the connectors they copied.")
     @route("/{personaId}")
     @put
     update(...PersonaPath, @body body: PersonaUpdate): Persona | ProblemResponse;

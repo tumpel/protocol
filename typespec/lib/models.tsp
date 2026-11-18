@@ -64,7 +64,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 24;
+const ChannelProtocolVersion = 25;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -87,7 +87,7 @@ const DigestsPerPart = 500;
 scalar GuestProtocol extends int32;
 
 const GuestProtocolOldest = 9;
-const GuestProtocolVersion = 13;
+const GuestProtocolVersion = 14;
 
 @doc("""
   The contract between the base image's stub init and the guest drive's init: the base writes it to
@@ -403,6 +403,9 @@ enum TurnFailureReason {
 
   @doc("A person stopped the session with cancelTurn while the turn was in flight; the detail names who.")
   Cancelled: "Cancelled",
+
+  @doc("A connector the session lists was disconnected before the turn began running; the detail names it. Reconnect it, or start a session on a persona without it.")
+  ConnectorDisconnected: "ConnectorDisconnected",
 }
 
 @doc("Why the box could not clone the session's repository.")
@@ -1029,6 +1032,9 @@ model Persona {
 
   @doc("The secret set every session of the persona runs on; its members are all a turn's box receives.")
   secretSetId: EntityId;
+
+  @doc("The connectors every session of the persona reaches, each once; a repeated id is refused InvalidRequest and another tenant's NotFound. A session copies the list when it starts; a later edit changes later sessions only.")
+  connectorIds: EntityId[];
 
   @doc("""
     The memory in MiB of each box the persona's sessions boot, from BoxMemoryLimit.DefaultMib up to

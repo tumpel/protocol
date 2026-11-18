@@ -168,6 +168,23 @@ model DispatchGrant {
     @minLength(1) path: string;
     @minLength(1) value: string;
   };
+
+  @doc("The session's connectors. The guest forwarder serves each at its loopback route and fetches its access token from tokenUrl with tokenCredential. Neither reaches the harness; a grant without them gives the box no connector.")
+  connectors?: DispatchConnector[];
+}
+
+@doc("""
+  One connector of a turn. `url` is the upstream MCP server. `tokenUrl` is the control plane's
+  ConnectorTokens_fetch for this turn and connector, and `tokenCredential` its ConnectorTurnToken,
+  valid while the turn is Running. The guest keeps both in forwarder memory only: never in the
+  harness environment, a file, a log or a snapshot, and a new tokenCredential never restarts the
+  harness.
+  """)
+model DispatchConnector {
+  connectorId: EntityId;
+  url: url;
+  tokenUrl: url;
+  @minLength(43) tokenCredential: string;
 }
 
 @doc("""
