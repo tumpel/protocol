@@ -481,7 +481,7 @@ model SessionListQuery {
   @query hostId?: EntityId;
 }
 
-model TurnSend is Create<Turn>;
+model TurnSend is Create<TurnBase>;
 
 model MetricWindow {
   @doc("The start of the window; Day buckets start at midnight in its offset, and every answered time is in its offset.")
