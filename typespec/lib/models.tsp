@@ -64,7 +64,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 22;
+const ChannelProtocolVersion = 23;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -382,6 +382,9 @@ enum TurnFailureReason {
 
   @doc("The host's first Heartbeat after it reconnected named no box for the turn's session, for example after its supervisor restarted, so the turn's work since its last snapshot is gone; the detail names the host.")
   BoxLost: "BoxLost",
+
+  @doc("A person stopped the session with cancelTurn while the turn was in flight; the detail names who.")
+  Cancelled: "Cancelled",
 }
 
 @doc("Why the box could not clone the session's repository.")
