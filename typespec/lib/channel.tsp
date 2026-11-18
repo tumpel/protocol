@@ -315,6 +315,16 @@ model TurnOffer {
   boxMemoryMib?: int32;
 
   @doc("""
+    The disk in MiB the box boots with: the persona's boxDiskMib, or BoxDiskLimit.DefaultMib. A box that
+    is already warm keeps the disk it booted with. A supervisor given an offer without it boots the
+    box with overlayMib of its runtime config, and refuses the turn PoolExhausted when the disk does
+    not fit its disk budget.
+    """)
+  @minValue(64)
+  @maxValue(262144)
+  boxDiskMib?: int32;
+
+  @doc("""
     Set when the turn builds a prebuild: the box clones the repository at this commit and runs the
     repository's setup step, /opt/tumpel/prebuild.mjs run, in place of the harness, its output lines
     being the turn's lines. The credential then holds only a GITHUB_TOKEN that reads the

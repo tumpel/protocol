@@ -64,7 +64,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 23;
+const ChannelProtocolVersion = 24;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -87,7 +87,7 @@ const DigestsPerPart = 500;
 scalar GuestProtocol extends int32;
 
 const GuestProtocolOldest = 9;
-const GuestProtocolVersion = 12;
+const GuestProtocolVersion = 13;
 
 @doc("""
   The contract between the base image's stub init and the guest drive's init: the base writes it to
@@ -115,6 +115,15 @@ enum PersonaFileLimit {
 enum BoxMemoryLimit {
   DefaultMib: 4096,
   MaxMib: 65536,
+}
+
+@doc("""
+  The disk of a box in MiB, a sparse drive that costs the host only what the box writes. A persona
+  that names no boxDiskMib runs its boxes with DefaultMib; one that names it may ask for up to MaxMib.
+  """)
+enum BoxDiskLimit {
+  DefaultMib: 32768,
+  MaxMib: 262144,
 }
 
 @doc("A path relative to the harness home in the box, such as .claude/settings.json. The harness catalog lists the paths each harness accepts.")
@@ -257,12 +266,18 @@ enum HostArchitecture {
 @doc("""
   What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts
   the paused boxes in their warm window, `loadAverage` is the one-minute load average of the host,
-  and `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB.
+  and `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the
+  host gives box disks: the free disk under its dataDir and what its boxes already wrote, less the
+  headroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host
+  admits a box only while its disk fits the budget beside the held ones; a supervisor older than
+  the box disk budget sends neither.
   """)
 model HostUsage {
   @minValue(0) boxesWarm: int32;
   @minValue(0) loadAverage: float64;
   @minValue(0) memoryAvailableMib: int64;
+  @minValue(0) diskBudgetMib?: int64;
+  @minValue(0) diskHeldMib?: int64;
 }
 
 @doc("""
@@ -339,7 +354,7 @@ enum TurnFailureReason {
 
   BoxBootFailed: "BoxBootFailed",
 
-  @doc("Every box slot of the host is claimed and no paused box has its last turn in a snapshot, so none can be evicted.")
+  @doc("The host has no box slot, memory or disk budget left for the box, and no paused box with its last turn in a snapshot can be evicted to make room; the detail names what ran out, what the host holds and what the box asked for.")
   PoolExhausted: "PoolExhausted",
 
   SnapshotUnreadable: "SnapshotUnreadable",
@@ -347,6 +362,9 @@ enum TurnFailureReason {
 
   @doc("The box ran out of memory and the kernel killed the harness; the detail names the box memory and the process the kernel picked, so the persona can run lighter builds or ask for more boxMemoryMib.")
   HarnessOutOfMemory: "HarnessOutOfMemory",
+
+  @doc("The box's disk filled up while the harness ran; the detail names the disk's size, so the persona can ask for more boxDiskMib.")
+  BoxDiskFull: "BoxDiskFull",
 
   @doc("The harness exited without printing a successful result, so the turn did not finish its work; the detail carries the tail of the harness's standard error.")
   HarnessExitedWithoutResult: "HarnessExitedWithoutResult",
@@ -1016,6 +1034,15 @@ model Persona {
   @minValue(4096)
   @maxValue(65536)
   boxMemoryMib?: int32;
+
+  @doc("""
+    The disk in MiB of each box the persona's sessions boot, from BoxDiskLimit.DefaultMib up to BoxDiskLimit.MaxMib; left
+    out, the boxes get BoxDiskLimit.DefaultMib. A host refuses a box whose disk does not fit its disk
+    budget, and a box already running keeps the disk it booted with.
+    """)
+  @minValue(32768)
+  @maxValue(262144)
+  boxDiskMib?: int32;
 
   @doc("The harness's own config files, written under the harness home in the box before the harness starts.")
   @visibility(Lifecycle.Read)
