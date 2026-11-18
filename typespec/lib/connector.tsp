@@ -179,6 +179,15 @@ model ConnectorTokenPath {
   @path connectorId: EntityId;
 }
 
+@doc("""
+  The connector a write names, with the updatedAt of the caller's last read of it. The write is
+  refused ConnectorChanged (409) when the stored updatedAt differs, and changes nothing.
+  """)
+model ConnectorWritePath {
+  ...ConnectorPath;
+  @query updatedAt: int64;
+}
+
 namespace V1 {
   @route("/connectors")
   interface Connectors {
@@ -194,7 +203,7 @@ namespace V1 {
     @doc("Renames a connector. Refused Conflict when another connector has the name.")
     @route("/{connectorId}")
     @put
-    update(...ConnectorPath, @body body: ConnectorUpdate): Connector | ProblemResponse;
+    update(...ConnectorWritePath, @body body: ConnectorUpdate): Connector | ProblemResponse;
 
     @doc("""
       Deletes a connector and its credential. Refused ConnectorInUse (409) while a persona lists it
@@ -203,7 +212,7 @@ namespace V1 {
       """)
     @route("/{connectorId}")
     @delete
-    delete(...ConnectorPath): NoContentResponse | ProblemResponse;
+    delete(...ConnectorWritePath): NoContentResponse | ProblemResponse;
 
     @doc("""
       Disconnects a connector for new turns: it reads Disconnected, pending authorizations are
@@ -214,7 +223,7 @@ namespace V1 {
       """)
     @route("/{connectorId}/credential")
     @delete
-    clearCredential(...ConnectorPath): Connector | ProblemResponse;
+    clearCredential(...ConnectorWritePath): Connector | ProblemResponse;
   }
 
   @route("/static-connectors")
@@ -226,7 +235,7 @@ namespace V1 {
     @doc("Stores the connector's token sealed, replacing any earlier one, and connects it; running turns get the new token at their next fetch. Over MCP the value is never taken: use the CLI's --stdin.")
     @route("/{connectorId}/token")
     @put
-    setToken(...ConnectorPath, @body body: StaticConnectorTokenWrite): StaticConnector | ProblemResponse;
+    setToken(...ConnectorWritePath, @body body: StaticConnectorTokenWrite): StaticConnector | ProblemResponse;
   }
 
   @route("/oauth-connectors")
@@ -244,7 +253,7 @@ namespace V1 {
       """)
     @route("/{connectorId}/authorize")
     @post
-    authorize(...ConnectorPath): ConnectorAuthorization | ProblemResponse;
+    authorize(...ConnectorWritePath): ConnectorAuthorization | ProblemResponse;
   }
 
   @doc("""
