@@ -27,6 +27,7 @@ build/.typespec: $(TYPESPEC_SOURCES) Cargo.toml | $(TYPESPEC_MODULES)
 	node typespec/npm-scripts/enum-names.mjs
 	node typespec/npm-scripts/union-schemas.mjs
 	node typespec/npm-scripts/channel-wire.mjs
+	node typespec/npm-scripts/tenant-api-wire.mjs
 	typespec/node_modules/.bin/openapi-typescript build/openapi/openapi.json -o build/openapi/paths.ts
 	node typespec/npm-scripts/packages.mjs
 	@touch $@
