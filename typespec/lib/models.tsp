@@ -64,7 +64,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 26;
+const ChannelProtocolVersion = 27;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -270,7 +270,10 @@ enum HostArchitecture {
   host gives box disks: the free disk under its dataDir and what its boxes already wrote, less the
   headroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host
   admits a box only while its disk fits the budget beside the held ones; a supervisor older than
-  the box disk budget sends neither.
+  the box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal
+  less the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it
+  holds. A host admits a box only while its memory fits the budget beside the held ones, whatever
+  their count; a supervisor older than the memory budget sends neither.
   """)
 model HostUsage {
   @minValue(0) boxesWarm: int32;
@@ -278,6 +281,8 @@ model HostUsage {
   @minValue(0) memoryAvailableMib: int64;
   @minValue(0) diskBudgetMib?: int64;
   @minValue(0) diskHeldMib?: int64;
+  @minValue(0) memoryBudgetMib?: int64;
+  @minValue(0) memoryHeldMib?: int64;
 }
 
 @doc("""
