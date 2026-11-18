@@ -231,6 +231,100 @@ model UnpinInput {
   harness: string;
 }
 
+model ListConnectorsInput {
+  tenantId: EntityId;
+  now: int64;
+}
+
+model GetConnectorInput {
+  tenantId: EntityId;
+  connectorId: EntityId;
+  now: int64;
+}
+
+model CreateConnectorInput {
+  tenantId: EntityId;
+  auth: ConnectorAuth;
+  name: string;
+  url: string;
+  now: int64;
+}
+
+model RenameConnectorInput {
+  tenantId: EntityId;
+  connectorId: EntityId;
+  updatedAt: int64;
+  name: string;
+  now: int64;
+}
+
+model DeleteConnectorInput {
+  connectorId: EntityId;
+  updatedAt: int64;
+}
+
+model SetStaticTokenInput {
+  tenantId: EntityId;
+  connectorId: EntityId;
+  updatedAt: int64;
+  value: string;
+  now: int64;
+}
+
+model ClearConnectorCredentialInput {
+  tenantId: EntityId;
+  connectorId: EntityId;
+  updatedAt: int64;
+  now: int64;
+}
+
+model StartConnectorAuthorizationInput {
+  tenantId: EntityId;
+  principalId: EntityId;
+  connectorId: EntityId;
+  updatedAt: int64;
+  controlPlaneOrigin: string;
+  now: int64;
+}
+
+@doc("The signed state of a connector authorization, as the callback reads it back.")
+model ConnectorStateClaims {
+  purpose: "ConnectorAuthorization";
+  @minLength(1) tenantId: string;
+  @minLength(1) connectorId: string;
+  @minLength(1) connectorAuthorizationId: string;
+  @minLength(1) principalId: string;
+}
+
+model ConnectorCallbackCode {
+  kind: "Code";
+  code: string;
+  issuer: string | null;
+}
+
+model ConnectorCallbackError {
+  kind: "Error";
+  error: string;
+}
+
+model ConnectorCallbackInput {
+  claims: ConnectorStateClaims;
+  stateHash: string;
+  callback: ConnectorCallbackCode | ConnectorCallbackError;
+  initiatorIsOwner: boolean;
+  now: int64;
+}
+
+model ServeConnectorTokenInput {
+  turnId: EntityId;
+  connectorId: EntityId;
+  now: int64;
+}
+
+model UnknownConnectorsInput {
+  connectorIds: EntityId[];
+}
+
 model ListPersonasRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "listPersonas";
@@ -345,6 +439,72 @@ model UnpinRequest {
   input: UnpinInput;
 }
 
+model ListConnectorsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listConnectors";
+  input: ListConnectorsInput;
+}
+
+model GetConnectorRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getConnector";
+  input: GetConnectorInput;
+}
+
+model CreateConnectorRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "createConnector";
+  input: CreateConnectorInput;
+}
+
+model RenameConnectorRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "renameConnector";
+  input: RenameConnectorInput;
+}
+
+model DeleteConnectorRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "deleteConnector";
+  input: DeleteConnectorInput;
+}
+
+model SetStaticTokenRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "setStaticToken";
+  input: SetStaticTokenInput;
+}
+
+model ClearConnectorCredentialRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "clearConnectorCredential";
+  input: ClearConnectorCredentialInput;
+}
+
+model StartConnectorAuthorizationRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "startConnectorAuthorization";
+  input: StartConnectorAuthorizationInput;
+}
+
+model ConnectorCallbackRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "connectorCallback";
+  input: ConnectorCallbackInput;
+}
+
+model ServeConnectorTokenRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "serveConnectorToken";
+  input: ServeConnectorTokenInput;
+}
+
+model UnknownConnectorsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "unknownConnectors";
+  input: UnknownConnectorsInput;
+}
+
 @doc("One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "operation" })
 union TenantRequest {
@@ -367,6 +527,17 @@ union TenantRequest {
   listPins: ListPinsRequest,
   pin: PinRequest,
   unpin: UnpinRequest,
+  listConnectors: ListConnectorsRequest,
+  getConnector: GetConnectorRequest,
+  createConnector: CreateConnectorRequest,
+  renameConnector: RenameConnectorRequest,
+  deleteConnector: DeleteConnectorRequest,
+  setStaticToken: SetStaticTokenRequest,
+  clearConnectorCredential: ClearConnectorCredentialRequest,
+  startConnectorAuthorization: StartConnectorAuthorizationRequest,
+  connectorCallback: ConnectorCallbackRequest,
+  serveConnectorToken: ServeConnectorTokenRequest,
+  unknownConnectors: UnknownConnectorsRequest,
 }
 
 @doc("The request names a version outside the instance's window, or an older version an adapter cannot translate. The caller answers a retryable failure.")
@@ -594,4 +765,126 @@ model DeletePersonaResult {
   model UnpinResult {
     unpinned: boolean;
   }
+
+model ListConnectorsResult {
+  connectors: Connector[];
+}
+
+model GetConnectorResult {
+  connector: Connector | null;
+}
+
+model ConnectorWrittenOk {
+  kind: "Written";
+  connector: Connector;
+}
+
+model ConnectorNotFound {
+  kind: "NotFound";
+}
+
+model ConnectorNameTaken {
+  kind: "NameTaken";
+}
+
+model ConnectorChanged {
+  kind: "Changed";
+}
+
+model ConnectorWrittenResult {
+  written: ConnectorWrittenOk | ConnectorNotFound | ConnectorNameTaken | ConnectorChanged;
+}
+
+model ConnectorDeletedOk {
+  kind: "Deleted";
+}
+
+model ConnectorInUse {
+  kind: "InUse";
+  detail: string;
+}
+
+model DeleteConnectorResult {
+  deleted: ConnectorDeletedOk | ConnectorNotFound | ConnectorChanged | ConnectorInUse;
+}
+
+model ConnectorAuthorizeStartedOk {
+  kind: "Started";
+  authorization: ConnectorAuthorization;
+}
+
+model ConnectorDiscoveryFailed {
+  kind: "DiscoveryFailed";
+  detail: string;
+}
+
+model ConnectorRegistrationUnsupported {
+  kind: "RegistrationUnsupported";
+  detail: string;
+}
+
+model StartConnectorAuthorizationResult {
+  started: ConnectorAuthorizeStartedOk | ConnectorNotFound | ConnectorChanged | ConnectorDiscoveryFailed | ConnectorRegistrationUnsupported;
+}
+
+model ConnectorCallbackConnected {
+  kind: "Connected";
+  name: string;
+}
+
+model ConnectorCallbackNotConnected {
+  kind: "NotConnected";
+  detail: string;
+}
+
+model ConnectorCallbackResult {
+  settled: ConnectorCallbackConnected | ConnectorCallbackNotConnected;
+}
+
+model ConnectorTokenServedOk {
+  kind: "Served";
+  token: ConnectorAccessToken;
+}
+
+model ConnectorTokenRefused {
+  kind: "Refused";
+}
+
+model ConnectorTurnNotRunning {
+  kind: "NotRunning";
+}
+
+model ConnectorNoCredential {
+  kind: "NoCredential";
+  name: string;
+}
+
+model ConnectorRefreshFailed {
+  kind: "RefreshFailed";
+  detail: string;
+}
+
+model ServeConnectorTokenResult {
+  served: ConnectorTokenServedOk | ConnectorTokenRefused | ConnectorTurnNotRunning | ConnectorNoCredential | ConnectorRefreshFailed;
+}
+
+model UnknownConnectorsResult {
+  unknownConnectorIds: EntityId[];
+}
+
+model CreateConnectorResult {
+  ...ConnectorWrittenResult;
+}
+
+model RenameConnectorResult {
+  ...ConnectorWrittenResult;
+}
+
+model SetStaticTokenResult {
+  ...ConnectorWrittenResult;
+}
+
+model ClearConnectorCredentialResult {
+  ...ConnectorWrittenResult;
+}
 }
