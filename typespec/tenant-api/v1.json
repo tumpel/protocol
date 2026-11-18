@@ -101,6 +101,15 @@
       ],
       "description": "What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode."
     },
+    "BuildProvider": {
+      "type": "string",
+      "enum": [
+        "GitHubActions",
+        "CircleCI",
+        "Namespace"
+      ],
+      "description": "A build provider that runs prebuilds on the tenant's own account and bills it."
+    },
     "Channel.BaseImageDownload": {
       "type": "object",
       "required": [
@@ -681,6 +690,69 @@
         }
       },
       "description": "A CircleCI organization the authorized token reads, from GET /api/v2/me/collaborations."
+    },
+    "CircleCIProject": {
+      "type": "object",
+      "required": [
+        "circleCIProjectId",
+        "tenantId",
+        "repository",
+        "projectSlug",
+        "projectId",
+        "pipelineDefinitionId",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "circleCIProjectId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "The repository as https://github.com/<owner>/<name> in lower case."
+        },
+        "projectSlug": {
+          "$ref": "#/components/schemas/CircleCIProjectSlug"
+        },
+        "projectId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CircleCIUuid"
+            }
+          ],
+          "description": "The CircleCI project id, read from the project at the binding."
+        },
+        "pipelineDefinitionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CircleCIUuid"
+            }
+          ],
+          "description": "The pipeline definition the prebuilds run, from Project Settings > Project Setup."
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "Binds one repository to the CircleCI project and pipeline definition its prebuilds run. The\npipeline definition must check out the repository."
+    },
+    "CircleCIProjectSlug": {
+      "type": "string",
+      "maxLength": 200,
+      "pattern": "^(gh|github|circleci)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$",
+      "description": "A CircleCI project slug: gh/<owner>/<name> in a GitHub OAuth organization, or\ncircleci/<organization id>/<project id> in a GitHub App organization."
     },
     "CircleCIUuid": {
       "type": "string",
@@ -1353,6 +1425,11 @@
       ],
       "description": "The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot."
     },
+    "ModelName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
     "ModelProvider": {
       "type": "string",
       "enum": [
@@ -1617,6 +1694,304 @@
       "maximum": 262144,
       "description": "The size of a persona file in bytes, at most PersonaFileLimit.PersonaBytes."
     },
+    "Prebuild": {
+      "type": "object",
+      "required": [
+        "prebuildId",
+        "tenantId",
+        "personaId",
+        "repository",
+        "inputDigest",
+        "guestImageDigest",
+        "provider",
+        "configSource",
+        "status",
+        "startedAt",
+        "logUrl",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "personaId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, whose harness version picks the guest image, and whose name the job's subject carries."
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "The repository as https://github.com/<owner>/<name> in lower case, whatever form the start named it in."
+        },
+        "inputDigest": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sha256Digest"
+            }
+          ],
+          "description": "The sha256 over the repository's devcontainer files and lockfiles on its default branch: every\nfile under .devcontainer/, the file .devcontainer.json, and these lockfiles at the repository\nroot: package-lock.json, npm-shrinkwrap.json, yarn.lock, pnpm-lock.yaml, bun.lock, bun.lockb,\nCargo.lock, go.sum, uv.lock, poetry.lock, Pipfile.lock, Gemfile.lock, composer.lock, mix.lock,\npubspec.lock and flake.lock, and the manifest the default config reads: package.json. For each\nfile present, in byte order of its path, one line\n`<path>` NUL `<git blob sha of the file>` LF; the digest is the sha256 of those lines."
+        },
+        "guestImageDigest": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sha256Digest"
+            }
+          ],
+          "description": "The digest of the guest image the layer is built on: the current release's image of the\npersona's harness version for Amd64. A layer is a diff against its image, so a new image needs\na new prebuild. Prebuilds build on Amd64 until the release carries Arm64 images."
+        },
+        "provider": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BuildProvider"
+            }
+          ],
+          "description": "The provider the start named. The prebuild runs on one of the tenant's online Amd64 hosts, as a turn of a session the session list leaves out."
+        },
+        "configSource": {
+          "$ref": "#/components/schemas/PrebuildConfigSource"
+        },
+        "status": {
+          "$ref": "#/components/schemas/PrebuildStatus"
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "logUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "The transcript of the prebuild's turn: the output of the repository's setup step."
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "A repository's dependencies installed once by a build provider on the tenant's account, stored as\none layer. The repository, the input digest and the guest image digest are its key: every commit\nwith the same devcontainer files and lockfiles, built on the same guest image, shares one\nprebuild. A prebuild exists only once its provider accepted the job."
+    },
+    "PrebuildBuilding": {
+      "type": "object",
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Building"
+          ]
+        }
+      }
+    },
+    "PrebuildConfigSource": {
+      "type": "string",
+      "enum": [
+        "RepositoryFile",
+        "Default"
+      ],
+      "description": "Where the commands a prebuild runs came from."
+    },
+    "PrebuildConverting": {
+      "type": "object",
+      "required": [
+        "state",
+        "layerDigest",
+        "layerSizeBytes",
+        "uploadedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Converting"
+          ]
+        },
+        "layerDigest": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sha256Digest"
+            }
+          ],
+          "description": "The sha256 of the compressed OCI layer the job uploaded."
+        },
+        "layerSizeBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "uploadedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PrebuildDispatched": {
+      "type": "object",
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Dispatched"
+          ]
+        }
+      }
+    },
+    "PrebuildDone": {
+      "type": "object",
+      "required": [
+        "state",
+        "layerDigest",
+        "layerSizeBytes",
+        "finishedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Done"
+          ]
+        },
+        "layerDigest": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sha256Digest"
+            }
+          ],
+          "description": "The sha256 of the OCI layer the provider uploaded."
+        },
+        "layerSizeBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "finishedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PrebuildFailed": {
+      "type": "object",
+      "required": [
+        "state",
+        "phase",
+        "finishedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Failed"
+          ]
+        },
+        "phase": {
+          "$ref": "#/components/schemas/PrebuildFailurePhase"
+        },
+        "finishedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PrebuildFailure": {
+      "type": "object",
+      "required": [
+        "prebuildId",
+        "tenantId",
+        "phase",
+        "detail",
+        "fix",
+        "createdAt"
+      ],
+      "properties": {
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "phase": {
+          "$ref": "#/components/schemas/PrebuildFailurePhase"
+        },
+        "detail": {
+          "type": "string",
+          "description": "What failed, with what the provider reported."
+        },
+        "fix": {
+          "type": "string",
+          "description": "What fixes it."
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "Why a prebuild ended Failed. Exists only for a prebuild in state Failed; the prebuild's status holds when."
+    },
+    "PrebuildFailurePhase": {
+      "type": "string",
+      "enum": [
+        "Dispatch",
+        "Build",
+        "Upload",
+        "Conversion"
+      ],
+      "description": "The phase a Failed prebuild stopped in. A provider that refuses the job refuses the start, and no prebuild exists."
+    },
+    "PrebuildStatus": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/PrebuildDispatched"
+        },
+        {
+          "$ref": "#/components/schemas/PrebuildBuilding"
+        },
+        {
+          "$ref": "#/components/schemas/PrebuildConverting"
+        },
+        {
+          "$ref": "#/components/schemas/PrebuildDone"
+        },
+        {
+          "$ref": "#/components/schemas/PrebuildFailed"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "state",
+        "mapping": {
+          "Dispatched": "#/components/schemas/PrebuildDispatched",
+          "Building": "#/components/schemas/PrebuildBuilding",
+          "Converting": "#/components/schemas/PrebuildConverting",
+          "Done": "#/components/schemas/PrebuildDone",
+          "Failed": "#/components/schemas/PrebuildFailed"
+        }
+      },
+      "description": "Where a prebuild is, with the facts of its state: the layer once Done, the failed phase once Failed."
+    },
+    "Prompt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100000
+    },
     "ReleaseHarnessLayer": {
       "type": "object",
       "required": [
@@ -1748,6 +2123,11 @@
         }
       },
       "description": "A host's box slots and its last reported usage, kept by its tenant from the host's Hello and\nHeartbeats. `boxCapacity` comes from Hello. `boxesRunning` counts the tenant's Offered and\nRunning turns on the host. Placement counts the boxes a host holds from the tenant's own\nsessions, never from the reported `boxesWarm`, which lags by a Heartbeat.\n`channelProtocol` is the protocol version the host's latest Hello negotiated; the control plane\ncloses the connection with UnsupportedVersion instead of sending a frame of a newer version,\nand resends it once the host reconnects on a version that speaks it. A host that has not connected since it enrolled has none."
+    },
+    "RepositoryUrl": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
     },
     "SecretKey": {
       "type": "object",
@@ -2007,6 +2387,43 @@
           "$ref": "#/components/schemas/SecretText"
         }
       }
+    },
+    "SessionStart": {
+      "type": "object",
+      "required": [
+        "personaId",
+        "repository",
+        "model",
+        "prompt"
+      ],
+      "properties": {
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name."
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "prompt": {
+          "$ref": "#/components/schemas/Prompt"
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What happens to the box after each turn; left out, the session takes its persona's boxRetention."
+        }
+      },
+      "description": "A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins."
     },
     "Sha256Digest": {
       "type": "string",
@@ -2520,6 +2937,173 @@
         }
       }
     },
+    "TenantApi.BindCircleCIUploadJobInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "prebuildId",
+        "upload",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "upload": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIUploadJob"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.BindCircleCIUploadJobRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "bindCircleCIUploadJob"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.BindCircleCIUploadJobInput"
+        }
+      }
+    },
+    "TenantApi.BindCircleCIUploadJobResult": {
+      "type": "object",
+      "required": [
+        "bound"
+      ],
+      "properties": {
+        "bound": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIJobBoundOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIJobOther"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIRevisionMoved"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIJobRefused"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.BindJobRunInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "prebuildId",
+        "runId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "runId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.BindJobRunRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "bindJobRun"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.BindJobRunInput"
+        }
+      }
+    },
+    "TenantApi.BindJobRunResult": {
+      "type": "object",
+      "required": [
+        "bound"
+      ],
+      "properties": {
+        "bound": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.JobRunBoundOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.JobRunOther"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.CallerWorkflowConnected": {
+      "type": "object",
+      "required": [
+        "kind",
+        "callerWorkflow"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Connected"
+          ]
+        },
+        "callerWorkflow": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.CallerWorkflowNotConnected": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotConnected"
+          ]
+        }
+      }
+    },
     "TenantApi.ChooseCircleCIOrganizationInput": {
       "type": "object",
       "required": [
@@ -2710,6 +3294,93 @@
         }
       }
     },
+    "TenantApi.CircleCIDispatched": {
+      "type": "object",
+      "required": [
+        "kind",
+        "prebuild"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Dispatched"
+          ]
+        },
+        "prebuild": {
+          "$ref": "#/components/schemas/Prebuild"
+        }
+      }
+    },
+    "TenantApi.CircleCIDispatchNotConnected": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotConnected"
+          ]
+        }
+      }
+    },
+    "TenantApi.CircleCIJobBoundOk": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Bound"
+          ]
+        }
+      }
+    },
+    "TenantApi.CircleCIJobOther": {
+      "type": "object",
+      "required": [
+        "kind",
+        "jobId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "OtherJob"
+          ]
+        },
+        "jobId": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.CircleCIJobRefused": {
+      "type": "object",
+      "required": [
+        "kind",
+        "status",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Refused"
+          ]
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
     "TenantApi.CircleCIRegistrationRefused": {
       "type": "object",
       "required": [
@@ -2727,6 +3398,184 @@
           "type": "string"
         }
       }
+    },
+    "TenantApi.CircleCIRevisionMoved": {
+      "type": "object",
+      "required": [
+        "kind",
+        "prebuild"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "RevisionMoved"
+          ]
+        },
+        "prebuild": {
+          "$ref": "#/components/schemas/Prebuild"
+        }
+      }
+    },
+    "TenantApi.CircleCIUploadJob": {
+      "type": "object",
+      "required": [
+        "pipelineId",
+        "headSha",
+        "jobId"
+      ],
+      "properties": {
+        "pipelineId": {
+          "type": "string"
+        },
+        "headSha": {
+          "type": "string"
+        },
+        "jobId": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.CircleCIUploadTarget": {
+      "type": "object",
+      "required": [
+        "provider",
+        "prebuild",
+        "defaultBranch",
+        "upload",
+        "organizationId",
+        "pipeline"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "enum": [
+            "CircleCI"
+          ]
+        },
+        "prebuild": {
+          "$ref": "#/components/schemas/Prebuild"
+        },
+        "defaultBranch": {
+          "type": "string"
+        },
+        "upload": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildLayerUpload"
+            }
+          ],
+          "nullable": true
+        },
+        "organizationId": {
+          "type": "string"
+        },
+        "pipeline": {
+          "$ref": "#/components/schemas/TenantApi.RecordedPipeline"
+        }
+      }
+    },
+    "TenantApi.CircleCIWorkflowCompletedEvent": {
+      "type": "object",
+      "required": [
+        "type",
+        "workflow",
+        "pipeline",
+        "project"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "workflow": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": [
+            "name",
+            "status",
+            "url"
+          ]
+        },
+        "pipeline": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "project": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    },
+    "TenantApi.CircleCIWorkflowCompletedInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "event",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "event": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIWorkflowCompletedEvent"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.CircleCIWorkflowCompletedRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "circleCIWorkflowCompleted"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIWorkflowCompletedInput"
+        }
+      }
+    },
+    "TenantApi.CircleCIWorkflowCompletedResult": {
+      "type": "object"
     },
     "TenantApi.ClaudeSetupCodedOk": {
       "type": "object",
@@ -3088,6 +3937,73 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.AuthorizationInvalid"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.CompletePrebuildUploadInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "prebuildId",
+        "upload",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "upload": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildLayerUpload"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.CompletePrebuildUploadRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "completePrebuildUpload"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CompletePrebuildUploadInput"
+        }
+      }
+    },
+    "TenantApi.CompletePrebuildUploadResult": {
+      "type": "object",
+      "required": [
+        "recorded"
+      ],
+      "properties": {
+        "recorded": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.UploadRecordedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.UploadNotUploading"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.UploadOtherLayer"
             }
           ]
         }
@@ -4089,6 +5005,80 @@
         }
       }
     },
+    "TenantApi.DispatchCircleCIPrebuildInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "start",
+        "project",
+        "parameters",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "start": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildStartRecord"
+        },
+        "project": {
+          "$ref": "#/components/schemas/CircleCIProject"
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.DispatchCircleCIPrebuildRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "dispatchCircleCIPrebuild"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.DispatchCircleCIPrebuildInput"
+        }
+      }
+    },
+    "TenantApi.DispatchCircleCIPrebuildResult": {
+      "type": "object",
+      "required": [
+        "dispatched"
+      ],
+      "properties": {
+        "dispatched": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIDispatched"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIDispatchNotConnected"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildRefused"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.GetClaudeSetupInput": {
       "type": "object",
       "required": [
@@ -4319,6 +5309,114 @@
         }
       }
     },
+    "TenantApi.GetPrebuildFailureInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "prebuildId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.GetPrebuildFailureRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getPrebuildFailure"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetPrebuildFailureInput"
+        }
+      }
+    },
+    "TenantApi.GetPrebuildFailureResult": {
+      "type": "object",
+      "required": [
+        "failure"
+      ],
+      "properties": {
+        "failure": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/PrebuildFailure"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.GetPrebuildInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "prebuildId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.GetPrebuildRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getPrebuild"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetPrebuildInput"
+        }
+      }
+    },
+    "TenantApi.GetPrebuildResult": {
+      "type": "object",
+      "required": [
+        "prebuild"
+      ],
+      "properties": {
+        "prebuild": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Prebuild"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
     "TenantApi.GetSecretSetInput": {
       "type": "object",
       "required": [
@@ -4377,6 +5475,96 @@
         }
       }
     },
+    "TenantApi.GitHubActionsStart": {
+      "type": "object",
+      "required": [
+        "prebuildId",
+        "personaId",
+        "target",
+        "repository",
+        "guestImageDigest",
+        "rootfsKey",
+        "callerWorkflow",
+        "apiOrigin",
+        "rebuild"
+      ],
+      "properties": {
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "target": {
+          "$ref": "#/components/schemas/TenantApi.RepositoryRef"
+        },
+        "repository": {
+          "type": "string"
+        },
+        "guestImageDigest": {
+          "type": "string"
+        },
+        "rootfsKey": {
+          "type": "string"
+        },
+        "callerWorkflow": {
+          "type": "string"
+        },
+        "apiOrigin": {
+          "type": "string"
+        },
+        "rebuild": {
+          "type": "boolean"
+        }
+      }
+    },
+    "TenantApi.GitHubActionsUploadTarget": {
+      "type": "object",
+      "required": [
+        "provider",
+        "prebuild",
+        "defaultBranch",
+        "upload",
+        "callerWorkflow",
+        "run"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "enum": [
+            "GitHubActions"
+          ]
+        },
+        "prebuild": {
+          "$ref": "#/components/schemas/Prebuild"
+        },
+        "defaultBranch": {
+          "type": "string"
+        },
+        "upload": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildLayerUpload"
+            }
+          ],
+          "nullable": true
+        },
+        "callerWorkflow": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.CallerWorkflowConnected"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.CallerWorkflowNotConnected"
+            }
+          ]
+        },
+        "run": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildRun"
+        }
+      }
+    },
     "TenantApi.GitHubUser": {
       "type": "object",
       "required": [
@@ -4393,6 +5581,78 @@
         }
       },
       "description": "The GitHub account a repository token secret acts as, when the set holds one."
+    },
+    "TenantApi.HeldPrebuildInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "key"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "key": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildKey"
+        }
+      }
+    },
+    "TenantApi.HeldPrebuildRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "heldPrebuild"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.HeldPrebuildInput"
+        }
+      }
+    },
+    "TenantApi.HeldPrebuildResult": {
+      "type": "object",
+      "required": [
+        "prebuild"
+      ],
+      "properties": {
+        "prebuild": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Prebuild"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.HostPrebuildStarted": {
+      "type": "object",
+      "required": [
+        "kind",
+        "started"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Started"
+          ]
+        },
+        "started": {
+          "$ref": "#/components/schemas/Prebuild"
+        }
+      }
     },
     "TenantApi.HostRecord": {
       "type": "object",
@@ -4499,6 +5759,140 @@
           "items": {
             "$ref": "#/components/schemas/HostArchitecture"
           }
+        }
+      }
+    },
+    "TenantApi.JobInputsTarget": {
+      "type": "object",
+      "required": [
+        "prebuild",
+        "defaultBranch",
+        "callerWorkflow",
+        "headSha",
+        "rootfsKey"
+      ],
+      "properties": {
+        "prebuild": {
+          "$ref": "#/components/schemas/Prebuild"
+        },
+        "defaultBranch": {
+          "type": "string"
+        },
+        "callerWorkflow": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.CallerWorkflowConnected"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.CallerWorkflowNotConnected"
+            }
+          ]
+        },
+        "headSha": {
+          "type": "string"
+        },
+        "rootfsKey": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.JobInputsTargetInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "repository",
+        "headSha",
+        "runId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "type": "string"
+        },
+        "headSha": {
+          "type": "string"
+        },
+        "runId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.JobInputsTargetRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "jobInputsTarget"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.JobInputsTargetInput"
+        }
+      }
+    },
+    "TenantApi.JobInputsTargetResult": {
+      "type": "object",
+      "required": [
+        "target"
+      ],
+      "properties": {
+        "target": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.JobInputsTarget"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.JobRunBoundOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "prebuild"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Bound"
+          ]
+        },
+        "prebuild": {
+          "$ref": "#/components/schemas/Prebuild"
+        }
+      }
+    },
+    "TenantApi.JobRunOther": {
+      "type": "object",
+      "required": [
+        "kind",
+        "runId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "OtherRun"
+          ]
+        },
+        "runId": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
@@ -4610,6 +6004,53 @@
         }
       }
     },
+    "TenantApi.ListLatestPrebuildsInput": {
+      "type": "object",
+      "required": [
+        "tenantId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListLatestPrebuildsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listLatestPrebuilds"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListLatestPrebuildsInput"
+        }
+      }
+    },
+    "TenantApi.ListLatestPrebuildsResult": {
+      "type": "object",
+      "required": [
+        "prebuilds"
+      ],
+      "properties": {
+        "prebuilds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Prebuild"
+          }
+        }
+      }
+    },
     "TenantApi.ListPersonasInput": {
       "type": "object",
       "required": [
@@ -4692,6 +6133,58 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/HarnessPin"
+          }
+        }
+      }
+    },
+    "TenantApi.ListPrebuildsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "repository"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "type": "string",
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.ListPrebuildsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listPrebuilds"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListPrebuildsInput"
+        }
+      }
+    },
+    "TenantApi.ListPrebuildsResult": {
+      "type": "object",
+      "required": [
+        "prebuilds"
+      ],
+      "properties": {
+        "prebuilds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Prebuild"
           }
         }
       }
@@ -4793,6 +6286,40 @@
         },
         "controlPlaneOrigin": {
           "type": "string"
+        }
+      }
+    },
+    "TenantApi.NewSession": {
+      "type": "object",
+      "required": [
+        "principalId",
+        "hosts",
+        "harness",
+        "harnessVersion",
+        "endpoint",
+        "start"
+      ],
+      "properties": {
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.HostRecord"
+          }
+        },
+        "harness": {
+          "$ref": "#/components/schemas/Harness"
+        },
+        "harnessVersion": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/components/schemas/SessionStart"
         }
       }
     },
@@ -5344,6 +6871,406 @@
         }
       }
     },
+    "TenantApi.PrebuildActionsDisabled": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "ActionsDisabled"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.PrebuildAppPermissionMissing": {
+      "type": "object",
+      "required": [
+        "kind",
+        "permissions",
+        "appSlug",
+        "appOwner"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "AppPermissionMissing"
+          ]
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "appSlug": {
+          "type": "string"
+        },
+        "appOwner": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.PrebuildBuildDue": {
+      "type": "object",
+      "required": [
+        "name",
+        "deadline"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "PrebuildBuild"
+          ]
+        },
+        "deadline": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildDeadline"
+        }
+      }
+    },
+    "TenantApi.PrebuildCallerRefused": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "CallerRefused"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.PrebuildCommitStart": {
+      "type": "object",
+      "required": [
+        "prebuildId",
+        "personaId",
+        "key",
+        "configSource",
+        "defaultBranch",
+        "headSha",
+        "rootfsKey"
+      ],
+      "properties": {
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "key": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildKey"
+        },
+        "configSource": {
+          "$ref": "#/components/schemas/PrebuildConfigSource"
+        },
+        "defaultBranch": {
+          "type": "string"
+        },
+        "headSha": {
+          "type": "string"
+        },
+        "rootfsKey": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.PrebuildDeadline": {
+      "type": "object",
+      "required": [
+        "prebuildId",
+        "at"
+      ],
+      "properties": {
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "at": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.PrebuildDeadlineReachedInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "due"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "due": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildDispatchDue"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildBuildDue"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.PrebuildDeadlineReachedRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "prebuildDeadlineReached"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildDeadlineReachedInput"
+        }
+      }
+    },
+    "TenantApi.PrebuildDeadlineReachedResult": {
+      "type": "object"
+    },
+    "TenantApi.PrebuildDispatchDue": {
+      "type": "object",
+      "required": [
+        "name",
+        "deadline"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "PrebuildDispatch"
+          ]
+        },
+        "deadline": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildDeadline"
+        }
+      }
+    },
+    "TenantApi.PrebuildKey": {
+      "type": "object",
+      "required": [
+        "repository",
+        "inputDigest",
+        "guestImageDigest"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string"
+        },
+        "inputDigest": {
+          "type": "string"
+        },
+        "guestImageDigest": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.PrebuildLayerUpload": {
+      "type": "object",
+      "required": [
+        "layerDigest",
+        "layerSizeBytes"
+      ],
+      "properties": {
+        "layerDigest": {
+          "type": "string"
+        },
+        "layerSizeBytes": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.PrebuildNoInstallation": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NoInstallation"
+          ]
+        }
+      }
+    },
+    "TenantApi.PrebuildPermissionMissing": {
+      "type": "object",
+      "required": [
+        "kind",
+        "permissions",
+        "appSlug"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "PermissionMissing"
+          ]
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "appSlug": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.PrebuildRefused": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Refused"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.PrebuildRun": {
+      "type": "object",
+      "required": [
+        "runId",
+        "headSha"
+      ],
+      "properties": {
+        "runId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "headSha": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.PrebuildStarted": {
+      "type": "object",
+      "required": [
+        "kind",
+        "prebuild"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Started"
+          ]
+        },
+        "prebuild": {
+          "$ref": "#/components/schemas/Prebuild"
+        }
+      }
+    },
+    "TenantApi.PrebuildStartRecord": {
+      "type": "object",
+      "required": [
+        "prebuildId",
+        "personaId",
+        "key",
+        "configSource",
+        "target",
+        "defaultBranch",
+        "headSha",
+        "rootfsKey"
+      ],
+      "properties": {
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "key": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildKey"
+        },
+        "configSource": {
+          "$ref": "#/components/schemas/PrebuildConfigSource"
+        },
+        "target": {
+          "$ref": "#/components/schemas/TenantApi.RepositoryRef"
+        },
+        "defaultBranch": {
+          "type": "string"
+        },
+        "headSha": {
+          "type": "string"
+        },
+        "rootfsKey": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.PrebuildTokenRefused": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "TokenRefused"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.PrebuildUnreadable": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unreadable"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
     "TenantApi.PrepareClaudeSetupInput": {
       "type": "object",
       "required": [
@@ -5414,6 +7341,99 @@
           ]
         }
       }
+    },
+    "TenantApi.ReadTokenOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "token"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Token"
+          ]
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.RecordedPipeline": {
+      "type": "object",
+      "required": [
+        "pipelineId",
+        "projectId",
+        "headSha",
+        "job"
+      ],
+      "properties": {
+        "pipelineId": {
+          "type": "string"
+        },
+        "projectId": {
+          "type": "string"
+        },
+        "headSha": {
+          "type": "string"
+        },
+        "job": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.UploadJobRecorded"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.UploadJobAbsent"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.RecordPrebuildBuildingInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "prebuildId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.RecordPrebuildBuildingRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "recordPrebuildBuilding"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.RecordPrebuildBuildingInput"
+        }
+      }
+    },
+    "TenantApi.RecordPrebuildBuildingResult": {
+      "type": "object"
     },
     "TenantApi.RemoveSecretMemberInput": {
       "type": "object",
@@ -5560,6 +7580,96 @@
         }
       }
     },
+    "TenantApi.RepositoryReadTokenInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "personaId",
+        "repository",
+        "now",
+        "permissions"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "$ref": "#/components/schemas/TenantApi.RepositoryRef"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "permissions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "enum": [
+              "read",
+              "write"
+            ]
+          }
+        }
+      }
+    },
+    "TenantApi.RepositoryReadTokenRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "repositoryReadToken"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.RepositoryReadTokenInput"
+        }
+      }
+    },
+    "TenantApi.RepositoryReadTokenResult": {
+      "type": "object",
+      "required": [
+        "read"
+      ],
+      "properties": {
+        "read": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ReadTokenOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildRefused"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.RepositoryRef": {
+      "type": "object",
+      "required": [
+        "owner",
+        "name"
+      ],
+      "properties": {
+        "owner": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "TenantApi.RewriteSecretSetWrite": {
       "type": "object",
       "required": [
@@ -5591,6 +7701,44 @@
           "nullable": true
         }
       }
+    },
+    "TenantApi.RunEvent": {
+      "type": "object",
+      "required": [
+        "action",
+        "runId",
+        "repository",
+        "path",
+        "headSha",
+        "htmlUrl",
+        "conclusion"
+      ],
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "runId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "repository": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "headSha": {
+          "type": "string"
+        },
+        "htmlUrl": {
+          "type": "string"
+        },
+        "conclusion": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "description": "A GitHub Actions workflow run event, as the webhook reports it."
     },
     "TenantApi.SecretMemberNotFound": {
       "type": "object",
@@ -6304,6 +8452,203 @@
         }
       }
     },
+    "TenantApi.StartConnectorDisconnected": {
+      "type": "object",
+      "required": [
+        "kind",
+        "names"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "ConnectorDisconnected"
+          ]
+        },
+        "names": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TenantApi.StartDraining": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Draining"
+          ]
+        }
+      }
+    },
+    "TenantApi.StartGitHubActionsPrebuildInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "start",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "start": {
+          "$ref": "#/components/schemas/TenantApi.GitHubActionsStart"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.StartGitHubActionsPrebuildRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "startGitHubActionsPrebuild"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.StartGitHubActionsPrebuildInput"
+        }
+      }
+    },
+    "TenantApi.StartGitHubActionsPrebuildResult": {
+      "type": "object",
+      "required": [
+        "started"
+      ],
+      "properties": {
+        "started": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildStarted"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildNoInstallation"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildTokenRefused"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildUnreadable"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildPermissionMissing"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildAppPermissionMissing"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildCallerRefused"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildActionsDisabled"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PrebuildRefused"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.StartHostPrebuildInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "commit",
+        "provider",
+        "input",
+        "apiOrigin",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "commit": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildCommitStart"
+        },
+        "provider": {
+          "$ref": "#/components/schemas/BuildProvider"
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.NewSession"
+        },
+        "apiOrigin": {
+          "type": "string"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.StartHostPrebuildRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "startHostPrebuild"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.StartHostPrebuildInput"
+        }
+      }
+    },
+    "TenantApi.StartHostPrebuildResult": {
+      "type": "object",
+      "required": [
+        "started"
+      ],
+      "properties": {
+        "started": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.HostPrebuildStarted"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartDraining"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartUnplaced"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartConnectorDisconnected"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupReleaseUnreadable"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.StartOpenRouterAuthorizationInput": {
       "type": "object",
       "required": [
@@ -6368,6 +8713,94 @@
               "$ref": "#/components/schemas/TenantApi.AuthorizationOtherCredential"
             }
           ]
+        }
+      }
+    },
+    "TenantApi.StartPrebuildUploadInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "prebuildId",
+        "upload",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "upload": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildLayerUpload"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.StartPrebuildUploadRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "startPrebuildUpload"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.StartPrebuildUploadInput"
+        }
+      }
+    },
+    "TenantApi.StartPrebuildUploadResult": {
+      "type": "object",
+      "required": [
+        "recorded"
+      ],
+      "properties": {
+        "recorded": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.UploadRecordedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.UploadNotUploading"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.UploadOtherLayer"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.StartUnplaced": {
+      "type": "object",
+      "required": [
+        "kind",
+        "hosts"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unplaced"
+          ]
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.Unplaceable"
+          }
         }
       }
     },
@@ -6920,6 +9353,63 @@
         },
         {
           "$ref": "#/components/schemas/TenantApi.PrepareClaudeSetupRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListPrebuildsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListLatestPrebuildsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetPrebuildRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.HeldPrebuildRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.RecordPrebuildBuildingRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.JobInputsTargetRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.BindJobRunRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.WorkflowRunReportedRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.PrebuildDeadlineReachedRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.StartGitHubActionsPrebuildRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.StartHostPrebuildRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UploadTargetRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.BindCircleCIUploadJobRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.StartPrebuildUploadRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CompletePrebuildUploadRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetPrebuildFailureRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DispatchCircleCIPrebuildRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CircleCIWorkflowCompletedRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.RepositoryReadTokenRequest"
         }
       ],
       "discriminator": {
@@ -6970,7 +9460,26 @@
           "submitClaudeSetupCode": "#/components/schemas/TenantApi.SubmitClaudeSetupCodeRequest",
           "writeClaudeSetupToken": "#/components/schemas/TenantApi.WriteClaudeSetupTokenRequest",
           "claudeSetupDeadlineReached": "#/components/schemas/TenantApi.ClaudeSetupDeadlineReachedRequest",
-          "prepareClaudeSetup": "#/components/schemas/TenantApi.PrepareClaudeSetupRequest"
+          "prepareClaudeSetup": "#/components/schemas/TenantApi.PrepareClaudeSetupRequest",
+          "listPrebuilds": "#/components/schemas/TenantApi.ListPrebuildsRequest",
+          "listLatestPrebuilds": "#/components/schemas/TenantApi.ListLatestPrebuildsRequest",
+          "getPrebuild": "#/components/schemas/TenantApi.GetPrebuildRequest",
+          "heldPrebuild": "#/components/schemas/TenantApi.HeldPrebuildRequest",
+          "recordPrebuildBuilding": "#/components/schemas/TenantApi.RecordPrebuildBuildingRequest",
+          "jobInputsTarget": "#/components/schemas/TenantApi.JobInputsTargetRequest",
+          "bindJobRun": "#/components/schemas/TenantApi.BindJobRunRequest",
+          "workflowRunReported": "#/components/schemas/TenantApi.WorkflowRunReportedRequest",
+          "prebuildDeadlineReached": "#/components/schemas/TenantApi.PrebuildDeadlineReachedRequest",
+          "startGitHubActionsPrebuild": "#/components/schemas/TenantApi.StartGitHubActionsPrebuildRequest",
+          "startHostPrebuild": "#/components/schemas/TenantApi.StartHostPrebuildRequest",
+          "uploadTarget": "#/components/schemas/TenantApi.UploadTargetRequest",
+          "bindCircleCIUploadJob": "#/components/schemas/TenantApi.BindCircleCIUploadJobRequest",
+          "startPrebuildUpload": "#/components/schemas/TenantApi.StartPrebuildUploadRequest",
+          "completePrebuildUpload": "#/components/schemas/TenantApi.CompletePrebuildUploadRequest",
+          "getPrebuildFailure": "#/components/schemas/TenantApi.GetPrebuildFailureRequest",
+          "dispatchCircleCIPrebuild": "#/components/schemas/TenantApi.DispatchCircleCIPrebuildRequest",
+          "circleCIWorkflowCompleted": "#/components/schemas/TenantApi.CircleCIWorkflowCompletedRequest",
+          "repositoryReadToken": "#/components/schemas/TenantApi.RepositoryReadTokenRequest"
         }
       },
       "description": "One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation."
@@ -7534,6 +10043,229 @@
           ]
         }
       }
+    },
+    "TenantApi.UploadJobAbsent": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NoJob"
+          ]
+        }
+      }
+    },
+    "TenantApi.UploadJobRecorded": {
+      "type": "object",
+      "required": [
+        "kind",
+        "jobId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Job"
+          ]
+        },
+        "jobId": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.UploadNotUploading": {
+      "type": "object",
+      "required": [
+        "kind",
+        "prebuild"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotUploading"
+          ]
+        },
+        "prebuild": {
+          "$ref": "#/components/schemas/Prebuild"
+        }
+      }
+    },
+    "TenantApi.UploadOtherLayer": {
+      "type": "object",
+      "required": [
+        "kind",
+        "prebuild",
+        "recorded"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "OtherLayer"
+          ]
+        },
+        "prebuild": {
+          "$ref": "#/components/schemas/Prebuild"
+        },
+        "recorded": {
+          "$ref": "#/components/schemas/TenantApi.PrebuildLayerUpload"
+        }
+      }
+    },
+    "TenantApi.UploadRecorded": {
+      "type": "object",
+      "required": [
+        "recorded"
+      ],
+      "properties": {
+        "recorded": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.UploadRecordedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.UploadNotUploading"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.UploadOtherLayer"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.UploadRecordedOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "prebuild"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Recorded"
+          ]
+        },
+        "prebuild": {
+          "$ref": "#/components/schemas/Prebuild"
+        }
+      }
+    },
+    "TenantApi.UploadTargetInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "prebuildId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.UploadTargetRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "uploadTarget"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.UploadTargetInput"
+        }
+      }
+    },
+    "TenantApi.UploadTargetResult": {
+      "type": "object",
+      "required": [
+        "target"
+      ],
+      "properties": {
+        "target": {
+          "anyOf": [
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/TenantApi.GitHubActionsUploadTarget"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/TenantApi.CircleCIUploadTarget"
+                }
+              ],
+              "nullable": true
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.WorkflowRunReportedInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "event",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "event": {
+          "$ref": "#/components/schemas/TenantApi.RunEvent"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.WorkflowRunReportedRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "workflowRunReported"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.WorkflowRunReportedInput"
+        }
+      }
+    },
+    "TenantApi.WorkflowRunReportedResult": {
+      "type": "object"
     },
     "TenantApi.WriteClaudeSetupTokenInput": {
       "type": "object",
