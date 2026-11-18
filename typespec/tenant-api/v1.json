@@ -682,6 +682,31 @@
       },
       "description": "Where a CircleCI authorization is: the consent URL while it waits for the redirect, the organizations while it waits for a choice, the organization once Completed, the reason once Failed."
     },
+    "CircleCIConnectionStart": {
+      "type": "object",
+      "required": [
+        "accountLabel",
+        "organizationId",
+        "apiToken"
+      ],
+      "properties": {
+        "accountLabel": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "organizationId": {
+          "$ref": "#/components/schemas/CircleCIUuid"
+        },
+        "apiToken": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SecretText"
+            }
+          ],
+          "description": "A personal API token of a member of the organization; CircleCI's API v2 refuses project tokens."
+        }
+      },
+      "description": "Connects CircleCI with a pasted token, the fallback to an authorization. The control plane checks the token with GET /api/v2/me and seals it; no operation answers it."
+    },
     "CircleCIOrganization": {
       "type": "object",
       "required": [
@@ -1648,6 +1673,65 @@
       },
       "description": "A variable a turn gets with a fixed value beside a credential, such as the base URL of the provider serving the harness's model API."
     },
+    "GitHubActionsConnection": {
+      "type": "object",
+      "required": [
+        "gitHubActionsConnectionId",
+        "tenantId",
+        "accountLabel",
+        "callerWorkflow",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "gitHubActionsConnectionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "accountLabel": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/DisplayName"
+            }
+          ],
+          "description": "The account GitHub Actions bills, as the tenant names it."
+        },
+        "callerWorkflow": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/WorkflowPath"
+            }
+          ],
+          "description": "The caller workflow each repository holds; the start commits or dispatches it and the job token must name it."
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "The tenant's GitHub Actions build provider. A prebuild dispatches the caller workflow in the\nrepository, which calls Tumpel's reusable prebuild workflow; the job's upload is accepted only\nfrom a run of that workflow."
+    },
+    "GitHubActionsConnectionStart": {
+      "type": "object",
+      "required": [
+        "accountLabel",
+        "callerWorkflow"
+      ],
+      "properties": {
+        "accountLabel": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "callerWorkflow": {
+          "$ref": "#/components/schemas/WorkflowPath"
+        }
+      }
+    },
     "GitHubIssueNumber": {
       "type": "integer",
       "format": "int64",
@@ -1805,6 +1889,27 @@
         "Google",
         "OpenRouter"
       ]
+    },
+    "NamespaceConnectionStart": {
+      "type": "object",
+      "required": [
+        "accountLabel",
+        "workspaceId"
+      ],
+      "properties": {
+        "accountLabel": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "workspaceId": {
+          "$ref": "#/components/schemas/NamespaceWorkspaceId"
+        }
+      }
+    },
+    "NamespaceWorkspaceId": {
+      "type": "string",
+      "maxLength": 100,
+      "pattern": "^tenant_[A-Za-z0-9]+$",
+      "description": "A Namespace workspace id, such as tenant_123456789ab."
     },
     "OAuthConnector": {
       "type": "object",
@@ -3933,6 +4038,59 @@
       },
       "description": "The latest supervisor update phase the host reported."
     },
+    "TenantApi.AddCircleCIProjectInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "binding",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "binding": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIBinding"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.AddCircleCIProjectRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "addCircleCIProject"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.AddCircleCIProjectInput"
+        }
+      }
+    },
+    "TenantApi.AddCircleCIProjectResult": {
+      "type": "object",
+      "required": [
+        "project"
+      ],
+      "properties": {
+        "project": {
+          "$ref": "#/components/schemas/CircleCIProject"
+        }
+      }
+    },
     "TenantApi.ApplyConfigInput": {
       "type": "object",
       "required": [
@@ -4540,6 +4698,154 @@
         }
       }
     },
+    "TenantApi.CircleCIBinding": {
+      "type": "object",
+      "required": [
+        "repository",
+        "projectSlug",
+        "projectId",
+        "pipelineDefinitionId",
+        "webhookId",
+        "signingSecret"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string"
+        },
+        "projectSlug": {
+          "type": "string"
+        },
+        "projectId": {
+          "type": "string"
+        },
+        "pipelineDefinitionId": {
+          "type": "string"
+        },
+        "webhookId": {
+          "type": "string"
+        },
+        "signingSecret": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.CircleCIConnectionInput": {
+      "type": "object"
+    },
+    "TenantApi.CircleCIConnectionRecord": {
+      "type": "object",
+      "required": [
+        "circleCIConnectionId",
+        "accountLabel",
+        "organizationId",
+        "credential",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "circleCIConnectionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "accountLabel": {
+          "type": "string"
+        },
+        "organizationId": {
+          "type": "string"
+        },
+        "credential": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCICredentialAuthorized"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCICredentialPasted"
+            }
+          ]
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "The tenant's CircleCI connection as the tenant Durable Object stores it, without its secret."
+    },
+    "TenantApi.CircleCIConnectionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "circleCIConnection"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIConnectionInput"
+        }
+      }
+    },
+    "TenantApi.CircleCIConnectionResult": {
+      "type": "object",
+      "required": [
+        "connection"
+      ],
+      "properties": {
+        "connection": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIConnectionRecord"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.CircleCICredentialAuthorized": {
+      "type": "object",
+      "required": [
+        "kind",
+        "expiresAtMs"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Authorized"
+          ]
+        },
+        "expiresAtMs": {
+          "type": "integer",
+          "format": "int64",
+          "description": "When the OAuth token expires, in epoch milliseconds."
+        }
+      }
+    },
+    "TenantApi.CircleCICredentialPasted": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Pasted"
+          ]
+        }
+      }
+    },
     "TenantApi.CircleCIDispatched": {
       "type": "object",
       "required": [
@@ -4627,6 +4933,114 @@
         }
       }
     },
+    "TenantApi.CircleCIProjectBoundToInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "projectId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "projectId": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.CircleCIProjectBoundToRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "circleCIProjectBoundTo"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIProjectBoundToInput"
+        }
+      }
+    },
+    "TenantApi.CircleCIProjectBoundToResult": {
+      "type": "object",
+      "required": [
+        "project"
+      ],
+      "properties": {
+        "project": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CircleCIProject"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.CircleCIProjectOfInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "repository"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.CircleCIProjectOfRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "circleCIProjectOf"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIProjectOfInput"
+        }
+      }
+    },
+    "TenantApi.CircleCIProjectOfResult": {
+      "type": "object",
+      "required": [
+        "project"
+      ],
+      "properties": {
+        "project": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CircleCIProject"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
     "TenantApi.CircleCIRegistrationRefused": {
       "type": "object",
       "required": [
@@ -4660,6 +5074,43 @@
         },
         "prebuild": {
           "$ref": "#/components/schemas/Prebuild"
+        }
+      }
+    },
+    "TenantApi.CircleCITokenInput": {
+      "type": "object"
+    },
+    "TenantApi.CircleCITokenRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "circleCIToken"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CircleCITokenInput"
+        }
+      }
+    },
+    "TenantApi.CircleCITokenResult": {
+      "type": "object",
+      "required": [
+        "token"
+      ],
+      "properties": {
+        "token": {
+          "type": "string",
+          "nullable": true
         }
       }
     },
@@ -4719,6 +5170,105 @@
         },
         "pipeline": {
           "$ref": "#/components/schemas/TenantApi.RecordedPipeline"
+        }
+      }
+    },
+    "TenantApi.CircleCIWebhook": {
+      "type": "object",
+      "required": [
+        "circleCIProjectId",
+        "webhookId"
+      ],
+      "properties": {
+        "circleCIProjectId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "webhookId": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.CircleCIWebhookSecretInput": {
+      "type": "object",
+      "required": [
+        "projectId"
+      ],
+      "properties": {
+        "projectId": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.CircleCIWebhookSecretRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "circleCIWebhookSecret"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIWebhookSecretInput"
+        }
+      }
+    },
+    "TenantApi.CircleCIWebhookSecretResult": {
+      "type": "object",
+      "required": [
+        "secret"
+      ],
+      "properties": {
+        "secret": {
+          "type": "string",
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.CircleCIWebhooksInput": {
+      "type": "object"
+    },
+    "TenantApi.CircleCIWebhooksRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "circleCIWebhooks"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIWebhooksInput"
+        }
+      }
+    },
+    "TenantApi.CircleCIWebhooksResult": {
+      "type": "object",
+      "required": [
+        "webhooks"
+      ],
+      "properties": {
+        "webhooks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.CircleCIWebhook"
+          }
         }
       }
     },
@@ -5331,6 +5881,215 @@
         }
       },
       "description": "One write of a config apply, which the tenant Durable Object commits with the others in one transaction."
+    },
+    "TenantApi.ConnectCircleCIInput": {
+      "type": "object",
+      "required": [
+        "start",
+        "now"
+      ],
+      "properties": {
+        "start": {
+          "$ref": "#/components/schemas/CircleCIConnectionStart"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ConnectCircleCIRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "connectCircleCI"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ConnectCircleCIInput"
+        }
+      }
+    },
+    "TenantApi.ConnectCircleCIResult": {
+      "type": "object",
+      "required": [
+        "connection"
+      ],
+      "properties": {
+        "connection": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIConnectionRecord"
+        }
+      }
+    },
+    "TenantApi.ConnectedAccounts": {
+      "type": "object",
+      "required": [
+        "GitHubActions",
+        "CircleCI",
+        "Namespace"
+      ],
+      "properties": {
+        "GitHubActions": {
+          "type": "string",
+          "nullable": true
+        },
+        "CircleCI": {
+          "type": "string",
+          "nullable": true
+        },
+        "Namespace": {
+          "type": "string",
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.ConnectedAccountsInput": {
+      "type": "object"
+    },
+    "TenantApi.ConnectedAccountsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "connectedAccounts"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ConnectedAccountsInput"
+        }
+      }
+    },
+    "TenantApi.ConnectedAccountsResult": {
+      "type": "object",
+      "required": [
+        "accounts"
+      ],
+      "properties": {
+        "accounts": {
+          "$ref": "#/components/schemas/TenantApi.ConnectedAccounts"
+        }
+      }
+    },
+    "TenantApi.ConnectGitHubActionsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "start",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "start": {
+          "$ref": "#/components/schemas/GitHubActionsConnectionStart"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ConnectGitHubActionsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "connectGitHubActions"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ConnectGitHubActionsInput"
+        }
+      }
+    },
+    "TenantApi.ConnectGitHubActionsResult": {
+      "type": "object",
+      "required": [
+        "connection"
+      ],
+      "properties": {
+        "connection": {
+          "$ref": "#/components/schemas/GitHubActionsConnection"
+        }
+      }
+    },
+    "TenantApi.ConnectNamespaceInput": {
+      "type": "object",
+      "required": [
+        "start",
+        "now"
+      ],
+      "properties": {
+        "start": {
+          "$ref": "#/components/schemas/NamespaceConnectionStart"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ConnectNamespaceRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "connectNamespace"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ConnectNamespaceInput"
+        }
+      }
+    },
+    "TenantApi.ConnectNamespaceResult": {
+      "type": "object",
+      "required": [
+        "connection"
+      ],
+      "properties": {
+        "connection": {
+          "$ref": "#/components/schemas/TenantApi.NamespaceConnectionRecord"
+        }
+      }
     },
     "TenantApi.ConnectorAuthorizeStartedOk": {
       "type": "object",
@@ -6022,6 +6781,94 @@
             }
           ],
           "nullable": true
+        }
+      }
+    },
+    "TenantApi.DeleteBuildConnectionInput": {
+      "type": "object",
+      "required": [
+        "provider"
+      ],
+      "properties": {
+        "provider": {
+          "$ref": "#/components/schemas/BuildProvider"
+        }
+      }
+    },
+    "TenantApi.DeleteBuildConnectionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "deleteBuildConnection"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.DeleteBuildConnectionInput"
+        }
+      }
+    },
+    "TenantApi.DeleteBuildConnectionResult": {
+      "type": "object",
+      "required": [
+        "deleted"
+      ],
+      "properties": {
+        "deleted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "TenantApi.DeleteCircleCIProjectInput": {
+      "type": "object",
+      "required": [
+        "circleCIProjectId"
+      ],
+      "properties": {
+        "circleCIProjectId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.DeleteCircleCIProjectRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "deleteCircleCIProject"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.DeleteCircleCIProjectInput"
+        }
+      }
+    },
+    "TenantApi.DeleteCircleCIProjectResult": {
+      "type": "object",
+      "required": [
+        "deleted"
+      ],
+      "properties": {
+        "deleted": {
+          "type": "boolean"
         }
       }
     },
@@ -6942,6 +7789,56 @@
         }
       }
     },
+    "TenantApi.GitHubActionsConnectionInput": {
+      "type": "object",
+      "required": [
+        "tenantId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.GitHubActionsConnectionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "gitHubActionsConnection"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GitHubActionsConnectionInput"
+        }
+      }
+    },
+    "TenantApi.GitHubActionsConnectionResult": {
+      "type": "object",
+      "required": [
+        "connection"
+      ],
+      "properties": {
+        "connection": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/GitHubActionsConnection"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
     "TenantApi.GitHubActionsStart": {
       "type": "object",
       "required": [
@@ -7384,6 +8281,53 @@
         "runId": {
           "type": "integer",
           "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ListCircleCIProjectsInput": {
+      "type": "object",
+      "required": [
+        "tenantId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListCircleCIProjectsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listCircleCIProjects"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListCircleCIProjectsInput"
+        }
+      }
+    },
+    "TenantApi.ListCircleCIProjectsResult": {
+      "type": "object",
+      "required": [
+        "projects"
+      ],
+      "properties": {
+        "projects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/CircleCIProject"
+          }
         }
       }
     },
@@ -7986,6 +8930,78 @@
           "items": {
             "$ref": "#/components/schemas/Turn"
           },
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.NamespaceConnectionInput": {
+      "type": "object"
+    },
+    "TenantApi.NamespaceConnectionRecord": {
+      "type": "object",
+      "required": [
+        "namespaceConnectionId",
+        "accountLabel",
+        "workspaceId",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "namespaceConnectionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "accountLabel": {
+          "type": "string"
+        },
+        "workspaceId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "The tenant's Namespace connection as the tenant Durable Object stores it."
+    },
+    "TenantApi.NamespaceConnectionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "namespaceConnection"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.NamespaceConnectionInput"
+        }
+      }
+    },
+    "TenantApi.NamespaceConnectionResult": {
+      "type": "object",
+      "required": [
+        "connection"
+      ],
+      "properties": {
+        "connection": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.NamespaceConnectionRecord"
+            }
+          ],
           "nullable": true
         }
       }
@@ -11736,6 +12752,54 @@
         },
         {
           "$ref": "#/components/schemas/TenantApi.TranscriptCursorRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ConnectedAccountsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DeleteBuildConnectionRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CircleCIConnectionRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CircleCITokenRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ConnectCircleCIRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListCircleCIProjectsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CircleCIProjectBoundToRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CircleCIProjectOfRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.AddCircleCIProjectRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CircleCIWebhooksRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CircleCIWebhookSecretRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DeleteCircleCIProjectRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GitHubActionsConnectionRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ConnectGitHubActionsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.NamespaceConnectionRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ConnectNamespaceRequest"
         }
       ],
       "discriminator": {
@@ -11821,7 +12885,23 @@
           "listSnapshots": "#/components/schemas/TenantApi.ListSnapshotsRequest",
           "listCredentialHandovers": "#/components/schemas/TenantApi.ListCredentialHandoversRequest",
           "getSnapshot": "#/components/schemas/TenantApi.GetSnapshotRequest",
-          "transcriptCursor": "#/components/schemas/TenantApi.TranscriptCursorRequest"
+          "transcriptCursor": "#/components/schemas/TenantApi.TranscriptCursorRequest",
+          "connectedAccounts": "#/components/schemas/TenantApi.ConnectedAccountsRequest",
+          "deleteBuildConnection": "#/components/schemas/TenantApi.DeleteBuildConnectionRequest",
+          "circleCIConnection": "#/components/schemas/TenantApi.CircleCIConnectionRequest",
+          "circleCIToken": "#/components/schemas/TenantApi.CircleCITokenRequest",
+          "connectCircleCI": "#/components/schemas/TenantApi.ConnectCircleCIRequest",
+          "listCircleCIProjects": "#/components/schemas/TenantApi.ListCircleCIProjectsRequest",
+          "circleCIProjectBoundTo": "#/components/schemas/TenantApi.CircleCIProjectBoundToRequest",
+          "circleCIProjectOf": "#/components/schemas/TenantApi.CircleCIProjectOfRequest",
+          "addCircleCIProject": "#/components/schemas/TenantApi.AddCircleCIProjectRequest",
+          "circleCIWebhooks": "#/components/schemas/TenantApi.CircleCIWebhooksRequest",
+          "circleCIWebhookSecret": "#/components/schemas/TenantApi.CircleCIWebhookSecretRequest",
+          "deleteCircleCIProject": "#/components/schemas/TenantApi.DeleteCircleCIProjectRequest",
+          "gitHubActionsConnection": "#/components/schemas/TenantApi.GitHubActionsConnectionRequest",
+          "connectGitHubActions": "#/components/schemas/TenantApi.ConnectGitHubActionsRequest",
+          "namespaceConnection": "#/components/schemas/TenantApi.NamespaceConnectionRequest",
+          "connectNamespace": "#/components/schemas/TenantApi.ConnectNamespaceRequest"
         }
       },
       "description": "One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation."
@@ -13331,6 +14411,12 @@
         "Completed",
         "Failed"
       ]
+    },
+    "WorkflowPath": {
+      "type": "string",
+      "maxLength": 200,
+      "pattern": "^\\.github/workflows/[A-Za-z0-9._-]+\\.ya?ml$",
+      "description": "A workflow file of the tenant's repositories, such as .github/workflows/tumpel-prebuild.yml."
     }
   }
 }

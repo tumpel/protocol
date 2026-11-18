@@ -804,6 +804,77 @@ model TranscriptCursorInput {
   maxBytes?: int64;
 }
 
+model ConnectedAccountsInput {}
+
+model DeleteBuildConnectionInput {
+  provider: BuildProvider;
+}
+
+model CircleCIConnectionInput {}
+
+model CircleCITokenInput {}
+
+model ConnectCircleCIInput {
+  start: CircleCIConnectionStart;
+  now: int64;
+}
+
+model ListCircleCIProjectsInput {
+  tenantId: EntityId;
+}
+
+model CircleCIProjectBoundToInput {
+  tenantId: EntityId;
+  projectId: string;
+}
+
+model CircleCIProjectOfInput {
+  tenantId: EntityId;
+  repository: string;
+}
+
+model CircleCIBinding {
+  repository: string;
+  projectSlug: string;
+  projectId: string;
+  pipelineDefinitionId: string;
+  webhookId: string;
+  signingSecret: string;
+}
+
+model AddCircleCIProjectInput {
+  tenantId: EntityId;
+  binding: CircleCIBinding;
+  now: int64;
+}
+
+model CircleCIWebhooksInput {}
+
+model CircleCIWebhookSecretInput {
+  projectId: string;
+}
+
+model DeleteCircleCIProjectInput {
+  circleCIProjectId: EntityId;
+}
+
+model GitHubActionsConnectionInput {
+  tenantId: EntityId;
+}
+
+model ConnectGitHubActionsInput {
+  tenantId: EntityId;
+  start: GitHubActionsConnectionStart;
+  now: int64;
+}
+
+model NamespaceConnectionInput {}
+
+model ConnectNamespaceInput {
+  start: NamespaceConnectionStart;
+  now: int64;
+}
+
 model ListPersonasRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "listPersonas";
@@ -1290,6 +1361,102 @@ model TranscriptCursorRequest {
   input: TranscriptCursorInput;
 }
 
+model ConnectedAccountsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "connectedAccounts";
+  input: ConnectedAccountsInput;
+}
+
+model DeleteBuildConnectionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "deleteBuildConnection";
+  input: DeleteBuildConnectionInput;
+}
+
+model CircleCIConnectionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "circleCIConnection";
+  input: CircleCIConnectionInput;
+}
+
+model CircleCITokenRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "circleCIToken";
+  input: CircleCITokenInput;
+}
+
+model ConnectCircleCIRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "connectCircleCI";
+  input: ConnectCircleCIInput;
+}
+
+model ListCircleCIProjectsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listCircleCIProjects";
+  input: ListCircleCIProjectsInput;
+}
+
+model CircleCIProjectBoundToRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "circleCIProjectBoundTo";
+  input: CircleCIProjectBoundToInput;
+}
+
+model CircleCIProjectOfRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "circleCIProjectOf";
+  input: CircleCIProjectOfInput;
+}
+
+model AddCircleCIProjectRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "addCircleCIProject";
+  input: AddCircleCIProjectInput;
+}
+
+model CircleCIWebhooksRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "circleCIWebhooks";
+  input: CircleCIWebhooksInput;
+}
+
+model CircleCIWebhookSecretRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "circleCIWebhookSecret";
+  input: CircleCIWebhookSecretInput;
+}
+
+model DeleteCircleCIProjectRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "deleteCircleCIProject";
+  input: DeleteCircleCIProjectInput;
+}
+
+model GitHubActionsConnectionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "gitHubActionsConnection";
+  input: GitHubActionsConnectionInput;
+}
+
+model ConnectGitHubActionsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "connectGitHubActions";
+  input: ConnectGitHubActionsInput;
+}
+
+model NamespaceConnectionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "namespaceConnection";
+  input: NamespaceConnectionInput;
+}
+
+model ConnectNamespaceRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "connectNamespace";
+  input: ConnectNamespaceInput;
+}
+
 @doc("One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "operation" })
 union TenantRequest {
@@ -1374,6 +1541,22 @@ union TenantRequest {
   listCredentialHandovers: ListCredentialHandoversRequest,
   getSnapshot: GetSnapshotRequest,
   transcriptCursor: TranscriptCursorRequest,
+  connectedAccounts: ConnectedAccountsRequest,
+  deleteBuildConnection: DeleteBuildConnectionRequest,
+  circleCIConnection: CircleCIConnectionRequest,
+  circleCIToken: CircleCITokenRequest,
+  connectCircleCI: ConnectCircleCIRequest,
+  listCircleCIProjects: ListCircleCIProjectsRequest,
+  circleCIProjectBoundTo: CircleCIProjectBoundToRequest,
+  circleCIProjectOf: CircleCIProjectOfRequest,
+  addCircleCIProject: AddCircleCIProjectRequest,
+  circleCIWebhooks: CircleCIWebhooksRequest,
+  circleCIWebhookSecret: CircleCIWebhookSecretRequest,
+  deleteCircleCIProject: DeleteCircleCIProjectRequest,
+  gitHubActionsConnection: GitHubActionsConnectionRequest,
+  connectGitHubActions: ConnectGitHubActionsRequest,
+  namespaceConnection: NamespaceConnectionRequest,
+  connectNamespace: ConnectNamespaceRequest,
 }
 
 @doc("The request names a version outside the instance's window, or an older version an adapter cannot translate. The caller answers a retryable failure.")
@@ -2394,5 +2577,109 @@ model TranscriptLines {
 
 model TranscriptCursorResult {
   cursor: TranscriptChunk | TranscriptLines | null;
+}
+
+model ConnectedAccounts {
+  GitHubActions: string | null;
+  CircleCI: string | null;
+  Namespace: string | null;
+}
+
+model ConnectedAccountsResult {
+  accounts: ConnectedAccounts;
+}
+
+model DeleteBuildConnectionResult {
+  deleted: boolean;
+}
+
+model CircleCICredentialAuthorized {
+  kind: "Authorized";
+  @doc("When the OAuth token expires, in epoch milliseconds.")
+  expiresAtMs: int64;
+}
+
+model CircleCICredentialPasted {
+  kind: "Pasted";
+}
+
+@doc("The tenant's CircleCI connection as the tenant Durable Object stores it, without its secret.")
+model CircleCIConnectionRecord {
+  circleCIConnectionId: EntityId;
+  accountLabel: string;
+  organizationId: string;
+  credential: CircleCICredentialAuthorized | CircleCICredentialPasted;
+  createdAt: int64;
+  updatedAt: int64;
+}
+
+model CircleCIConnectionResult {
+  connection: CircleCIConnectionRecord | null;
+}
+
+model CircleCITokenResult {
+  token: string | null;
+}
+
+model ConnectCircleCIResult {
+  connection: CircleCIConnectionRecord;
+}
+
+model ListCircleCIProjectsResult {
+  projects: CircleCIProject[];
+}
+
+model CircleCIProjectBoundToResult {
+  project: CircleCIProject | null;
+}
+
+model CircleCIProjectOfResult {
+  project: CircleCIProject | null;
+}
+
+model AddCircleCIProjectResult {
+  project: CircleCIProject;
+}
+
+model CircleCIWebhook {
+  circleCIProjectId: EntityId;
+  webhookId: string;
+}
+
+model CircleCIWebhooksResult {
+  webhooks: CircleCIWebhook[];
+}
+
+model CircleCIWebhookSecretResult {
+  secret: string | null;
+}
+
+model DeleteCircleCIProjectResult {
+  deleted: boolean;
+}
+
+model GitHubActionsConnectionResult {
+  connection: GitHubActionsConnection | null;
+}
+
+model ConnectGitHubActionsResult {
+  connection: GitHubActionsConnection;
+}
+
+@doc("The tenant's Namespace connection as the tenant Durable Object stores it.")
+model NamespaceConnectionRecord {
+  namespaceConnectionId: EntityId;
+  accountLabel: string;
+  workspaceId: string;
+  createdAt: int64;
+  updatedAt: int64;
+}
+
+model NamespaceConnectionResult {
+  connection: NamespaceConnectionRecord | null;
+}
+
+model ConnectNamespaceResult {
+  connection: NamespaceConnectionRecord;
 }
 }
