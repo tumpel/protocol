@@ -14,6 +14,7 @@ import "./lib/prebuild-template.tsp";
 import "./lib/build-provider.tsp";
 import "./lib/claude-setup.tsp";
 import "./lib/openrouter.tsp";
+import "./lib/connector.tsp";
 
 using TypeSpec.Http;
 
