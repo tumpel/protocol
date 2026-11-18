@@ -570,7 +570,7 @@
           "description": "A CredentialFile credential: the guest writes `value` to `path` under the harness home, mode 0600, before the harness starts, and deletes it at the end of the turn."
         }
       },
-      "description": "The dispatch variables for one offer: every member of the persona's secret set, the credential for\nthe harness's provider under the variable its kind maps to and every other member under its own\nname. The control plane decrypts them from the secret set each time it sends or resends a\nTurnOffer, keeps no plaintext copy and records the variable names in an append-only handover log;\n`credentialHandoverId` names this handover in the supervisor's errors. `expiresAt`, the end of\nthe turn's credential span (the longer of dispatchGrantTtlSeconds and turnOfferTtlSeconds plus\nturnImageFetchBudgetSeconds, from when the offer was sent), is when the supervisor stops handing\nthe variables to a box and fails the turn DispatchCredentialExpired instead."
+      "description": "The dispatch variables for one offer: every member of the persona's secret set, the credential for\nthe harness's provider under the variable its kind maps to and every other member under its own\nname. The control plane decrypts them from the secret set each time it sends or resends a\nTurnOffer, keeps no plaintext copy and records the variable names in an append-only handover log;\n`credentialHandoverId` names this handover in the supervisor's errors. `expiresAt`, the end of\nthe turn's credential span (the longer of dispatchGrantTtlSeconds and turnClaimBudgetSeconds plus\nturnImageFetchBudgetSeconds, from when the offer was sent), is when the supervisor stops handing\nthe variables to a box and fails the turn DispatchCredentialExpired instead."
     },
     "Channel.DispatchVariable": {
       "type": "object",
@@ -665,7 +665,7 @@
           "minimum": 1
         }
       },
-      "description": "The full guest image of the turn, from the current ReleaseManifest, for the session's harness version\nand the architecture the host enrolled with, offered while the release lacks a base image or a\nharness layer for them. `imageUrl`, `kernelUrl` and `manifestUrl` are presigned\nGETs of the ext4 image, the kernel and the GuestImageManifest document stored under\n`imageDigest`, `kernelDigest` and `manifestDigest` in the release bucket, valid until\n`downloadExpiresAt`, turnOfferTtlSeconds plus `fetchSeconds` after the send of the offer. A supervisor whose\nimage cache lacks `imageDigest` sends TurnImageFetching and downloads the three within `fetchSeconds` of\nsending it, counting the wait for another image the host is fetching; it fetches one image at a time,\nchecks each against its digest and only then moves them into the cache, replacing the cached image\nof the same harness version; it skips the kernel when the cache holds `kernelDigest`. A download\nthat fails, misses its digest or names another image in its manifest fails the turn ImageFetchFailed,\none that outlasts `fetchSeconds` fails it ImageFetchTimedOut."
+      "description": "The full guest image of the turn, from the current ReleaseManifest, for the session's harness version\nand the architecture the host enrolled with, offered while the release lacks a base image or a\nharness layer for them. `imageUrl`, `kernelUrl` and `manifestUrl` are presigned\nGETs of the ext4 image, the kernel and the GuestImageManifest document stored under\n`imageDigest`, `kernelDigest` and `manifestDigest` in the release bucket, valid until\n`downloadExpiresAt`, the end of the turn's claim budget plus `fetchSeconds`. A supervisor whose\nimage cache lacks `imageDigest` sends TurnImageFetching and downloads the three within `fetchSeconds` of\nsending it, counting the wait for another image the host is fetching; it fetches one image at a time,\nchecks each against its digest and only then moves them into the cache, replacing the cached image\nof the same harness version; it skips the kernel when the cache holds `kernelDigest`. A download\nthat fails, misses its digest or names another image in its manifest fails the turn ImageFetchFailed,\none that outlasts `fetchSeconds` fails it ImageFetchTimedOut."
     },
     "Channel.HarnessLayerDownload": {
       "type": "object",
@@ -947,7 +947,7 @@
           "minimum": 1
         }
       },
-      "description": "The layered boot of the turn, offered when the current release carries a base image for the\nhost's architecture and a harness layer for the session's harness version on it. The box boots\nfrom the base, the guest drive of the host's supervisor and the layer. The URLs are valid until\n`downloadExpiresAt`, turnOfferTtlSeconds plus `fetchSeconds` after the send of the offer. A supervisor whose\ncache lacks the base or the layer sends TurnImageFetching naming the first part it lacks, then\nfetches base, kernel and layer within one `fetchSeconds` of sending it, counting the wait for\nanother fetch on the host, and checks each against its digest before it moves it into the cache. A\ndownload that fails, misses its digest or names another part in its manifest fails the turn\nImageFetchFailed, one that outlasts `fetchSeconds` fails it ImageFetchTimedOut. The host keeps the\nbase and the layer in its cache while a box runs on them."
+      "description": "The layered boot of the turn, offered when the current release carries a base image for the\nhost's architecture and a harness layer for the session's harness version on it. The box boots\nfrom the base, the guest drive of the host's supervisor and the layer. The URLs are valid until\n`downloadExpiresAt`, the end of the turn's claim budget plus `fetchSeconds`. A supervisor whose\ncache lacks the base or the layer sends TurnImageFetching naming the first part it lacks, then\nfetches base, kernel and layer within one `fetchSeconds` of sending it, counting the wait for\nanother fetch on the host, and checks each against its digest before it moves it into the cache. A\ndownload that fails, misses its digest or names another part in its manifest fails the turn\nImageFetchFailed, one that outlasts `fetchSeconds` fails it ImageFetchTimedOut. The host keeps the\nbase and the layer in its cache while a box runs on them."
     },
     "Channel.Pack": {
       "type": "object",
@@ -1591,7 +1591,7 @@
           "$ref": "#/components/schemas/EntityId"
         }
       },
-      "description": "The host accepts the offered turn. It sends this at once, before it fetches the image, restores the\nsnapshot or boots the box; those keep their own budgets and failures. The control plane answers TurnClaimed\nand the turn reads Running, or answers TurnWithdrawn when the turn already left Offered. The host\nhands the prompt to the harness only once TurnClaimed arrived and the box is ready. A host that\ngives up waiting for the answer hands nothing and fails the turn NotClaimed, and the control plane\noffers the turn again. So a turn is either claimed and its result reaches the control plane, or\nrefused before the harness starts."
+      "description": "The host accepts the offered turn. It sends this at once, before it fetches the image, restores the\nsnapshot or boots the box; those keep their own budgets and failures. The control plane answers TurnClaimed\nand the turn reads Running, or answers TurnWithdrawn when the turn already left Offered. The host\nhands the prompt to the harness only once TurnClaimed arrived and the box is ready; with no answer\nwithin 60 seconds of the claim it hands nothing and fails the turn NotClaimed. So a turn is either\nclaimed and its result reaches the control plane, or refused before the harness starts."
     },
     "Channel.TurnClaimed": {
       "type": "object",
@@ -2198,7 +2198,6 @@
       "type": "string",
       "enum": [
         "NotClaimed",
-        "Undelivered",
         "NoFirstOutput",
         "HostOffline",
         "CredentialRefused",
