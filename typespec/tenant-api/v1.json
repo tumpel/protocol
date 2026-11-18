@@ -1,0 +1,799 @@
+{
+  "tenantApiVersion": 1,
+  "schemas": {
+    "BoxRetention": {
+      "type": "string",
+      "enum": [
+        "Off",
+        "Warm",
+        "Auto"
+      ],
+      "description": "What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode."
+    },
+    "DisplayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "EntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "Harness": {
+      "type": "string",
+      "enum": [
+        "ClaudeCode",
+        "Codex",
+        "OpenCode",
+        "PiDev",
+        "MistralAgent"
+      ]
+    },
+    "PersonaFilePath": {
+      "type": "string",
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$",
+      "description": "A path relative to the harness home in the box, such as .claude/settings.json. The harness catalog lists the paths each harness accepts."
+    },
+    "PersonaFileSize": {
+      "type": "integer",
+      "format": "int64",
+      "minimum": 0,
+      "maximum": 262144,
+      "description": "The size of a persona file in bytes, at most PersonaFileLimit.PersonaBytes."
+    },
+    "Sha256Digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "A lower-case hex SHA-256 digest: the name of a file in the image cache, or of a persona file blob."
+    },
+    "TenantApi.CreatePersonaInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "persona",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "persona": {
+          "$ref": "#/components/schemas/TenantApi.PersonaWrite"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.CreatePersonaRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "createPersona"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CreatePersonaInput"
+        }
+      }
+    },
+    "TenantApi.CreatePersonaResult": {
+      "type": "object",
+      "required": [
+        "written"
+      ],
+      "properties": {
+        "written": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.PersonaWritten"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.WriteConflict"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.DeletePersonaInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "personaId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.DeletePersonaRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "deletePersona"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.DeletePersonaInput"
+        }
+      }
+    },
+    "TenantApi.DeletePersonaResult": {
+      "type": "object",
+      "required": [
+        "deleted"
+      ],
+      "properties": {
+        "deleted": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.PersonaDeleted"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PersonaNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.PersonaInUse"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.GetPersonaInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "personaId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.GetPersonaRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getPersona"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetPersonaInput"
+        }
+      }
+    },
+    "TenantApi.GetPersonaResult": {
+      "type": "object",
+      "required": [
+        "persona"
+      ],
+      "properties": {
+        "persona": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.StoredPersona"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.ListPersonasInput": {
+      "type": "object",
+      "required": [
+        "tenantId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListPersonasRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listPersonas"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListPersonasInput"
+        }
+      }
+    },
+    "TenantApi.ListPersonasResult": {
+      "type": "object",
+      "required": [
+        "personas"
+      ],
+      "properties": {
+        "personas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.StoredPersona"
+          }
+        }
+      }
+    },
+    "TenantApi.PersonaChange": {
+      "type": "object",
+      "required": [
+        "name",
+        "secretSetId",
+        "connectorIds",
+        "boxMemoryMib",
+        "boxDiskMib",
+        "boxRetention",
+        "files"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "connectorIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        },
+        "boxMemoryMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 512,
+          "maximum": 65536
+        },
+        "boxDiskMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 32768,
+          "maximum": 262144
+        },
+        "boxRetention": {
+          "$ref": "#/components/schemas/BoxRetention"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.StoredFile"
+          }
+        }
+      },
+      "description": "What a persona edit writes. The harness is fixed at create."
+    },
+    "TenantApi.PersonaDeleted": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Deleted"
+          ]
+        }
+      }
+    },
+    "TenantApi.PersonaInUse": {
+      "type": "object",
+      "required": [
+        "kind",
+        "sessions"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "InUse"
+          ]
+        },
+        "sessions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        }
+      }
+    },
+    "TenantApi.PersonaNotFound": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotFound"
+          ]
+        }
+      }
+    },
+    "TenantApi.PersonaUpdated": {
+      "type": "object",
+      "required": [
+        "ok",
+        "value"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        },
+        "value": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.StoredPersona"
+            }
+          ],
+          "nullable": true,
+          "description": "Null when no persona has the id."
+        }
+      }
+    },
+    "TenantApi.PersonaWrite": {
+      "type": "object",
+      "required": [
+        "name",
+        "secretSetId",
+        "connectorIds",
+        "boxMemoryMib",
+        "boxDiskMib",
+        "boxRetention",
+        "files",
+        "harness"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "connectorIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        },
+        "boxMemoryMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 512,
+          "maximum": 65536
+        },
+        "boxDiskMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 32768,
+          "maximum": 262144
+        },
+        "boxRetention": {
+          "$ref": "#/components/schemas/BoxRetention"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.StoredFile"
+          }
+        },
+        "harness": {
+          "$ref": "#/components/schemas/Harness"
+        }
+      },
+      "description": "What a persona create writes."
+    },
+    "TenantApi.PersonaWritten": {
+      "type": "object",
+      "required": [
+        "ok",
+        "value"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        },
+        "value": {
+          "$ref": "#/components/schemas/TenantApi.StoredPersona"
+        }
+      }
+    },
+    "TenantApi.StoredFile": {
+      "type": "object",
+      "required": [
+        "path",
+        "digest",
+        "sizeBytes"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/components/schemas/PersonaFilePath"
+        },
+        "digest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "sizeBytes": {
+          "$ref": "#/components/schemas/PersonaFileSize"
+        }
+      },
+      "description": "A persona file as the tenant Durable Object stores it: the bytes live in the store under `digest`."
+    },
+    "TenantApi.StoredFileRead": {
+      "type": "object",
+      "required": [
+        "path",
+        "digest",
+        "sizeBytes",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/components/schemas/PersonaFilePath"
+        },
+        "digest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "sizeBytes": {
+          "$ref": "#/components/schemas/PersonaFileSize"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "A stored persona file with its timestamps, as a persona read carries it."
+    },
+    "TenantApi.StoredPersona": {
+      "type": "object",
+      "required": [
+        "personaId",
+        "tenantId",
+        "name",
+        "harness",
+        "secretSetId",
+        "connectorIds",
+        "boxRetention",
+        "files",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "harness": {
+          "$ref": "#/components/schemas/Harness"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "connectorIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        },
+        "boxMemoryMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 512,
+          "maximum": 65536
+        },
+        "boxDiskMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 32768,
+          "maximum": 262144
+        },
+        "boxRetention": {
+          "$ref": "#/components/schemas/BoxRetention"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.StoredFileRead"
+          }
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "A persona as the tenant Durable Object stores it, its files named by digest."
+    },
+    "TenantApi.TenantApiVersionUnsupported": {
+      "type": "object",
+      "required": [
+        "refusal",
+        "oldestTenantApiVersion",
+        "tenantApiVersion"
+      ],
+      "properties": {
+        "refusal": {
+          "type": "string",
+          "enum": [
+            "TenantApiVersionUnsupported"
+          ]
+        },
+        "oldestTenantApiVersion": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tenantApiVersion": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "description": "The request names a version outside the instance's window, or an older version an adapter cannot translate. The caller answers a retryable failure."
+    },
+    "TenantApi.TenantOperationUnknown": {
+      "type": "object",
+      "required": [
+        "refusal",
+        "operation"
+      ],
+      "properties": {
+        "refusal": {
+          "type": "string",
+          "enum": [
+            "TenantOperationUnknown"
+          ]
+        },
+        "operation": {
+          "type": "string"
+        }
+      },
+      "description": "The instance does not know the operation: it runs older code. The caller answers a retryable failure."
+    },
+    "TenantApi.TenantRefusal": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/TenantApi.TenantApiVersionUnsupported"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.TenantOperationUnknown"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.TenantRequestInvalid"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "refusal",
+        "mapping": {
+          "TenantApiVersionUnsupported": "#/components/schemas/TenantApi.TenantApiVersionUnsupported",
+          "TenantOperationUnknown": "#/components/schemas/TenantApi.TenantOperationUnknown",
+          "TenantRequestInvalid": "#/components/schemas/TenantApi.TenantRequestInvalid"
+        }
+      },
+      "description": "Why the tenant Durable Object served no result."
+    },
+    "TenantApi.TenantRequest": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/TenantApi.ListPersonasRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetPersonaRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CreatePersonaRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UpdatePersonaRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DeletePersonaRequest"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "operation",
+        "mapping": {
+          "listPersonas": "#/components/schemas/TenantApi.ListPersonasRequest",
+          "getPersona": "#/components/schemas/TenantApi.GetPersonaRequest",
+          "createPersona": "#/components/schemas/TenantApi.CreatePersonaRequest",
+          "updatePersona": "#/components/schemas/TenantApi.UpdatePersonaRequest",
+          "deletePersona": "#/components/schemas/TenantApi.DeletePersonaRequest"
+        }
+      },
+      "description": "One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation."
+    },
+    "TenantApi.TenantRequestInvalid": {
+      "type": "object",
+      "required": [
+        "refusal",
+        "operation",
+        "issues"
+      ],
+      "properties": {
+        "refusal": {
+          "type": "string",
+          "enum": [
+            "TenantRequestInvalid"
+          ]
+        },
+        "operation": {
+          "type": "string"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "The input fails the operation's schema: a caller bug, which the caller fails as a 500."
+    },
+    "TenantApi.UpdatePersonaInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "personaId",
+        "persona",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "persona": {
+          "$ref": "#/components/schemas/TenantApi.PersonaChange"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.UpdatePersonaRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "updatePersona"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.UpdatePersonaInput"
+        }
+      }
+    },
+    "TenantApi.UpdatePersonaResult": {
+      "type": "object",
+      "required": [
+        "written"
+      ],
+      "properties": {
+        "written": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.PersonaUpdated"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.WriteConflict"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.WriteConflict": {
+      "type": "object",
+      "required": [
+        "ok",
+        "constraint"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean",
+          "enum": [
+            false
+          ]
+        },
+        "constraint": {
+          "type": "string"
+        }
+      },
+      "description": "A unique constraint refused the write."
+    },
+    "TenantApiProtocol": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 1,
+      "maximum": 1,
+      "description": "The Tenant API versions the tenant Durable Object serves, from Oldest to Version. A caller always\nsends Version. Within a version only a new operation lands; every other change to an operation's\ninput or result raises Version, and the Durable Object keeps serving Version - 1 for one deploy.",
+      "x-bound-names": [
+        "Oldest",
+        "Version"
+      ]
+    }
+  }
+}

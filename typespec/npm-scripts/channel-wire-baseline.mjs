@@ -9,9 +9,9 @@ export const git = (cwd, args) => {
   return { ok: status === 0, stdout, stderr: stderr.trim() };
 };
 
-export const baselineLockTexts = (cwd, ref) => {
+export const baselineLockTexts = (cwd, ref, dir = LOCK_DIR_PATH) => {
   const list = (dir) => git(cwd, ["ls-tree", "--full-tree", "--name-only", ref, `${dir}/`]);
-  const listed = list(LOCK_DIR_PATH);
+  const listed = list(dir);
   if (!listed.ok) return { ok: false, error: listed.stderr };
   const paths = listed.stdout.split("\n").filter((path) => lockVersion(basename(path)) !== undefined);
   const shown = paths.map((path) => [lockVersion(basename(path)), git(cwd, ["show", `${ref}:${path}`])]);
