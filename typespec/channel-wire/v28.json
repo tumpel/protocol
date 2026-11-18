@@ -539,6 +539,9 @@
         "connectorId": {
           "$ref": "#/components/schemas/EntityId"
         },
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
         "url": {
           "type": "string",
           "format": "uri"
@@ -552,7 +555,7 @@
           "minLength": 43
         }
       },
-      "description": "One connector of a turn. `url` is the upstream MCP server. `tokenUrl` is the control plane's\nConnectorTokens_fetch for this turn and connector, and `tokenCredential` its ConnectorTurnToken,\nvalid while the turn is Running. The guest keeps both in forwarder memory only: never in the\nharness environment, a file, a log or a snapshot, and a new tokenCredential never restarts the\nharness."
+      "description": "One connector of a turn. `url` is the upstream MCP server. `tokenUrl` is the control plane's\nConnectorTokens_fetch for this turn and connector, and `tokenCredential` its ConnectorTurnToken,\nvalid while the turn is Running. The guest keeps both in forwarder memory only: never in the\nharness environment, a file, a log or a snapshot, and a new tokenCredential never restarts the\nharness. `name` is the connector's name; the guest derives each harness's MCP server name from it,\nand from `connectorId` when a control plane leaves it out."
     },
     "Channel.DispatchGrant": {
       "type": "object",
