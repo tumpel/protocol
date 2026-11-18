@@ -1,6 +1,8 @@
 import "./models.tsp";
 import "./operations.tsp";
 import "./channel.tsp";
+import "./prebuild.tsp";
+import "./build-provider.tsp";
 
 namespace Tumpel;
 
@@ -479,6 +481,225 @@ model PrepareClaudeSetupInput {
   now: int64;
 }
 
+model ListPrebuildsInput {
+  tenantId: EntityId;
+  repository: string | null;
+}
+
+model ListLatestPrebuildsInput {
+  tenantId: EntityId;
+}
+
+model GetPrebuildInput {
+  tenantId: EntityId;
+  prebuildId: EntityId;
+}
+
+model PrebuildKey {
+  repository: string;
+  inputDigest: string;
+  guestImageDigest: string;
+}
+
+model HeldPrebuildInput {
+  tenantId: EntityId;
+  key: PrebuildKey;
+}
+
+model RecordPrebuildBuildingInput {
+  tenantId: EntityId;
+  prebuildId: EntityId;
+  now: int64;
+}
+
+model JobInputsTargetInput {
+  tenantId: EntityId;
+  repository: string;
+  headSha: string;
+  runId: int64;
+}
+
+model BindJobRunInput {
+  tenantId: EntityId;
+  prebuildId: EntityId;
+  runId: int64;
+  now: int64;
+}
+
+@doc("A GitHub Actions workflow run event, as the webhook reports it.")
+model RunEvent {
+  action: string;
+  runId: int64;
+  repository: string;
+  path: string;
+  headSha: string;
+  htmlUrl: string;
+  conclusion: string | null;
+}
+
+model WorkflowRunReportedInput {
+  tenantId: EntityId;
+  event: RunEvent;
+  now: int64;
+}
+
+model PrebuildDeadline {
+  prebuildId: EntityId;
+  at: int64;
+}
+
+model PrebuildDispatchDue {
+  name: "PrebuildDispatch";
+  deadline: PrebuildDeadline;
+}
+
+model PrebuildBuildDue {
+  name: "PrebuildBuild";
+  deadline: PrebuildDeadline;
+}
+
+model PrebuildDeadlineReachedInput {
+  tenantId: EntityId;
+  due: PrebuildDispatchDue | PrebuildBuildDue;
+}
+
+model RepositoryRef {
+  owner: string;
+  name: string;
+}
+
+model GitHubActionsStart {
+  prebuildId: EntityId;
+  personaId: EntityId;
+  target: RepositoryRef;
+  repository: string;
+  guestImageDigest: string;
+  rootfsKey: string;
+  callerWorkflow: string;
+  apiOrigin: string;
+  rebuild: boolean;
+}
+
+model StartGitHubActionsPrebuildInput {
+  tenantId: EntityId;
+  start: GitHubActionsStart;
+  now: int64;
+}
+
+model PrebuildCommitStart {
+  prebuildId: EntityId;
+  personaId: EntityId;
+  key: PrebuildKey;
+  configSource: PrebuildConfigSource;
+  defaultBranch: string;
+  headSha: string;
+  rootfsKey: string;
+}
+
+model NewSession {
+  principalId: EntityId;
+  hosts: HostRecord[];
+  harness: Harness;
+  harnessVersion: string;
+  endpoint: string;
+  start: SessionStart;
+}
+
+model StartHostPrebuildInput {
+  tenantId: EntityId;
+  commit: PrebuildCommitStart;
+  provider: BuildProvider;
+  input: NewSession;
+  apiOrigin: string;
+  now: int64;
+}
+
+model UploadTargetInput {
+  tenantId: EntityId;
+  prebuildId: EntityId;
+}
+
+model CircleCIUploadJob {
+  pipelineId: string;
+  headSha: string;
+  jobId: string;
+}
+
+model BindCircleCIUploadJobInput {
+  tenantId: EntityId;
+  prebuildId: EntityId;
+  upload: CircleCIUploadJob;
+  now: int64;
+}
+
+model PrebuildLayerUpload {
+  layerDigest: string;
+  layerSizeBytes: int64;
+}
+
+model StartPrebuildUploadInput {
+  tenantId: EntityId;
+  prebuildId: EntityId;
+  upload: PrebuildLayerUpload;
+  now: int64;
+}
+
+model CompletePrebuildUploadInput {
+  tenantId: EntityId;
+  prebuildId: EntityId;
+  upload: PrebuildLayerUpload;
+  now: int64;
+}
+
+model GetPrebuildFailureInput {
+  tenantId: EntityId;
+  prebuildId: EntityId;
+}
+
+model PrebuildStartRecord {
+  prebuildId: EntityId;
+  personaId: EntityId;
+  key: PrebuildKey;
+  configSource: PrebuildConfigSource;
+  target: RepositoryRef;
+  defaultBranch: string;
+  headSha: string;
+  rootfsKey: string;
+}
+
+model DispatchCircleCIPrebuildInput {
+  tenantId: EntityId;
+  start: PrebuildStartRecord;
+  project: CircleCIProject;
+  parameters: Record<string>;
+  now: int64;
+}
+
+model CircleCIWorkflowCompletedEvent {
+  type: string;
+  workflow: {
+    name: string;
+    status: string;
+    url: url;
+  };
+  pipelineId: string;
+  projectId: string;
+}
+
+model CircleCIWorkflowCompletedInput {
+  tenantId: EntityId;
+  event: CircleCIWorkflowCompletedEvent;
+  now: int64;
+}
+
+model RepositoryReadTokenInput {
+  tenantId: EntityId;
+  personaId: EntityId;
+  repository: RepositoryRef;
+  now: int64;
+  permissions: Record<"read" | "write">;
+}
+
 model ListPersonasRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "listPersonas";
@@ -755,6 +976,120 @@ model PrepareClaudeSetupRequest {
   input: PrepareClaudeSetupInput;
 }
 
+model ListPrebuildsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listPrebuilds";
+  input: ListPrebuildsInput;
+}
+
+model ListLatestPrebuildsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listLatestPrebuilds";
+  input: ListLatestPrebuildsInput;
+}
+
+model GetPrebuildRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getPrebuild";
+  input: GetPrebuildInput;
+}
+
+model HeldPrebuildRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "heldPrebuild";
+  input: HeldPrebuildInput;
+}
+
+model RecordPrebuildBuildingRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "recordPrebuildBuilding";
+  input: RecordPrebuildBuildingInput;
+}
+
+model JobInputsTargetRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "jobInputsTarget";
+  input: JobInputsTargetInput;
+}
+
+model BindJobRunRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "bindJobRun";
+  input: BindJobRunInput;
+}
+
+model WorkflowRunReportedRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "workflowRunReported";
+  input: WorkflowRunReportedInput;
+}
+
+model PrebuildDeadlineReachedRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "prebuildDeadlineReached";
+  input: PrebuildDeadlineReachedInput;
+}
+
+model StartGitHubActionsPrebuildRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "startGitHubActionsPrebuild";
+  input: StartGitHubActionsPrebuildInput;
+}
+
+model StartHostPrebuildRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "startHostPrebuild";
+  input: StartHostPrebuildInput;
+}
+
+model UploadTargetRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "uploadTarget";
+  input: UploadTargetInput;
+}
+
+model BindCircleCIUploadJobRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "bindCircleCIUploadJob";
+  input: BindCircleCIUploadJobInput;
+}
+
+model StartPrebuildUploadRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "startPrebuildUpload";
+  input: StartPrebuildUploadInput;
+}
+
+model CompletePrebuildUploadRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "completePrebuildUpload";
+  input: CompletePrebuildUploadInput;
+}
+
+model GetPrebuildFailureRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getPrebuildFailure";
+  input: GetPrebuildFailureInput;
+}
+
+model DispatchCircleCIPrebuildRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "dispatchCircleCIPrebuild";
+  input: DispatchCircleCIPrebuildInput;
+}
+
+model CircleCIWorkflowCompletedRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "circleCIWorkflowCompleted";
+  input: CircleCIWorkflowCompletedInput;
+}
+
+model RepositoryReadTokenRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "repositoryReadToken";
+  input: RepositoryReadTokenInput;
+}
+
 @doc("One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "operation" })
 union TenantRequest {
@@ -804,6 +1139,25 @@ union TenantRequest {
   writeClaudeSetupToken: WriteClaudeSetupTokenRequest,
   claudeSetupDeadlineReached: ClaudeSetupDeadlineReachedRequest,
   prepareClaudeSetup: PrepareClaudeSetupRequest,
+  listPrebuilds: ListPrebuildsRequest,
+  listLatestPrebuilds: ListLatestPrebuildsRequest,
+  getPrebuild: GetPrebuildRequest,
+  heldPrebuild: HeldPrebuildRequest,
+  recordPrebuildBuilding: RecordPrebuildBuildingRequest,
+  jobInputsTarget: JobInputsTargetRequest,
+  bindJobRun: BindJobRunRequest,
+  workflowRunReported: WorkflowRunReportedRequest,
+  prebuildDeadlineReached: PrebuildDeadlineReachedRequest,
+  startGitHubActionsPrebuild: StartGitHubActionsPrebuildRequest,
+  startHostPrebuild: StartHostPrebuildRequest,
+  uploadTarget: UploadTargetRequest,
+  bindCircleCIUploadJob: BindCircleCIUploadJobRequest,
+  startPrebuildUpload: StartPrebuildUploadRequest,
+  completePrebuildUpload: CompletePrebuildUploadRequest,
+  getPrebuildFailure: GetPrebuildFailureRequest,
+  dispatchCircleCIPrebuild: DispatchCircleCIPrebuildRequest,
+  circleCIWorkflowCompleted: CircleCIWorkflowCompletedRequest,
+  repositoryReadToken: RepositoryReadTokenRequest,
 }
 
 @doc("The request names a version outside the instance's window, or an older version an adapter cannot translate. The caller answers a retryable failure.")
@@ -1379,5 +1733,259 @@ model ClaudeSetupWithdrawn {
 
 model PrepareClaudeSetupResult {
   prepared: ClaudeSetupReady | ClaudeSetupWithdrawn;
+}
+
+model ListPrebuildsResult {
+  prebuilds: Prebuild[];
+}
+
+model ListLatestPrebuildsResult {
+  prebuilds: Prebuild[];
+}
+
+model GetPrebuildResult {
+  prebuild: Prebuild | null;
+}
+
+model HeldPrebuildResult {
+  prebuild: Prebuild | null;
+}
+
+model RecordPrebuildBuildingResult {}
+
+model CallerWorkflowConnected {
+  kind: "Connected";
+  callerWorkflow: string;
+}
+
+model CallerWorkflowNotConnected {
+  kind: "NotConnected";
+}
+
+model JobInputsTarget {
+  prebuild: Prebuild;
+  defaultBranch: string;
+  callerWorkflow: CallerWorkflowConnected | CallerWorkflowNotConnected;
+  headSha: string;
+  rootfsKey: string;
+}
+
+model JobInputsTargetResult {
+  target: JobInputsTarget | null;
+}
+
+model JobRunBoundOk {
+  kind: "Bound";
+  prebuild: Prebuild;
+}
+
+model JobRunOther {
+  kind: "OtherRun";
+  runId: int64;
+}
+
+model BindJobRunResult {
+  bound: JobRunBoundOk | JobRunOther;
+}
+
+model WorkflowRunReportedResult {}
+
+model PrebuildDeadlineReachedResult {}
+
+model PrebuildStarted {
+  kind: "Started";
+  prebuild: Prebuild;
+}
+
+model PrebuildNoInstallation {
+  kind: "NoInstallation";
+}
+
+model PrebuildTokenRefused {
+  kind: "TokenRefused";
+  detail: string;
+}
+
+model PrebuildUnreadable {
+  kind: "Unreadable";
+  detail: string;
+}
+
+model PrebuildPermissionMissing {
+  kind: "PermissionMissing";
+  permissions: string[];
+  appSlug: string;
+}
+
+model PrebuildAppPermissionMissing {
+  kind: "AppPermissionMissing";
+  permissions: string[];
+  appSlug: string;
+  appOwner: string;
+}
+
+model PrebuildCallerRefused {
+  kind: "CallerRefused";
+  detail: string;
+}
+
+model PrebuildActionsDisabled {
+  kind: "ActionsDisabled";
+  detail: string;
+}
+
+model PrebuildRefused {
+  kind: "Refused";
+  detail: string;
+}
+
+model StartGitHubActionsPrebuildResult {
+  started: PrebuildStarted | PrebuildNoInstallation | PrebuildTokenRefused | PrebuildUnreadable | PrebuildPermissionMissing | PrebuildAppPermissionMissing | PrebuildCallerRefused | PrebuildActionsDisabled | PrebuildRefused;
+}
+
+model HostPrebuildStarted {
+  kind: "Started";
+  started: Prebuild;
+}
+
+model StartDraining {
+  kind: "Draining";
+}
+
+model StartUnplaced {
+  kind: "Unplaced";
+  hosts: Unplaceable[];
+}
+
+model StartConnectorDisconnected {
+  kind: "ConnectorDisconnected";
+  names: string[];
+}
+
+model StartHostPrebuildResult {
+  started: HostPrebuildStarted | StartDraining | StartUnplaced | StartConnectorDisconnected | ClaudeSetupReleaseUnreadable;
+}
+
+model PrebuildRun {
+  runId: int64;
+  headSha: string;
+}
+
+model UploadJobRecorded {
+  kind: "Job";
+  jobId: string;
+}
+
+model UploadJobAbsent {
+  kind: "NoJob";
+}
+
+model RecordedPipeline {
+  pipelineId: string;
+  projectId: string;
+  headSha: string;
+  job: UploadJobRecorded | UploadJobAbsent;
+}
+
+model GitHubActionsUploadTarget {
+  provider: "GitHubActions";
+  prebuild: Prebuild;
+  defaultBranch: string;
+  upload: PrebuildLayerUpload | null;
+  callerWorkflow: CallerWorkflowConnected | CallerWorkflowNotConnected;
+  run: PrebuildRun;
+}
+
+model CircleCIUploadTarget {
+  provider: "CircleCI";
+  prebuild: Prebuild;
+  defaultBranch: string;
+  upload: PrebuildLayerUpload | null;
+  organizationId: string;
+  pipeline: RecordedPipeline;
+}
+
+model UploadTargetResult {
+  target: GitHubActionsUploadTarget | CircleCIUploadTarget | null;
+}
+
+model CircleCIJobBoundOk {
+  kind: "Bound";
+}
+
+model CircleCIJobOther {
+  kind: "OtherJob";
+  jobId: string;
+}
+
+model CircleCIRevisionMoved {
+  kind: "RevisionMoved";
+  prebuild: Prebuild;
+}
+
+model CircleCIJobRefused {
+  kind: "Refused";
+  status: int32;
+  detail: string;
+}
+
+model BindCircleCIUploadJobResult {
+  bound: CircleCIJobBoundOk | CircleCIJobOther | CircleCIRevisionMoved | CircleCIJobRefused;
+}
+
+model UploadRecordedOk {
+  kind: "Recorded";
+  prebuild: Prebuild;
+}
+
+model UploadNotUploading {
+  kind: "NotUploading";
+  prebuild: Prebuild;
+}
+
+model UploadOtherLayer {
+  kind: "OtherLayer";
+  prebuild: Prebuild;
+  recorded: PrebuildLayerUpload;
+}
+
+model UploadRecorded {
+  recorded: UploadRecordedOk | UploadNotUploading | UploadOtherLayer;
+}
+
+model StartPrebuildUploadResult {
+  ...UploadRecorded;
+}
+
+model CompletePrebuildUploadResult {
+  ...UploadRecorded;
+}
+
+model GetPrebuildFailureResult {
+  failure: PrebuildFailure | null;
+}
+
+model CircleCIDispatched {
+  kind: "Dispatched";
+  prebuild: Prebuild;
+}
+
+model CircleCIDispatchNotConnected {
+  kind: "NotConnected";
+}
+
+model DispatchCircleCIPrebuildResult {
+  dispatched: CircleCIDispatched | CircleCIDispatchNotConnected | PrebuildRefused;
+}
+
+model CircleCIWorkflowCompletedResult {}
+
+model ReadTokenOk {
+  kind: "Token";
+  token: string;
+}
+
+model RepositoryReadTokenResult {
+  read: ReadTokenOk | PrebuildRefused;
 }
 }
