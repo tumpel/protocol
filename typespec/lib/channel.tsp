@@ -145,7 +145,7 @@ model DispatchVariable {
   name. The control plane decrypts them from the secret set each time it sends or resends a
   TurnOffer, keeps no plaintext copy and records the variable names in an append-only handover log;
   `credentialHandoverId` names this handover in the supervisor's errors. `expiresAt`, the end of
-  the turn's credential span (the longer of dispatchGrantTtlSeconds and turnClaimBudgetSeconds plus
+  the turn's credential span (the longer of dispatchGrantTtlSeconds and turnOfferTtlSeconds plus
   turnImageFetchBudgetSeconds, from when the offer was sent), is when the supervisor stops handing
   the variables to a box and fails the turn DispatchCredentialExpired instead.
   """)
@@ -197,7 +197,7 @@ model PersonaFileDownload {
   harness layer for them. `imageUrl`, `kernelUrl` and `manifestUrl` are presigned
   GETs of the ext4 image, the kernel and the GuestImageManifest document stored under
   `imageDigest`, `kernelDigest` and `manifestDigest` in the release bucket, valid until
-  `downloadExpiresAt`, the end of the turn's claim budget plus `fetchSeconds`. A supervisor whose
+  `downloadExpiresAt`, turnOfferTtlSeconds plus `fetchSeconds` after the send of the offer. A supervisor whose
   image cache lacks `imageDigest` sends TurnImageFetching and downloads the three within `fetchSeconds` of
   sending it, counting the wait for another image the host is fetching; it fetches one image at a time,
   checks each against its digest and only then moves them into the cache, replacing the cached image
@@ -248,7 +248,7 @@ model HarnessLayerDownload {
   The layered boot of the turn, offered when the current release carries a base image for the
   host's architecture and a harness layer for the session's harness version on it. The box boots
   from the base, the guest drive of the host's supervisor and the layer. The URLs are valid until
-  `downloadExpiresAt`, the end of the turn's claim budget plus `fetchSeconds`. A supervisor whose
+  `downloadExpiresAt`, turnOfferTtlSeconds plus `fetchSeconds` after the send of the offer. A supervisor whose
   cache lacks the base or the layer sends TurnImageFetching naming the first part it lacks, then
   fetches base, kernel and layer within one `fetchSeconds` of sending it, counting the wait for
   another fetch on the host, and checks each against its digest before it moves it into the cache. A
@@ -334,9 +334,10 @@ model TurnWithdrawn {
   The host accepts the offered turn. It sends this at once, before it fetches the image, restores the
   snapshot or boots the box; those keep their own budgets and failures. The control plane answers TurnClaimed
   and the turn reads Running, or answers TurnWithdrawn when the turn already left Offered. The host
-  hands the prompt to the harness only once TurnClaimed arrived and the box is ready; with no answer
-  within 60 seconds of the claim it hands nothing and fails the turn NotClaimed. So a turn is either
-  claimed and its result reaches the control plane, or refused before the harness starts.
+  hands the prompt to the harness only once TurnClaimed arrived and the box is ready. A host that
+  gives up waiting for the answer hands nothing and fails the turn NotClaimed, and the control plane
+  offers the turn again. So a turn is either claimed and its result reaches the control plane, or
+  refused before the harness starts.
   """)
 model TurnClaim {
   type: "TurnClaim";

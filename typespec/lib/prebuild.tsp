@@ -34,7 +34,7 @@ enum PrebuildConfigSource {
 
 @doc("The phase a Failed prebuild stopped in. A provider that refuses the job refuses the start, and no prebuild exists.")
 enum PrebuildFailurePhase {
-  @doc("The turn ended before its host claimed it: no host claimed it within turnClaimBudgetSeconds, or no installation token could be minted for the clone.")
+  @doc("The turn ended before its host claimed it: it failed Undelivered, or no installation token could be minted for the clone.")
   Dispatch: "Dispatch",
 
   @doc("The turn failed: the clone or the setup step failed, or it ran past its budget.")

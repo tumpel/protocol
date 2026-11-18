@@ -64,7 +64,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 20;
+const ChannelProtocolVersion = 21;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -321,7 +321,12 @@ enum TurnState {
 
 @doc("Why a turn ended Failed. Each reason names the phase the turn stopped in.")
 enum TurnFailureReason {
+  @doc("The host reports the control plane did not answer its TurnClaim in time and the harness never started; the control plane offers the turn again, so no turn fails NotClaimed.")
   NotClaimed: "NotClaimed",
+
+  @doc("The dead letter: no host claimed the turn within turnTotalBudgetSeconds of its offer, so it never ran. The detail names the host and whether it is online.")
+  Undelivered: "Undelivered",
+
   NoFirstOutput: "NoFirstOutput",
   HostOffline: "HostOffline",
   CredentialRefused: "CredentialRefused",
@@ -1190,7 +1195,7 @@ model SecretSet {
   a named failure.
   """)
 model ControlPlaneSettings {
-  @doc("How long after a TurnOffer is sent the supervisor still hands its dispatch variables to a box, at least; the expiresAt of its DispatchGrant is the longer of this and turnClaimBudgetSeconds plus turnImageFetchBudgetSeconds.")
+  @doc("How long after a TurnOffer is sent the supervisor still hands its dispatch variables to a box, at least; the expiresAt of its DispatchGrant is the longer of this and turnOfferTtlSeconds plus turnImageFetchBudgetSeconds.")
   @minValue(1)
   dispatchGrantTtlSeconds: int32;
 
@@ -1202,11 +1207,11 @@ model ControlPlaneSettings {
   @minValue(1)
   snapshotDeadlineSeconds: int32;
 
-  @doc("How long the host may take to claim an offered turn before it fails NotClaimed.")
+  @doc("How long the credential, restore URLs and image URLs of each send of a TurnOffer stay valid, plus turnImageFetchBudgetSeconds for the image. It bounds no turn: a turn no host claims stays Offered.")
   @minValue(1)
-  turnClaimBudgetSeconds: int32;
+  turnOfferTtlSeconds: int32;
 
-  @doc("How long the host may take to download a guest image its cache lacks, after it sends TurnImageFetching; the offer's image.fetchSeconds. The image URLs stay valid for the claim budget plus this. A host that runs past it fails the turn ImageFetchTimedOut.")
+  @doc("How long the host may take to download a guest image its cache lacks, after it sends TurnImageFetching; the offer's image.fetchSeconds. The image URLs stay valid for turnOfferTtlSeconds plus this. A host that runs past it fails the turn ImageFetchTimedOut.")
   @minValue(1)
   turnImageFetchBudgetSeconds: int32;
 
@@ -1214,7 +1219,7 @@ model ControlPlaneSettings {
   @minValue(1)
   turnFirstLineBudgetSeconds: int32;
 
-  @doc("How long a turn may take from offer to completion before it fails TurnTimedOut.")
+  @doc("How long a claimed turn may run before it fails TurnTimedOut, and how long an unclaimed turn stays Offered before it fails Undelivered.")
   @minValue(1)
   turnTotalBudgetSeconds: int32;
 
