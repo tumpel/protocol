@@ -59,7 +59,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 19;
+const ChannelProtocolVersion = 20;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -335,8 +335,11 @@ enum TurnFailureReason {
   SnapshotUnreadable: "SnapshotUnreadable",
   HarnessExited: "HarnessExited",
 
-  @doc("The box ran out of memory and the kernel killed the harness and everything it started; the detail names the box memory and the process the kernel picked, so the persona can run lighter builds or ask for more boxMemoryMib.")
+  @doc("The box ran out of memory and the kernel killed the harness; the detail names the box memory and the process the kernel picked, so the persona can run lighter builds or ask for more boxMemoryMib.")
   HarnessOutOfMemory: "HarnessOutOfMemory",
+
+  @doc("The harness exited without printing a successful result, so the turn did not finish its work; the detail carries the tail of the harness's standard error.")
+  HarnessExitedWithoutResult: "HarnessExitedWithoutResult",
 
   TurnTimedOut: "TurnTimedOut",
 
@@ -537,6 +540,10 @@ model Session {
   @visibility(Lifecycle.Read)
   lastTurnAt: offsetDateTime;
 
+  @doc("The session's latest turn, with why it failed once it is Failed.")
+  @visibility(Lifecycle.Read)
+  lastTurn: Turn;
+
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
@@ -573,8 +580,8 @@ model StopFailure {
   createdAt: int64;
 }
 
-@doc("One prompt and the harness's completion of it, run on a session's box.")
-model Turn {
+@doc("The fields every turn carries, whatever its state.")
+model TurnBase {
   @key @visibility(Lifecycle.Read) turnId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
   @visibility(Lifecycle.Read) sessionId: EntityId;
@@ -584,7 +591,6 @@ model Turn {
   boxId: EntityId;
 
   prompt: Prompt;
-  @visibility(Lifecycle.Read) state: TurnState;
 
   @doc("How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.")
   @visibility(Lifecycle.Read)
@@ -592,6 +598,42 @@ model Turn {
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
+}
+
+model OfferedTurn {
+  ...TurnBase;
+  state: TurnState.Offered;
+}
+
+model RunningTurn {
+  ...TurnBase;
+  state: TurnState.Running;
+}
+
+model CompletedTurn {
+  ...TurnBase;
+  state: TurnState.Completed;
+}
+
+@doc("A turn that ended Failed, with why.")
+model FailedTurn {
+  ...TurnBase;
+  state: TurnState.Failed;
+  reason: TurnFailureReason;
+
+  @doc("What failed and what fixes it, with the tail of the harness's standard error when there is one.")
+  detail: string;
+
+  failedAt: offsetDateTime;
+}
+
+@doc("One prompt and the harness's completion of it, run on a session's box.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
+union Turn {
+  Offered: OfferedTurn,
+  Running: RunningTurn,
+  Completed: CompletedTurn,
+  Failed: FailedTurn,
 }
 
 @doc("Why a turn ended Failed. Exists only for a turn in state Failed.")
