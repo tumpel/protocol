@@ -64,7 +64,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 21;
+const ChannelProtocolVersion = 22;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -379,6 +379,9 @@ enum TurnFailureReason {
 
   @doc("The host was handing its boxes to a new supervisor binary when the offer arrived, so it took no turn; the control plane offers the turn to another host at once, or keeps it Offered and offers it again once the host is back, so no turn fails HostUpdating.")
   HostUpdating: "HostUpdating",
+
+  @doc("The host's first Heartbeat after it reconnected named no box for the turn's session, for example after its supervisor restarted, so the turn's work since its last snapshot is gone; the detail names the host.")
+  BoxLost: "BoxLost",
 }
 
 @doc("Why the box could not clone the session's repository.")

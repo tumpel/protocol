@@ -126,11 +126,17 @@ model StoredHostFrame {
   The host sends one every 10 seconds after Welcome, whatever else it sends, with its usage. The
   control plane keeps the last one per host for the host's tenant, which places a new session on
   the Online host with the most free box slots, then the most memory available.
+  `heldSessionIds` names every session the host holds a box for, whether the box runs a turn, waits
+  warm or still boots, and is empty when it holds none. The host sends every frame queued before it
+  read the list ahead of the Heartbeat, so the first Heartbeat after Welcome follows the resent
+  frames. On that Heartbeat the control plane fails each Running turn on the host whose session the
+  list does not name with BoxLost.
   """)
 model HostHeartbeat {
   type: "Heartbeat";
   sentAt: offsetDateTime;
   usage: HostUsage;
+  heldSessionIds: EntityId[];
 }
 
 @doc("One environment variable for one turn: a secret set member's value. It lives in box memory only and is never written to the host's disk.")
