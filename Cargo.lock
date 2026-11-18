@@ -1583,7 +1583,7 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "tumpel-api"
-version = "0.11.0"
+version = "0.12.0"
 dependencies = [
  "chrono",
  "progenitor-client",
@@ -1970,7 +1970,7 @@ checksum = "3ad82d2a33cdc9674dc7465672f271e096168fcdbe0f799d9e6db8c5892679dc"
 
 [[package]]
 name = "xtask"
-version = "0.11.0"
+version = "0.12.0"
 dependencies = [
  "openapiv3",
  "prettyplease",
