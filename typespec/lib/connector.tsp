@@ -37,14 +37,8 @@ enum ConnectorState {
   AuthorizationFailed: "AuthorizationFailed",
 }
 
-@doc("Why an OAuth connector's authorization or refresh failed. Each reason names the phase it stopped in.")
+@doc("Why an OAuth connector's authorization or refresh failed after authorize answered. Each reason names the phase it stopped in.")
 enum ConnectorAuthorizationFailureReason {
-  @doc("The server's protected-resource or authorization-server metadata could not be read within 10 seconds, or it named a non-HTTPS, private or loopback address, or no S256 support.")
-  DiscoveryFailed: "DiscoveryFailed",
-
-  @doc("The authorization server advertises no dynamic client registration endpoint, or refused the registration.")
-  RegistrationUnsupported: "RegistrationUnsupported",
-
   @doc("The provider sent the browser back with an error, as it does when the person declines, or the person who authorized is no longer an Owner.")
   AuthorizationDenied: "AuthorizationDenied",
 
@@ -65,9 +59,6 @@ model ConnectorNotConnected {
 model ConnectorConnected {
   state: ConnectorState.Connected;
   connectedAt: offsetDateTime;
-
-  @doc("When the access token the control plane holds expires; a later token fetch refreshes it. Absent for a static token and for an OAuth token issued without expires_in.")
-  accessTokenExpiresAt?: offsetDateTime;
 }
 
 model ConnectorDisconnected {
@@ -85,7 +76,7 @@ model ConnectorAuthorizationFailed {
   failedAt: offsetDateTime;
 }
 
-@doc("Whether a connector serves new turns, with when it connected and its access token expiry, when it was disconnected, or why its authorization failed.")
+@doc("Whether a connector serves new turns, with when it connected, when it was disconnected, or why its authorization failed.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
 union ConnectorStatus {
   NotConnected: ConnectorNotConnected,
@@ -94,15 +85,10 @@ union ConnectorStatus {
   AuthorizationFailed: ConnectorAuthorizationFailed,
 }
 
-@doc("""
-  A remote MCP server the tenant connects once with one static token. Every session in the tenant
-  whose persona lists it reaches it through the box's loopback forwarder, which sends the token as
-  Authorization: Bearer. The URL is fixed at create; the token is write-only.
-  """)
-model StaticConnector {
+@doc("The fields every connector has, whatever holds its credential.")
+model ConnectorFields {
   @key @visibility(Lifecycle.Read) connectorId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
-  @visibility(Lifecycle.Read) auth: ConnectorAuth.Static;
   name: DisplayName;
   @visibility(Lifecycle.Read, Lifecycle.Create) url: ConnectorUrl;
   @visibility(Lifecycle.Read) status: ConnectorStatus;
@@ -111,19 +97,23 @@ model StaticConnector {
 }
 
 @doc("""
+  A remote MCP server the tenant connects once with one static token. Every session in the tenant
+  whose persona lists it reaches it through the box's loopback forwarder, which sends the token as
+  Authorization: Bearer. The URL is fixed at create; the token is write-only.
+  """)
+model StaticConnector {
+  @visibility(Lifecycle.Read) auth: ConnectorAuth.Static;
+  ...ConnectorFields;
+}
+
+@doc("""
   A remote MCP server the tenant connects once through OAuth. An Owner authorizes it in a browser,
   the control plane holds the grant sealed and refreshes it, and every session in the tenant whose
   persona lists it reaches it through the box's loopback forwarder. The URL is fixed at create.
   """)
 model OAuthConnector {
-  @key @visibility(Lifecycle.Read) connectorId: EntityId;
-  @visibility(Lifecycle.Read) tenantId: EntityId;
   @visibility(Lifecycle.Read) auth: ConnectorAuth.OAuth;
-  name: DisplayName;
-  @visibility(Lifecycle.Read, Lifecycle.Create) url: ConnectorUrl;
-  @visibility(Lifecycle.Read) status: ConnectorStatus;
-  @visibility(Lifecycle.Read) createdAt: int64;
-  @visibility(Lifecycle.Read) updatedAt: int64;
+  ...ConnectorFields;
 }
 
 @doc("A connector of either credential kind.")
@@ -138,9 +128,7 @@ model StaticConnectorCreate is Create<StaticConnector>;
 model OAuthConnectorCreate is Create<OAuthConnector>;
 
 @doc("Renames a connector. Its URL and credential kind are fixed at create; a new endpoint is a new connector.")
-model ConnectorUpdate {
-  name: DisplayName;
-}
+model ConnectorUpdate is Update<StaticConnector>;
 
 @doc("The token a static connector sends upstream as Authorization: Bearer. It is stored sealed and never returned.")
 model StaticConnectorTokenWrite {
