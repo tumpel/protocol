@@ -2445,6 +2445,26 @@
       "minLength": 1,
       "maxLength": 64
     },
+    "EventPage": {
+      "type": "object",
+      "required": [
+        "events",
+        "lastEventId"
+      ],
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantEvent"
+          },
+          "maxItems": 100
+        },
+        "lastEventId": {
+          "$ref": "#/components/schemas/Sequence"
+        }
+      },
+      "description": "A page of the tenant's events, oldest first, at most 100. `lastEventId` is the id the read\nreached; pass it as `afterEventId` to read on."
+    },
     "FailedTurn": {
       "type": "object",
       "required": [
@@ -2751,6 +2771,68 @@
       "type": "string",
       "pattern": "^[a-z0-9][a-z0-9._=-]{0,62}$",
       "description": "A label a host carries for placement, such as gpu or region-eu."
+    },
+    "HostOfflineEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "hostId"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "HostOffline"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "HostOnlineEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "hostId"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "HostOnline"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
     },
     "HostState": {
       "type": "string",
@@ -3397,6 +3479,41 @@
         }
       }
     },
+    "PrebuildDoneEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "prebuildId",
+        "repository"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "PrebuildDone"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "$ref": "#/components/schemas/RepositoryUrl"
+        }
+      }
+    },
     "PrebuildFailed": {
       "type": "object",
       "required": [
@@ -3417,6 +3534,45 @@
         "finishedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "PrebuildFailedEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "prebuildId",
+        "repository",
+        "phase"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "PrebuildFailed"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "$ref": "#/components/schemas/RepositoryUrl"
+        },
+        "phase": {
+          "$ref": "#/components/schemas/PrebuildFailurePhase"
         }
       }
     },
@@ -4206,6 +4362,108 @@
       },
       "description": "A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins."
     },
+    "SessionArchivedEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "sessionId"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "SessionArchived"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "SessionFailedEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "sessionId"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "SessionFailed"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "SessionIdleEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "sessionId",
+        "turnId"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "SessionIdle"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "turnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The turn whose end left the session Idle."
+        }
+      }
+    },
     "SessionIssue": {
       "type": "object",
       "required": [
@@ -4417,6 +4675,37 @@
         "Archived",
         "Failed"
       ]
+    },
+    "SessionStoppedEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "sessionId"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "SessionStopped"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
     },
     "Sha256Digest": {
       "type": "string",
@@ -8201,6 +8490,43 @@
         }
       }
     },
+    "TenantApi.EventCursorExpired": {
+      "type": "object",
+      "required": [
+        "kind",
+        "oldestEventId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "CursorExpired"
+          ]
+        },
+        "oldestEventId": {
+          "$ref": "#/components/schemas/Sequence"
+        }
+      },
+      "description": "The afterEventId is older than the oldest event the log keeps."
+    },
+    "TenantApi.EventsRead": {
+      "type": "object",
+      "required": [
+        "kind",
+        "page"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Read"
+          ]
+        },
+        "page": {
+          "$ref": "#/components/schemas/EventPage"
+        }
+      }
+    },
     "TenantApi.ExpiredCredentialRefusal": {
       "type": "object",
       "required": [
@@ -9935,6 +10261,94 @@
             "$ref": "#/components/schemas/CredentialHandover"
           },
           "nullable": true
+        }
+      }
+    },
+    "TenantApi.ListEventsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "afterEventId",
+        "events",
+        "sessionId",
+        "waitSeconds"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "afterEventId": {
+          "type": "integer",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "nullable": true,
+          "description": "The id after which the page starts; null starts at the current end of the log."
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantEventType"
+          },
+          "description": "The event types to keep; an empty list keeps every type."
+        },
+        "sessionId": {
+          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "nullable": true,
+          "description": "The session whose events to keep; null keeps every session's."
+        },
+        "waitSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0,
+          "maximum": 50
+        }
+      }
+    },
+    "TenantApi.ListEventsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listEvents"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListEventsInput"
+        }
+      }
+    },
+    "TenantApi.ListEventsResult": {
+      "type": "object",
+      "required": [
+        "listed"
+      ],
+      "properties": {
+        "listed": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.EventsRead"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.EventCursorExpired"
+            }
+          ]
         }
       }
     },
@@ -14594,6 +15008,9 @@
           "$ref": "#/components/schemas/TenantApi.WaitTurnsRequest"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.ListEventsRequest"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.GetTurnFailureRequest"
         },
         {
@@ -14777,6 +15194,7 @@
           "listTurns": "#/components/schemas/TenantApi.ListTurnsRequest",
           "getTurn": "#/components/schemas/TenantApi.GetTurnRequest",
           "waitTurns": "#/components/schemas/TenantApi.WaitTurnsRequest",
+          "listEvents": "#/components/schemas/TenantApi.ListEventsRequest",
           "getTurnFailure": "#/components/schemas/TenantApi.GetTurnFailureRequest",
           "listStopFailures": "#/components/schemas/TenantApi.ListStopFailuresRequest",
           "listSnapshots": "#/components/schemas/TenantApi.ListSnapshotsRequest",
@@ -16191,6 +16609,78 @@
         "Version"
       ]
     },
+    "TenantEvent": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/TurnStartedEvent"
+        },
+        {
+          "$ref": "#/components/schemas/TurnCompletedEvent"
+        },
+        {
+          "$ref": "#/components/schemas/TurnFailedEvent"
+        },
+        {
+          "$ref": "#/components/schemas/SessionIdleEvent"
+        },
+        {
+          "$ref": "#/components/schemas/SessionStoppedEvent"
+        },
+        {
+          "$ref": "#/components/schemas/SessionFailedEvent"
+        },
+        {
+          "$ref": "#/components/schemas/SessionArchivedEvent"
+        },
+        {
+          "$ref": "#/components/schemas/HostOnlineEvent"
+        },
+        {
+          "$ref": "#/components/schemas/HostOfflineEvent"
+        },
+        {
+          "$ref": "#/components/schemas/PrebuildDoneEvent"
+        },
+        {
+          "$ref": "#/components/schemas/PrebuildFailedEvent"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "event",
+        "mapping": {
+          "TurnStarted": "#/components/schemas/TurnStartedEvent",
+          "TurnCompleted": "#/components/schemas/TurnCompletedEvent",
+          "TurnFailed": "#/components/schemas/TurnFailedEvent",
+          "SessionIdle": "#/components/schemas/SessionIdleEvent",
+          "SessionStopped": "#/components/schemas/SessionStoppedEvent",
+          "SessionFailed": "#/components/schemas/SessionFailedEvent",
+          "SessionArchived": "#/components/schemas/SessionArchivedEvent",
+          "HostOnline": "#/components/schemas/HostOnlineEvent",
+          "HostOffline": "#/components/schemas/HostOfflineEvent",
+          "PrebuildDone": "#/components/schemas/PrebuildDoneEvent",
+          "PrebuildFailed": "#/components/schemas/PrebuildFailedEvent"
+        }
+      },
+      "description": "A record that something happened in a tenant. The control plane appends it in the same\ntransaction as the state change it reports. It holds ids and the fact that changed; read the\nresource for the rest."
+    },
+    "TenantEventType": {
+      "type": "string",
+      "enum": [
+        "TurnStarted",
+        "TurnCompleted",
+        "TurnFailed",
+        "SessionIdle",
+        "SessionStopped",
+        "SessionFailed",
+        "SessionArchived",
+        "HostOnline",
+        "HostOffline",
+        "PrebuildDone",
+        "PrebuildFailed"
+      ],
+      "description": "The kind of a tenant event, named for the state change it records."
+    },
     "TranscriptLine": {
       "type": "object",
       "required": [
@@ -16250,6 +16740,85 @@
         }
       },
       "description": "One prompt and the harness's completion of it, run on a session's box."
+    },
+    "TurnCompletedEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "turnId",
+        "sessionId"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "TurnCompleted"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TurnFailedEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "turnId",
+        "sessionId",
+        "reason",
+        "detail"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "TurnFailed"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/TurnFailureReason"
+        },
+        "detail": {
+          "type": "string",
+          "description": "What failed and what fixes it, as the turn's failure reads."
+        }
+      }
     },
     "TurnFailure": {
       "type": "object",
@@ -16403,6 +16972,41 @@
         }
       },
       "description": "The fields every turn carries, whatever its state."
+    },
+    "TurnStartedEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "turnId",
+        "sessionId"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "TurnStarted"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
     },
     "TurnState": {
       "type": "string",

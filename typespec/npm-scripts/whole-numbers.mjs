@@ -31,7 +31,7 @@ const marked = blocks.map((block) => {
   const schema = name === undefined ? undefined : schemas[name];
   if (!schema) return block;
   return integerFields(schema).reduce((held, field) => {
-    const whole = new RegExp(`(\\b${field}: z\\.)number\\(\\)`);
+    const whole = new RegExp(`(\\b${field}: z\\.(?:union\\(\\[z\\.)?)number\\(\\)`);
     if (!whole.test(held)) throw new Error(`no generated z.number() to mark whole: ${name}.${field}`);
     return held.replace(whole, "$1int()");
   }, block);

@@ -3,6 +3,7 @@ import "./operations.tsp";
 import "./channel.tsp";
 import "./prebuild.tsp";
 import "./build-provider.tsp";
+import "./events.tsp";
 
 namespace Tumpel;
 
@@ -770,6 +771,23 @@ model WaitTurnsInput {
   timeoutSeconds: int32;
 }
 
+model ListEventsInput {
+  tenantId: EntityId;
+
+  @doc("The id after which the page starts; null starts at the current end of the log.")
+  afterEventId: Sequence | null;
+
+  @doc("The event types to keep; an empty list keeps every type.")
+  events: TenantEventType[];
+
+  @doc("The session whose events to keep; null keeps every session's.")
+  sessionId: EntityId | null;
+
+  @minValue(0)
+  @maxValue(50)
+  waitSeconds: int32;
+}
+
 model GetTurnFailureInput {
   tenantId: EntityId;
   turnId: EntityId;
@@ -1419,6 +1437,12 @@ model WaitTurnsRequest {
   input: WaitTurnsInput;
 }
 
+model ListEventsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listEvents";
+  input: ListEventsInput;
+}
+
 model GetTurnFailureRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "getTurnFailure";
@@ -1707,6 +1731,7 @@ union TenantRequest {
   listTurns: ListTurnsRequest,
   getTurn: GetTurnRequest,
   waitTurns: WaitTurnsRequest,
+  listEvents: ListEventsRequest,
   getTurnFailure: GetTurnFailureRequest,
   listStopFailures: ListStopFailuresRequest,
   listSnapshots: ListSnapshotsRequest,
@@ -2714,6 +2739,21 @@ model WaitedTurnNotFound {
 
 model WaitTurnsResult {
   waited: TurnsRead | WaitedTurnNotFound;
+}
+
+model EventsRead {
+  kind: "Read";
+  page: EventPage;
+}
+
+@doc("The afterEventId is older than the oldest event the log keeps.")
+model EventCursorExpired {
+  kind: "CursorExpired";
+  oldestEventId: Sequence;
+}
+
+model ListEventsResult {
+  listed: EventsRead | EventCursorExpired;
 }
 
 model GetTurnFailureResult {
