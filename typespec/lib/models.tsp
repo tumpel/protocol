@@ -540,9 +540,9 @@ model Session {
   @visibility(Lifecycle.Read)
   lastTurnAt: offsetDateTime;
 
-  @doc("Why the latest turn ended Failed. Present only when lastTurnState is Failed.")
+  @doc("The session's latest turn, with why it failed once it is Failed.")
   @visibility(Lifecycle.Read)
-  lastTurnFailure?: TurnFailure;
+  lastTurn: Turn;
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
@@ -580,8 +580,8 @@ model StopFailure {
   createdAt: int64;
 }
 
-@doc("One prompt and the harness's completion of it, run on a session's box.")
-model Turn {
+@doc("The fields every turn carries, whatever its state.")
+model TurnBase {
   @key @visibility(Lifecycle.Read) turnId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
   @visibility(Lifecycle.Read) sessionId: EntityId;
@@ -591,18 +591,49 @@ model Turn {
   boxId: EntityId;
 
   prompt: Prompt;
-  @visibility(Lifecycle.Read) state: TurnState;
 
   @doc("How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.")
   @visibility(Lifecycle.Read)
   lineCount: Sequence;
 
-  @doc("Why the turn ended Failed. Present only when state is Failed.")
-  @visibility(Lifecycle.Read)
-  failure?: TurnFailure;
-
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
+}
+
+model OfferedTurn {
+  ...TurnBase;
+  state: TurnState.Offered;
+}
+
+model RunningTurn {
+  ...TurnBase;
+  state: TurnState.Running;
+}
+
+model CompletedTurn {
+  ...TurnBase;
+  state: TurnState.Completed;
+}
+
+@doc("A turn that ended Failed, with why.")
+model FailedTurn {
+  ...TurnBase;
+  state: TurnState.Failed;
+  reason: TurnFailureReason;
+
+  @doc("What failed and what fixes it, with the tail of the harness's standard error when there is one.")
+  detail: string;
+
+  failedAt: offsetDateTime;
+}
+
+@doc("One prompt and the harness's completion of it, run on a session's box.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
+union Turn {
+  Offered: OfferedTurn,
+  Running: RunningTurn,
+  Completed: CompletedTurn,
+  Failed: FailedTurn,
 }
 
 @doc("Why a turn ended Failed. Exists only for a turn in state Failed.")
