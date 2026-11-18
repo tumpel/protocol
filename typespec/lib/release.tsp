@@ -37,9 +37,11 @@ model ReleaseSupervisor {
   The `release.json` asset of a supervisor release: its version, the tumpel-api version it was
   built with, the ChannelProtocol and GuestProtocol ranges it speaks, and one binary per
   architecture. A control plane release reads it to refuse a supervisor whose ranges miss its own.
+  `supervisorVersion` is `X.Y.Z` for a stable release, or `X.Y.Z-main.N` for a dev build from main,
+  N commits after the latest stable tag; semver orders it before the stable `X.Y.Z` it leads to.
   """)
 model SupervisorRelease {
-  @pattern("^[0-9]+\\.[0-9]+\\.[0-9]+$") supervisorVersion: string;
+  @pattern("^[0-9]+\\.[0-9]+\\.[0-9]+(-main\\.[0-9]+)?$") supervisorVersion: string;
   @pattern("^[0-9]+\\.[0-9]+\\.[0-9]+$") tumpelApiVersion: string;
   @minValue(1) channelProtocolOldest: int32;
   @minValue(1) channelProtocolVersion: int32;
