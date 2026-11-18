@@ -1,3 +1,5 @@
+<p align="center"><img src="doc/assets/mascot.svg" alt="The tumpel salamander" width="160"></p>
+
 # tumpel protocol
 
 The TypeSpec for the tumpel API, the host channel between a supervisor and the control plane, and the release manifests. Every client, schema and type that speaks to tumpel is generated from it.
