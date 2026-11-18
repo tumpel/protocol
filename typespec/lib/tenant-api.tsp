@@ -4,6 +4,7 @@ import "./channel.tsp";
 import "./prebuild.tsp";
 import "./build-provider.tsp";
 import "./events.tsp";
+import "./notifications.tsp";
 
 namespace Tumpel;
 
@@ -788,6 +789,60 @@ model ListEventsInput {
   waitSeconds: int32;
 }
 
+model ListWebhookEndpointsInput {
+  tenantId: EntityId;
+}
+
+model CreateWebhookEndpointInput {
+  tenantId: EntityId;
+  endpoint: WebhookEndpointCreate;
+  now: int64;
+}
+
+model GetWebhookEndpointInput {
+  tenantId: EntityId;
+  webhookEndpointId: EntityId;
+}
+
+model DeleteWebhookEndpointInput {
+  tenantId: EntityId;
+  webhookEndpointId: EntityId;
+}
+
+model SetWebhookEndpointStatusInput {
+  tenantId: EntityId;
+  webhookEndpointId: EntityId;
+  status: WebhookDeliveryStatus;
+}
+
+model ListPushSubscriptionsInput {
+  tenantId: EntityId;
+  principalId: EntityId;
+}
+
+model CreatePushSubscriptionInput {
+  tenantId: EntityId;
+  principalId: EntityId;
+  subscription: PushSubscriptionCreate;
+  now: int64;
+}
+
+model DeletePushSubscriptionInput {
+  tenantId: EntityId;
+  principalId: EntityId;
+  pushSubscriptionId: EntityId;
+}
+
+model ForgetPushSubscriptionInput {
+  tenantId: EntityId;
+  pushSubscriptionId: EntityId;
+}
+
+model PushTargetInput {
+  tenantId: EntityId;
+  pushSubscriptionId: EntityId;
+}
+
 model GetTurnFailureInput {
   tenantId: EntityId;
   turnId: EntityId;
@@ -1443,6 +1498,66 @@ model ListEventsRequest {
   input: ListEventsInput;
 }
 
+model ListWebhookEndpointsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listWebhookEndpoints";
+  input: ListWebhookEndpointsInput;
+}
+
+model CreateWebhookEndpointRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "createWebhookEndpoint";
+  input: CreateWebhookEndpointInput;
+}
+
+model GetWebhookEndpointRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getWebhookEndpoint";
+  input: GetWebhookEndpointInput;
+}
+
+model DeleteWebhookEndpointRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "deleteWebhookEndpoint";
+  input: DeleteWebhookEndpointInput;
+}
+
+model SetWebhookEndpointStatusRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "setWebhookEndpointStatus";
+  input: SetWebhookEndpointStatusInput;
+}
+
+model ListPushSubscriptionsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listPushSubscriptions";
+  input: ListPushSubscriptionsInput;
+}
+
+model CreatePushSubscriptionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "createPushSubscription";
+  input: CreatePushSubscriptionInput;
+}
+
+model DeletePushSubscriptionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "deletePushSubscription";
+  input: DeletePushSubscriptionInput;
+}
+
+model ForgetPushSubscriptionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "forgetPushSubscription";
+  input: ForgetPushSubscriptionInput;
+}
+
+model PushTargetRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "pushTarget";
+  input: PushTargetInput;
+}
+
 model GetTurnFailureRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "getTurnFailure";
@@ -1732,6 +1847,16 @@ union TenantRequest {
   getTurn: GetTurnRequest,
   waitTurns: WaitTurnsRequest,
   listEvents: ListEventsRequest,
+  listWebhookEndpoints: ListWebhookEndpointsRequest,
+  createWebhookEndpoint: CreateWebhookEndpointRequest,
+  getWebhookEndpoint: GetWebhookEndpointRequest,
+  deleteWebhookEndpoint: DeleteWebhookEndpointRequest,
+  setWebhookEndpointStatus: SetWebhookEndpointStatusRequest,
+  listPushSubscriptions: ListPushSubscriptionsRequest,
+  createPushSubscription: CreatePushSubscriptionRequest,
+  deletePushSubscription: DeletePushSubscriptionRequest,
+  forgetPushSubscription: ForgetPushSubscriptionRequest,
+  pushTarget: PushTargetRequest,
   getTurnFailure: GetTurnFailureRequest,
   listStopFailures: ListStopFailuresRequest,
   listSnapshots: ListSnapshotsRequest,
@@ -2754,6 +2879,53 @@ model EventCursorExpired {
 
 model ListEventsResult {
   listed: EventsRead | EventCursorExpired;
+}
+
+@doc("Where and how a push subscription receives its notifications.")
+model PushDeliveryTarget {
+  endpoint: PushEndpointUrl;
+  keys: PushSubscriptionKeys;
+  events: TenantEventType[];
+}
+
+model ListWebhookEndpointsResult {
+  endpoints: WebhookEndpoint[];
+}
+
+model CreateWebhookEndpointResult {
+  endpoint: WebhookEndpoint;
+}
+
+model GetWebhookEndpointResult {
+  @doc("Null when the tenant has no webhook endpoint with the id.")
+  endpoint: WebhookEndpoint | null;
+}
+
+model DeleteWebhookEndpointResult {
+  @doc("False when the tenant has no webhook endpoint with the id.")
+  deleted: boolean;
+}
+
+model SetWebhookEndpointStatusResult {}
+
+model ListPushSubscriptionsResult {
+  subscriptions: PushSubscription[];
+}
+
+model CreatePushSubscriptionResult {
+  subscription: PushSubscription;
+}
+
+model DeletePushSubscriptionResult {
+  @doc("False when the principal has no push subscription with the id.")
+  deleted: boolean;
+}
+
+model ForgetPushSubscriptionResult {}
+
+model PushTargetResult {
+  @doc("Null when the subscription is gone.")
+  target: PushDeliveryTarget | null;
 }
 
 model GetTurnFailureResult {
