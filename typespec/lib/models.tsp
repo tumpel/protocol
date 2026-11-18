@@ -33,6 +33,11 @@ scalar StorageKey extends string;
 @maxLength(100000)
 scalar Prompt extends string;
 
+@doc("A condition the harness keeps working toward until it holds.")
+@minLength(1)
+@maxLength(100000)
+scalar Goal extends string;
+
 @minValue(0)
 scalar Sequence extends int64;
 
@@ -605,6 +610,9 @@ model TurnBase {
 
   prompt: Prompt;
 
+  @doc("A condition the harness keeps working toward until it holds; only a session whose harness has goals in the harness catalog accepts it.")
+  goal?: Goal;
+
   @doc("How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.")
   @visibility(Lifecycle.Read)
   lineCount: Sequence;
@@ -827,6 +835,9 @@ model HarnessCatalogEntry {
 
   @doc("Whether a transcript read with compact accepts a session on this harness.")
   compactTranscript: boolean;
+
+  @doc("Whether a turn send with a goal accepts a session on this harness.")
+  goals: boolean;
 }
 
 @doc("How the guest image installs a harness version.")
