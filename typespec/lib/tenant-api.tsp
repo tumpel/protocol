@@ -875,6 +875,100 @@ model ConnectNamespaceInput {
   now: int64;
 }
 
+model OfferSentInput {
+  turnId: EntityId;
+}
+
+model HostHelloInput {
+  hostId: EntityId;
+  boxCapacity: int32;
+  usage: HostUsage;
+  now: int64;
+  channelProtocol: int32;
+}
+
+model HostUsageInput {
+  hostId: EntityId;
+  usage: HostUsage;
+  now: int64;
+}
+
+model ReconcileHeldBoxesInput {
+  tenantId: EntityId;
+  hostId: EntityId;
+  heldSessionIds: EntityId[];
+  now: int64;
+}
+
+model ForgetHostUsageInput {
+  hostId: EntityId;
+}
+
+model RunningTurnsByHostInput {}
+
+model ListHostUsageInput {
+  tenantId: EntityId;
+}
+
+model DeferredOffersInput {
+  tenantId: EntityId;
+  hostId: EntityId;
+}
+
+model TurnMetricDimensionsInput {
+  turnIds: EntityId[];
+}
+
+model PrepareOfferInput {
+  tenantId: EntityId;
+  turnId: EntityId;
+  hostId: EntityId;
+  now: int64;
+}
+
+enum HostPresence {
+  Online: "Online",
+  Offline: "Offline",
+}
+
+model HostPresenceInput {
+  tenantId: EntityId;
+  hostId: EntityId;
+  presence: HostPresence;
+  now: int64;
+}
+
+model HostMessageInput {
+  tenantId: EntityId;
+  hostId: EntityId;
+  message: Channel.TurnImageFetching | Channel.TurnClaim | Channel.TurnRepositoryReady | Channel.TurnLine | Channel.TurnComplete | Channel.TurnRepositoryCloneFailed | Channel.TurnFailed | Channel.SnapshotChunks | Channel.SnapshotPacks | Channel.RestoreChunks | Channel.SnapshotDone | Channel.SnapshotFailed | Channel.BoxGone | Channel.BoxTeardownFailed | Channel.ClaudeSetupBoxUrl | Channel.ClaudeSetupBoxFailed;
+}
+
+model TurnDeadline {
+  turnId: EntityId;
+  at: int64;
+}
+
+enum SessionDeadlineName {
+  FirstLine: "FirstLine",
+  Total: "Total",
+  Snapshot: "Snapshot",
+  SnapshotAnswer: "SnapshotAnswer",
+  Teardown: "Teardown",
+  TeardownAnswer: "TeardownAnswer",
+  HostOffline: "HostOffline",
+}
+
+model SessionDueDeadline {
+  name: SessionDeadlineName;
+  deadline: TurnDeadline;
+}
+
+model DeadlineReachedInput {
+  tenantId: EntityId;
+  due: SessionDueDeadline;
+}
+
 model ListPersonasRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "listPersonas";
@@ -1457,6 +1551,84 @@ model ConnectNamespaceRequest {
   input: ConnectNamespaceInput;
 }
 
+model OfferSentRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "offerSent";
+  input: OfferSentInput;
+}
+
+model HostHelloRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "hostHello";
+  input: HostHelloInput;
+}
+
+model HostUsageRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "hostUsage";
+  input: HostUsageInput;
+}
+
+model ReconcileHeldBoxesRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "reconcileHeldBoxes";
+  input: ReconcileHeldBoxesInput;
+}
+
+model ForgetHostUsageRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "forgetHostUsage";
+  input: ForgetHostUsageInput;
+}
+
+model RunningTurnsByHostRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "runningTurnsByHost";
+  input: RunningTurnsByHostInput;
+}
+
+model ListHostUsageRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listHostUsage";
+  input: ListHostUsageInput;
+}
+
+model DeferredOffersRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "deferredOffers";
+  input: DeferredOffersInput;
+}
+
+model TurnMetricDimensionsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "turnMetricDimensions";
+  input: TurnMetricDimensionsInput;
+}
+
+model PrepareOfferRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "prepareOffer";
+  input: PrepareOfferInput;
+}
+
+model HostPresenceRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "hostPresence";
+  input: HostPresenceInput;
+}
+
+model HostMessageRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "hostMessage";
+  input: HostMessageInput;
+}
+
+model DeadlineReachedRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "deadlineReached";
+  input: DeadlineReachedInput;
+}
+
 @doc("One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "operation" })
 union TenantRequest {
@@ -1557,6 +1729,19 @@ union TenantRequest {
   connectGitHubActions: ConnectGitHubActionsRequest,
   namespaceConnection: NamespaceConnectionRequest,
   connectNamespace: ConnectNamespaceRequest,
+  offerSent: OfferSentRequest,
+  hostHello: HostHelloRequest,
+  hostUsage: HostUsageRequest,
+  reconcileHeldBoxes: ReconcileHeldBoxesRequest,
+  forgetHostUsage: ForgetHostUsageRequest,
+  runningTurnsByHost: RunningTurnsByHostRequest,
+  listHostUsage: ListHostUsageRequest,
+  deferredOffers: DeferredOffersRequest,
+  turnMetricDimensions: TurnMetricDimensionsRequest,
+  prepareOffer: PrepareOfferRequest,
+  hostPresence: HostPresenceRequest,
+  hostMessage: HostMessageRequest,
+  deadlineReached: DeadlineReachedRequest,
 }
 
 @doc("The request names a version outside the instance's window, or an older version an adapter cannot translate. The caller answers a retryable failure.")
@@ -2682,4 +2867,72 @@ model NamespaceConnectionResult {
 model ConnectNamespaceResult {
   connection: NamespaceConnectionRecord;
 }
+
+model OfferSentResult {}
+
+model HostHelloResult {}
+
+model HostUsageResult {}
+
+model ReconcileHeldBoxesResult {}
+
+model ForgetHostUsageResult {}
+
+model RunningTurns {
+  hostId: EntityId;
+  runningTurns: int32;
+}
+
+model RunningTurnsByHostResult {
+  running: RunningTurns[];
+}
+
+model ListHostUsageResult {
+  usage: ReportedHostUsage[];
+}
+
+@doc("A turn offer as the control plane stores it, before it adds the parts minted at each send.")
+model StoredTurnOffer {
+  ...OmitProperties<Channel.TurnOffer, "credential" | "lastLineSeq" | "snapshots" | "personaFiles" | "image" | "gitAuthorName" | "gitAuthorEmail">;
+}
+
+model TurnHandoff {
+  type: "TurnHandoff";
+  hostId: EntityId;
+  offer: StoredTurnOffer;
+}
+
+model DeferredOffersResult {
+  handoffs: TurnHandoff[];
+}
+
+model TurnMetricDimensionsResult {
+  dimensions: Record<Record<string>>;
+}
+
+model OfferReady {
+  kind: "Ready";
+  ...PickProperties<Channel.TurnOffer, "credential" | "lastLineSeq" | "snapshots" | "personaFiles" | "image" | "gitAuthorName" | "gitAuthorEmail">;
+}
+
+model OfferWithdrawn {
+  kind: "Withdrawn";
+}
+
+model PrepareOfferResult {
+  prepared: OfferReady | OfferWithdrawn;
+}
+
+model HostPresenceResult {}
+
+model HostFrameRefused {
+  type: "Refused";
+  reason: string;
+}
+
+model HostMessageResult {
+  reply: HostFrameRefused | Channel.SnapshotChunksHeld | Channel.SnapshotPackUploads | Channel.RestoreDownloads | Channel.BoxDiscard | Channel.ClaudeSetupBoxDiscard | Channel.TurnClaimed | Channel.TurnWithdrawn | StoredTurnOffer | TurnHandoff | null;
+}
+
+model DeadlineReachedResult {}
 }
