@@ -620,8 +620,10 @@ model SnapshotFailed {
 }
 
 @doc("""
-  Asks the host to tear down the box of a session once a snapshot holds its last completed turn.
-  The host answers BoxGone, also when it runs no box of the session with that boxId, or BoxTeardownFailed.
+  Asks the host to tear down the box of a session once a snapshot holds its last completed turn:
+  when a person stops or archives the session, after each turn of an Off session, and when placement
+  evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it. The host
+  answers BoxGone, also when it runs no box of the session with that boxId, or BoxTeardownFailed.
   """)
 model BoxTeardown {
   type: "BoxTeardown";

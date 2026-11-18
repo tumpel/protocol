@@ -480,6 +480,8 @@ model HostLabels {
 
 model SessionStart is Create<Session> {
   prompt: Prompt;
+  @doc("What happens to the box after each turn; left out, the session takes its persona's boxRetention.")
+  boxRetention?: BoxRetention;
 }
 
 @doc("A start from an open GitHub issue: the control plane reads the issue and writes the first prompt, which asks for the branch ticket/<issueNumber>-<slug of the title> and a draft pull request that closes the issue.")
@@ -489,6 +491,8 @@ model SessionStartFromIssue {
   name: GitHubRepositoryName;
   issueNumber: GitHubIssueNumber;
   `model`: ModelName;
+  @doc("What happens to the box after each turn; left out, the session takes its persona's boxRetention.")
+  boxRetention?: BoxRetention;
 }
 
 @doc("The answer to a start, sent before the harness writes anything.")
@@ -650,11 +654,16 @@ model CompactTranscriptLine {
 model PersonaCreate is Create<Persona> {
   @doc("The persona's files; none when left out.")
   files?: PersonaFileWrite[];
+
+  @doc("What happens to the box after each turn; left out, the persona's sessions get Auto.")
+  boxRetention?: BoxRetention;
 }
 
-@doc("Replaces the persona's name, secret set, connectors, box memory and whole file set: a file the update leaves out is deleted, and a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib. The harness is fixed at create.")
+@doc("Replaces the persona's name, secret set, connectors, box memory, box retention and whole file set: a file the update leaves out is deleted, a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib, and a box retention it leaves out goes back to Auto. The harness is fixed at create.")
 model PersonaUpdate is Update<Persona> {
   files: PersonaFileWrite[];
+  @doc("What happens to the box after each turn; left out, the persona's sessions get Auto.")
+  boxRetention?: BoxRetention;
 }
 
 @doc("Asks for a presigned upload of one persona file larger than PersonaFileLimit.InlineFileBytes, named by the sha256 of its bytes.")
@@ -962,7 +971,7 @@ namespace V1 {
 
   @route("/sessions")
   interface Sessions {
-    @doc("Starts a session with its first prompt on the online host of the tenant with the most free box slots, then the most memory available, and refuses PoolExhausted when every host runs a turn in every slot; the session runs its persona's harness at the pinned version, with the persona's files and secret set. Answers before the harness writes anything.")
+    @doc("Starts a session with its first prompt on the online host of the tenant with the most free box slots, then the most memory available. A slot is free when no running turn and no held box takes it; an Auto box that waits idle frees its slot for placement. When no host has a free slot, the start evicts the least recently used Auto box on one host until the new box fits there, and it refuses PoolExhausted when nothing frees room. The session runs its persona's harness at the pinned version, with the persona's files and secret set. Answers before the harness writes anything.")
     @post
     start(@body body: SessionStart): StartedSession | ProblemResponse;
 
