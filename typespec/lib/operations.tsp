@@ -110,6 +110,9 @@ enum ProblemCode {
 
   InvitationExpired: "InvitationExpired",
 
+  @doc("The afterEventId of an events read is older than the oldest event the log keeps.")
+  EventCursorExpired: "EventCursorExpired",
+
   @doc("No host of the tenant is Online with a free box slot and a guest image of the pinned Claude Code for its architecture.")
   NoHostOnline: "NoHostOnline",
 
