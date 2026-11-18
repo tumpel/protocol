@@ -5,7 +5,8 @@ fn grant() -> Value {
     json!({
         "credentialHandoverId": "01HZY8Q6V0M1C2D3E4F5G6H7J8",
         "expiresAt": "2026-11-16T12:00:00+00:00",
-        "variables": [{ "name": "OPENROUTER_API_KEY", "value": "sk-or" }]
+        "variables": [{ "name": "OPENROUTER_API_KEY", "value": "sk-or" }],
+        "connectors": []
     })
 }
 

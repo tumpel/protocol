@@ -169,8 +169,8 @@ model DispatchGrant {
     @minLength(1) value: string;
   };
 
-  @doc("The session's connectors. The guest forwarder serves each at its loopback route and fetches its access token from tokenUrl with tokenCredential. Neither reaches the harness; a grant without them gives the box no connector.")
-  connectors?: DispatchConnector[];
+  @doc("The session's connectors, none when its persona lists none. The guest forwarder serves each at its loopback route and fetches its access token from tokenUrl with tokenCredential. Neither reaches the harness.")
+  connectors: DispatchConnector[];
 }
 
 @doc("""
