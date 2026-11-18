@@ -417,10 +417,11 @@ model TurnFailed {
 }
 
 @doc("""
-  Asks the host to end turn `turnId` at once, which the control plane already failed Cancelled: the
-  host pauses the box running it, which stops the harness mid-step, keeps the box and reports
-  nothing more for the turn. The SnapshotRequest and BoxTeardown that follow then snapshot and free
-  the box. A host that runs no such turn does nothing.
+  Asks the host to end turn `turnId` at once, which the control plane already failed Cancelled. The
+  host ends the harness and answers TurnFailed Cancelled with the turn's credential file, and the
+  control plane keeps the reason and detail it recorded. The box is then a box after any turn, and the
+  SnapshotRequest and BoxTeardown that follow snapshot and free it. A host that runs no such turn
+  does nothing.
   """)
 model TurnCancel {
   type: "TurnCancel";
