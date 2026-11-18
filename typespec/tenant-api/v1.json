@@ -1,6 +1,97 @@
 {
   "tenantApiVersion": 1,
   "schemas": {
+    "ApiKeyKey": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "provider",
+        "updatedAt"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "ApiKey"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "provider": {
+          "$ref": "#/components/schemas/ModelProvider"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "ApiKeyUpdate": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "provider"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "ApiKey"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "provider": {
+          "$ref": "#/components/schemas/ModelProvider"
+        },
+        "value": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SecretText"
+            }
+          ],
+          "description": "The new value of the member. Left out, the member keeps the value it has stored."
+        },
+        "previousName": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SecretName"
+            }
+          ],
+          "description": "The name the member had before this update, when the update renames it; its stored value moves with it."
+        }
+      }
+    },
+    "ApiKeyValue": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "provider",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "ApiKey"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "provider": {
+          "$ref": "#/components/schemas/ModelProvider"
+        },
+        "value": {
+          "$ref": "#/components/schemas/SecretText"
+        }
+      }
+    },
     "BoxRetention": {
       "type": "string",
       "enum": [
@@ -9,6 +100,202 @@
         "Auto"
       ],
       "description": "What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode."
+    },
+    "Channel.SupervisorUpdateFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "fromSha256",
+        "toSha256",
+        "reason",
+        "detail",
+        "outputTail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SupervisorUpdateFailed"
+          ]
+        },
+        "fromSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "toSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/SupervisorUpdateFailureReason"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "outputTail": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The host's supervisor update stopped. `detail` states what failed and what fixes it.\n`outputTail` holds the last lines the candidate printed in its dry run, token-shaped runs\nhidden, and is empty for every other reason."
+    },
+    "Channel.SupervisorUpdateStep": {
+      "type": "object",
+      "required": [
+        "type",
+        "fromSha256",
+        "toSha256",
+        "releaseVersion",
+        "boxesRunning",
+        "phase",
+        "at"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SupervisorUpdateStep"
+          ]
+        },
+        "fromSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "toSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "releaseVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "boxesRunning": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0
+        },
+        "phase": {
+          "$ref": "#/components/schemas/SupervisorUpdatePhase"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The host's supervisor update from the binary `fromSha256` to `toSha256` entered `phase`. The new\nbinary sends Online once it reaches Welcome after the swap."
+    },
+    "CredentialFileKey": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "provider",
+        "expiresAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "CredentialFile"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "provider": {
+          "$ref": "#/components/schemas/ModelProvider"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the access token in the file stops working. Shown only: the harness refreshes the file itself, so a turn is not refused for it."
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "CredentialFileUpdate": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "provider",
+        "expiresAt"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "CredentialFile"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "provider": {
+          "$ref": "#/components/schemas/ModelProvider"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the access token in the file stops working. Shown only: the harness refreshes the file itself, so a turn is not refused for it."
+        },
+        "value": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SecretText"
+            }
+          ],
+          "description": "The new value of the member. Left out, the member keeps the value it has stored."
+        },
+        "previousName": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SecretName"
+            }
+          ],
+          "description": "The name the member had before this update, when the update renames it; its stored value moves with it."
+        }
+      }
+    },
+    "CredentialFileValue": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "provider",
+        "expiresAt",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "CredentialFile"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "provider": {
+          "$ref": "#/components/schemas/ModelProvider"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the access token in the file stops working. Shown only: the harness refreshes the file itself, so a turn is not refused for it."
+        },
+        "value": {
+          "$ref": "#/components/schemas/SecretText"
+        }
+      }
     },
     "DisplayName": {
       "type": "string",
@@ -30,6 +317,58 @@
         "MistralAgent"
       ]
     },
+    "HarnessPin": {
+      "type": "object",
+      "required": [
+        "harness",
+        "harnessVersion",
+        "updatedAt"
+      ],
+      "properties": {
+        "harness": {
+          "$ref": "#/components/schemas/Harness"
+        },
+        "harnessVersion": {
+          "$ref": "#/components/schemas/HarnessVersion"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        }
+      },
+      "description": "The harness version a tenant runs for one harness. It names an entry of the harness catalog."
+    },
+    "HarnessPinCreate": {
+      "type": "object",
+      "required": [
+        "harness",
+        "harnessVersion"
+      ],
+      "properties": {
+        "harness": {
+          "$ref": "#/components/schemas/Harness"
+        },
+        "harnessVersion": {
+          "$ref": "#/components/schemas/HarnessVersion"
+        }
+      },
+      "description": "The harness version a tenant runs for one harness. It names an entry of the harness catalog."
+    },
+    "HarnessVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ModelProvider": {
+      "type": "string",
+      "enum": [
+        "Anthropic",
+        "OpenAi",
+        "Mistral",
+        "Google",
+        "OpenRouter"
+      ]
+    },
     "PersonaFilePath": {
       "type": "string",
       "maxLength": 200,
@@ -43,10 +382,724 @@
       "maximum": 262144,
       "description": "The size of a persona file in bytes, at most PersonaFileLimit.PersonaBytes."
     },
+    "SecretKey": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/SecretVariableKey"
+        },
+        {
+          "$ref": "#/components/schemas/ApiKeyKey"
+        },
+        {
+          "$ref": "#/components/schemas/SubscriptionTokenKey"
+        },
+        {
+          "$ref": "#/components/schemas/CredentialFileKey"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Variable": "#/components/schemas/SecretVariableKey",
+          "ApiKey": "#/components/schemas/ApiKeyKey",
+          "SubscriptionToken": "#/components/schemas/SubscriptionTokenKey",
+          "CredentialFile": "#/components/schemas/CredentialFileKey"
+        }
+      },
+      "description": "One member of a secret set, without its value. The value never leaves the control plane in a response."
+    },
+    "SecretMemberUpdate": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/SecretVariableUpdate"
+        },
+        {
+          "$ref": "#/components/schemas/ApiKeyUpdate"
+        },
+        {
+          "$ref": "#/components/schemas/SubscriptionTokenUpdate"
+        },
+        {
+          "$ref": "#/components/schemas/CredentialFileUpdate"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Variable": "#/components/schemas/SecretVariableUpdate",
+          "ApiKey": "#/components/schemas/ApiKeyUpdate",
+          "SubscriptionToken": "#/components/schemas/SubscriptionTokenUpdate",
+          "CredentialFile": "#/components/schemas/CredentialFileUpdate"
+        }
+      },
+      "description": "One member of a secret set update: a new value, or none to keep the value stored under its name or its previousName."
+    },
+    "SecretName": {
+      "type": "string",
+      "maxLength": 100,
+      "pattern": "^[A-Z_][A-Z0-9_]*$",
+      "description": "The name of a secret set member, which is also the environment variable a box gets its value in."
+    },
+    "SecretSet": {
+      "type": "object",
+      "required": [
+        "secretSetId",
+        "tenantId",
+        "name",
+        "keys",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "secretSetId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "keys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SecretKey"
+          },
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        }
+      },
+      "description": "A named set of secrets: at most one credential per provider, and any number of variables. Values are write-only."
+    },
+    "SecretSetCreate": {
+      "type": "object",
+      "required": [
+        "name",
+        "secrets"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "secrets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SecretValue"
+          }
+        }
+      },
+      "description": "A named set of secrets: at most one credential per provider, and any number of variables. Values are write-only."
+    },
+    "SecretSetUpdate": {
+      "type": "object",
+      "required": [
+        "name",
+        "secrets"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "secrets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SecretMemberUpdate"
+          }
+        }
+      },
+      "description": "Sets the set's name and its list of members. A member the update leaves out is deleted with its\nvalue. A member sent without a value keeps the value stored under its previousName, or under its\nname when it is not renamed."
+    },
+    "SecretText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10000
+    },
+    "SecretValue": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/SecretVariableValue"
+        },
+        {
+          "$ref": "#/components/schemas/ApiKeyValue"
+        },
+        {
+          "$ref": "#/components/schemas/SubscriptionTokenValue"
+        },
+        {
+          "$ref": "#/components/schemas/CredentialFileValue"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Variable": "#/components/schemas/SecretVariableValue",
+          "ApiKey": "#/components/schemas/ApiKeyValue",
+          "SubscriptionToken": "#/components/schemas/SubscriptionTokenValue",
+          "CredentialFile": "#/components/schemas/CredentialFileValue"
+        }
+      },
+      "description": "One member of a secret set with its value, written once and never read back."
+    },
+    "SecretVariableKey": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "updatedAt"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Variable"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "SecretVariableUpdate": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Variable"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "value": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SecretText"
+            }
+          ],
+          "description": "The new value of the member. Left out, the member keeps the value it has stored."
+        },
+        "previousName": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SecretName"
+            }
+          ],
+          "description": "The name the member had before this update, when the update renames it; its stored value moves with it."
+        }
+      }
+    },
+    "SecretVariableValue": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Variable"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "value": {
+          "$ref": "#/components/schemas/SecretText"
+        }
+      }
+    },
     "Sha256Digest": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$",
       "description": "A lower-case hex SHA-256 digest: the name of a file in the image cache, or of a persona file blob."
+    },
+    "SubscriptionTokenKey": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "provider",
+        "expiresAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "SubscriptionToken"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "provider": {
+          "$ref": "#/components/schemas/ModelProvider"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the token stops working. A turn offered at or after it fails CredentialExpired."
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "SubscriptionTokenUpdate": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "provider",
+        "expiresAt"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "SubscriptionToken"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "provider": {
+          "$ref": "#/components/schemas/ModelProvider"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the token stops working. A turn offered at or after it fails CredentialExpired."
+        },
+        "value": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SecretText"
+            }
+          ],
+          "description": "The new value of the member. Left out, the member keeps the value it has stored."
+        },
+        "previousName": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SecretName"
+            }
+          ],
+          "description": "The name the member had before this update, when the update renames it; its stored value moves with it."
+        }
+      }
+    },
+    "SubscriptionTokenValue": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "provider",
+        "expiresAt",
+        "value"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "SubscriptionToken"
+          ]
+        },
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "provider": {
+          "$ref": "#/components/schemas/ModelProvider"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the token stops working. A turn offered at or after it fails CredentialExpired."
+        },
+        "value": {
+          "$ref": "#/components/schemas/SecretText"
+        }
+      }
+    },
+    "SupervisorUpdateFailureReason": {
+      "type": "string",
+      "enum": [
+        "SupervisorUpdateFetchFailed",
+        "SupervisorUpdateChecksumMismatch",
+        "SupervisorUpdateDryRunFailed",
+        "SupervisorUpdateStateUnreadable",
+        "SupervisorUpdateIdleTimedOut",
+        "SupervisorUpdateSwapFailed",
+        "SupervisorUpdateRolledBack"
+      ],
+      "description": "Why a supervisor update stopped. Every one but SupervisorUpdateRolledBack leaves the running binary in place."
+    },
+    "SupervisorUpdateFailureReport": {
+      "type": "object",
+      "required": [
+        "fromSha256",
+        "toSha256",
+        "reason",
+        "detail",
+        "outputTail",
+        "failedAt"
+      ],
+      "properties": {
+        "fromSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "toSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/SupervisorUpdateFailureReason"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "outputTail": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "A host's supervisor update that stopped. `detail` states what failed and what fixes it.\n`outputTail` holds the last lines the candidate printed in its dry run, token-shaped runs\nhidden, and is empty for every other reason."
+    },
+    "SupervisorUpdateFailureReported": {
+      "type": "object",
+      "required": [
+        "state",
+        "failure"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Reported"
+          ]
+        },
+        "failure": {
+          "$ref": "#/components/schemas/SupervisorUpdateFailureReport"
+        }
+      },
+      "description": "The latest supervisor update failure the host reported."
+    },
+    "SupervisorUpdateLatestFailure": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/SupervisorUpdateNotReported"
+        },
+        {
+          "$ref": "#/components/schemas/SupervisorUpdateFailureReported"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "state",
+        "mapping": {
+          "NotReported": "#/components/schemas/SupervisorUpdateNotReported",
+          "Reported": "#/components/schemas/SupervisorUpdateFailureReported"
+        }
+      }
+    },
+    "SupervisorUpdateLatestStep": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/SupervisorUpdateNotReported"
+        },
+        {
+          "$ref": "#/components/schemas/SupervisorUpdateStepReported"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "state",
+        "mapping": {
+          "NotReported": "#/components/schemas/SupervisorUpdateNotReported",
+          "Reported": "#/components/schemas/SupervisorUpdateStepReported"
+        }
+      }
+    },
+    "SupervisorUpdateNotReported": {
+      "type": "object",
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "NotReported"
+          ]
+        }
+      },
+      "description": "The host has reported no supervisor update step, or no failure, since it enrolled."
+    },
+    "SupervisorUpdatePhase": {
+      "type": "string",
+      "enum": [
+        "Fetching",
+        "DryRunning",
+        "Staged",
+        "WaitingForIdle",
+        "Restarting",
+        "Online"
+      ],
+      "description": "The phase a supervisor update entered. Fetching downloads and verifies the candidate binary,\nDryRunning runs it with `check` beside the running binary and keeps it once it passes, Staged\nis what supervisors before the box handover send while a candidate waits for the host to run no\nbox, Restarting swaps the binaries, parks every running turn and execs the new one, which takes\nover the running boxes, and Online is the new binary reaching Welcome. WaitingForIdle is what supervisors before the idle claim send between DryRunning and\nRestarting; the control plane accepts it and records nothing."
+    },
+    "SupervisorUpdateStepReport": {
+      "type": "object",
+      "required": [
+        "fromSha256",
+        "toSha256",
+        "releaseVersion",
+        "boxesRunning",
+        "phase",
+        "at"
+      ],
+      "properties": {
+        "fromSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "toSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "releaseVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "boxesRunning": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0
+        },
+        "phase": {
+          "$ref": "#/components/schemas/SupervisorUpdatePhase"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "A phase a host's supervisor update entered: from the binary `fromSha256` to `toSha256` of the\nrelease `releaseVersion`, at `at`. `boxesRunning` counts the boxes the host ran as it entered\nthe phase; on Staged, the boxes the swap waits on, and on Restarting, the boxes handed over."
+    },
+    "SupervisorUpdateStepReported": {
+      "type": "object",
+      "required": [
+        "state",
+        "step"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Reported"
+          ]
+        },
+        "step": {
+          "$ref": "#/components/schemas/SupervisorUpdateStepReport"
+        }
+      },
+      "description": "The latest supervisor update phase the host reported."
+    },
+    "TenantApi.ApplyConfigInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "writes",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "writes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.ConfigWrite"
+          }
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ApplyConfigRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "applyConfig"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ApplyConfigInput"
+        }
+      }
+    },
+    "TenantApi.ApplyConfigResult": {
+      "type": "object",
+      "required": [
+        "applied"
+      ],
+      "properties": {
+        "applied": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ConfigApplied"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConfigConflict"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ConfigResourceDeleted"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.ConfigApplied": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Applied"
+          ]
+        }
+      }
+    },
+    "TenantApi.ConfigConflict": {
+      "type": "object",
+      "required": [
+        "kind",
+        "constraint"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Conflict"
+          ]
+        },
+        "constraint": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ConfigResourceDeleted": {
+      "type": "object",
+      "required": [
+        "kind",
+        "resource"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Deleted"
+          ]
+        },
+        "resource": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ConfigWrite": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/TenantApi.CreateSecretSetWrite"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.RewriteSecretSetWrite"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DeleteSecretSetWrite"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CreatePersonaWrite"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UpdatePersonaWrite"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DeletePersonaWrite"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.PinWrite"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UnpinWrite"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "CreateSecretSet": "#/components/schemas/TenantApi.CreateSecretSetWrite",
+          "RewriteSecretSet": "#/components/schemas/TenantApi.RewriteSecretSetWrite",
+          "DeleteSecretSet": "#/components/schemas/TenantApi.DeleteSecretSetWrite",
+          "CreatePersona": "#/components/schemas/TenantApi.CreatePersonaWrite",
+          "UpdatePersona": "#/components/schemas/TenantApi.UpdatePersonaWrite",
+          "DeletePersona": "#/components/schemas/TenantApi.DeletePersonaWrite",
+          "Pin": "#/components/schemas/TenantApi.PinWrite",
+          "Unpin": "#/components/schemas/TenantApi.UnpinWrite"
+        }
+      },
+      "description": "One write of a config apply, which the tenant Durable Object commits with the others in one transaction."
     },
     "TenantApi.CreatePersonaInput": {
       "type": "object",
@@ -108,6 +1161,126 @@
         }
       }
     },
+    "TenantApi.CreatePersonaWrite": {
+      "type": "object",
+      "required": [
+        "kind",
+        "persona"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "CreatePersona"
+          ]
+        },
+        "persona": {
+          "$ref": "#/components/schemas/TenantApi.PersonaWrite"
+        }
+      }
+    },
+    "TenantApi.CreateSecretSetInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "secretSet",
+        "githubUser",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSet": {
+          "$ref": "#/components/schemas/SecretSetCreate"
+        },
+        "githubUser": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.GitHubUser"
+            }
+          ],
+          "nullable": true
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.CreateSecretSetRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "createSecretSet"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CreateSecretSetInput"
+        }
+      }
+    },
+    "TenantApi.CreateSecretSetResult": {
+      "type": "object",
+      "required": [
+        "written"
+      ],
+      "properties": {
+        "written": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetWritten"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.WriteConflict"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.CreateSecretSetWrite": {
+      "type": "object",
+      "required": [
+        "kind",
+        "secretSetId",
+        "secretSet",
+        "githubUser"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "CreateSecretSet"
+          ]
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSet": {
+          "$ref": "#/components/schemas/SecretSetCreate"
+        },
+        "githubUser": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.GitHubUser"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
     "TenantApi.DeletePersonaInput": {
       "type": "object",
       "required": [
@@ -166,6 +1339,96 @@
         }
       }
     },
+    "TenantApi.DeletePersonaWrite": {
+      "type": "object",
+      "required": [
+        "kind",
+        "personaId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "DeletePersona"
+          ]
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.DeleteSecretSetInput": {
+      "type": "object",
+      "required": [
+        "secretSetId"
+      ],
+      "properties": {
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.DeleteSecretSetRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "deleteSecretSet"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.DeleteSecretSetInput"
+        }
+      }
+    },
+    "TenantApi.DeleteSecretSetResult": {
+      "type": "object",
+      "required": [
+        "deleted"
+      ],
+      "properties": {
+        "deleted": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetDeleted"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetInUse"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.DeleteSecretSetWrite": {
+      "type": "object",
+      "required": [
+        "kind",
+        "secretSetId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "DeleteSecretSet"
+          ]
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
     "TenantApi.GetPersonaInput": {
       "type": "object",
       "required": [
@@ -220,6 +1483,81 @@
         }
       }
     },
+    "TenantApi.GetSecretSetInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "secretSetId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.GetSecretSetRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getSecretSet"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetSecretSetInput"
+        }
+      }
+    },
+    "TenantApi.GetSecretSetResult": {
+      "type": "object",
+      "required": [
+        "read"
+      ],
+      "properties": {
+        "read": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetUnreadable"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.GitHubUser": {
+      "type": "object",
+      "required": [
+        "githubUserId",
+        "login"
+      ],
+      "properties": {
+        "githubUserId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "login": {
+          "type": "string"
+        }
+      },
+      "description": "The GitHub account a repository token secret acts as, when the set holds one."
+    },
     "TenantApi.ListPersonasInput": {
       "type": "object",
       "required": [
@@ -266,6 +1604,137 @@
           }
         }
       }
+    },
+    "TenantApi.ListPinsInput": {
+      "type": "object"
+    },
+    "TenantApi.ListPinsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listPins"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListPinsInput"
+        }
+      }
+    },
+    "TenantApi.ListPinsResult": {
+      "type": "object",
+      "required": [
+        "pins"
+      ],
+      "properties": {
+        "pins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/HarnessPin"
+          }
+        }
+      }
+    },
+    "TenantApi.ListSecretSetsInput": {
+      "type": "object",
+      "required": [
+        "tenantId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListSecretSetsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listSecretSets"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListSecretSetsInput"
+        }
+      }
+    },
+    "TenantApi.ListSecretSetsResult": {
+      "type": "object",
+      "required": [
+        "read"
+      ],
+      "properties": {
+        "read": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetsRead"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetUnreadable"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.OpenInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.OpenRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "open"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.OpenInput"
+        }
+      }
+    },
+    "TenantApi.OpenResult": {
+      "type": "object"
     },
     "TenantApi.PersonaChange": {
       "type": "object",
@@ -459,6 +1928,532 @@
         }
       }
     },
+    "TenantApi.PinInput": {
+      "type": "object",
+      "required": [
+        "pin",
+        "now"
+      ],
+      "properties": {
+        "pin": {
+          "$ref": "#/components/schemas/HarnessPinCreate"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.PinRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "pin"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.PinInput"
+        }
+      }
+    },
+    "TenantApi.PinResult": {
+      "type": "object",
+      "required": [
+        "pin"
+      ],
+      "properties": {
+        "pin": {
+          "$ref": "#/components/schemas/HarnessPin"
+        }
+      }
+    },
+    "TenantApi.PinWrite": {
+      "type": "object",
+      "required": [
+        "kind",
+        "pin"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Pin"
+          ]
+        },
+        "pin": {
+          "$ref": "#/components/schemas/HarnessPinCreate"
+        }
+      }
+    },
+    "TenantApi.RemoveSecretMemberInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "secretSetId",
+        "name",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.RemoveSecretMemberRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "removeSecretMember"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.RemoveSecretMemberInput"
+        }
+      }
+    },
+    "TenantApi.RemoveSecretMemberResult": {
+      "type": "object",
+      "required": [
+        "removed"
+      ],
+      "properties": {
+        "removed": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretMemberRemoved"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetMissing"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretMemberNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetUnreadable"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.RewriteSecretSetWrite": {
+      "type": "object",
+      "required": [
+        "kind",
+        "secretSetId",
+        "secretSet",
+        "githubUser"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "RewriteSecretSet"
+          ]
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSet": {
+          "$ref": "#/components/schemas/SecretSetCreate"
+        },
+        "githubUser": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.GitHubUser"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.SecretMemberNotFound": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "MemberNotFound"
+          ]
+        }
+      }
+    },
+    "TenantApi.SecretMemberRemoved": {
+      "type": "object",
+      "required": [
+        "kind",
+        "secretSet"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Removed"
+          ]
+        },
+        "secretSet": {
+          "$ref": "#/components/schemas/SecretSet"
+        }
+      }
+    },
+    "TenantApi.SecretMemberWritten": {
+      "type": "object",
+      "required": [
+        "kind",
+        "secretSet"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Set"
+          ]
+        },
+        "secretSet": {
+          "$ref": "#/components/schemas/SecretSet"
+        }
+      }
+    },
+    "TenantApi.SecretSetConflict": {
+      "type": "object",
+      "required": [
+        "kind",
+        "constraint"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Conflict"
+          ]
+        },
+        "constraint": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.SecretSetDeleted": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Deleted"
+          ]
+        }
+      }
+    },
+    "TenantApi.SecretSetFound": {
+      "type": "object",
+      "required": [
+        "kind",
+        "secretSet"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Found"
+          ]
+        },
+        "secretSet": {
+          "$ref": "#/components/schemas/SecretSet"
+        }
+      }
+    },
+    "TenantApi.SecretSetInUse": {
+      "type": "object",
+      "required": [
+        "kind",
+        "personas"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "InUse"
+          ]
+        },
+        "personas": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TenantApi.SecretSetMissing": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "SetNotFound"
+          ]
+        }
+      }
+    },
+    "TenantApi.SecretSetNoStoredValue": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "source"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NoStoredValue"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.SecretSetNotFound": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotFound"
+          ]
+        }
+      }
+    },
+    "TenantApi.SecretSetsRead": {
+      "type": "object",
+      "required": [
+        "kind",
+        "secretSets"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Read"
+          ]
+        },
+        "secretSets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SecretSet"
+          }
+        }
+      }
+    },
+    "TenantApi.SecretSetUncheckedToken": {
+      "type": "object",
+      "required": [
+        "kind",
+        "source"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "UncheckedToken"
+          ]
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.SecretSetUnreadable": {
+      "type": "object",
+      "required": [
+        "kind",
+        "secretSetId",
+        "name",
+        "member",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unreadable"
+          ]
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "name": {
+          "type": "string"
+        },
+        "member": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        }
+      },
+      "description": "A stored member no longer matches its kind, so the set cannot be read."
+    },
+    "TenantApi.SecretSetUpdated": {
+      "type": "object",
+      "required": [
+        "kind",
+        "secretSet"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Updated"
+          ]
+        },
+        "secretSet": {
+          "$ref": "#/components/schemas/SecretSet"
+        }
+      }
+    },
+    "TenantApi.SecretSetWritten": {
+      "type": "object",
+      "required": [
+        "ok",
+        "value"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        },
+        "value": {
+          "$ref": "#/components/schemas/SecretSet"
+        }
+      }
+    },
+    "TenantApi.SetSecretMemberInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "secretSetId",
+        "member",
+        "githubUser",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "member": {
+          "$ref": "#/components/schemas/SecretValue"
+        },
+        "githubUser": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.GitHubUser"
+            }
+          ],
+          "nullable": true
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.SetSecretMemberRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "setSecretMember"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.SetSecretMemberInput"
+        }
+      }
+    },
+    "TenantApi.SetSecretMemberResult": {
+      "type": "object",
+      "required": [
+        "set"
+      ],
+      "properties": {
+        "set": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretMemberWritten"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetMissing"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetConflict"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetUnreadable"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.StoredFile": {
       "type": "object",
       "required": [
@@ -577,6 +2572,119 @@
       },
       "description": "A persona as the tenant Durable Object stores it, its files named by digest."
     },
+    "TenantApi.SupervisorUpdateInput": {
+      "type": "object",
+      "required": [
+        "hostId",
+        "message"
+      ],
+      "properties": {
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/Channel.SupervisorUpdateStep"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.SupervisorUpdateFailed"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.SupervisorUpdateRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "supervisorUpdate"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.SupervisorUpdateInput"
+        }
+      }
+    },
+    "TenantApi.SupervisorUpdateResult": {
+      "type": "object"
+    },
+    "TenantApi.SupervisorUpdates": {
+      "type": "object",
+      "required": [
+        "supervisorUpdateStep",
+        "supervisorUpdateFailure"
+      ],
+      "properties": {
+        "supervisorUpdateStep": {
+          "$ref": "#/components/schemas/SupervisorUpdateLatestStep"
+        },
+        "supervisorUpdateFailure": {
+          "$ref": "#/components/schemas/SupervisorUpdateLatestFailure"
+        }
+      },
+      "description": "The latest update step and failure a host reported."
+    },
+    "TenantApi.SupervisorUpdatesInput": {
+      "type": "object",
+      "required": [
+        "hostIds"
+      ],
+      "properties": {
+        "hostIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        }
+      }
+    },
+    "TenantApi.SupervisorUpdatesRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "supervisorUpdates"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.SupervisorUpdatesInput"
+        }
+      }
+    },
+    "TenantApi.SupervisorUpdatesResult": {
+      "type": "object",
+      "required": [
+        "byHost"
+      ],
+      "properties": {
+        "byHost": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/components/schemas/TenantApi.SupervisorUpdates"
+          }
+        }
+      }
+    },
     "TenantApi.TenantApiVersionUnsupported": {
       "type": "object",
       "required": [
@@ -661,6 +2769,48 @@
         },
         {
           "$ref": "#/components/schemas/TenantApi.DeletePersonaRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.OpenRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.SupervisorUpdateRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.SupervisorUpdatesRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListSecretSetsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetSecretSetRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CreateSecretSetRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UpdateSecretSetRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.SetSecretMemberRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.RemoveSecretMemberRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DeleteSecretSetRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ApplyConfigRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListPinsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.PinRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UnpinRequest"
         }
       ],
       "discriminator": {
@@ -670,7 +2820,21 @@
           "getPersona": "#/components/schemas/TenantApi.GetPersonaRequest",
           "createPersona": "#/components/schemas/TenantApi.CreatePersonaRequest",
           "updatePersona": "#/components/schemas/TenantApi.UpdatePersonaRequest",
-          "deletePersona": "#/components/schemas/TenantApi.DeletePersonaRequest"
+          "deletePersona": "#/components/schemas/TenantApi.DeletePersonaRequest",
+          "open": "#/components/schemas/TenantApi.OpenRequest",
+          "supervisorUpdate": "#/components/schemas/TenantApi.SupervisorUpdateRequest",
+          "supervisorUpdates": "#/components/schemas/TenantApi.SupervisorUpdatesRequest",
+          "listSecretSets": "#/components/schemas/TenantApi.ListSecretSetsRequest",
+          "getSecretSet": "#/components/schemas/TenantApi.GetSecretSetRequest",
+          "createSecretSet": "#/components/schemas/TenantApi.CreateSecretSetRequest",
+          "updateSecretSet": "#/components/schemas/TenantApi.UpdateSecretSetRequest",
+          "setSecretMember": "#/components/schemas/TenantApi.SetSecretMemberRequest",
+          "removeSecretMember": "#/components/schemas/TenantApi.RemoveSecretMemberRequest",
+          "deleteSecretSet": "#/components/schemas/TenantApi.DeleteSecretSetRequest",
+          "applyConfig": "#/components/schemas/TenantApi.ApplyConfigRequest",
+          "listPins": "#/components/schemas/TenantApi.ListPinsRequest",
+          "pin": "#/components/schemas/TenantApi.PinRequest",
+          "unpin": "#/components/schemas/TenantApi.UnpinRequest"
         }
       },
       "description": "One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation."
@@ -700,6 +2864,68 @@
         }
       },
       "description": "The input fails the operation's schema: a caller bug, which the caller fails as a 500."
+    },
+    "TenantApi.UnpinInput": {
+      "type": "object",
+      "required": [
+        "harness"
+      ],
+      "properties": {
+        "harness": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.UnpinRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "unpin"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.UnpinInput"
+        }
+      }
+    },
+    "TenantApi.UnpinResult": {
+      "type": "object",
+      "required": [
+        "unpinned"
+      ],
+      "properties": {
+        "unpinned": {
+          "type": "boolean"
+        }
+      }
+    },
+    "TenantApi.UnpinWrite": {
+      "type": "object",
+      "required": [
+        "kind",
+        "harness"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unpin"
+          ]
+        },
+        "harness": {
+          "type": "string"
+        }
+      }
     },
     "TenantApi.UpdatePersonaInput": {
       "type": "object",
@@ -760,6 +2986,111 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.WriteConflict"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.UpdatePersonaWrite": {
+      "type": "object",
+      "required": [
+        "kind",
+        "personaId",
+        "persona"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "UpdatePersona"
+          ]
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "persona": {
+          "$ref": "#/components/schemas/TenantApi.PersonaChange"
+        }
+      }
+    },
+    "TenantApi.UpdateSecretSetInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "secretSetId",
+        "change",
+        "githubUser",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "change": {
+          "$ref": "#/components/schemas/SecretSetUpdate"
+        },
+        "githubUser": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.GitHubUser"
+            }
+          ],
+          "nullable": true
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.UpdateSecretSetRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "updateSecretSet"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.UpdateSecretSetInput"
+        }
+      }
+    },
+    "TenantApi.UpdateSecretSetResult": {
+      "type": "object",
+      "required": [
+        "updated"
+      ],
+      "properties": {
+        "updated": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetUpdated"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetMissing"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetConflict"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetNoStoredValue"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetUncheckedToken"
             }
           ]
         }
