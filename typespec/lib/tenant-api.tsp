@@ -325,6 +325,160 @@ model UnknownConnectorsInput {
   connectorIds: EntityId[];
 }
 
+model NewOpenRouterAuthorization {
+  secretSetId: EntityId;
+  controlPlaneOrigin: string;
+}
+
+model StartOpenRouterAuthorizationInput {
+  tenantId: EntityId;
+  principalId: EntityId;
+  input: NewOpenRouterAuthorization;
+  now: int64;
+}
+
+model GetOpenRouterAuthorizationInput {
+  tenantId: EntityId;
+  principalId: EntityId;
+  openRouterAuthorizationId: EntityId;
+}
+
+model OpenRouterCallbackCode {
+  kind: "Code";
+  code: string;
+}
+
+model OpenRouterCallbackNoCode {
+  kind: "NoCode";
+}
+
+model OpenRouterCallbackInput {
+  tenantId: EntityId;
+  openRouterAuthorizationId: EntityId;
+  callback: OpenRouterCallbackCode | OpenRouterCallbackNoCode;
+  now: int64;
+}
+
+model OpenRouterAuthorizationDeadline {
+  openRouterAuthorizationId: EntityId;
+  at: int64;
+}
+
+model OpenRouterAuthorizationDeadlineReachedInput {
+  deadline: OpenRouterAuthorizationDeadline;
+}
+
+model OpenRouterSecretSetsInput {}
+
+model StartCircleCIAuthorizationInput {
+  tenantId: EntityId;
+  principalId: EntityId;
+  now: int64;
+}
+
+model CompleteCircleCIAuthorizationInput {
+  tenantId: EntityId;
+  principalId: EntityId;
+  circleCIAuthorizationId: EntityId;
+  redirectedUrl: string;
+  now: int64;
+}
+
+model ChooseCircleCIOrganizationInput {
+  tenantId: EntityId;
+  principalId: EntityId;
+  circleCIAuthorizationId: EntityId;
+  organizationId: string;
+  now: int64;
+}
+
+model CircleCIAuthorizationDeadline {
+  circleCIAuthorizationId: EntityId;
+  at: int64;
+}
+
+model CircleCIAuthorizationDeadlineReachedInput {
+  tenantId: EntityId;
+  deadline: CircleCIAuthorizationDeadline;
+}
+
+@doc("A host as the control plane stores it, without its supervisor update reports.")
+model HostRecord {
+  ...OmitProperties<Host, "supervisorUpdateStep" | "supervisorUpdateFailure">;
+}
+
+model NewClaudeSetup {
+  principalId: EntityId;
+  secretSetId: EntityId;
+  harness: ClaudeSetupHarness;
+  harnessVersion: string;
+  hosts: HostRecord[];
+  endpoint: string;
+}
+
+model StartClaudeSetupInput {
+  tenantId: EntityId;
+  input: NewClaudeSetup;
+  now: int64;
+}
+
+model GetClaudeSetupInput {
+  tenantId: EntityId;
+  claudeSetupId: EntityId;
+  now: int64;
+}
+
+model ListClaudeSetupsInput {
+  tenantId: EntityId;
+  secretSetId: EntityId;
+  now: int64;
+}
+
+model SubmitClaudeSetupCodeInput {
+  tenantId: EntityId;
+  claudeSetupId: EntityId;
+  code: string;
+  now: int64;
+}
+
+model WriteClaudeSetupTokenInput {
+  tenantId: EntityId;
+  claudeSetupId: EntityId;
+  credential: string;
+  token: string;
+  tokenExpiresAt?: string;
+  now: int64;
+}
+
+model ClaudeSetupDeadline {
+  claudeSetupId: EntityId;
+  at: int64;
+}
+
+model ClaudeSetupDeadlineReachedInput {
+  tenantId: EntityId;
+  deadline: ClaudeSetupDeadline;
+}
+
+model StoredClaudeSetupOffer {
+  type: "ClaudeSetupBoxOffer";
+  claudeSetupId: EntityId;
+  boxId: EntityId;
+}
+
+model StoredClaudeSetupCode {
+  type: "ClaudeSetupBoxCode";
+  claudeSetupId: EntityId;
+  boxId: EntityId;
+}
+
+model PrepareClaudeSetupInput {
+  tenantId: EntityId;
+  stored: StoredClaudeSetupOffer | StoredClaudeSetupCode;
+  hostId: EntityId;
+  now: int64;
+}
+
 model ListPersonasRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "listPersonas";
@@ -505,6 +659,102 @@ model UnknownConnectorsRequest {
   input: UnknownConnectorsInput;
 }
 
+model StartOpenRouterAuthorizationRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "startOpenRouterAuthorization";
+  input: StartOpenRouterAuthorizationInput;
+}
+
+model GetOpenRouterAuthorizationRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getOpenRouterAuthorization";
+  input: GetOpenRouterAuthorizationInput;
+}
+
+model OpenRouterCallbackRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "openRouterCallback";
+  input: OpenRouterCallbackInput;
+}
+
+model OpenRouterAuthorizationDeadlineReachedRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "openRouterAuthorizationDeadlineReached";
+  input: OpenRouterAuthorizationDeadlineReachedInput;
+}
+
+model OpenRouterSecretSetsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "openRouterSecretSets";
+  input: OpenRouterSecretSetsInput;
+}
+
+model StartCircleCIAuthorizationRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "startCircleCIAuthorization";
+  input: StartCircleCIAuthorizationInput;
+}
+
+model CompleteCircleCIAuthorizationRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "completeCircleCIAuthorization";
+  input: CompleteCircleCIAuthorizationInput;
+}
+
+model ChooseCircleCIOrganizationRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "chooseCircleCIOrganization";
+  input: ChooseCircleCIOrganizationInput;
+}
+
+model CircleCIAuthorizationDeadlineReachedRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "circleCIAuthorizationDeadlineReached";
+  input: CircleCIAuthorizationDeadlineReachedInput;
+}
+
+model StartClaudeSetupRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "startClaudeSetup";
+  input: StartClaudeSetupInput;
+}
+
+model GetClaudeSetupRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getClaudeSetup";
+  input: GetClaudeSetupInput;
+}
+
+model ListClaudeSetupsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listClaudeSetups";
+  input: ListClaudeSetupsInput;
+}
+
+model SubmitClaudeSetupCodeRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "submitClaudeSetupCode";
+  input: SubmitClaudeSetupCodeInput;
+}
+
+model WriteClaudeSetupTokenRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "writeClaudeSetupToken";
+  input: WriteClaudeSetupTokenInput;
+}
+
+model ClaudeSetupDeadlineReachedRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "claudeSetupDeadlineReached";
+  input: ClaudeSetupDeadlineReachedInput;
+}
+
+model PrepareClaudeSetupRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "prepareClaudeSetup";
+  input: PrepareClaudeSetupInput;
+}
+
 @doc("One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "operation" })
 union TenantRequest {
@@ -538,6 +788,22 @@ union TenantRequest {
   connectorCallback: ConnectorCallbackRequest,
   serveConnectorToken: ServeConnectorTokenRequest,
   unknownConnectors: UnknownConnectorsRequest,
+  startOpenRouterAuthorization: StartOpenRouterAuthorizationRequest,
+  getOpenRouterAuthorization: GetOpenRouterAuthorizationRequest,
+  openRouterCallback: OpenRouterCallbackRequest,
+  openRouterAuthorizationDeadlineReached: OpenRouterAuthorizationDeadlineReachedRequest,
+  openRouterSecretSets: OpenRouterSecretSetsRequest,
+  startCircleCIAuthorization: StartCircleCIAuthorizationRequest,
+  completeCircleCIAuthorization: CompleteCircleCIAuthorizationRequest,
+  chooseCircleCIOrganization: ChooseCircleCIOrganizationRequest,
+  circleCIAuthorizationDeadlineReached: CircleCIAuthorizationDeadlineReachedRequest,
+  startClaudeSetup: StartClaudeSetupRequest,
+  getClaudeSetup: GetClaudeSetupRequest,
+  listClaudeSetups: ListClaudeSetupsRequest,
+  submitClaudeSetupCode: SubmitClaudeSetupCodeRequest,
+  writeClaudeSetupToken: WriteClaudeSetupTokenRequest,
+  claudeSetupDeadlineReached: ClaudeSetupDeadlineReachedRequest,
+  prepareClaudeSetup: PrepareClaudeSetupRequest,
 }
 
 @doc("The request names a version outside the instance's window, or an older version an adapter cannot translate. The caller answers a retryable failure.")
@@ -886,5 +1152,232 @@ model SetStaticTokenResult {
 
 model ClearConnectorCredentialResult {
   ...ConnectorWrittenResult;
+}
+
+model OpenRouterAuthorizationStartedOk {
+  kind: "Started";
+  authorization: OpenRouterAuthorization;
+}
+
+model AuthorizationNoSecretSet {
+  kind: "NoSecretSet";
+}
+
+model AuthorizationOtherCredential {
+  kind: "OtherCredential";
+  name: string;
+}
+
+model StartOpenRouterAuthorizationResult {
+  started: OpenRouterAuthorizationStartedOk | AuthorizationNoSecretSet | AuthorizationOtherCredential;
+}
+
+model OpenRouterAuthorizationFound {
+  kind: "Found";
+  authorization: OpenRouterAuthorization;
+}
+
+model AuthorizationNotFound {
+  kind: "NotFound";
+}
+
+model GetOpenRouterAuthorizationResult {
+  read: OpenRouterAuthorizationFound | AuthorizationNotFound;
+}
+
+model OpenRouterReturned {
+  kind: "Returned";
+  secretSetId: EntityId;
+}
+
+model OpenRouterCallbackResult {
+  settled: OpenRouterReturned | AuthorizationNotFound;
+}
+
+model OpenRouterAuthorizationDeadlineReachedResult {}
+
+model OpenRouterSecretSetsResult {
+  names: string[];
+}
+
+model CircleCIAuthorizationStartedOk {
+  kind: "Started";
+  authorization: CircleCIAuthorization;
+}
+
+model CircleCIRegistrationRefused {
+  kind: "RegistrationRefused";
+  detail: string;
+}
+
+model StartCircleCIAuthorizationResult {
+  started: CircleCIAuthorizationStartedOk | CircleCIRegistrationRefused;
+}
+
+model CircleCIAuthorizationSteppedOk {
+  kind: "Stepped";
+  authorization: CircleCIAuthorization;
+}
+
+model AuthorizationNotWaiting {
+  kind: "NotWaiting";
+  detail: string;
+}
+
+model AuthorizationInvalid {
+  kind: "Invalid";
+  detail: string;
+}
+
+model CircleCIAuthorizationStepped {
+  stepped: CircleCIAuthorizationSteppedOk | AuthorizationNotFound | AuthorizationNotWaiting | AuthorizationInvalid;
+}
+
+model CompleteCircleCIAuthorizationResult {
+  ...CircleCIAuthorizationStepped;
+}
+
+model ChooseCircleCIOrganizationResult {
+  ...CircleCIAuthorizationStepped;
+}
+
+model CircleCIAuthorizationDeadlineReachedResult {}
+
+model ImageAvailability {
+  harness: string;
+  harnessVersion: string;
+  architectures: HostArchitecture[];
+}
+
+model UnplaceableNotOnline {
+  kind: "Unplaceable";
+  host: HostRecord;
+  reason: "NotOnline";
+}
+
+model UnplaceableNoImage {
+  kind: "Unplaceable";
+  host: HostRecord;
+  reason: "NoImage";
+  image: ImageAvailability;
+}
+
+model UnplaceableFull {
+  kind: "Unplaceable";
+  host: HostRecord;
+  reason: "Full";
+  usage: ReportedHostUsage;
+}
+
+model UnplaceableMemoryFull {
+  kind: "Unplaceable";
+  host: HostRecord;
+  reason: "MemoryFull";
+  usage: ReportedHostUsage;
+  boxMemoryMib: int32;
+}
+
+model UnplaceableNoMemory {
+  kind: "Unplaceable";
+  host: HostRecord;
+  reason: "NoMemory";
+  usage: ReportedHostUsage;
+  boxMemoryMib: int32;
+}
+
+model UnplaceableNoDisk {
+  kind: "Unplaceable";
+  host: HostRecord;
+  reason: "NoDisk";
+  usage: ReportedHostUsage;
+  boxDiskMib: int32;
+}
+
+model UnplaceableNoConnectors {
+  kind: "Unplaceable";
+  host: HostRecord;
+  reason: "NoConnectors";
+  usage: ReportedHostUsage;
+}
+
+@doc("Why placement passed over a host.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "reason" })
+union Unplaceable {
+  NotOnline: UnplaceableNotOnline,
+  NoImage: UnplaceableNoImage,
+  Full: UnplaceableFull,
+  MemoryFull: UnplaceableMemoryFull,
+  NoMemory: UnplaceableNoMemory,
+  NoDisk: UnplaceableNoDisk,
+  NoConnectors: UnplaceableNoConnectors,
+}
+
+model ClaudeSetupStartedOk {
+  kind: "Started";
+  setup: ClaudeSetup;
+}
+
+model ClaudeSetupUnplaced {
+  kind: "Unplaced";
+  hosts: Unplaceable[];
+}
+
+model ClaudeSetupReleaseUnreadable {
+  kind: "ReleaseUnreadable";
+  detail: string;
+}
+
+model StartClaudeSetupResult {
+  started: ClaudeSetupStartedOk | ClaudeSetupUnplaced | ClaudeSetupReleaseUnreadable | AuthorizationNoSecretSet | AuthorizationOtherCredential;
+}
+
+model GetClaudeSetupResult {
+  setup: ClaudeSetup | null;
+}
+
+model ListClaudeSetupsResult {
+  setups: ClaudeSetup[];
+}
+
+model ClaudeSetupCodedOk {
+  kind: "Coded";
+  setup: ClaudeSetup;
+}
+
+model SubmitClaudeSetupCodeResult {
+  coded: ClaudeSetupCodedOk | AuthorizationNotFound | AuthorizationNotWaiting;
+}
+
+model ClaudeSetupStoredOk {
+  kind: "Stored";
+}
+
+model ClaudeSetupRefused {
+  kind: "Refused";
+}
+
+model ClaudeSetupNotStored {
+  kind: "NotStored";
+  detail: string;
+}
+
+model WriteClaudeSetupTokenResult {
+  stored: ClaudeSetupStoredOk | AuthorizationNotFound | ClaudeSetupRefused | AuthorizationNotWaiting | ClaudeSetupNotStored;
+}
+
+model ClaudeSetupDeadlineReachedResult {}
+
+model ClaudeSetupReady {
+  kind: "Ready";
+  message: Channel.ClaudeSetupBoxOffer | Channel.ClaudeSetupBoxCode;
+}
+
+model ClaudeSetupWithdrawn {
+  kind: "Withdrawn";
+  message: Channel.ClaudeSetupBoxDiscard;
+}
+
+model PrepareClaudeSetupResult {
+  prepared: ClaudeSetupReady | ClaudeSetupWithdrawn;
 }
 }

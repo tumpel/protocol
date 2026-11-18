@@ -101,6 +101,276 @@
       ],
       "description": "What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode."
     },
+    "Channel.BaseImageDownload": {
+      "type": "object",
+      "required": [
+        "imageDigest",
+        "kernelDigest",
+        "manifestDigest",
+        "imageUrl",
+        "kernelUrl",
+        "manifestUrl"
+      ],
+      "properties": {
+        "imageDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "kernelDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "manifestDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "kernelUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "manifestUrl": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "description": "The base image of a layered boot, the current release's ReleaseBaseImage for the host's\narchitecture. `imageUrl`, `kernelUrl` and `manifestUrl` are presigned GETs of the ext4 image, the\nkernel and the BaseImageManifest document stored under `imageDigest`, `kernelDigest` and\n`manifestDigest` in the release bucket."
+    },
+    "Channel.BootImage": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/Channel.GuestImageDownload"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.LayeredImageDownload"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Full": "#/components/schemas/Channel.GuestImageDownload",
+          "Layered": "#/components/schemas/Channel.LayeredImageDownload"
+        }
+      },
+      "description": "What a box boots from: a full guest image, or a base image with a harness layer."
+    },
+    "Channel.ClaudeSetupBoxCode": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "boxId",
+        "code",
+        "mintBudgetSeconds"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxCode"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "code": {
+          "$ref": "#/components/schemas/ClaudeSetupCodeText"
+        },
+        "mintBudgetSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 3600
+        }
+      },
+      "description": "The code the person submitted, for the standard input of the setup's `claude setup-token`; the\nhost forwards it to the box once and keeps no copy. The box fails the setup MintTimedOut when\nClaude Code prints no token within `mintBudgetSeconds` of the code."
+    },
+    "Channel.ClaudeSetupBoxDiscard": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "boxId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxDiscard"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "Asks the host to stop the setup's box and delete its drive, also in place of an unacked offer or\ncode of a setup that ended. The host answers nothing, and does nothing when it runs no such box."
+    },
+    "Channel.ClaudeSetupBoxOffer": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "tenantId",
+        "boxId",
+        "harnessVersion",
+        "image",
+        "tokenUrl",
+        "tokenCredential",
+        "expiresAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxOffer"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "harnessVersion": {
+          "$ref": "#/components/schemas/HarnessVersion"
+        },
+        "image": {
+          "$ref": "#/components/schemas/Channel.BootImage"
+        },
+        "tokenUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "tokenCredential": {
+          "type": "string",
+          "minLength": 43
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Asks the host to boot box `boxId` from `image` with no repository, no persona files and no\ncredential, and run `claude setup-token` in it for Claude setup `claudeSetupId`. The host answers\nClaudeSetupBoxUrl once the command prints its sign-in URL, hands the code of a ClaudeSetupBoxCode\nto the command's standard input, and answers ClaudeSetupBoxFailed when the box stops without\nstoring the token. Only the box writes the token: it POSTs it to `tokenUrl` with `tokenCredential`\nas its bearer token, and the host never sees it. `tokenCredential` is bound to this setup and\nwrites its token once, while the setup is Minting. The host stops the box at `expiresAt`, when it stores the token, or on\nClaudeSetupBoxDiscard, and deletes its drive."
+    },
+    "Channel.GuestImageDownload": {
+      "type": "object",
+      "required": [
+        "kind",
+        "imageDigest",
+        "kernelDigest",
+        "manifestDigest",
+        "imageUrl",
+        "kernelUrl",
+        "manifestUrl",
+        "downloadExpiresAt",
+        "fetchSeconds"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Full"
+          ]
+        },
+        "imageDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "kernelDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "manifestDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "kernelUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "manifestUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "downloadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fetchSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        }
+      },
+      "description": "The full guest image of the turn, from the current ReleaseManifest, for the session's harness version\nand the architecture the host enrolled with, offered while the release lacks a base image or a\nharness layer for them. `imageUrl`, `kernelUrl` and `manifestUrl` are presigned\nGETs of the ext4 image, the kernel and the GuestImageManifest document stored under\n`imageDigest`, `kernelDigest` and `manifestDigest` in the release bucket, valid until\n`downloadExpiresAt`, turnOfferTtlSeconds plus `fetchSeconds` after the send of the offer. A supervisor whose\nimage cache lacks `imageDigest` sends TurnImageFetching and downloads the three within `fetchSeconds` of\nsending it, counting the wait for another image the host is fetching; it fetches one image at a time,\nchecks each against its digest and only then moves them into the cache, replacing the cached image\nof the same harness version; it skips the kernel when the cache holds `kernelDigest`. A download\nthat fails, misses its digest or names another image in its manifest fails the turn ImageFetchFailed,\none that outlasts `fetchSeconds` fails it ImageFetchTimedOut."
+    },
+    "Channel.HarnessLayerDownload": {
+      "type": "object",
+      "required": [
+        "layer",
+        "layerUrl",
+        "manifestUrl"
+      ],
+      "properties": {
+        "layer": {
+          "$ref": "#/components/schemas/ReleaseHarnessLayer"
+        },
+        "layerUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "manifestUrl": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "description": "The harness layer of a layered boot, the current release's ReleaseHarnessLayer for the session's\nharness version and the host's architecture. `layerUrl` and `manifestUrl` are presigned GETs of\nthe squashfs file and the HarnessLayerManifest document stored under `layer.layerDigest` and\n`layer.manifestDigest` in the release bucket."
+    },
+    "Channel.LayeredImageDownload": {
+      "type": "object",
+      "required": [
+        "kind",
+        "base",
+        "layer",
+        "downloadExpiresAt",
+        "fetchSeconds"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Layered"
+          ]
+        },
+        "base": {
+          "$ref": "#/components/schemas/Channel.BaseImageDownload"
+        },
+        "layer": {
+          "$ref": "#/components/schemas/Channel.HarnessLayerDownload"
+        },
+        "downloadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fetchSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        }
+      },
+      "description": "The layered boot of the turn, offered when the current release carries a base image for the\nhost's architecture and a harness layer for the session's harness version on it. The box boots\nfrom the base, the guest drive of the host's supervisor and the layer. The URLs are valid until\n`downloadExpiresAt`, turnOfferTtlSeconds plus `fetchSeconds` after the send of the offer. A supervisor whose\ncache lacks the base or the layer sends TurnImageFetching naming the first part it lacks, then\nfetches base, kernel and layer within one `fetchSeconds` of sending it, counting the wait for\nanother fetch on the host, and checks each against its digest before it moves it into the cache. A\ndownload that fails, misses its digest or names another part in its manifest fails the turn\nImageFetchFailed, one that outlasts `fetchSeconds` fails it ImageFetchTimedOut. The host keeps the\nbase and the layer in its cache while a box runs on them."
+    },
     "Channel.SupervisorUpdateFailed": {
       "type": "object",
       "required": [
@@ -187,6 +457,502 @@
         }
       },
       "description": "The host's supervisor update from the binary `fromSha256` to `toSha256` entered `phase`. The new\nbinary sends Online once it reaches Welcome after the swap."
+    },
+    "ChannelProtocol": {
+      "type": "integer",
+      "format": "int32",
+      "minimum": 18,
+      "maximum": 28,
+      "description": "A host channel protocol version, from Oldest, the oldest version whose wire lock and data types\nthe repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a\nconnection that speaks another with UnsupportedVersion.",
+      "x-bound-names": [
+        "Oldest",
+        "Version"
+      ]
+    },
+    "CircleCIAuthorization": {
+      "type": "object",
+      "required": [
+        "circleCIAuthorizationId",
+        "tenantId",
+        "principalId",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "circleCIAuthorizationId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "status": {
+          "$ref": "#/components/schemas/CircleCIAuthorizationStatus"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "One OAuth 2.0 authorization code flow with PKCE S256 that connects the tenant's CircleCI\norganization. The tenant's own client, registered once through CircleCI's dynamic client\nregistration, sends the person to CircleCI's consent page; CircleCI sends the browser back to a\nloopback address. The verifier and the token are held sealed and never answered."
+    },
+    "CircleCIAuthorizationAwaitingRedirect": {
+      "type": "object",
+      "required": [
+        "state",
+        "authorizeUrl",
+        "redirectUri",
+        "redirectDueAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "AwaitingRedirect"
+          ]
+        },
+        "authorizeUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "CircleCI's consent page, with this authorization's client_id, PKCE S256 challenge and state."
+        },
+        "redirectUri": {
+          "type": "string",
+          "format": "uri",
+          "description": "The loopback address CircleCI sends the browser to, http://127.0.0.1:47151/circleci/callback; nothing listens there unless the tumpel CLI does."
+        },
+        "redirectDueAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the redirect address must arrive by, or the authorization fails AuthorizationTimedOut."
+        }
+      }
+    },
+    "CircleCIAuthorizationChoosingOrganization": {
+      "type": "object",
+      "required": [
+        "state",
+        "organizations",
+        "chooseDueAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "ChoosingOrganization"
+          ]
+        },
+        "organizations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/CircleCIOrganization"
+          }
+        },
+        "chooseDueAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the organization must be chosen by, or the authorization fails AuthorizationTimedOut and the token is discarded."
+        }
+      }
+    },
+    "CircleCIAuthorizationCompleted": {
+      "type": "object",
+      "required": [
+        "state",
+        "organizationId",
+        "accountLabel",
+        "expiresAt",
+        "completedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Completed"
+          ]
+        },
+        "organizationId": {
+          "$ref": "#/components/schemas/CircleCIUuid"
+        },
+        "accountLabel": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the token stops working."
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "CircleCIAuthorizationFailed": {
+      "type": "object",
+      "required": [
+        "state",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Failed"
+          ]
+        },
+        "reason": {
+          "$ref": "#/components/schemas/CircleCIAuthorizationFailureReason"
+        },
+        "detail": {
+          "type": "string",
+          "description": "What failed and what fixes it."
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "CircleCIAuthorizationFailureReason": {
+      "type": "string",
+      "enum": [
+        "AuthorizationTimedOut",
+        "AccessDenied",
+        "CodeRefused",
+        "NoOrganization",
+        "ExchangeFailed"
+      ],
+      "description": "Why a CircleCI authorization ended Failed. Each reason names the phase it stopped in."
+    },
+    "CircleCIAuthorizationStatus": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/CircleCIAuthorizationAwaitingRedirect"
+        },
+        {
+          "$ref": "#/components/schemas/CircleCIAuthorizationChoosingOrganization"
+        },
+        {
+          "$ref": "#/components/schemas/CircleCIAuthorizationCompleted"
+        },
+        {
+          "$ref": "#/components/schemas/CircleCIAuthorizationFailed"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "state",
+        "mapping": {
+          "AwaitingRedirect": "#/components/schemas/CircleCIAuthorizationAwaitingRedirect",
+          "ChoosingOrganization": "#/components/schemas/CircleCIAuthorizationChoosingOrganization",
+          "Completed": "#/components/schemas/CircleCIAuthorizationCompleted",
+          "Failed": "#/components/schemas/CircleCIAuthorizationFailed"
+        }
+      },
+      "description": "Where a CircleCI authorization is: the consent URL while it waits for the redirect, the organizations while it waits for a choice, the organization once Completed, the reason once Failed."
+    },
+    "CircleCIOrganization": {
+      "type": "object",
+      "required": [
+        "organizationId",
+        "name",
+        "slug"
+      ],
+      "properties": {
+        "organizationId": {
+          "$ref": "#/components/schemas/CircleCIUuid"
+        },
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "slug": {
+          "type": "string",
+          "description": "The organization's slug, such as gh/acme or circleci/<id>."
+        }
+      },
+      "description": "A CircleCI organization the authorized token reads, from GET /api/v2/me/collaborations."
+    },
+    "CircleCIUuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "A CircleCI id: an organization, a project or a pipeline definition, as a lower-case UUID."
+    },
+    "ClaudeSetup": {
+      "type": "object",
+      "required": [
+        "claudeSetupId",
+        "tenantId",
+        "principalId",
+        "secretSetId",
+        "hostId",
+        "boxId",
+        "harness",
+        "harnessVersion",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "harness": {
+          "$ref": "#/components/schemas/ClaudeSetupHarness"
+        },
+        "harnessVersion": {
+          "$ref": "#/components/schemas/HarnessVersion"
+        },
+        "status": {
+          "$ref": "#/components/schemas/ClaudeSetupStatus"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "A short-lived box that signs in to the setup's harness and stores the token in a secret set: it\nruns `claude setup-token` from the tenant's pinned Claude Code and stores the SubscriptionToken\nmember CLAUDE_CODE_OAUTH_TOKEN for Anthropic, or `codex login --device-auth` from the pinned Codex\nand stores the auth.json it writes as the CredentialFile member CODEX_AUTH_JSON for OpenAi. The box gets no secret set member and no GitHub token,\nand the token never appears in any response."
+    },
+    "ClaudeSetupAwaitingCode": {
+      "type": "object",
+      "required": [
+        "state",
+        "signInUrl",
+        "codeDueAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "AwaitingCode"
+          ]
+        },
+        "signInUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Where the person signs in; for Claude Code the page shows the code to submit."
+        },
+        "userCode": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ClaudeSetupUserCode"
+            }
+          ],
+          "description": "The one-time code a Codex setup shows, for the person to enter at signInUrl. A Codex setup takes no submitted code: its box stores the token once the person signs in."
+        },
+        "codeDueAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the code must arrive by, or for Codex the sign-in must finish by, or the setup fails SetupTimedOut."
+        }
+      },
+      "description": "The box printed its sign-in URL and waits for the code the sign-in page shows."
+    },
+    "ClaudeSetupCodeText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "The sign-in code a person pastes after signing in at a Claude setup's signInUrl."
+    },
+    "ClaudeSetupCompleted": {
+      "type": "object",
+      "required": [
+        "state",
+        "memberName",
+        "expiresAt",
+        "completedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Completed"
+          ]
+        },
+        "memberName": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ClaudeSetupMember"
+            }
+          ],
+          "description": "The member the setup wrote: the SubscriptionToken CLAUDE_CODE_OAUTH_TOKEN for Anthropic, or the CredentialFile CODEX_AUTH_JSON for OpenAi."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself."
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The secret set holds the minted token."
+    },
+    "ClaudeSetupFailed": {
+      "type": "object",
+      "required": [
+        "state",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Failed"
+          ]
+        },
+        "reason": {
+          "$ref": "#/components/schemas/ClaudeSetupFailureReason"
+        },
+        "detail": {
+          "type": "string",
+          "description": "What failed and what fixes it."
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The setup stopped without storing a token; the secret set is unchanged."
+    },
+    "ClaudeSetupFailureReason": {
+      "type": "string",
+      "enum": [
+        "SetupUrlMissing",
+        "CodeRejected",
+        "ClaudeCodeExited",
+        "SetupTimedOut",
+        "TokenNotStored",
+        "NoHostOnline",
+        "Superseded"
+      ],
+      "description": "Why a Claude setup ended Failed. Each reason names the phase it stopped in."
+    },
+    "ClaudeSetupHarness": {
+      "type": "string",
+      "enum": [
+        "ClaudeCode",
+        "Codex"
+      ],
+      "description": "The harness a Claude setup signs in to: Claude Code with claude setup-token, or Codex with codex login --device-auth."
+    },
+    "ClaudeSetupMember": {
+      "type": "string",
+      "enum": [
+        "CLAUDE_CODE_OAUTH_TOKEN",
+        "CODEX_AUTH_JSON"
+      ],
+      "description": "The secret set member a Claude setup writes: the variable its harness reads a subscription token from."
+    },
+    "ClaudeSetupMinting": {
+      "type": "object",
+      "required": [
+        "state",
+        "tokenDueAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Minting"
+          ]
+        },
+        "tokenDueAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the setup fails SetupTimedOut unless the box stored the token or reported why not: claudeSetupMintBudgetSeconds plus claudeSetupMintGraceSeconds after the code."
+        }
+      },
+      "description": "The box has the code and waits for Claude Code to mint and store the token."
+    },
+    "ClaudeSetupStarting": {
+      "type": "object",
+      "required": [
+        "state",
+        "urlDueAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Starting"
+          ]
+        },
+        "urlDueAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the box must print its sign-in URL by, or the setup fails SetupUrlMissing."
+        }
+      },
+      "description": "The box is booting on its host."
+    },
+    "ClaudeSetupStatus": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/ClaudeSetupStarting"
+        },
+        {
+          "$ref": "#/components/schemas/ClaudeSetupAwaitingCode"
+        },
+        {
+          "$ref": "#/components/schemas/ClaudeSetupMinting"
+        },
+        {
+          "$ref": "#/components/schemas/ClaudeSetupCompleted"
+        },
+        {
+          "$ref": "#/components/schemas/ClaudeSetupFailed"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "state",
+        "mapping": {
+          "Starting": "#/components/schemas/ClaudeSetupStarting",
+          "AwaitingCode": "#/components/schemas/ClaudeSetupAwaitingCode",
+          "Minting": "#/components/schemas/ClaudeSetupMinting",
+          "Completed": "#/components/schemas/ClaudeSetupCompleted",
+          "Failed": "#/components/schemas/ClaudeSetupFailed"
+        }
+      },
+      "description": "Where a Claude setup is, with the facts of its state: the time each live phase ends by, the sign-in URL while it waits for the code, the member once Completed, the reason once Failed. A setup read past the end of its phase reads Failed."
+    },
+    "ClaudeSetupUserCode": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "The one-time code Codex prints for the person to enter at the sign-in URL."
     },
     "Connector": {
       "type": "object",
@@ -554,6 +1320,39 @@
       "type": "string",
       "minLength": 1
     },
+    "HostArchitecture": {
+      "type": "string",
+      "enum": [
+        "Amd64",
+        "Arm64"
+      ]
+    },
+    "HostLabel": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._=-]{0,62}$",
+      "description": "A label a host carries for placement, such as gpu or region-eu."
+    },
+    "HostState": {
+      "type": "string",
+      "enum": [
+        "Enrolled",
+        "Online",
+        "Offline",
+        "Revoked"
+      ]
+    },
+    "ImageHarness": {
+      "type": "string",
+      "enum": [
+        "ClaudeCode",
+        "Codex",
+        "OpenCode",
+        "PiDev",
+        "MistralAgent",
+        "Shell"
+      ],
+      "description": "The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot."
+    },
     "ModelProvider": {
       "type": "string",
       "enum": [
@@ -627,6 +1426,184 @@
       },
       "description": "A remote MCP server the tenant connects once through OAuth. An Owner authorizes it in a browser,\nthe control plane holds the grant sealed and refreshes it, and every session in the tenant whose\npersona lists it reaches it through the box's loopback forwarder. The URL is fixed at create."
     },
+    "OpenRouterAuthorization": {
+      "type": "object",
+      "required": [
+        "openRouterAuthorizationId",
+        "tenantId",
+        "principalId",
+        "secretSetId",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "openRouterAuthorizationId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "status": {
+          "$ref": "#/components/schemas/OpenRouterAuthorizationStatus"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "One OAuth PKCE S256 flow at OpenRouter that mints an API key and stores it in a secret set as the\nApiKey member OPENROUTER_API_KEY for OpenRouter. OpenRouter sends the browser back to the control\nplane, which spends the code with the verifier it holds sealed and then sends the browser to\nthe secret set's page with openRouterAuthorizationId added. The code, the verifier and the key never appear in\na response."
+    },
+    "OpenRouterAuthorizationAwaitingCallback": {
+      "type": "object",
+      "required": [
+        "state",
+        "authorizeUrl",
+        "callbackDueAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "AwaitingCallback"
+          ]
+        },
+        "authorizeUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "OpenRouter's authorization page, with the control plane's callback_url, this authorization's PKCE S256 challenge and its signed state."
+        },
+        "callbackDueAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the callback must arrive by, or the authorization fails AuthorizationTimedOut."
+        }
+      }
+    },
+    "OpenRouterAuthorizationCompleted": {
+      "type": "object",
+      "required": [
+        "state",
+        "keyLabel",
+        "completedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Completed"
+          ]
+        },
+        "keyLabel": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/DisplayName"
+            }
+          ],
+          "description": "The label the key carries on OpenRouter, where its owner deletes it."
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "OpenRouterAuthorizationExchanging": {
+      "type": "object",
+      "required": [
+        "state",
+        "exchangeDueAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Exchanging"
+          ]
+        },
+        "exchangeDueAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the exchange must have stored a key by, or the authorization fails ExchangeFailed."
+        }
+      }
+    },
+    "OpenRouterAuthorizationFailed": {
+      "type": "object",
+      "required": [
+        "state",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Failed"
+          ]
+        },
+        "reason": {
+          "$ref": "#/components/schemas/OpenRouterAuthorizationFailureReason"
+        },
+        "detail": {
+          "type": "string",
+          "description": "What failed and what fixes it."
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "OpenRouterAuthorizationFailureReason": {
+      "type": "string",
+      "enum": [
+        "AuthorizationTimedOut",
+        "NotConnected",
+        "CodeRefused",
+        "ExchangeFailed",
+        "KeyNotStored"
+      ],
+      "description": "Why an OpenRouter authorization ended Failed. Each reason names the phase it stopped in."
+    },
+    "OpenRouterAuthorizationStatus": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/OpenRouterAuthorizationAwaitingCallback"
+        },
+        {
+          "$ref": "#/components/schemas/OpenRouterAuthorizationExchanging"
+        },
+        {
+          "$ref": "#/components/schemas/OpenRouterAuthorizationCompleted"
+        },
+        {
+          "$ref": "#/components/schemas/OpenRouterAuthorizationFailed"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "state",
+        "mapping": {
+          "AwaitingCallback": "#/components/schemas/OpenRouterAuthorizationAwaitingCallback",
+          "Exchanging": "#/components/schemas/OpenRouterAuthorizationExchanging",
+          "Completed": "#/components/schemas/OpenRouterAuthorizationCompleted",
+          "Failed": "#/components/schemas/OpenRouterAuthorizationFailed"
+        }
+      },
+      "description": "Where an OpenRouter authorization is: the authorization URL while it waits for the callback, the exchange time limit while it spends the code, the key label once Completed, the reason once Failed."
+    },
     "PersonaFilePath": {
       "type": "string",
       "maxLength": 200,
@@ -639,6 +1616,138 @@
       "minimum": 0,
       "maximum": 262144,
       "description": "The size of a persona file in bytes, at most PersonaFileLimit.PersonaBytes."
+    },
+    "ReleaseHarnessLayer": {
+      "type": "object",
+      "required": [
+        "harness",
+        "harnessVersion",
+        "architecture",
+        "layerDigest",
+        "manifestDigest",
+        "sizeBytes"
+      ],
+      "properties": {
+        "harness": {
+          "$ref": "#/components/schemas/ImageHarness"
+        },
+        "harnessVersion": {
+          "$ref": "#/components/schemas/HarnessVersion"
+        },
+        "architecture": {
+          "$ref": "#/components/schemas/HostArchitecture"
+        },
+        "layerDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "manifestDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
+      },
+      "description": "One harness layer of a release, for one harness version and architecture: a read-only squashfs\nimage compressed with zstd whose root is `/opt/harness/<harness>/<harnessVersion>` in the box.\nThe squashfs file and its HarnessLayerManifest document are stored under\n`layers/<harness>/<harnessVersion>/<arch>/<digest>` by `layerDigest` and `manifestDigest`.\n`sizeBytes` is the size of the squashfs file. A host attaches a layer only once its sha256\nmatches `layerDigest`."
+    },
+    "ReportedHostUsage": {
+      "type": "object",
+      "required": [
+        "hostId",
+        "tenantId",
+        "boxCapacity",
+        "boxesRunning",
+        "boxesWarm",
+        "loadAverage",
+        "memoryAvailableMib",
+        "channelProtocol",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "hostId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxCapacity": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 256
+        },
+        "boxesRunning": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0
+        },
+        "boxesWarm": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0
+        },
+        "loadAverage": {
+          "type": "number",
+          "format": "double",
+          "minimum": 0
+        },
+        "memoryAvailableMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "diskBudgetMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "diskHeldMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "memoryBudgetMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "memoryHeldMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "channelProtocol": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ChannelProtocol"
+            }
+          ],
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        }
+      },
+      "description": "A host's box slots and its last reported usage, kept by its tenant from the host's Hello and\nHeartbeats. `boxCapacity` comes from Hello. `boxesRunning` counts the tenant's Offered and\nRunning turns on the host. Placement counts the boxes a host holds from the tenant's own\nsessions, never from the reported `boxesWarm`, which lags by a Heartbeat.\n`channelProtocol` is the protocol version the host's latest Hello negotiated; the control plane\ncloses the connection with UnsupportedVersion instead of sending a frame of a newer version,\nand resends it once the host reconnects on a version that speaks it. A host that has not connected since it enrolled has none."
     },
     "SecretKey": {
       "type": "object",
@@ -1329,6 +2438,516 @@
         }
       }
     },
+    "TenantApi.AuthorizationInvalid": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Invalid"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.AuthorizationNoSecretSet": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NoSecretSet"
+          ]
+        }
+      }
+    },
+    "TenantApi.AuthorizationNotFound": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotFound"
+          ]
+        }
+      }
+    },
+    "TenantApi.AuthorizationNotWaiting": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotWaiting"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.AuthorizationOtherCredential": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "OtherCredential"
+          ]
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ChooseCircleCIOrganizationInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "principalId",
+        "circleCIAuthorizationId",
+        "organizationId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "circleCIAuthorizationId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "organizationId": {
+          "type": "string"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ChooseCircleCIOrganizationRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "chooseCircleCIOrganization"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ChooseCircleCIOrganizationInput"
+        }
+      }
+    },
+    "TenantApi.ChooseCircleCIOrganizationResult": {
+      "type": "object",
+      "required": [
+        "stepped"
+      ],
+      "properties": {
+        "stepped": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIAuthorizationSteppedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotWaiting"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationInvalid"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.CircleCIAuthorizationDeadline": {
+      "type": "object",
+      "required": [
+        "circleCIAuthorizationId",
+        "at"
+      ],
+      "properties": {
+        "circleCIAuthorizationId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "at": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.CircleCIAuthorizationDeadlineReachedInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "deadline"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "deadline": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIAuthorizationDeadline"
+        }
+      }
+    },
+    "TenantApi.CircleCIAuthorizationDeadlineReachedRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "circleCIAuthorizationDeadlineReached"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CircleCIAuthorizationDeadlineReachedInput"
+        }
+      }
+    },
+    "TenantApi.CircleCIAuthorizationDeadlineReachedResult": {
+      "type": "object"
+    },
+    "TenantApi.CircleCIAuthorizationStartedOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "authorization"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Started"
+          ]
+        },
+        "authorization": {
+          "$ref": "#/components/schemas/CircleCIAuthorization"
+        }
+      }
+    },
+    "TenantApi.CircleCIAuthorizationStepped": {
+      "type": "object",
+      "required": [
+        "stepped"
+      ],
+      "properties": {
+        "stepped": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIAuthorizationSteppedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotWaiting"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationInvalid"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.CircleCIAuthorizationSteppedOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "authorization"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Stepped"
+          ]
+        },
+        "authorization": {
+          "$ref": "#/components/schemas/CircleCIAuthorization"
+        }
+      }
+    },
+    "TenantApi.CircleCIRegistrationRefused": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "RegistrationRefused"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupCodedOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "setup"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Coded"
+          ]
+        },
+        "setup": {
+          "$ref": "#/components/schemas/ClaudeSetup"
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupDeadline": {
+      "type": "object",
+      "required": [
+        "claudeSetupId",
+        "at"
+      ],
+      "properties": {
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "at": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupDeadlineReachedInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "deadline"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "deadline": {
+          "$ref": "#/components/schemas/TenantApi.ClaudeSetupDeadline"
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupDeadlineReachedRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "claudeSetupDeadlineReached"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ClaudeSetupDeadlineReachedInput"
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupDeadlineReachedResult": {
+      "type": "object"
+    },
+    "TenantApi.ClaudeSetupNotStored": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotStored"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupReady": {
+      "type": "object",
+      "required": [
+        "kind",
+        "message"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Ready"
+          ]
+        },
+        "message": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/Channel.ClaudeSetupBoxOffer"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.ClaudeSetupBoxCode"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupRefused": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Refused"
+          ]
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupReleaseUnreadable": {
+      "type": "object",
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "ReleaseUnreadable"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupStartedOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "setup"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Started"
+          ]
+        },
+        "setup": {
+          "$ref": "#/components/schemas/ClaudeSetup"
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupStoredOk": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Stored"
+          ]
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupUnplaced": {
+      "type": "object",
+      "required": [
+        "kind",
+        "hosts"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unplaced"
+          ]
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.Unplaceable"
+          }
+        }
+      }
+    },
+    "TenantApi.ClaudeSetupWithdrawn": {
+      "type": "object",
+      "required": [
+        "kind",
+        "message"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Withdrawn"
+          ]
+        },
+        "message": {
+          "$ref": "#/components/schemas/Channel.ClaudeSetupBoxDiscard"
+        }
+      }
+    },
     "TenantApi.ClearConnectorCredentialInput": {
       "type": "object",
       "required": [
@@ -1395,6 +3014,80 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.ConnectorChanged"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.CompleteCircleCIAuthorizationInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "principalId",
+        "circleCIAuthorizationId",
+        "redirectedUrl",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "circleCIAuthorizationId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "redirectedUrl": {
+          "type": "string"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.CompleteCircleCIAuthorizationRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "completeCircleCIAuthorization"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CompleteCircleCIAuthorizationInput"
+        }
+      }
+    },
+    "TenantApi.CompleteCircleCIAuthorizationResult": {
+      "type": "object",
+      "required": [
+        "stepped"
+      ],
+      "properties": {
+        "stepped": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIAuthorizationSteppedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotWaiting"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationInvalid"
             }
           ]
         }
@@ -2396,6 +4089,65 @@
         }
       }
     },
+    "TenantApi.GetClaudeSetupInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "claudeSetupId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.GetClaudeSetupRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getClaudeSetup"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetClaudeSetupInput"
+        }
+      }
+    },
+    "TenantApi.GetClaudeSetupResult": {
+      "type": "object",
+      "required": [
+        "setup"
+      ],
+      "properties": {
+        "setup": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ClaudeSetup"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
     "TenantApi.GetConnectorInput": {
       "type": "object",
       "required": [
@@ -2451,6 +4203,65 @@
             }
           ],
           "nullable": true
+        }
+      }
+    },
+    "TenantApi.GetOpenRouterAuthorizationInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "principalId",
+        "openRouterAuthorizationId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "openRouterAuthorizationId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.GetOpenRouterAuthorizationRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getOpenRouterAuthorization"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetOpenRouterAuthorizationInput"
+        }
+      }
+    },
+    "TenantApi.GetOpenRouterAuthorizationResult": {
+      "type": "object",
+      "required": [
+        "read"
+      ],
+      "properties": {
+        "read": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.OpenRouterAuthorizationFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotFound"
+            }
+          ]
         }
       }
     },
@@ -2582,6 +4393,170 @@
         }
       },
       "description": "The GitHub account a repository token secret acts as, when the set holds one."
+    },
+    "TenantApi.HostRecord": {
+      "type": "object",
+      "required": [
+        "hostId",
+        "tenantId",
+        "name",
+        "state",
+        "architecture",
+        "cpuCount",
+        "memoryBytes",
+        "publicKey",
+        "supervisorVersion",
+        "labels",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "hostId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "state": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/HostState"
+            }
+          ],
+          "readOnly": true
+        },
+        "architecture": {
+          "$ref": "#/components/schemas/HostArchitecture"
+        },
+        "cpuCount": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "memoryBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "publicKey": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The host's Ed25519 public key, base64. The private key never leaves the host."
+        },
+        "supervisorVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/HostLabel"
+          },
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        }
+      },
+      "description": "A host as the control plane stores it, without its supervisor update reports."
+    },
+    "TenantApi.ImageAvailability": {
+      "type": "object",
+      "required": [
+        "harness",
+        "harnessVersion",
+        "architectures"
+      ],
+      "properties": {
+        "harness": {
+          "type": "string"
+        },
+        "harnessVersion": {
+          "type": "string"
+        },
+        "architectures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/HostArchitecture"
+          }
+        }
+      }
+    },
+    "TenantApi.ListClaudeSetupsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "secretSetId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ListClaudeSetupsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listClaudeSetups"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListClaudeSetupsInput"
+        }
+      }
+    },
+    "TenantApi.ListClaudeSetupsResult": {
+      "type": "object",
+      "required": [
+        "setups"
+      ],
+      "properties": {
+        "setups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/ClaudeSetup"
+          }
+        }
+      }
     },
     "TenantApi.ListConnectorsInput": {
       "type": "object",
@@ -2772,6 +4747,55 @@
         }
       }
     },
+    "TenantApi.NewClaudeSetup": {
+      "type": "object",
+      "required": [
+        "principalId",
+        "secretSetId",
+        "harness",
+        "harnessVersion",
+        "hosts",
+        "endpoint"
+      ],
+      "properties": {
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "harness": {
+          "$ref": "#/components/schemas/ClaudeSetupHarness"
+        },
+        "harnessVersion": {
+          "type": "string"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.HostRecord"
+          }
+        },
+        "endpoint": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.NewOpenRouterAuthorization": {
+      "type": "object",
+      "required": [
+        "secretSetId",
+        "controlPlaneOrigin"
+      ],
+      "properties": {
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "controlPlaneOrigin": {
+          "type": "string"
+        }
+      }
+    },
     "TenantApi.OpenInput": {
       "type": "object",
       "required": [
@@ -2812,6 +4836,254 @@
     },
     "TenantApi.OpenResult": {
       "type": "object"
+    },
+    "TenantApi.OpenRouterAuthorizationDeadline": {
+      "type": "object",
+      "required": [
+        "openRouterAuthorizationId",
+        "at"
+      ],
+      "properties": {
+        "openRouterAuthorizationId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "at": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.OpenRouterAuthorizationDeadlineReachedInput": {
+      "type": "object",
+      "required": [
+        "deadline"
+      ],
+      "properties": {
+        "deadline": {
+          "$ref": "#/components/schemas/TenantApi.OpenRouterAuthorizationDeadline"
+        }
+      }
+    },
+    "TenantApi.OpenRouterAuthorizationDeadlineReachedRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "openRouterAuthorizationDeadlineReached"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.OpenRouterAuthorizationDeadlineReachedInput"
+        }
+      }
+    },
+    "TenantApi.OpenRouterAuthorizationDeadlineReachedResult": {
+      "type": "object"
+    },
+    "TenantApi.OpenRouterAuthorizationFound": {
+      "type": "object",
+      "required": [
+        "kind",
+        "authorization"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Found"
+          ]
+        },
+        "authorization": {
+          "$ref": "#/components/schemas/OpenRouterAuthorization"
+        }
+      }
+    },
+    "TenantApi.OpenRouterAuthorizationStartedOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "authorization"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Started"
+          ]
+        },
+        "authorization": {
+          "$ref": "#/components/schemas/OpenRouterAuthorization"
+        }
+      }
+    },
+    "TenantApi.OpenRouterCallbackCode": {
+      "type": "object",
+      "required": [
+        "kind",
+        "code"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Code"
+          ]
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.OpenRouterCallbackInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "openRouterAuthorizationId",
+        "callback",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "openRouterAuthorizationId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "callback": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.OpenRouterCallbackCode"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.OpenRouterCallbackNoCode"
+            }
+          ]
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.OpenRouterCallbackNoCode": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NoCode"
+          ]
+        }
+      }
+    },
+    "TenantApi.OpenRouterCallbackRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "openRouterCallback"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.OpenRouterCallbackInput"
+        }
+      }
+    },
+    "TenantApi.OpenRouterCallbackResult": {
+      "type": "object",
+      "required": [
+        "settled"
+      ],
+      "properties": {
+        "settled": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.OpenRouterReturned"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotFound"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.OpenRouterReturned": {
+      "type": "object",
+      "required": [
+        "kind",
+        "secretSetId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Returned"
+          ]
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.OpenRouterSecretSetsInput": {
+      "type": "object"
+    },
+    "TenantApi.OpenRouterSecretSetsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "openRouterSecretSets"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.OpenRouterSecretSetsInput"
+        }
+      }
+    },
+    "TenantApi.OpenRouterSecretSetsResult": {
+      "type": "object",
+      "required": [
+        "names"
+      ],
+      "properties": {
+        "names": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     },
     "TenantApi.PersonaChange": {
       "type": "object",
@@ -3069,6 +5341,77 @@
         },
         "pin": {
           "$ref": "#/components/schemas/HarnessPinCreate"
+        }
+      }
+    },
+    "TenantApi.PrepareClaudeSetupInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "stored",
+        "hostId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "stored": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.StoredClaudeSetupOffer"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StoredClaudeSetupCode"
+            }
+          ]
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.PrepareClaudeSetupRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "prepareClaudeSetup"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.PrepareClaudeSetupInput"
+        }
+      }
+    },
+    "TenantApi.PrepareClaudeSetupResult": {
+      "type": "object",
+      "required": [
+        "prepared"
+      ],
+      "properties": {
+        "prepared": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupReady"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupWithdrawn"
+            }
+          ]
         }
       }
     },
@@ -3750,6 +6093,135 @@
         }
       }
     },
+    "TenantApi.StartCircleCIAuthorizationInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "principalId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.StartCircleCIAuthorizationRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "startCircleCIAuthorization"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.StartCircleCIAuthorizationInput"
+        }
+      }
+    },
+    "TenantApi.StartCircleCIAuthorizationResult": {
+      "type": "object",
+      "required": [
+        "started"
+      ],
+      "properties": {
+        "started": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIAuthorizationStartedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.CircleCIRegistrationRefused"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.StartClaudeSetupInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "input",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.NewClaudeSetup"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.StartClaudeSetupRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "startClaudeSetup"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.StartClaudeSetupInput"
+        }
+      }
+    },
+    "TenantApi.StartClaudeSetupResult": {
+      "type": "object",
+      "required": [
+        "started"
+      ],
+      "properties": {
+        "started": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupStartedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupUnplaced"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupReleaseUnreadable"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNoSecretSet"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationOtherCredential"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.StartConnectorAuthorizationInput": {
       "type": "object",
       "required": [
@@ -3829,6 +6301,117 @@
               "$ref": "#/components/schemas/TenantApi.ConnectorRegistrationUnsupported"
             }
           ]
+        }
+      }
+    },
+    "TenantApi.StartOpenRouterAuthorizationInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "principalId",
+        "input",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.NewOpenRouterAuthorization"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.StartOpenRouterAuthorizationRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "startOpenRouterAuthorization"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.StartOpenRouterAuthorizationInput"
+        }
+      }
+    },
+    "TenantApi.StartOpenRouterAuthorizationResult": {
+      "type": "object",
+      "required": [
+        "started"
+      ],
+      "properties": {
+        "started": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.OpenRouterAuthorizationStartedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNoSecretSet"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationOtherCredential"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.StoredClaudeSetupCode": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "boxId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxCode"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.StoredClaudeSetupOffer": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "boxId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxOffer"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
         }
       }
     },
@@ -3949,6 +6532,73 @@
         }
       },
       "description": "A persona as the tenant Durable Object stores it, its files named by digest."
+    },
+    "TenantApi.SubmitClaudeSetupCodeInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "claudeSetupId",
+        "code",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "code": {
+          "type": "string"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.SubmitClaudeSetupCodeRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "submitClaudeSetupCode"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.SubmitClaudeSetupCodeInput"
+        }
+      }
+    },
+    "TenantApi.SubmitClaudeSetupCodeResult": {
+      "type": "object",
+      "required": [
+        "coded"
+      ],
+      "properties": {
+        "coded": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupCodedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotWaiting"
+            }
+          ]
+        }
+      }
     },
     "TenantApi.SupervisorUpdateInput": {
       "type": "object",
@@ -4222,6 +6872,54 @@
         },
         {
           "$ref": "#/components/schemas/TenantApi.UnknownConnectorsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.StartOpenRouterAuthorizationRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetOpenRouterAuthorizationRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.OpenRouterCallbackRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.OpenRouterAuthorizationDeadlineReachedRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.OpenRouterSecretSetsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.StartCircleCIAuthorizationRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CompleteCircleCIAuthorizationRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ChooseCircleCIOrganizationRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CircleCIAuthorizationDeadlineReachedRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.StartClaudeSetupRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetClaudeSetupRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListClaudeSetupsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.SubmitClaudeSetupCodeRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.WriteClaudeSetupTokenRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ClaudeSetupDeadlineReachedRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.PrepareClaudeSetupRequest"
         }
       ],
       "discriminator": {
@@ -4256,7 +6954,23 @@
           "startConnectorAuthorization": "#/components/schemas/TenantApi.StartConnectorAuthorizationRequest",
           "connectorCallback": "#/components/schemas/TenantApi.ConnectorCallbackRequest",
           "serveConnectorToken": "#/components/schemas/TenantApi.ServeConnectorTokenRequest",
-          "unknownConnectors": "#/components/schemas/TenantApi.UnknownConnectorsRequest"
+          "unknownConnectors": "#/components/schemas/TenantApi.UnknownConnectorsRequest",
+          "startOpenRouterAuthorization": "#/components/schemas/TenantApi.StartOpenRouterAuthorizationRequest",
+          "getOpenRouterAuthorization": "#/components/schemas/TenantApi.GetOpenRouterAuthorizationRequest",
+          "openRouterCallback": "#/components/schemas/TenantApi.OpenRouterCallbackRequest",
+          "openRouterAuthorizationDeadlineReached": "#/components/schemas/TenantApi.OpenRouterAuthorizationDeadlineReachedRequest",
+          "openRouterSecretSets": "#/components/schemas/TenantApi.OpenRouterSecretSetsRequest",
+          "startCircleCIAuthorization": "#/components/schemas/TenantApi.StartCircleCIAuthorizationRequest",
+          "completeCircleCIAuthorization": "#/components/schemas/TenantApi.CompleteCircleCIAuthorizationRequest",
+          "chooseCircleCIOrganization": "#/components/schemas/TenantApi.ChooseCircleCIOrganizationRequest",
+          "circleCIAuthorizationDeadlineReached": "#/components/schemas/TenantApi.CircleCIAuthorizationDeadlineReachedRequest",
+          "startClaudeSetup": "#/components/schemas/TenantApi.StartClaudeSetupRequest",
+          "getClaudeSetup": "#/components/schemas/TenantApi.GetClaudeSetupRequest",
+          "listClaudeSetups": "#/components/schemas/TenantApi.ListClaudeSetupsRequest",
+          "submitClaudeSetupCode": "#/components/schemas/TenantApi.SubmitClaudeSetupCodeRequest",
+          "writeClaudeSetupToken": "#/components/schemas/TenantApi.WriteClaudeSetupTokenRequest",
+          "claudeSetupDeadlineReached": "#/components/schemas/TenantApi.ClaudeSetupDeadlineReachedRequest",
+          "prepareClaudeSetup": "#/components/schemas/TenantApi.PrepareClaudeSetupRequest"
         }
       },
       "description": "One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation."
@@ -4396,6 +7110,259 @@
         },
         "harness": {
           "type": "string"
+        }
+      }
+    },
+    "TenantApi.Unplaceable": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/TenantApi.UnplaceableNotOnline"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UnplaceableNoImage"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UnplaceableFull"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UnplaceableMemoryFull"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UnplaceableNoMemory"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UnplaceableNoDisk"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.UnplaceableNoConnectors"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "reason",
+        "mapping": {
+          "NotOnline": "#/components/schemas/TenantApi.UnplaceableNotOnline",
+          "NoImage": "#/components/schemas/TenantApi.UnplaceableNoImage",
+          "Full": "#/components/schemas/TenantApi.UnplaceableFull",
+          "MemoryFull": "#/components/schemas/TenantApi.UnplaceableMemoryFull",
+          "NoMemory": "#/components/schemas/TenantApi.UnplaceableNoMemory",
+          "NoDisk": "#/components/schemas/TenantApi.UnplaceableNoDisk",
+          "NoConnectors": "#/components/schemas/TenantApi.UnplaceableNoConnectors"
+        }
+      },
+      "description": "Why placement passed over a host."
+    },
+    "TenantApi.UnplaceableFull": {
+      "type": "object",
+      "required": [
+        "kind",
+        "host",
+        "reason",
+        "usage"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unplaceable"
+          ]
+        },
+        "host": {
+          "$ref": "#/components/schemas/TenantApi.HostRecord"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "Full"
+          ]
+        },
+        "usage": {
+          "$ref": "#/components/schemas/ReportedHostUsage"
+        }
+      }
+    },
+    "TenantApi.UnplaceableMemoryFull": {
+      "type": "object",
+      "required": [
+        "kind",
+        "host",
+        "reason",
+        "usage",
+        "boxMemoryMib"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unplaceable"
+          ]
+        },
+        "host": {
+          "$ref": "#/components/schemas/TenantApi.HostRecord"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "MemoryFull"
+          ]
+        },
+        "usage": {
+          "$ref": "#/components/schemas/ReportedHostUsage"
+        },
+        "boxMemoryMib": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TenantApi.UnplaceableNoConnectors": {
+      "type": "object",
+      "required": [
+        "kind",
+        "host",
+        "reason",
+        "usage"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unplaceable"
+          ]
+        },
+        "host": {
+          "$ref": "#/components/schemas/TenantApi.HostRecord"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "NoConnectors"
+          ]
+        },
+        "usage": {
+          "$ref": "#/components/schemas/ReportedHostUsage"
+        }
+      }
+    },
+    "TenantApi.UnplaceableNoDisk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "host",
+        "reason",
+        "usage",
+        "boxDiskMib"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unplaceable"
+          ]
+        },
+        "host": {
+          "$ref": "#/components/schemas/TenantApi.HostRecord"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "NoDisk"
+          ]
+        },
+        "usage": {
+          "$ref": "#/components/schemas/ReportedHostUsage"
+        },
+        "boxDiskMib": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TenantApi.UnplaceableNoImage": {
+      "type": "object",
+      "required": [
+        "kind",
+        "host",
+        "reason",
+        "image"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unplaceable"
+          ]
+        },
+        "host": {
+          "$ref": "#/components/schemas/TenantApi.HostRecord"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "NoImage"
+          ]
+        },
+        "image": {
+          "$ref": "#/components/schemas/TenantApi.ImageAvailability"
+        }
+      }
+    },
+    "TenantApi.UnplaceableNoMemory": {
+      "type": "object",
+      "required": [
+        "kind",
+        "host",
+        "reason",
+        "usage",
+        "boxMemoryMib"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unplaceable"
+          ]
+        },
+        "host": {
+          "$ref": "#/components/schemas/TenantApi.HostRecord"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "NoMemory"
+          ]
+        },
+        "usage": {
+          "$ref": "#/components/schemas/ReportedHostUsage"
+        },
+        "boxMemoryMib": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TenantApi.UnplaceableNotOnline": {
+      "type": "object",
+      "required": [
+        "kind",
+        "host",
+        "reason"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unplaceable"
+          ]
+        },
+        "host": {
+          "$ref": "#/components/schemas/TenantApi.HostRecord"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "NotOnline"
+          ]
         }
       }
     },
@@ -4563,6 +7530,86 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.SecretSetUncheckedToken"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.WriteClaudeSetupTokenInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "claudeSetupId",
+        "credential",
+        "token",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "credential": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "tokenExpiresAt": {
+          "type": "string"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.WriteClaudeSetupTokenRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "writeClaudeSetupToken"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.WriteClaudeSetupTokenInput"
+        }
+      }
+    },
+    "TenantApi.WriteClaudeSetupTokenResult": {
+      "type": "object",
+      "required": [
+        "stored"
+      ],
+      "properties": {
+        "stored": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupStoredOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupRefused"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.AuthorizationNotWaiting"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupNotStored"
             }
           ]
         }
