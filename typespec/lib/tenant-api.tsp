@@ -700,6 +700,110 @@ model RepositoryReadTokenInput {
   permissions: Record<"read" | "write">;
 }
 
+model StartSessionInput {
+  tenantId: EntityId;
+  input: NewSession;
+  now: int64;
+}
+
+model IssueOfSession {
+  ...OmitProperties<SessionIssue, "sessionId">;
+}
+
+model StartSessionFromIssueInput {
+  tenantId: EntityId;
+  input: NewSession;
+  issue: IssueOfSession;
+  now: int64;
+}
+
+model SendTurnInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+  send: TurnSend;
+  hosts: HostRecord[];
+  now: int64;
+}
+
+model StopSessionInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+  cancelledBy: string | null;
+  now: int64;
+}
+
+model ArchiveSessionInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+  now: int64;
+}
+
+model GetSessionInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+}
+
+model SessionFilter {
+  state?: SessionState;
+  hostId?: EntityId;
+  lastTurnBefore?: int64;
+}
+
+model ListSessionsInput {
+  tenantId: EntityId;
+  filter: SessionFilter;
+}
+
+model ListTurnsInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+}
+
+model GetTurnInput {
+  tenantId: EntityId;
+  turnId: EntityId;
+}
+
+model WaitTurnsInput {
+  tenantId: EntityId;
+  turnIds: EntityId[];
+  timeoutSeconds: int32;
+}
+
+model GetTurnFailureInput {
+  tenantId: EntityId;
+  turnId: EntityId;
+}
+
+model ListStopFailuresInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+}
+
+model ListSnapshotsInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+}
+
+model ListCredentialHandoversInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+}
+
+model GetSnapshotInput {
+  tenantId: EntityId;
+  snapshotId: EntityId;
+}
+
+model TranscriptCursorInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+  after: int64;
+  turnId: EntityId | null;
+  limit: int32;
+  maxBytes?: int64;
+}
+
 model ListPersonasRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "listPersonas";
@@ -1090,6 +1194,102 @@ model RepositoryReadTokenRequest {
   input: RepositoryReadTokenInput;
 }
 
+model StartSessionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "startSession";
+  input: StartSessionInput;
+}
+
+model StartSessionFromIssueRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "startSessionFromIssue";
+  input: StartSessionFromIssueInput;
+}
+
+model SendTurnRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "sendTurn";
+  input: SendTurnInput;
+}
+
+model StopSessionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "stopSession";
+  input: StopSessionInput;
+}
+
+model ArchiveSessionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "archiveSession";
+  input: ArchiveSessionInput;
+}
+
+model GetSessionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getSession";
+  input: GetSessionInput;
+}
+
+model ListSessionsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listSessions";
+  input: ListSessionsInput;
+}
+
+model ListTurnsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listTurns";
+  input: ListTurnsInput;
+}
+
+model GetTurnRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getTurn";
+  input: GetTurnInput;
+}
+
+model WaitTurnsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "waitTurns";
+  input: WaitTurnsInput;
+}
+
+model GetTurnFailureRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getTurnFailure";
+  input: GetTurnFailureInput;
+}
+
+model ListStopFailuresRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listStopFailures";
+  input: ListStopFailuresInput;
+}
+
+model ListSnapshotsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listSnapshots";
+  input: ListSnapshotsInput;
+}
+
+model ListCredentialHandoversRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listCredentialHandovers";
+  input: ListCredentialHandoversInput;
+}
+
+model GetSnapshotRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getSnapshot";
+  input: GetSnapshotInput;
+}
+
+model TranscriptCursorRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "transcriptCursor";
+  input: TranscriptCursorInput;
+}
+
 @doc("One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "operation" })
 union TenantRequest {
@@ -1158,6 +1358,22 @@ union TenantRequest {
   dispatchCircleCIPrebuild: DispatchCircleCIPrebuildRequest,
   circleCIWorkflowCompleted: CircleCIWorkflowCompletedRequest,
   repositoryReadToken: RepositoryReadTokenRequest,
+  startSession: StartSessionRequest,
+  startSessionFromIssue: StartSessionFromIssueRequest,
+  sendTurn: SendTurnRequest,
+  stopSession: StopSessionRequest,
+  archiveSession: ArchiveSessionRequest,
+  getSession: GetSessionRequest,
+  listSessions: ListSessionsRequest,
+  listTurns: ListTurnsRequest,
+  getTurn: GetTurnRequest,
+  waitTurns: WaitTurnsRequest,
+  getTurnFailure: GetTurnFailureRequest,
+  listStopFailures: ListStopFailuresRequest,
+  listSnapshots: ListSnapshotsRequest,
+  listCredentialHandovers: ListCredentialHandoversRequest,
+  getSnapshot: GetSnapshotRequest,
+  transcriptCursor: TranscriptCursorRequest,
 }
 
 @doc("The request names a version outside the instance's window, or an older version an adapter cannot translate. The caller answers a retryable failure.")
@@ -1987,5 +2203,196 @@ model ReadTokenOk {
 
 model RepositoryReadTokenResult {
   read: ReadTokenOk | PrebuildRefused;
+}
+
+model SessionStartedOk {
+  kind: "Started";
+  started: StartedSession;
+}
+
+model StartSessionResult {
+  started: SessionStartedOk | StartDraining | StartUnplaced | StartConnectorDisconnected | ClaudeSetupReleaseUnreadable;
+}
+
+model SessionFromIssueStartedOk {
+  kind: "Started";
+  started: StartedSessionFromIssue;
+}
+
+model StartSessionFromIssueResult {
+  started: SessionFromIssueStartedOk | StartDraining | StartUnplaced | StartConnectorDisconnected | ClaudeSetupReleaseUnreadable;
+}
+
+model TurnSentOk {
+  kind: "Sent";
+  turn: Turn;
+}
+
+model TurnStranded {
+  kind: "Stranded";
+  missingTurnIds: EntityId[];
+}
+
+model SessionNotFound {
+  kind: "NotFound";
+}
+
+model TurnInFlight {
+  kind: "InFlight";
+  turnId: EntityId;
+}
+
+model SessionStopping {
+  kind: "Stopping";
+}
+
+model SessionArchivedState {
+  kind: "Archived";
+}
+
+model SessionFailedState {
+  kind: "Failed";
+}
+
+model NoCredentialRefusal {
+  kind: "NoCredential";
+  accepted: HarnessCredential[];
+}
+
+model NoModelCredentialRefusal {
+  kind: "NoModelCredential";
+  `model`: string;
+  provider: ModelProvider;
+  accepted: HarnessCredential[];
+}
+
+model UnsupportedCredentialRefusal {
+  kind: "Unsupported";
+  name: string;
+  credentialKind: string;
+  supported: string[];
+}
+
+model ExpiredCredentialRefusal {
+  kind: "Expired";
+  name: string;
+  expiresAt: string;
+}
+
+model TurnCredentialRefused {
+  kind: "CredentialRefused";
+  personaId: EntityId;
+  refusal: NoCredentialRefusal | NoModelCredentialRefusal | UnsupportedCredentialRefusal | ExpiredCredentialRefusal;
+}
+
+model SendTurnResult {
+  sent: TurnSentOk | StartDraining | TurnStranded | StartUnplaced | StartConnectorDisconnected | ClaudeSetupReleaseUnreadable | SessionNotFound | TurnInFlight | SessionStopping | SessionArchivedState | SessionFailedState | TurnCredentialRefused;
+}
+
+model SessionStoppingWith {
+  kind: "Stopping";
+  session: Session;
+}
+
+model CancelUnspoken {
+  kind: "CancelUnspoken";
+  turnId: EntityId;
+  host: string;
+}
+
+model StopSessionResult {
+  stopped: SessionStoppingWith | SessionNotFound | TurnInFlight | CancelUnspoken | SessionArchivedState;
+}
+
+model SessionArchivedOk {
+  kind: "Archived";
+  session: Session;
+}
+
+model SessionNotStopped {
+  kind: "NotStopped";
+  state: SessionState;
+}
+
+model ArchiveSessionResult {
+  archived: SessionArchivedOk | SessionNotFound | SessionNotStopped;
+}
+
+model GetSessionResult {
+  session: Session | null;
+}
+
+model ListSessionsResult {
+  sessions: Session[];
+}
+
+model ListTurnsResult {
+  turns: Turn[] | null;
+}
+
+model GetTurnResult {
+  turn: Turn | null;
+}
+
+model TurnsRead {
+  kind: "Read";
+  turns: Turn[];
+}
+
+model WaitedTurnNotFound {
+  kind: "NotFound";
+  turnId: EntityId;
+}
+
+model WaitTurnsResult {
+  waited: TurnsRead | WaitedTurnNotFound;
+}
+
+model GetTurnFailureResult {
+  failure: TurnFailure | null;
+}
+
+model ListStopFailuresResult {
+  failures: StopFailure[] | null;
+}
+
+model ListSnapshotsResult {
+  snapshots: Snapshot[] | null;
+}
+
+model ListCredentialHandoversResult {
+  handovers: CredentialHandover[] | null;
+}
+
+model GetSnapshotResult {
+  snapshot: Snapshot | null;
+}
+
+model ByteRange {
+  offset: int64;
+  length: int64;
+}
+
+model TranscriptChunk {
+  kind: "Chunk";
+  sessionState: SessionState;
+  harness: Harness;
+  lastLineSeq: int64;
+  inFlight: boolean;
+  storageKey: string;
+  range: ByteRange;
+}
+
+model TranscriptLines {
+  kind: "Lines";
+  sessionState: SessionState;
+  harness: Harness;
+  lastLineSeq: int64;
+  inFlight: boolean;
+  lines: TranscriptLine[];
+}
+
+model TranscriptCursorResult {
+  cursor: TranscriptChunk | TranscriptLines | null;
 }
 }
