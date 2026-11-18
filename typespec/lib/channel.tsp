@@ -178,10 +178,12 @@ model DispatchGrant {
   ConnectorTokens_fetch for this turn and connector, and `tokenCredential` its ConnectorTurnToken,
   valid while the turn is Running. The guest keeps both in forwarder memory only: never in the
   harness environment, a file, a log or a snapshot, and a new tokenCredential never restarts the
-  harness.
+  harness. `name` is the connector's name; the guest derives each harness's MCP server name from it,
+  and from `connectorId` when a control plane leaves it out.
   """)
 model DispatchConnector {
   connectorId: EntityId;
+  name?: DisplayName;
   url: url;
   tokenUrl: url;
   @minLength(43) tokenCredential: string;
