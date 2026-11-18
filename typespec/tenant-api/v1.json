@@ -380,6 +380,18 @@
       },
       "description": "The layered boot of the turn, offered when the current release carries a base image for the\nhost's architecture and a harness layer for the session's harness version on it. The box boots\nfrom the base, the guest drive of the host's supervisor and the layer. The URLs are valid until\n`downloadExpiresAt`, turnOfferTtlSeconds plus `fetchSeconds` after the send of the offer. A supervisor whose\ncache lacks the base or the layer sends TurnImageFetching naming the first part it lacks, then\nfetches base, kernel and layer within one `fetchSeconds` of sending it, counting the wait for\nanother fetch on the host, and checks each against its digest before it moves it into the cache. A\ndownload that fails, misses its digest or names another part in its manifest fails the turn\nImageFetchFailed, one that outlasts `fetchSeconds` fails it ImageFetchTimedOut. The host keeps the\nbase and the layer in its cache while a box runs on them."
     },
+    "Channel.SnapshotFailureReason": {
+      "type": "string",
+      "enum": [
+        "BoxNotFound",
+        "UpperDirectoryUnreadable",
+        "UploadExpired",
+        "UploadRejected",
+        "SnapshotTimedOut",
+        "NotAnswered"
+      ],
+      "description": "Why the host could not store a snapshot."
+    },
     "Channel.SupervisorUpdateFailed": {
       "type": "object",
       "required": [
@@ -1026,6 +1038,105 @@
       "maxLength": 64,
       "description": "The one-time code Codex prints for the person to enter at the sign-in URL."
     },
+    "CompletedTurn": {
+      "type": "object",
+      "required": [
+        "turnId",
+        "tenantId",
+        "sessionId",
+        "boxId",
+        "prompt",
+        "lineCount",
+        "createdAt",
+        "updatedAt",
+        "state"
+      ],
+      "properties": {
+        "turnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The control plane mints the id of the box that runs the turn.",
+          "readOnly": true
+        },
+        "prompt": {
+          "$ref": "#/components/schemas/Prompt"
+        },
+        "goal": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Goal"
+            }
+          ],
+          "description": "A condition the harness keeps working toward until it holds; only a session whose harness has goals in the harness catalog accepts it."
+        },
+        "lineCount": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "description": "How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.",
+          "readOnly": true
+        },
+        "image": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the turn's box boots, recorded when the control plane offers the turn. A turn not yet offered has none.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Completed"
+          ]
+        },
+        "warning": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A condition the turn completed under that the persona should act on, such as a box disk with less than a hundredth of it free, with its size and the boxDiskMib that raises it. Absent when there was none."
+        }
+      }
+    },
     "Connector": {
       "type": "object",
       "oneOf": [
@@ -1221,6 +1332,15 @@
       "pattern": "^https://[^/@?#\\s]+(/[^?#\\s]*)?$",
       "description": "The HTTPS address of a remote MCP server that speaks Streamable HTTP. It carries no user info, no\nquery and no fragment, so it never holds a credential."
     },
+    "CostBasis": {
+      "type": "string",
+      "enum": [
+        "Billed",
+        "NotBilled",
+        "NotReported"
+      ],
+      "description": "Whether a turn on a credential reports what it cost and whether that cost is billed. A turn records\nits tokens as turn.tokens and, unless NotReported, its cost as turn.cost in micro-US-dollars, both\nwith the basis as their costBasis dimension."
+    },
     "CredentialFileKey": {
       "type": "object",
       "required": [
@@ -1330,6 +1450,68 @@
         }
       }
     },
+    "CredentialHandover": {
+      "type": "object",
+      "required": [
+        "credentialHandoverId",
+        "tenantId",
+        "sessionId",
+        "turnId",
+        "hostId",
+        "boxId",
+        "variableNames",
+        "repositoryCredentialSource",
+        "createdAt"
+      ],
+      "properties": {
+        "credentialHandoverId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "variableNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "repositoryCredentialSource": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryCredentialSource"
+            }
+          ],
+          "description": "Where the GITHUB_TOKEN this offer carried came from."
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "One offer of a turn's credentials to its box, appended when the control plane sent the turn offer.\n`variableNames` lists the variables handed over; values are never recorded or returned."
+    },
+    "CredentialKind": {
+      "type": "string",
+      "enum": [
+        "ApiKey",
+        "SubscriptionToken",
+        "CredentialFile"
+      ],
+      "description": "The kinds of provider credential a secret set can hold."
+    },
     "DisplayName": {
       "type": "string",
       "minLength": 1,
@@ -1340,6 +1522,144 @@
       "minLength": 1,
       "maxLength": 64
     },
+    "FailedTurn": {
+      "type": "object",
+      "required": [
+        "turnId",
+        "tenantId",
+        "sessionId",
+        "boxId",
+        "prompt",
+        "lineCount",
+        "createdAt",
+        "updatedAt",
+        "state",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "turnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The control plane mints the id of the box that runs the turn.",
+          "readOnly": true
+        },
+        "prompt": {
+          "$ref": "#/components/schemas/Prompt"
+        },
+        "goal": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Goal"
+            }
+          ],
+          "description": "A condition the harness keeps working toward until it holds; only a session whose harness has goals in the harness catalog accepts it."
+        },
+        "lineCount": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "description": "How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.",
+          "readOnly": true
+        },
+        "image": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the turn's box boots, recorded when the control plane offers the turn. A turn not yet offered has none.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Failed"
+          ]
+        },
+        "reason": {
+          "$ref": "#/components/schemas/TurnFailureReason"
+        },
+        "detail": {
+          "type": "string",
+          "description": "What failed and what fixes it, with the tail of the harness's standard error when there is one."
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "A turn that ended Failed, with why."
+    },
+    "FixedVariable": {
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A variable a turn gets with a fixed value beside a credential, such as the base URL of the provider serving the harness's model API."
+    },
+    "GitHubIssueNumber": {
+      "type": "integer",
+      "format": "int64",
+      "minimum": 1,
+      "description": "The number of an issue in its repository."
+    },
+    "Goal": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100000,
+      "description": "A condition the harness keeps working toward until it holds."
+    },
     "Harness": {
       "type": "string",
       "enum": [
@@ -1349,6 +1669,52 @@
         "PiDev",
         "MistralAgent"
       ]
+    },
+    "HarnessCredential": {
+      "type": "object",
+      "required": [
+        "provider",
+        "kind",
+        "variable",
+        "fixed",
+        "arguments",
+        "costBasis"
+      ],
+      "properties": {
+        "provider": {
+          "$ref": "#/components/schemas/ModelProvider"
+        },
+        "kind": {
+          "$ref": "#/components/schemas/CredentialKind"
+        },
+        "variable": {
+          "$ref": "#/components/schemas/SecretName"
+        },
+        "fixed": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/FixedVariable"
+          }
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "costBasis": {
+          "$ref": "#/components/schemas/CostBasis"
+        },
+        "path": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/PersonaFilePath"
+            }
+          ],
+          "description": "For a CredentialFile, the file under the harness home the guest writes it to, mode 0600, in place of the variable; the harness may rewrite it, and a changed file is stored back in the secret set at the end of the turn."
+        }
+      },
+      "description": "A credential a harness accepts, and what a turn gets from it: the credential under `variable`,\nthe `fixed` variables beside it, and the `arguments` the guest adds to the harness command, such\nas the Codex model provider that reads `variable`. The arguments hold no secret."
     },
     "HarnessPin": {
       "type": "object",
@@ -1502,6 +1868,100 @@
         }
       },
       "description": "A remote MCP server the tenant connects once through OAuth. An Owner authorizes it in a browser,\nthe control plane holds the grant sealed and refreshes it, and every session in the tenant whose\npersona lists it reaches it through the box's loopback forwarder. The URL is fixed at create."
+    },
+    "OfferedTurn": {
+      "type": "object",
+      "required": [
+        "turnId",
+        "tenantId",
+        "sessionId",
+        "boxId",
+        "prompt",
+        "lineCount",
+        "createdAt",
+        "updatedAt",
+        "state"
+      ],
+      "properties": {
+        "turnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The control plane mints the id of the box that runs the turn.",
+          "readOnly": true
+        },
+        "prompt": {
+          "$ref": "#/components/schemas/Prompt"
+        },
+        "goal": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Goal"
+            }
+          ],
+          "description": "A condition the harness keeps working toward until it holds; only a session whose harness has goals in the harness catalog accepts it."
+        },
+        "lineCount": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "description": "How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.",
+          "readOnly": true
+        },
+        "image": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the turn's box boots, recorded when the control plane offers the turn. A turn not yet offered has none.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Offered"
+          ]
+        }
+      }
     },
     "OpenRouterAuthorization": {
       "type": "object",
@@ -1956,6 +2416,18 @@
       ],
       "description": "The phase a Failed prebuild stopped in. A provider that refuses the job refuses the start, and no prebuild exists."
     },
+    "PrebuildLayerAbsence": {
+      "type": "string",
+      "enum": [
+        "BuildsPrebuild",
+        "HostNotAmd64",
+        "NoAmd64Image",
+        "NoPrebuild",
+        "OtherGuestImage",
+        "NotRecorded"
+      ],
+      "description": "Why a session's files start without a prebuild's layer."
+    },
     "PrebuildStatus": {
       "type": "object",
       "oneOf": [
@@ -2124,10 +2596,113 @@
       },
       "description": "A host's box slots and its last reported usage, kept by its tenant from the host's Hello and\nHeartbeats. `boxCapacity` comes from Hello. `boxesRunning` counts the tenant's Offered and\nRunning turns on the host. Placement counts the boxes a host holds from the tenant's own\nsessions, never from the reported `boxesWarm`, which lags by a Heartbeat.\n`channelProtocol` is the protocol version the host's latest Hello negotiated; the control plane\ncloses the connection with UnsupportedVersion instead of sending a frame of a newer version,\nand resends it once the host reconnects on a version that speaks it. A host that has not connected since it enrolled has none."
     },
+    "RepositoryCredentialSource": {
+      "type": "string",
+      "enum": [
+        "GitHubApp",
+        "SecretSet",
+        "None"
+      ],
+      "description": "Where the GITHUB_TOKEN of a turn offer came from."
+    },
     "RepositoryUrl": {
       "type": "string",
       "minLength": 1,
       "maxLength": 500
+    },
+    "RunningTurn": {
+      "type": "object",
+      "required": [
+        "turnId",
+        "tenantId",
+        "sessionId",
+        "boxId",
+        "prompt",
+        "lineCount",
+        "createdAt",
+        "updatedAt",
+        "state"
+      ],
+      "properties": {
+        "turnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The control plane mints the id of the box that runs the turn.",
+          "readOnly": true
+        },
+        "prompt": {
+          "$ref": "#/components/schemas/Prompt"
+        },
+        "goal": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Goal"
+            }
+          ],
+          "description": "A condition the harness keeps working toward until it holds; only a session whose harness has goals in the harness catalog accepts it."
+        },
+        "lineCount": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "description": "How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.",
+          "readOnly": true
+        },
+        "image": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the turn's box boots, recorded when the control plane offers the turn. A turn not yet offered has none.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Running"
+          ]
+        }
+      }
     },
     "SecretKey": {
       "type": "object",
@@ -2388,6 +2963,353 @@
         }
       }
     },
+    "Sequence": {
+      "type": "integer",
+      "format": "int64",
+      "minimum": 0
+    },
+    "Session": {
+      "type": "object",
+      "required": [
+        "sessionId",
+        "tenantId",
+        "principalId",
+        "hostId",
+        "boxId",
+        "personaId",
+        "repository",
+        "origin",
+        "harness",
+        "harnessVersion",
+        "model",
+        "state",
+        "lastTurnId",
+        "lastTurnState",
+        "lastTurnAt",
+        "lastTurn",
+        "boxRetention",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "principalId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "hostId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name."
+        },
+        "origin": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionOrigin"
+            }
+          ],
+          "description": "What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.",
+          "readOnly": true
+        },
+        "harness": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Harness"
+            }
+          ],
+          "readOnly": true
+        },
+        "harnessVersion": {
+          "type": "string",
+          "readOnly": true
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "state": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionState"
+            }
+          ],
+          "readOnly": true
+        },
+        "lastTurnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session's latest turn. A start offers the first turn together with the session, so every session has one.",
+          "readOnly": true
+        },
+        "lastTurnState": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnState"
+            }
+          ],
+          "readOnly": true
+        },
+        "lastTurnAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the latest turn last changed state.",
+          "readOnly": true
+        },
+        "lastTurn": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Turn"
+            }
+          ],
+          "description": "The session's latest turn, with why it failed once it is Failed.",
+          "readOnly": true
+        },
+        "lastTurnImage": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the latest turn's box boots. Present once the control plane offered the latest turn.",
+          "readOnly": true
+        },
+        "prebuildLayer": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionPrebuildLayer"
+            }
+          ],
+          "description": "The prebuild layer the session's files start from, or why they start without one. The control\nplane records it for each box it boots while the session holds no snapshot of its own; once a\nsnapshot exists, every box restores that snapshot and the layer stays. Present once the control\nplane offered the session's first turn.",
+          "readOnly": true
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What happens to the session's box after each turn, fixed when the session starts.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        }
+      },
+      "description": "A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins."
+    },
+    "SessionIssue": {
+      "type": "object",
+      "required": [
+        "sessionId",
+        "issueNumber",
+        "title",
+        "htmlUrl",
+        "branch"
+      ],
+      "properties": {
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "issueNumber": {
+          "$ref": "#/components/schemas/GitHubIssueNumber"
+        },
+        "title": {
+          "type": "string"
+        },
+        "htmlUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "branch": {
+          "type": "string"
+        }
+      },
+      "description": "The GitHub issue of the session's repository that the session was started from, and the branch its first prompt asks for."
+    },
+    "SessionIssueOrigin": {
+      "type": "object",
+      "required": [
+        "kind",
+        "issueNumber",
+        "title",
+        "htmlUrl",
+        "branch"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Issue"
+          ]
+        },
+        "issueNumber": {
+          "$ref": "#/components/schemas/GitHubIssueNumber"
+        },
+        "title": {
+          "type": "string"
+        },
+        "htmlUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "branch": {
+          "type": "string"
+        }
+      },
+      "description": "The session started from a GitHub issue with Sessions_startFromIssue, with the branch its first prompt asks for."
+    },
+    "SessionOrigin": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/SessionPromptOrigin"
+        },
+        {
+          "$ref": "#/components/schemas/SessionIssueOrigin"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Prompt": "#/components/schemas/SessionPromptOrigin",
+          "Issue": "#/components/schemas/SessionIssueOrigin"
+        }
+      }
+    },
+    "SessionPrebuildLayer": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/SessionPrebuildLayerStored"
+        },
+        {
+          "$ref": "#/components/schemas/SessionPrebuildLayerAbsent"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "layer",
+        "mapping": {
+          "Prebuild": "#/components/schemas/SessionPrebuildLayerStored",
+          "None": "#/components/schemas/SessionPrebuildLayerAbsent"
+        }
+      }
+    },
+    "SessionPrebuildLayerAbsent": {
+      "type": "object",
+      "required": [
+        "layer",
+        "reason",
+        "detail"
+      ],
+      "properties": {
+        "layer": {
+          "type": "string",
+          "enum": [
+            "None"
+          ]
+        },
+        "reason": {
+          "$ref": "#/components/schemas/PrebuildLayerAbsence"
+        },
+        "detail": {
+          "type": "string"
+        }
+      },
+      "description": "The session's files start without a prebuild's layer. `detail` states why and what fixes it."
+    },
+    "SessionPrebuildLayerStored": {
+      "type": "object",
+      "required": [
+        "layer",
+        "prebuildId",
+        "layerDigest"
+      ],
+      "properties": {
+        "layer": {
+          "type": "string",
+          "enum": [
+            "Prebuild"
+          ]
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "layerDigest": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sha256Digest"
+            }
+          ],
+          "description": "The digest the prebuild's read names for its layer."
+        }
+      },
+      "description": "The session's files start from a stored prebuild's layer."
+    },
+    "SessionPromptOrigin": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Prompt"
+          ]
+        }
+      },
+      "description": "The session started with a prompt sent with Sessions_start."
+    },
     "SessionStart": {
       "type": "object",
       "required": [
@@ -2425,10 +3347,180 @@
       },
       "description": "A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins."
     },
+    "SessionState": {
+      "type": "string",
+      "enum": [
+        "Starting",
+        "Idle",
+        "Running",
+        "Stopping",
+        "Stopped",
+        "Archived",
+        "Failed"
+      ]
+    },
     "Sha256Digest": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$",
       "description": "A lower-case hex SHA-256 digest: the name of a file in the image cache, or of a persona file blob."
+    },
+    "Snapshot": {
+      "type": "object",
+      "required": [
+        "snapshotId",
+        "tenantId",
+        "sessionId",
+        "boxId",
+        "turnId",
+        "snapshotSeq",
+        "storageKey",
+        "outcome",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "snapshotSeq": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "description": "Orders a session's snapshots from 1; each one holds the whole upper directory, and a restore reads the latest."
+        },
+        "storageKey": {
+          "$ref": "#/components/schemas/StorageKey"
+        },
+        "outcome": {
+          "$ref": "#/components/schemas/SnapshotOutcome"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "The overlay upper directory of a box: a SnapshotRoot under `storageKey` naming the chunks of a\nSnapshotManifest that lists every entry, with the contents of its files as chunks in packs stored\nunder the tenant and shared by every snapshot and session of the tenant that holds the same bytes.\nExists once the host answered its request, or the snapshot deadline passed: `outcome` says\nwhether the root is stored or why not."
+    },
+    "SnapshotFailure": {
+      "type": "object",
+      "required": [
+        "state",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Failed"
+          ]
+        },
+        "reason": {
+          "$ref": "#/components/schemas/Channel.SnapshotFailureReason"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The snapshot was not stored. `detail` states what failed and what fixes it."
+    },
+    "SnapshotOutcome": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/SnapshotStored"
+        },
+        {
+          "$ref": "#/components/schemas/SnapshotFailure"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "state",
+        "mapping": {
+          "Stored": "#/components/schemas/SnapshotStored",
+          "Failed": "#/components/schemas/SnapshotFailure"
+        }
+      }
+    },
+    "SnapshotStored": {
+      "type": "object",
+      "required": [
+        "state",
+        "uploadedBytes"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "Stored"
+          ]
+        },
+        "uploadedBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        }
+      },
+      "description": "The host stored the snapshot's root under its storage key. `uploadedBytes` counts the bytes that left the host: the packs the tenant held no object for, plus the root."
+    },
+    "StartedSession": {
+      "type": "object",
+      "required": [
+        "session",
+        "turn"
+      ],
+      "properties": {
+        "session": {
+          "$ref": "#/components/schemas/Session"
+        },
+        "turn": {
+          "$ref": "#/components/schemas/Turn"
+        }
+      },
+      "description": "The answer to a start, sent before the harness writes anything."
+    },
+    "StartedSessionFromIssue": {
+      "type": "object",
+      "required": [
+        "session",
+        "turn",
+        "issue"
+      ],
+      "properties": {
+        "session": {
+          "$ref": "#/components/schemas/Session"
+        },
+        "turn": {
+          "$ref": "#/components/schemas/Turn"
+        },
+        "issue": {
+          "$ref": "#/components/schemas/SessionIssue"
+        }
+      },
+      "description": "The answer to a start from an issue: the start's answer and the issue the session works."
     },
     "StaticConnector": {
       "type": "object",
@@ -2492,6 +3584,58 @@
         }
       },
       "description": "A remote MCP server the tenant connects once with one static token. Every session in the tenant\nwhose persona lists it reaches it through the box's loopback forwarder, which sends the token as\nAuthorization: Bearer. The URL is fixed at create; the token is write-only."
+    },
+    "StopFailure": {
+      "type": "object",
+      "required": [
+        "stopFailureId",
+        "tenantId",
+        "sessionId",
+        "reason",
+        "detail",
+        "failedAt",
+        "createdAt"
+      ],
+      "properties": {
+        "stopFailureId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/StopFailureReason"
+        },
+        "detail": {
+          "type": "string",
+          "description": "What failed and what fixes it."
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "A stop that failed and returned its session to Idle with its box kept."
+    },
+    "StopFailureReason": {
+      "type": "string",
+      "enum": [
+        "BoxDirty",
+        "NotAnswered"
+      ],
+      "description": "Why a stop returned its session to Idle with its box kept."
+    },
+    "StorageKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
     },
     "SubscriptionTokenKey": {
       "type": "object",
@@ -2855,6 +3999,69 @@
         }
       }
     },
+    "TenantApi.ArchiveSessionInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ArchiveSessionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "archiveSession"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ArchiveSessionInput"
+        }
+      }
+    },
+    "TenantApi.ArchiveSessionResult": {
+      "type": "object",
+      "required": [
+        "archived"
+      ],
+      "properties": {
+        "archived": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionArchivedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionNotStopped"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.AuthorizationInvalid": {
       "type": "object",
       "required": [
@@ -3072,6 +4279,23 @@
         }
       }
     },
+    "TenantApi.ByteRange": {
+      "type": "object",
+      "required": [
+        "offset",
+        "length"
+      ],
+      "properties": {
+        "offset": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "length": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "TenantApi.CallerWorkflowConnected": {
       "type": "object",
       "required": [
@@ -3101,6 +4325,28 @@
           "enum": [
             "NotConnected"
           ]
+        }
+      }
+    },
+    "TenantApi.CancelUnspoken": {
+      "type": "object",
+      "required": [
+        "kind",
+        "turnId",
+        "host"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "CancelUnspoken"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "host": {
+          "type": "string"
         }
       }
     },
@@ -5063,6 +6309,28 @@
         }
       }
     },
+    "TenantApi.ExpiredCredentialRefusal": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "expiresAt"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Expired"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "expiresAt": {
+          "type": "string"
+        }
+      }
+    },
     "TenantApi.GetClaudeSetupInput": {
       "type": "object",
       "required": [
@@ -5459,6 +6727,221 @@
         }
       }
     },
+    "TenantApi.GetSessionInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.GetSessionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getSession"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetSessionInput"
+        }
+      }
+    },
+    "TenantApi.GetSessionResult": {
+      "type": "object",
+      "required": [
+        "session"
+      ],
+      "properties": {
+        "session": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Session"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.GetSnapshotInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "snapshotId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.GetSnapshotRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getSnapshot"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetSnapshotInput"
+        }
+      }
+    },
+    "TenantApi.GetSnapshotResult": {
+      "type": "object",
+      "required": [
+        "snapshot"
+      ],
+      "properties": {
+        "snapshot": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Snapshot"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.GetTurnFailureInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "turnId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.GetTurnFailureRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getTurnFailure"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetTurnFailureInput"
+        }
+      }
+    },
+    "TenantApi.GetTurnFailureResult": {
+      "type": "object",
+      "required": [
+        "failure"
+      ],
+      "properties": {
+        "failure": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnFailure"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.GetTurnInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "turnId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.GetTurnRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getTurn"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetTurnInput"
+        }
+      }
+    },
+    "TenantApi.GetTurnResult": {
+      "type": "object",
+      "required": [
+        "turn"
+      ],
+      "properties": {
+        "turn": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Turn"
+            }
+          ],
+          "nullable": true
+        }
+      }
+    },
     "TenantApi.GitHubActionsStart": {
       "type": "object",
       "required": [
@@ -5746,6 +7229,30 @@
         }
       }
     },
+    "TenantApi.IssueOfSession": {
+      "type": "object",
+      "required": [
+        "issueNumber",
+        "title",
+        "htmlUrl",
+        "branch"
+      ],
+      "properties": {
+        "issueNumber": {
+          "$ref": "#/components/schemas/GitHubIssueNumber"
+        },
+        "title": {
+          "type": "string"
+        },
+        "htmlUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "branch": {
+          "type": "string"
+        }
+      }
+    },
     "TenantApi.JobInputsTarget": {
       "type": "object",
       "required": [
@@ -5988,6 +7495,58 @@
         }
       }
     },
+    "TenantApi.ListCredentialHandoversInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListCredentialHandoversRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listCredentialHandovers"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListCredentialHandoversInput"
+        }
+      }
+    },
+    "TenantApi.ListCredentialHandoversResult": {
+      "type": "object",
+      "required": [
+        "handovers"
+      ],
+      "properties": {
+        "handovers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/CredentialHandover"
+          },
+          "nullable": true
+        }
+      }
+    },
     "TenantApi.ListLatestPrebuildsInput": {
       "type": "object",
       "required": [
@@ -6224,6 +7783,213 @@
         }
       }
     },
+    "TenantApi.ListSessionsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "filter"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "filter": {
+          "$ref": "#/components/schemas/TenantApi.SessionFilter"
+        }
+      }
+    },
+    "TenantApi.ListSessionsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listSessions"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListSessionsInput"
+        }
+      }
+    },
+    "TenantApi.ListSessionsResult": {
+      "type": "object",
+      "required": [
+        "sessions"
+      ],
+      "properties": {
+        "sessions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Session"
+          }
+        }
+      }
+    },
+    "TenantApi.ListSnapshotsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListSnapshotsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listSnapshots"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListSnapshotsInput"
+        }
+      }
+    },
+    "TenantApi.ListSnapshotsResult": {
+      "type": "object",
+      "required": [
+        "snapshots"
+      ],
+      "properties": {
+        "snapshots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Snapshot"
+          },
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.ListStopFailuresInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListStopFailuresRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listStopFailures"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListStopFailuresInput"
+        }
+      }
+    },
+    "TenantApi.ListStopFailuresResult": {
+      "type": "object",
+      "required": [
+        "failures"
+      ],
+      "properties": {
+        "failures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/StopFailure"
+          },
+          "nullable": true
+        }
+      }
+    },
+    "TenantApi.ListTurnsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListTurnsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listTurns"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListTurnsInput"
+        }
+      }
+    },
+    "TenantApi.ListTurnsResult": {
+      "type": "object",
+      "required": [
+        "turns"
+      ],
+      "properties": {
+        "turns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Turn"
+          },
+          "nullable": true
+        }
+      }
+    },
     "TenantApi.NewClaudeSetup": {
       "type": "object",
       "required": [
@@ -6304,6 +8070,56 @@
         },
         "start": {
           "$ref": "#/components/schemas/SessionStart"
+        }
+      }
+    },
+    "TenantApi.NoCredentialRefusal": {
+      "type": "object",
+      "required": [
+        "kind",
+        "accepted"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NoCredential"
+          ]
+        },
+        "accepted": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/HarnessCredential"
+          }
+        }
+      }
+    },
+    "TenantApi.NoModelCredentialRefusal": {
+      "type": "object",
+      "required": [
+        "kind",
+        "model",
+        "provider",
+        "accepted"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NoModelCredential"
+          ]
+        },
+        "model": {
+          "type": "string"
+        },
+        "provider": {
+          "$ref": "#/components/schemas/ModelProvider"
+        },
+        "accepted": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/HarnessCredential"
+          }
         }
       }
     },
@@ -8001,6 +9817,107 @@
         }
       }
     },
+    "TenantApi.SendTurnInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId",
+        "send",
+        "hosts",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "send": {
+          "$ref": "#/components/schemas/TurnSend"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.HostRecord"
+          }
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.SendTurnRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "sendTurn"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.SendTurnInput"
+        }
+      }
+    },
+    "TenantApi.SendTurnResult": {
+      "type": "object",
+      "required": [
+        "sent"
+      ],
+      "properties": {
+        "sent": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.TurnSentOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartDraining"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.TurnStranded"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartUnplaced"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartConnectorDisconnected"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupReleaseUnreadable"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.TurnInFlight"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionStopping"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionArchivedState"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionFailedState"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.TurnCredentialRefused"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.ServeConnectorTokenInput": {
       "type": "object",
       "required": [
@@ -8067,6 +9984,167 @@
               "$ref": "#/components/schemas/TenantApi.ConnectorRefreshFailed"
             }
           ]
+        }
+      }
+    },
+    "TenantApi.SessionArchivedOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "session"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Archived"
+          ]
+        },
+        "session": {
+          "$ref": "#/components/schemas/Session"
+        }
+      }
+    },
+    "TenantApi.SessionArchivedState": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Archived"
+          ]
+        }
+      }
+    },
+    "TenantApi.SessionFailedState": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Failed"
+          ]
+        }
+      }
+    },
+    "TenantApi.SessionFilter": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "$ref": "#/components/schemas/SessionState"
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "lastTurnBefore": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.SessionFromIssueStartedOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "started"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Started"
+          ]
+        },
+        "started": {
+          "$ref": "#/components/schemas/StartedSessionFromIssue"
+        }
+      }
+    },
+    "TenantApi.SessionNotFound": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotFound"
+          ]
+        }
+      }
+    },
+    "TenantApi.SessionNotStopped": {
+      "type": "object",
+      "required": [
+        "kind",
+        "state"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotStopped"
+          ]
+        },
+        "state": {
+          "$ref": "#/components/schemas/SessionState"
+        }
+      }
+    },
+    "TenantApi.SessionStartedOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "started"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Started"
+          ]
+        },
+        "started": {
+          "$ref": "#/components/schemas/StartedSession"
+        }
+      }
+    },
+    "TenantApi.SessionStopping": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Stopping"
+          ]
+        }
+      }
+    },
+    "TenantApi.SessionStoppingWith": {
+      "type": "object",
+      "required": [
+        "kind",
+        "session"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Stopping"
+          ]
+        },
+        "session": {
+          "$ref": "#/components/schemas/Session"
         }
       }
     },
@@ -8767,6 +10845,148 @@
         }
       }
     },
+    "TenantApi.StartSessionFromIssueInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "input",
+        "issue",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.NewSession"
+        },
+        "issue": {
+          "$ref": "#/components/schemas/TenantApi.IssueOfSession"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.StartSessionFromIssueRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "startSessionFromIssue"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.StartSessionFromIssueInput"
+        }
+      }
+    },
+    "TenantApi.StartSessionFromIssueResult": {
+      "type": "object",
+      "required": [
+        "started"
+      ],
+      "properties": {
+        "started": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionFromIssueStartedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartDraining"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartUnplaced"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartConnectorDisconnected"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupReleaseUnreadable"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.StartSessionInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "input",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.NewSession"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.StartSessionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "startSession"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.StartSessionInput"
+        }
+      }
+    },
+    "TenantApi.StartSessionResult": {
+      "type": "object",
+      "required": [
+        "started"
+      ],
+      "properties": {
+        "started": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionStartedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartDraining"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartUnplaced"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.StartConnectorDisconnected"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ClaudeSetupReleaseUnreadable"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.StartUnplaced": {
       "type": "object",
       "required": [
@@ -8785,6 +11005,80 @@
           "items": {
             "$ref": "#/components/schemas/TenantApi.Unplaceable"
           }
+        }
+      }
+    },
+    "TenantApi.StopSessionInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId",
+        "cancelledBy",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "cancelledBy": {
+          "type": "string",
+          "nullable": true
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.StopSessionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "stopSession"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.StopSessionInput"
+        }
+      }
+    },
+    "TenantApi.StopSessionResult": {
+      "type": "object",
+      "required": [
+        "stopped"
+      ],
+      "properties": {
+        "stopped": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionStoppingWith"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.TurnInFlight"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.CancelUnspoken"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionArchivedState"
+            }
+          ]
         }
       }
     },
@@ -9394,6 +11688,54 @@
         },
         {
           "$ref": "#/components/schemas/TenantApi.RepositoryReadTokenRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.StartSessionRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.StartSessionFromIssueRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.SendTurnRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.StopSessionRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ArchiveSessionRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetSessionRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListSessionsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListTurnsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetTurnRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.WaitTurnsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetTurnFailureRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListStopFailuresRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListSnapshotsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListCredentialHandoversRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetSnapshotRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.TranscriptCursorRequest"
         }
       ],
       "discriminator": {
@@ -9463,7 +11805,23 @@
           "getPrebuildFailure": "#/components/schemas/TenantApi.GetPrebuildFailureRequest",
           "dispatchCircleCIPrebuild": "#/components/schemas/TenantApi.DispatchCircleCIPrebuildRequest",
           "circleCIWorkflowCompleted": "#/components/schemas/TenantApi.CircleCIWorkflowCompletedRequest",
-          "repositoryReadToken": "#/components/schemas/TenantApi.RepositoryReadTokenRequest"
+          "repositoryReadToken": "#/components/schemas/TenantApi.RepositoryReadTokenRequest",
+          "startSession": "#/components/schemas/TenantApi.StartSessionRequest",
+          "startSessionFromIssue": "#/components/schemas/TenantApi.StartSessionFromIssueRequest",
+          "sendTurn": "#/components/schemas/TenantApi.SendTurnRequest",
+          "stopSession": "#/components/schemas/TenantApi.StopSessionRequest",
+          "archiveSession": "#/components/schemas/TenantApi.ArchiveSessionRequest",
+          "getSession": "#/components/schemas/TenantApi.GetSessionRequest",
+          "listSessions": "#/components/schemas/TenantApi.ListSessionsRequest",
+          "listTurns": "#/components/schemas/TenantApi.ListTurnsRequest",
+          "getTurn": "#/components/schemas/TenantApi.GetTurnRequest",
+          "waitTurns": "#/components/schemas/TenantApi.WaitTurnsRequest",
+          "getTurnFailure": "#/components/schemas/TenantApi.GetTurnFailureRequest",
+          "listStopFailures": "#/components/schemas/TenantApi.ListStopFailuresRequest",
+          "listSnapshots": "#/components/schemas/TenantApi.ListSnapshotsRequest",
+          "listCredentialHandovers": "#/components/schemas/TenantApi.ListCredentialHandoversRequest",
+          "getSnapshot": "#/components/schemas/TenantApi.GetSnapshotRequest",
+          "transcriptCursor": "#/components/schemas/TenantApi.TranscriptCursorRequest"
         }
       },
       "description": "One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation."
@@ -9493,6 +11851,287 @@
         }
       },
       "description": "The input fails the operation's schema: a caller bug, which the caller fails as a 500."
+    },
+    "TenantApi.TranscriptChunk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "sessionState",
+        "harness",
+        "lastLineSeq",
+        "inFlight",
+        "storageKey",
+        "range"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Chunk"
+          ]
+        },
+        "sessionState": {
+          "$ref": "#/components/schemas/SessionState"
+        },
+        "harness": {
+          "$ref": "#/components/schemas/Harness"
+        },
+        "lastLineSeq": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "inFlight": {
+          "type": "boolean"
+        },
+        "storageKey": {
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/components/schemas/TenantApi.ByteRange"
+        }
+      }
+    },
+    "TenantApi.TranscriptCursorInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId",
+        "after",
+        "turnId",
+        "limit"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "after": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "turnId": {
+          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "nullable": true
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxBytes": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.TranscriptCursorRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "transcriptCursor"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.TranscriptCursorInput"
+        }
+      }
+    },
+    "TenantApi.TranscriptCursorResult": {
+      "type": "object",
+      "required": [
+        "cursor"
+      ],
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/TenantApi.TranscriptChunk"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/TenantApi.TranscriptLines"
+                }
+              ],
+              "nullable": true
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.TranscriptLines": {
+      "type": "object",
+      "required": [
+        "kind",
+        "sessionState",
+        "harness",
+        "lastLineSeq",
+        "inFlight",
+        "lines"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Lines"
+          ]
+        },
+        "sessionState": {
+          "$ref": "#/components/schemas/SessionState"
+        },
+        "harness": {
+          "$ref": "#/components/schemas/Harness"
+        },
+        "lastLineSeq": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "inFlight": {
+          "type": "boolean"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TranscriptLine"
+          }
+        }
+      }
+    },
+    "TenantApi.TurnCredentialRefused": {
+      "type": "object",
+      "required": [
+        "kind",
+        "personaId",
+        "refusal"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "CredentialRefused"
+          ]
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "refusal": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.NoCredentialRefusal"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.NoModelCredentialRefusal"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.UnsupportedCredentialRefusal"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.ExpiredCredentialRefusal"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.TurnInFlight": {
+      "type": "object",
+      "required": [
+        "kind",
+        "turnId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "InFlight"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.TurnSentOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "turn"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Sent"
+          ]
+        },
+        "turn": {
+          "$ref": "#/components/schemas/Turn"
+        }
+      }
+    },
+    "TenantApi.TurnsRead": {
+      "type": "object",
+      "required": [
+        "kind",
+        "turns"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Read"
+          ]
+        },
+        "turns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Turn"
+          }
+        }
+      }
+    },
+    "TenantApi.TurnStranded": {
+      "type": "object",
+      "required": [
+        "kind",
+        "missingTurnIds"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Stranded"
+          ]
+        },
+        "missingTurnIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        }
+      }
     },
     "TenantApi.UnknownConnectorsInput": {
       "type": "object",
@@ -9859,6 +12498,35 @@
         }
       }
     },
+    "TenantApi.UnsupportedCredentialRefusal": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "credentialKind",
+        "supported"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unsupported"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "credentialKind": {
+          "type": "string"
+        },
+        "supported": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "TenantApi.UpdatePersonaInput": {
       "type": "object",
       "required": [
@@ -10206,6 +12874,87 @@
         }
       }
     },
+    "TenantApi.WaitedTurnNotFound": {
+      "type": "object",
+      "required": [
+        "kind",
+        "turnId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotFound"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.WaitTurnsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "turnIds",
+        "timeoutSeconds"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "turnIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        },
+        "timeoutSeconds": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TenantApi.WaitTurnsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "waitTurns"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.WaitTurnsInput"
+        }
+      }
+    },
+    "TenantApi.WaitTurnsResult": {
+      "type": "object",
+      "required": [
+        "waited"
+      ],
+      "properties": {
+        "waited": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.TurnsRead"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.WaitedTurnNotFound"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.WorkflowRunReportedInput": {
       "type": "object",
       "required": [
@@ -10359,6 +13108,228 @@
       "x-bound-names": [
         "Oldest",
         "Version"
+      ]
+    },
+    "TranscriptLine": {
+      "type": "object",
+      "required": [
+        "sessionId",
+        "lineSeq",
+        "tenantId",
+        "turnId",
+        "text",
+        "createdAt"
+      ],
+      "properties": {
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "lineSeq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "text": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "One harness-native JSONL line of a turn. `lineSeq` numbers the lines of a session from 1 and\nnever restarts, so a cursor stays valid across snapshots, cold boots and host moves."
+    },
+    "Turn": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/OfferedTurn"
+        },
+        {
+          "$ref": "#/components/schemas/RunningTurn"
+        },
+        {
+          "$ref": "#/components/schemas/CompletedTurn"
+        },
+        {
+          "$ref": "#/components/schemas/FailedTurn"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "state",
+        "mapping": {
+          "Offered": "#/components/schemas/OfferedTurn",
+          "Running": "#/components/schemas/RunningTurn",
+          "Completed": "#/components/schemas/CompletedTurn",
+          "Failed": "#/components/schemas/FailedTurn"
+        }
+      },
+      "description": "One prompt and the harness's completion of it, run on a session's box."
+    },
+    "TurnFailure": {
+      "type": "object",
+      "required": [
+        "turnId",
+        "tenantId",
+        "sessionId",
+        "reason",
+        "detail",
+        "failedAt",
+        "createdAt"
+      ],
+      "properties": {
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/TurnFailureReason"
+        },
+        "detail": {
+          "type": "string",
+          "description": "What failed and what fixes it, with the tail of the harness's standard error when there is one."
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "Why a turn ended Failed. Exists only for a turn in state Failed."
+    },
+    "TurnFailureReason": {
+      "type": "string",
+      "enum": [
+        "NotClaimed",
+        "Undelivered",
+        "NoFirstOutput",
+        "HostOffline",
+        "CredentialRefused",
+        "DispatchCredentialExpired",
+        "CredentialExpired",
+        "BoxBootFailed",
+        "PoolExhausted",
+        "SnapshotUnreadable",
+        "HarnessExited",
+        "HarnessOutOfMemory",
+        "BoxDiskFull",
+        "HarnessExitedWithoutResult",
+        "TurnTimedOut",
+        "TranscriptGap",
+        "PersonaFileUnreadable",
+        "RepositoryCloneFailed",
+        "HarnessReportedError",
+        "RepositoryTokenRefused",
+        "ImageNotReleased",
+        "ImageFetchFailed",
+        "ImageFetchTimedOut",
+        "HostUpdating",
+        "BoxLost",
+        "Cancelled",
+        "ConnectorDisconnected"
+      ],
+      "description": "Why a turn ended Failed. Each reason names the phase the turn stopped in."
+    },
+    "TurnFullImage": {
+      "type": "object",
+      "required": [
+        "kind",
+        "guestImageDigest"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Full"
+          ]
+        },
+        "guestImageDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        }
+      },
+      "description": "The turn's box boots a full guest image. `guestImageDigest` names the same image as a prebuild's guestImageDigest."
+    },
+    "TurnImage": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/TurnFullImage"
+        },
+        {
+          "$ref": "#/components/schemas/TurnLayeredImage"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Full": "#/components/schemas/TurnFullImage",
+          "Layered": "#/components/schemas/TurnLayeredImage"
+        }
+      },
+      "description": "The image a turn's box boots."
+    },
+    "TurnLayeredImage": {
+      "type": "object",
+      "required": [
+        "kind",
+        "baseImageDigest",
+        "harnessLayerDigest"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Layered"
+          ]
+        },
+        "baseImageDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "harnessLayerDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        }
+      },
+      "description": "The turn's box boots a base image with the harness layer of the session's harness version."
+    },
+    "TurnSend": {
+      "type": "object",
+      "required": [
+        "prompt"
+      ],
+      "properties": {
+        "prompt": {
+          "$ref": "#/components/schemas/Prompt"
+        },
+        "goal": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Goal"
+            }
+          ],
+          "description": "A condition the harness keeps working toward until it holds; only a session whose harness has goals in the harness catalog accepts it."
+        }
+      },
+      "description": "The fields every turn carries, whatever its state."
+    },
+    "TurnState": {
+      "type": "string",
+      "enum": [
+        "Offered",
+        "Running",
+        "Completed",
+        "Failed"
       ]
     }
   }
