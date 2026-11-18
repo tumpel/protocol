@@ -16,6 +16,7 @@ import "./lib/claude-setup.tsp";
 import "./lib/openrouter.tsp";
 import "./lib/connector.tsp";
 import "./lib/events.tsp";
+import "./lib/notifications.tsp";
 import "./lib/tenant-api.tsp";
 
 using TypeSpec.Http;

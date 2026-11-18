@@ -3658,6 +3658,110 @@
       "minLength": 1,
       "maxLength": 100000
     },
+    "PushEndpointUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "pattern": "^https://[^/@?#\\s]+(/[^#\\s]*)?$",
+      "description": "The HTTPS push service address a browser's push subscription names."
+    },
+    "PushSubscription": {
+      "type": "object",
+      "required": [
+        "pushSubscriptionId",
+        "tenantId",
+        "principalId",
+        "endpoint",
+        "events",
+        "createdAt"
+      ],
+      "properties": {
+        "pushSubscriptionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "principalId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "endpoint": {
+          "$ref": "#/components/schemas/PushEndpointUrl"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantEventType"
+          },
+          "minItems": 1
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        }
+      },
+      "description": "One browser of the caller that receives a Web Push notification for each of the tenant's events\nof the listed types. A push service that answers 404 or 410 deletes the\nsubscription."
+    },
+    "PushSubscriptionCreate": {
+      "type": "object",
+      "required": [
+        "endpoint",
+        "events",
+        "keys"
+      ],
+      "properties": {
+        "endpoint": {
+          "$ref": "#/components/schemas/PushEndpointUrl"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantEventType"
+          },
+          "minItems": 1
+        },
+        "keys": {
+          "$ref": "#/components/schemas/PushSubscriptionKeys"
+        }
+      },
+      "description": "What a browser sends to subscribe: its push endpoint, its keys and the event types to notify. The keys are write-only."
+    },
+    "PushSubscriptionKeys": {
+      "type": "object",
+      "required": [
+        "p256dh",
+        "auth"
+      ],
+      "properties": {
+        "p256dh": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{87}$",
+          "description": "The browser's P-256 public key, uncompressed."
+        },
+        "auth": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{22}$",
+          "description": "The 16-byte authentication secret."
+        }
+      },
+      "description": "The keys a browser's push subscription carries, in base64url, as the Push API reports them."
+    },
     "ReleaseHarnessLayer": {
       "type": "object",
       "required": [
@@ -7911,6 +8015,63 @@
         }
       }
     },
+    "TenantApi.CreatePushSubscriptionInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "principalId",
+        "subscription",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "subscription": {
+          "$ref": "#/components/schemas/PushSubscriptionCreate"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.CreatePushSubscriptionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "createPushSubscription"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CreatePushSubscriptionInput"
+        }
+      }
+    },
+    "TenantApi.CreatePushSubscriptionResult": {
+      "type": "object",
+      "required": [
+        "subscription"
+      ],
+      "properties": {
+        "subscription": {
+          "$ref": "#/components/schemas/PushSubscription"
+        }
+      }
+    },
     "TenantApi.CreateSecretSetInput": {
       "type": "object",
       "required": [
@@ -8010,6 +8171,59 @@
             }
           ],
           "nullable": true
+        }
+      }
+    },
+    "TenantApi.CreateWebhookEndpointInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "endpoint",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "endpoint": {
+          "$ref": "#/components/schemas/WebhookEndpointCreate"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.CreateWebhookEndpointRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "createWebhookEndpoint"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.CreateWebhookEndpointInput"
+        }
+      }
+    },
+    "TenantApi.CreateWebhookEndpointResult": {
+      "type": "object",
+      "required": [
+        "endpoint"
+      ],
+      "properties": {
+        "endpoint": {
+          "$ref": "#/components/schemas/WebhookEndpoint"
         }
       }
     },
@@ -8330,6 +8544,59 @@
         }
       }
     },
+    "TenantApi.DeletePushSubscriptionInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "principalId",
+        "pushSubscriptionId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "pushSubscriptionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.DeletePushSubscriptionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "deletePushSubscription"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.DeletePushSubscriptionInput"
+        }
+      }
+    },
+    "TenantApi.DeletePushSubscriptionResult": {
+      "type": "object",
+      "required": [
+        "deleted"
+      ],
+      "properties": {
+        "deleted": {
+          "type": "boolean",
+          "description": "False when the principal has no push subscription with the id."
+        }
+      }
+    },
     "TenantApi.DeleteSecretSetInput": {
       "type": "object",
       "required": [
@@ -8399,6 +8666,55 @@
         },
         "secretSetId": {
           "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.DeleteWebhookEndpointInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "webhookEndpointId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "webhookEndpointId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.DeleteWebhookEndpointRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "deleteWebhookEndpoint"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.DeleteWebhookEndpointInput"
+        }
+      }
+    },
+    "TenantApi.DeleteWebhookEndpointResult": {
+      "type": "object",
+      "required": [
+        "deleted"
+      ],
+      "properties": {
+        "deleted": {
+          "type": "boolean",
+          "description": "False when the tenant has no webhook endpoint with the id."
         }
       }
     },
@@ -8569,6 +8885,46 @@
       }
     },
     "TenantApi.ForgetHostUsageResult": {
+      "type": "object"
+    },
+    "TenantApi.ForgetPushSubscriptionInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "pushSubscriptionId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "pushSubscriptionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ForgetPushSubscriptionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "forgetPushSubscription"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ForgetPushSubscriptionInput"
+        }
+      }
+    },
+    "TenantApi.ForgetPushSubscriptionResult": {
       "type": "object"
     },
     "TenantApi.GetClaudeSetupInput": {
@@ -9179,6 +9535,61 @@
             }
           ],
           "nullable": true
+        }
+      }
+    },
+    "TenantApi.GetWebhookEndpointInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "webhookEndpointId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "webhookEndpointId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.GetWebhookEndpointRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "getWebhookEndpoint"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.GetWebhookEndpointInput"
+        }
+      }
+    },
+    "TenantApi.GetWebhookEndpointResult": {
+      "type": "object",
+      "required": [
+        "endpoint"
+      ],
+      "properties": {
+        "endpoint": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/WebhookEndpoint"
+            }
+          ],
+          "nullable": true,
+          "description": "Null when the tenant has no webhook endpoint with the id."
         }
       }
     },
@@ -10570,6 +10981,57 @@
         }
       }
     },
+    "TenantApi.ListPushSubscriptionsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "principalId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListPushSubscriptionsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listPushSubscriptions"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListPushSubscriptionsInput"
+        }
+      }
+    },
+    "TenantApi.ListPushSubscriptionsResult": {
+      "type": "object",
+      "required": [
+        "subscriptions"
+      ],
+      "properties": {
+        "subscriptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/PushSubscription"
+          }
+        }
+      }
+    },
     "TenantApi.ListSecretSetsInput": {
       "type": "object",
       "required": [
@@ -10825,6 +11287,53 @@
             "$ref": "#/components/schemas/Turn"
           },
           "nullable": true
+        }
+      }
+    },
+    "TenantApi.ListWebhookEndpointsInput": {
+      "type": "object",
+      "required": [
+        "tenantId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListWebhookEndpointsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listWebhookEndpoints"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListWebhookEndpointsInput"
+        }
+      }
+    },
+    "TenantApi.ListWebhookEndpointsResult": {
+      "type": "object",
+      "required": [
+        "endpoints"
+      ],
+      "properties": {
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/WebhookEndpoint"
+          }
         }
       }
     },
@@ -12215,6 +12724,84 @@
         }
       }
     },
+    "TenantApi.PushDeliveryTarget": {
+      "type": "object",
+      "required": [
+        "endpoint",
+        "keys",
+        "events"
+      ],
+      "properties": {
+        "endpoint": {
+          "$ref": "#/components/schemas/PushEndpointUrl"
+        },
+        "keys": {
+          "$ref": "#/components/schemas/PushSubscriptionKeys"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantEventType"
+          }
+        }
+      },
+      "description": "Where and how a push subscription receives its notifications."
+    },
+    "TenantApi.PushTargetInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "pushSubscriptionId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "pushSubscriptionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.PushTargetRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "pushTarget"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.PushTargetInput"
+        }
+      }
+    },
+    "TenantApi.PushTargetResult": {
+      "type": "object",
+      "required": [
+        "target"
+      ],
+      "properties": {
+        "target": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.PushDeliveryTarget"
+            }
+          ],
+          "nullable": true,
+          "description": "Null when the subscription is gone."
+        }
+      }
+    },
     "TenantApi.ReadTokenOk": {
       "type": "object",
       "required": [
@@ -13509,6 +14096,50 @@
           ]
         }
       }
+    },
+    "TenantApi.SetWebhookEndpointStatusInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "webhookEndpointId",
+        "status"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "webhookEndpointId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "status": {
+          "$ref": "#/components/schemas/WebhookDeliveryStatus"
+        }
+      }
+    },
+    "TenantApi.SetWebhookEndpointStatusRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "setWebhookEndpointStatus"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.SetWebhookEndpointStatusInput"
+        }
+      }
+    },
+    "TenantApi.SetWebhookEndpointStatusResult": {
+      "type": "object"
     },
     "TenantApi.StartCircleCIAuthorizationInput": {
       "type": "object",
@@ -14997,6 +15628,36 @@
           "$ref": "#/components/schemas/TenantApi.ListEventsRequest"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.ListWebhookEndpointsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CreateWebhookEndpointRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.GetWebhookEndpointRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DeleteWebhookEndpointRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.SetWebhookEndpointStatusRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListPushSubscriptionsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.CreatePushSubscriptionRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DeletePushSubscriptionRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ForgetPushSubscriptionRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.PushTargetRequest"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.GetTurnFailureRequest"
         },
         {
@@ -15181,6 +15842,16 @@
           "getTurn": "#/components/schemas/TenantApi.GetTurnRequest",
           "waitTurns": "#/components/schemas/TenantApi.WaitTurnsRequest",
           "listEvents": "#/components/schemas/TenantApi.ListEventsRequest",
+          "listWebhookEndpoints": "#/components/schemas/TenantApi.ListWebhookEndpointsRequest",
+          "createWebhookEndpoint": "#/components/schemas/TenantApi.CreateWebhookEndpointRequest",
+          "getWebhookEndpoint": "#/components/schemas/TenantApi.GetWebhookEndpointRequest",
+          "deleteWebhookEndpoint": "#/components/schemas/TenantApi.DeleteWebhookEndpointRequest",
+          "setWebhookEndpointStatus": "#/components/schemas/TenantApi.SetWebhookEndpointStatusRequest",
+          "listPushSubscriptions": "#/components/schemas/TenantApi.ListPushSubscriptionsRequest",
+          "createPushSubscription": "#/components/schemas/TenantApi.CreatePushSubscriptionRequest",
+          "deletePushSubscription": "#/components/schemas/TenantApi.DeletePushSubscriptionRequest",
+          "forgetPushSubscription": "#/components/schemas/TenantApi.ForgetPushSubscriptionRequest",
+          "pushTarget": "#/components/schemas/TenantApi.PushTargetRequest",
           "getTurnFailure": "#/components/schemas/TenantApi.GetTurnFailureRequest",
           "listStopFailures": "#/components/schemas/TenantApi.ListStopFailuresRequest",
           "listSnapshots": "#/components/schemas/TenantApi.ListSnapshotsRequest",
@@ -17002,6 +17673,143 @@
         "Completed",
         "Failed"
       ]
+    },
+    "WebhookDelivering": {
+      "type": "object",
+      "required": [
+        "delivery"
+      ],
+      "properties": {
+        "delivery": {
+          "type": "string",
+          "enum": [
+            "Delivering"
+          ]
+        }
+      }
+    },
+    "WebhookDeliveryStatus": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/WebhookDelivering"
+        },
+        {
+          "$ref": "#/components/schemas/WebhookFailing"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "delivery",
+        "mapping": {
+          "Delivering": "#/components/schemas/WebhookDelivering",
+          "Failing": "#/components/schemas/WebhookFailing"
+        }
+      },
+      "description": "Whether a webhook endpoint receives its events, with how it fails when it does not."
+    },
+    "WebhookEndpoint": {
+      "type": "object",
+      "required": [
+        "webhookEndpointId",
+        "tenantId",
+        "url",
+        "events",
+        "status",
+        "createdAt"
+      ],
+      "properties": {
+        "webhookEndpointId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "url": {
+          "$ref": "#/components/schemas/WebhookUrl"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantEventType"
+          },
+          "minItems": 1
+        },
+        "status": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/WebhookDeliveryStatus"
+            }
+          ],
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        }
+      },
+      "description": "An HTTPS endpoint that receives the tenant's events of the listed types, in eventId order, at\nleast once. Each request is a POST of one event as JSON. Its `Tumpel-Signature` header is the\nbase64url Ed25519 signature, under the tenant's webhook signing key, over the request body;\n`Tumpel-Event-Id` repeats the eventId so a receiver drops a repeat. A failed request is retried\nafter 1 minute, doubling to 1 hour. The URL and types are fixed at create."
+    },
+    "WebhookEndpointCreate": {
+      "type": "object",
+      "required": [
+        "url",
+        "events"
+      ],
+      "properties": {
+        "url": {
+          "$ref": "#/components/schemas/WebhookUrl"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantEventType"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "An HTTPS endpoint that receives the tenant's events of the listed types, in eventId order, at\nleast once. Each request is a POST of one event as JSON. Its `Tumpel-Signature` header is the\nbase64url Ed25519 signature, under the tenant's webhook signing key, over the request body;\n`Tumpel-Event-Id` repeats the eventId so a receiver drops a repeat. A failed request is retried\nafter 1 minute, doubling to 1 hour. The URL and types are fixed at create."
+    },
+    "WebhookFailing": {
+      "type": "object",
+      "required": [
+        "delivery",
+        "detail",
+        "failingSince"
+      ],
+      "properties": {
+        "delivery": {
+          "type": "string",
+          "enum": [
+            "Failing"
+          ]
+        },
+        "detail": {
+          "type": "string",
+          "description": "How the last request failed: the status the endpoint answered, or that it did not answer within 10 seconds."
+        },
+        "failingSince": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "WebhookUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "pattern": "^https://[^/@?#\\s]+(/[^#\\s]*)?$",
+      "description": "The HTTPS address a webhook endpoint receives events at. It carries no user info and no\nfragment, so it never holds a credential."
     },
     "WorkflowPath": {
       "type": "string",
