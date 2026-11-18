@@ -164,6 +164,123 @@
       },
       "description": "What a box boots from: a full guest image, or a base image with a harness layer."
     },
+    "Channel.BoxDiscard": {
+      "type": "object",
+      "required": [
+        "type",
+        "sessionId",
+        "boxId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "BoxDiscard"
+          ]
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "Asks the host to drop a box of a session that moved to another host, even when the box holds a\ncompleted turn no snapshot holds, or of a session whose repository the box could not clone. The host answers BoxGone, also when it runs no such box."
+    },
+    "Channel.BoxGone": {
+      "type": "object",
+      "required": [
+        "type",
+        "sessionId",
+        "boxId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "BoxGone"
+          ]
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "The host runs no box of the session any more and returned its TAP device to the pool."
+    },
+    "Channel.BoxTeardownFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "sessionId",
+        "boxId",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "BoxTeardownFailed"
+          ]
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/Channel.BoxTeardownFailureReason"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The host kept the box. `detail` states what failed and what fixes it."
+    },
+    "Channel.BoxTeardownFailureReason": {
+      "type": "string",
+      "enum": [
+        "BoxDirty"
+      ],
+      "description": "Why the host kept a box it was asked to tear down."
+    },
+    "Channel.ChunkPlacement": {
+      "type": "object",
+      "required": [
+        "digest",
+        "packDigest",
+        "offset",
+        "length"
+      ],
+      "properties": {
+        "digest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "packDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "length": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        }
+      },
+      "description": "Where one chunk is stored: the chunk whose bytes have the lower-case hex SHA-256 `digest` lies\n`length` bytes long at byte `offset` of the pack `packDigest`. A pack is chunks concatenated, about\n8 MiB of them, stored under `<tenantId>/packs/<packDigest>`, where `packDigest` is the SHA-256 of\nthe whole pack."
+    },
     "Channel.ClaudeSetupBoxCode": {
       "type": "object",
       "required": [
@@ -221,6 +338,38 @@
       },
       "description": "Asks the host to stop the setup's box and delete its drive, also in place of an unacked offer or\ncode of a setup that ended. The host answers nothing, and does nothing when it runs no such box."
     },
+    "Channel.ClaudeSetupBoxFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxFailed"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/ClaudeSetupFailureReason"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The setup's box stopped without storing the token and is gone. `detail` states what failed and\nwhat fixes it, and never holds the token."
+    },
     "Channel.ClaudeSetupBoxOffer": {
       "type": "object",
       "required": [
@@ -270,6 +419,140 @@
         }
       },
       "description": "Asks the host to boot box `boxId` from `image` with no repository, no persona files and no\ncredential, and run `claude setup-token` in it for Claude setup `claudeSetupId`. The host answers\nClaudeSetupBoxUrl once the command prints its sign-in URL, hands the code of a ClaudeSetupBoxCode\nto the command's standard input, and answers ClaudeSetupBoxFailed when the box stops without\nstoring the token. Only the box writes the token: it POSTs it to `tokenUrl` with `tokenCredential`\nas its bearer token, and the host never sees it. `tokenCredential` is bound to this setup and\nwrites its token once, while the setup is Minting. The host stops the box at `expiresAt`, when it stores the token, or on\nClaudeSetupBoxDiscard, and deletes its drive."
+    },
+    "Channel.ClaudeSetupBoxUrl": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "signInUrl"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxUrl"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "signInUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "userCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      },
+      "description": "The setup's `claude setup-token` printed the URL where the person signs in."
+    },
+    "Channel.DispatchConnector": {
+      "type": "object",
+      "required": [
+        "connectorId",
+        "url",
+        "tokenUrl",
+        "tokenCredential"
+      ],
+      "properties": {
+        "connectorId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "tokenUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "tokenCredential": {
+          "type": "string",
+          "minLength": 43
+        }
+      },
+      "description": "One connector of a turn. `url` is the upstream MCP server. `tokenUrl` is the control plane's\nConnectorTokens_fetch for this turn and connector, and `tokenCredential` its ConnectorTurnToken,\nvalid while the turn is Running. The guest keeps both in forwarder memory only: never in the\nharness environment, a file, a log or a snapshot, and a new tokenCredential never restarts the\nharness. `name` is the connector's name; the guest derives each harness's MCP server name from it,\nand from `connectorId` when a control plane leaves it out."
+    },
+    "Channel.DispatchGrant": {
+      "type": "object",
+      "required": [
+        "credentialHandoverId",
+        "expiresAt",
+        "variables",
+        "connectors"
+      ],
+      "properties": {
+        "credentialHandoverId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.DispatchVariable"
+          }
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The harness arguments the catalog maps the credential to; they hold no secret. A grant without them gives the guest none."
+        },
+        "credentialFile": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "path",
+            "value"
+          ],
+          "description": "A CredentialFile credential: the guest writes `value` to `path` under the harness home, mode 0600, before the harness starts, and deletes it at the end of the turn."
+        },
+        "connectors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.DispatchConnector"
+          },
+          "description": "The session's connectors, none when its persona lists none. The guest forwarder serves each at its loopback route and fetches its access token from tokenUrl with tokenCredential. Neither reaches the harness."
+        }
+      },
+      "description": "The dispatch variables for one offer: every member of the persona's secret set, the credential for\nthe harness's provider under the variable its kind maps to and every other member under its own\nname. The control plane decrypts them from the secret set each time it sends or resends a\nTurnOffer, keeps no plaintext copy and records the variable names in an append-only handover log;\n`credentialHandoverId` names this handover in the supervisor's errors. `expiresAt`, the end of\nthe turn's credential span (the longer of dispatchGrantTtlSeconds and turnOfferTtlSeconds plus\nturnImageFetchBudgetSeconds, from when the offer was sent), is when the supervisor stops handing\nthe variables to a box and fails the turn DispatchCredentialExpired instead."
+    },
+    "Channel.DispatchVariable": {
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "One environment variable for one turn: a secret set member's value. It lives in box memory only and is never written to the host's disk."
     },
     "Channel.GuestImageDownload": {
       "type": "object",
@@ -380,6 +663,301 @@
       },
       "description": "The layered boot of the turn, offered when the current release carries a base image for the\nhost's architecture and a harness layer for the session's harness version on it. The box boots\nfrom the base, the guest drive of the host's supervisor and the layer. The URLs are valid until\n`downloadExpiresAt`, turnOfferTtlSeconds plus `fetchSeconds` after the send of the offer. A supervisor whose\ncache lacks the base or the layer sends TurnImageFetching naming the first part it lacks, then\nfetches base, kernel and layer within one `fetchSeconds` of sending it, counting the wait for\nanother fetch on the host, and checks each against its digest before it moves it into the cache. A\ndownload that fails, misses its digest or names another part in its manifest fails the turn\nImageFetchFailed, one that outlasts `fetchSeconds` fails it ImageFetchTimedOut. The host keeps the\nbase and the layer in its cache while a box runs on them."
     },
+    "Channel.Pack": {
+      "type": "object",
+      "required": [
+        "packDigest",
+        "sizeBytes"
+      ],
+      "properties": {
+        "packDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
+      },
+      "description": "One pack: `packDigest` is the SHA-256 of its `sizeBytes` bytes."
+    },
+    "Channel.PackUrl": {
+      "type": "object",
+      "required": [
+        "packDigest",
+        "sizeBytes",
+        "url"
+      ],
+      "properties": {
+        "packDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "description": "One pack object stored under `<tenantId>/packs/<packDigest>`, `sizeBytes` long, and `url` a\npresigned URL of that object alone."
+    },
+    "Channel.PersonaFileDownload": {
+      "type": "object",
+      "required": [
+        "path",
+        "digest",
+        "sizeBytes",
+        "downloadUrl",
+        "downloadExpiresAt"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/components/schemas/PersonaFilePath"
+        },
+        "digest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "sizeBytes": {
+          "$ref": "#/components/schemas/PersonaFileSize"
+        },
+        "downloadUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "downloadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "One file of the session's persona. `downloadUrl` is a presigned GET of the blob stored under\n`digest`, valid until `downloadExpiresAt`, the DispatchGrant's expiresAt. The supervisor\nchecks the bytes against `digest` and keeps them in its cache, so a digest it already holds is\nnot fetched again."
+    },
+    "Channel.RestoreChunks": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "part",
+        "chunks"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "RestoreChunks"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "chunks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.ChunkPlacement"
+          },
+          "maxItems": 500
+        }
+      },
+      "description": "Part `part` of the chunks a box that boots cold needs for turn `turnId` and lacks in the host's\nchunk cache, each at the placement its manifest or root names, at most\nChunkExchange.DigestsPerPart of them, grouped by pack. The host sends each next part once the\nanswer to the one before arrived, and starts the downloads of each part as its answer arrives.\nThe control plane answers RestoreDownloads."
+    },
+    "Channel.RestoreDownloads": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "part",
+        "packs",
+        "downloadExpiresAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "RestoreDownloads"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "packs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.PackUrl"
+          },
+          "maxItems": 500
+        },
+        "downloadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The answer to RestoreChunks part `part`: a presigned GET for each pack that holds chunks of that\npart, valid until `downloadExpiresAt`, the DispatchGrant's expiresAt. A pack is left out when\nany chunk asked in it is no chunk of the session at that placement, and the host fails the turn\nSnapshotUnreadable."
+    },
+    "Channel.SnapshotChunks": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "part",
+        "digests"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotChunks"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "digests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Sha256Digest"
+          },
+          "maxItems": 500
+        }
+      },
+      "description": "Part `part` of the chunk digests the files of a snapshot hold that the box's previous snapshot\ndid not, at most ChunkExchange.DigestsPerPart of them. The host sends part 1 once its files are\ncut, and each next part once the answer to the one before arrived. The control plane answers\nSnapshotChunksHeld and counts each digest as referenced by the session."
+    },
+    "Channel.SnapshotChunksHeld": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "part",
+        "held"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotChunksHeld"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "held": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.ChunkPlacement"
+          },
+          "maxItems": 500
+        }
+      },
+      "description": "The answer to SnapshotChunks part `part`: where the tenant stores each digest of that part it\nholds already. A digest left out is stored in no pack, and the host packs and uploads it."
+    },
+    "Channel.SnapshotDone": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "uploadedBytes"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotDone"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "uploadedBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        }
+      },
+      "description": "The host stored the snapshot's packs and root. `uploadedBytes` counts the bytes it uploaded: the packs the tenant lacked, plus the root."
+    },
+    "Channel.SnapshotDownload": {
+      "type": "object",
+      "required": [
+        "snapshotId",
+        "snapshotSeq",
+        "storageKey",
+        "downloadUrl",
+        "downloadExpiresAt"
+      ],
+      "properties": {
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "snapshotSeq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "storageKey": {
+          "$ref": "#/components/schemas/StorageKey"
+        },
+        "downloadUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "downloadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "One stored snapshot of a session, for a box that boots cold. `downloadUrl` is a presigned GET of\nthe SnapshotRoot under `storageKey` alone, valid until `downloadExpiresAt`, the end of the turn's\ncredential span, the DispatchGrant's expiresAt."
+    },
+    "Channel.SnapshotFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotFailed"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/Channel.SnapshotFailureReason"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The host could not store the snapshot. `detail` states what failed and what fixes it."
+    },
     "Channel.SnapshotFailureReason": {
       "type": "string",
       "enum": [
@@ -391,6 +969,85 @@
         "NotAnswered"
       ],
       "description": "Why the host could not store a snapshot."
+    },
+    "Channel.SnapshotPacks": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "part",
+        "packs",
+        "chunks"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotPacks"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "packs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.Pack"
+          },
+          "maxItems": 500
+        },
+        "chunks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.ChunkPlacement"
+          },
+          "maxItems": 500
+        }
+      },
+      "description": "Part `part` of the chunks a snapshot packed: where each chunk lies, at most\nChunkExchange.DigestsPerPart of them, and the size of each pack they lie in. A pack whose chunks\nrun past one part is listed again in the next. The host sends part 1 once its packs are written,\nand each next part once the answer to the one before arrived. The control plane keeps the\nplacements until SnapshotDone, counts each digest as referenced by the session, and answers\nSnapshotPackUploads."
+    },
+    "Channel.SnapshotPackUploads": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "part",
+        "uploads",
+        "uploadExpiresAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotPackUploads"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "uploads": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.PackUrl"
+          },
+          "maxItems": 500
+        },
+        "uploadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The answer to SnapshotPacks part `part`: a presigned PUT for each pack of that part the tenant\nholds no object for, valid until `uploadExpiresAt`. Each URL signs the pack's SHA-256 as the\nx-amz-checksum-sha256 header, so the host sends that header and object storage refuses bytes that\ndo not hash to the key. A pack left out is stored already."
     },
     "Channel.SupervisorUpdateFailed": {
       "type": "object",
@@ -478,6 +1135,242 @@
         }
       },
       "description": "The host's supervisor update from the binary `fromSha256` to `toSha256` entered `phase`. The new\nbinary sends Online once it reaches Welcome after the swap."
+    },
+    "Channel.TurnClaim": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "boxId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnClaim"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "The host accepts the offered turn. It sends this at once, before it fetches the image, restores the\nsnapshot or boots the box; those keep their own budgets and failures. The control plane answers TurnClaimed\nand the turn reads Running, or answers TurnWithdrawn when the turn already left Offered. The host\nhands the prompt to the harness only once TurnClaimed arrived and the box is ready. A host that\ngives up waiting for the answer hands nothing and fails the turn NotClaimed, and the control plane\noffers the turn again. So a turn is either claimed and its result reaches the control plane, or\nrefused before the harness starts."
+    },
+    "Channel.TurnClaimed": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnClaimed"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "The control plane's answer to a TurnClaim for a turn that was still Offered; the turn now reads Running, and the host hands its prompt to the harness once the box is ready."
+    },
+    "Channel.TurnComplete": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "lastLineSeq",
+        "completedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnComplete"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "lastLineSeq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "credentialFile": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member."
+        },
+        "warning": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The guest's warning for a turn the harness completed, such as a box disk with less than a hundredth of it free; the control plane shows it on the turn read."
+        }
+      },
+      "description": "The harness finished the turn. `lastLineSeq` is the turn's final line; the control plane holds every line up to it before the turn reads Completed."
+    },
+    "Channel.TurnFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnFailed"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/TurnFailureReason"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "credentialFile": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member."
+        }
+      }
+    },
+    "Channel.TurnImageFetching": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "imageDigest"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnImageFetching"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "imageDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        }
+      },
+      "description": "The host's cache lacks part of the offer's image and the host has started to download it: `imageDigest` names\nthe full image, or the base image or harness layer of a layered boot, whichever it lacks first.\nIt follows the TurnClaim; the host fails the turn ImageFetchTimedOut when the fetch outlasts the\noffer's `image.fetchSeconds`."
+    },
+    "Channel.TurnLine": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "lineSeq",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnLine"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "lineSeq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "description": "One harness-native JSONL line. `lineSeq` continues the session's line count, so lines of a turn arrive in `lineSeq` order with no gap."
+    },
+    "Channel.TurnRepositoryCloneFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "cause",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnRepositoryCloneFailed"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "cause": {
+          "$ref": "#/components/schemas/RepositoryCloneFailureCause"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The box could not clone the session's repository; the turn fails RepositoryCloneFailed. `detail` carries what git reported."
+    },
+    "Channel.TurnRepositoryReady": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnRepositoryReady"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "The box holds the session's repository and the harness is about to get the prompt; the first-line budget starts here."
+    },
+    "Channel.TurnWithdrawn": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnWithdrawn"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "Takes the place of an unacked TurnOffer when the control plane resends it after its turn left\nOffered, so the resend keeps every `seq` and no key reaches a turn that already ended. It is also\nthe answer to a TurnClaim for a turn that left Offered before the claim arrived: the host then\nhands the turn no prompt, keeps the box warm and reports nothing for the turn."
     },
     "ChannelProtocol": {
       "type": "integer",
@@ -1542,6 +2435,11 @@
       "minLength": 1,
       "maxLength": 100
     },
+    "EmailAddress": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 320
+    },
     "EntityId": {
       "type": "string",
       "minLength": 1,
@@ -1862,6 +2760,52 @@
         "Offline",
         "Revoked"
       ]
+    },
+    "HostUsage": {
+      "type": "object",
+      "required": [
+        "boxesWarm",
+        "loadAverage",
+        "memoryAvailableMib"
+      ],
+      "properties": {
+        "boxesWarm": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0
+        },
+        "loadAverage": {
+          "type": "number",
+          "format": "double",
+          "minimum": 0
+        },
+        "memoryAvailableMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "diskBudgetMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "diskHeldMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "memoryBudgetMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "memoryHeldMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        }
+      },
+      "description": "What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts\nthe paused boxes it holds, `loadAverage` is the one-minute load average of the host,\nand `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the\nhost gives box disks: the free disk under its dataDir and what its boxes already wrote, less the\nheadroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host\nadmits a box only while its disk fits the budget beside the held ones; a supervisor older than\nthe box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal\nless the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it\nholds. A host admits a box only while its memory fits the budget beside the held ones, whatever\ntheir count; a supervisor older than the memory budget sends neither."
     },
     "ImageHarness": {
       "type": "string",
@@ -2700,6 +3644,16 @@
         }
       },
       "description": "A host's box slots and its last reported usage, kept by its tenant from the host's Hello and\nHeartbeats. `boxCapacity` comes from Hello. `boxesRunning` counts the tenant's Offered and\nRunning turns on the host. Placement counts the boxes a host holds from the tenant's own\nsessions, never from the reported `boxesWarm`, which lags by a Heartbeat.\n`channelProtocol` is the protocol version the host's latest Hello negotiated; the control plane\ncloses the connection with UnsupportedVersion instead of sending a frame of a newer version,\nand resends it once the host reconnects on a version that speaks it. A host that has not connected since it enrolled has none."
+    },
+    "RepositoryCloneFailureCause": {
+      "type": "string",
+      "enum": [
+        "Refused",
+        "TimedOut",
+        "DirectoryNotEmpty",
+        "Other"
+      ],
+      "description": "Why the box could not clone the session's repository."
     },
     "RepositoryCredentialSource": {
       "type": "string",
@@ -6784,6 +7738,97 @@
         }
       }
     },
+    "TenantApi.DeadlineReachedInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "due"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "due": {
+          "$ref": "#/components/schemas/TenantApi.SessionDueDeadline"
+        }
+      }
+    },
+    "TenantApi.DeadlineReachedRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "deadlineReached"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.DeadlineReachedInput"
+        }
+      }
+    },
+    "TenantApi.DeadlineReachedResult": {
+      "type": "object"
+    },
+    "TenantApi.DeferredOffersInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "hostId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.DeferredOffersRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "deferredOffers"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.DeferredOffersInput"
+        }
+      }
+    },
+    "TenantApi.DeferredOffersResult": {
+      "type": "object",
+      "required": [
+        "handoffs"
+      ],
+      "properties": {
+        "handoffs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.TurnHandoff"
+          }
+        }
+      }
+    },
     "TenantApi.DeleteBuildConnectionInput": {
       "type": "object",
       "required": [
@@ -7177,6 +8222,42 @@
           "type": "string"
         }
       }
+    },
+    "TenantApi.ForgetHostUsageInput": {
+      "type": "object",
+      "required": [
+        "hostId"
+      ],
+      "properties": {
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ForgetHostUsageRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "forgetHostUsage"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ForgetHostUsageInput"
+        }
+      }
+    },
+    "TenantApi.ForgetHostUsageResult": {
+      "type": "object"
     },
     "TenantApi.GetClaudeSetupInput": {
       "type": "object",
@@ -8000,6 +9081,271 @@
         }
       }
     },
+    "TenantApi.HostFrameRefused": {
+      "type": "object",
+      "required": [
+        "type",
+        "reason"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Refused"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "TenantApi.HostHelloInput": {
+      "type": "object",
+      "required": [
+        "hostId",
+        "boxCapacity",
+        "usage",
+        "now",
+        "channelProtocol"
+      ],
+      "properties": {
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxCapacity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "usage": {
+          "$ref": "#/components/schemas/HostUsage"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "channelProtocol": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TenantApi.HostHelloRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "hostHello"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.HostHelloInput"
+        }
+      }
+    },
+    "TenantApi.HostHelloResult": {
+      "type": "object"
+    },
+    "TenantApi.HostMessageInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "hostId",
+        "message"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/Channel.TurnImageFetching"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.TurnClaim"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.TurnRepositoryReady"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.TurnLine"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.TurnComplete"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.TurnRepositoryCloneFailed"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.TurnFailed"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.SnapshotChunks"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.SnapshotPacks"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.RestoreChunks"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.SnapshotDone"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.SnapshotFailed"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.BoxGone"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.BoxTeardownFailed"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.ClaudeSetupBoxUrl"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.ClaudeSetupBoxFailed"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.HostMessageRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "hostMessage"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.HostMessageInput"
+        }
+      }
+    },
+    "TenantApi.HostMessageResult": {
+      "type": "object",
+      "required": [
+        "reply"
+      ],
+      "properties": {
+        "reply": {
+          "anyOf": [
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/TenantApi.HostFrameRefused"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Channel.SnapshotChunksHeld"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Channel.SnapshotPackUploads"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Channel.RestoreDownloads"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Channel.BoxDiscard"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Channel.ClaudeSetupBoxDiscard"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Channel.TurnClaimed"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Channel.TurnWithdrawn"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/TenantApi.StoredTurnOffer"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/TenantApi.TurnHandoff"
+                }
+              ],
+              "nullable": true
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.HostPrebuildStarted": {
       "type": "object",
       "required": [
@@ -8017,6 +9363,62 @@
           "$ref": "#/components/schemas/Prebuild"
         }
       }
+    },
+    "TenantApi.HostPresence": {
+      "type": "string",
+      "enum": [
+        "Online",
+        "Offline"
+      ]
+    },
+    "TenantApi.HostPresenceInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "hostId",
+        "presence",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "presence": {
+          "$ref": "#/components/schemas/TenantApi.HostPresence"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.HostPresenceRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "hostPresence"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.HostPresenceInput"
+        }
+      }
+    },
+    "TenantApi.HostPresenceResult": {
+      "type": "object"
     },
     "TenantApi.HostRecord": {
       "type": "object",
@@ -8103,6 +9505,51 @@
         }
       },
       "description": "A host as the control plane stores it, without its supervisor update reports."
+    },
+    "TenantApi.HostUsageInput": {
+      "type": "object",
+      "required": [
+        "hostId",
+        "usage",
+        "now"
+      ],
+      "properties": {
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "usage": {
+          "$ref": "#/components/schemas/HostUsage"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.HostUsageRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "hostUsage"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.HostUsageInput"
+        }
+      }
+    },
+    "TenantApi.HostUsageResult": {
+      "type": "object"
     },
     "TenantApi.ImageAvailability": {
       "type": "object",
@@ -8488,6 +9935,53 @@
             "$ref": "#/components/schemas/CredentialHandover"
           },
           "nullable": true
+        }
+      }
+    },
+    "TenantApi.ListHostUsageInput": {
+      "type": "object",
+      "required": [
+        "tenantId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListHostUsageRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listHostUsage"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListHostUsageInput"
+        }
+      }
+    },
+    "TenantApi.ListHostUsageResult": {
+      "type": "object",
+      "required": [
+        "usage"
+      ],
+      "properties": {
+        "usage": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/ReportedHostUsage"
+          }
         }
       }
     },
@@ -9136,6 +10630,105 @@
           "items": {
             "$ref": "#/components/schemas/HarnessCredential"
           }
+        }
+      }
+    },
+    "TenantApi.OfferReady": {
+      "type": "object",
+      "required": [
+        "kind",
+        "credential",
+        "lastLineSeq",
+        "snapshots",
+        "personaFiles",
+        "image",
+        "gitAuthorName",
+        "gitAuthorEmail"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Ready"
+          ]
+        },
+        "credential": {
+          "$ref": "#/components/schemas/Channel.DispatchGrant"
+        },
+        "lastLineSeq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "snapshots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.SnapshotDownload"
+          },
+          "maxItems": 1
+        },
+        "personaFiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.PersonaFileDownload"
+          }
+        },
+        "image": {
+          "$ref": "#/components/schemas/Channel.BootImage"
+        },
+        "gitAuthorName": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "gitAuthorEmail": {
+          "$ref": "#/components/schemas/EmailAddress"
+        }
+      }
+    },
+    "TenantApi.OfferSentInput": {
+      "type": "object",
+      "required": [
+        "turnId"
+      ],
+      "properties": {
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.OfferSentRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "offerSent"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.OfferSentInput"
+        }
+      }
+    },
+    "TenantApi.OfferSentResult": {
+      "type": "object"
+    },
+    "TenantApi.OfferWithdrawn": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Withdrawn"
+          ]
         }
       }
     },
@@ -10158,6 +11751,70 @@
         }
       }
     },
+    "TenantApi.PrepareOfferInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "turnId",
+        "hostId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.PrepareOfferRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "prepareOffer"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.PrepareOfferInput"
+        }
+      }
+    },
+    "TenantApi.PrepareOfferResult": {
+      "type": "object",
+      "required": [
+        "prepared"
+      ],
+      "properties": {
+        "prepared": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.OfferReady"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.OfferWithdrawn"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.ReadTokenOk": {
       "type": "object",
       "required": [
@@ -10175,6 +11832,58 @@
           "type": "string"
         }
       }
+    },
+    "TenantApi.ReconcileHeldBoxesInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "hostId",
+        "heldSessionIds",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "heldSessionIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.ReconcileHeldBoxesRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "reconcileHeldBoxes"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ReconcileHeldBoxesInput"
+        }
+      }
+    },
+    "TenantApi.ReconcileHeldBoxesResult": {
+      "type": "object"
     },
     "TenantApi.RecordedPipeline": {
       "type": "object",
@@ -10555,6 +12264,61 @@
         }
       },
       "description": "A GitHub Actions workflow run event, as the webhook reports it."
+    },
+    "TenantApi.RunningTurns": {
+      "type": "object",
+      "required": [
+        "hostId",
+        "runningTurns"
+      ],
+      "properties": {
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "runningTurns": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TenantApi.RunningTurnsByHostInput": {
+      "type": "object"
+    },
+    "TenantApi.RunningTurnsByHostRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "runningTurnsByHost"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.RunningTurnsByHostInput"
+        }
+      }
+    },
+    "TenantApi.RunningTurnsByHostResult": {
+      "type": "object",
+      "required": [
+        "running"
+      ],
+      "properties": {
+        "running": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.RunningTurns"
+          }
+        }
+      }
     },
     "TenantApi.SecretMemberNotFound": {
       "type": "object",
@@ -11032,6 +12796,33 @@
           "enum": [
             "Archived"
           ]
+        }
+      }
+    },
+    "TenantApi.SessionDeadlineName": {
+      "type": "string",
+      "enum": [
+        "FirstLine",
+        "Total",
+        "Snapshot",
+        "SnapshotAnswer",
+        "Teardown",
+        "TeardownAnswer",
+        "HostOffline"
+      ]
+    },
+    "TenantApi.SessionDueDeadline": {
+      "type": "object",
+      "required": [
+        "name",
+        "deadline"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/components/schemas/TenantApi.SessionDeadlineName"
+        },
+        "deadline": {
+          "$ref": "#/components/schemas/TenantApi.TurnDeadline"
         }
       }
     },
@@ -12260,6 +14051,73 @@
       },
       "description": "A persona as the tenant Durable Object stores it, its files named by digest."
     },
+    "TenantApi.StoredTurnOffer": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "sessionId",
+        "boxId",
+        "repository",
+        "harness",
+        "harnessVersion",
+        "model",
+        "prompt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnOffer"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "$ref": "#/components/schemas/RepositoryUrl"
+        },
+        "harness": {
+          "$ref": "#/components/schemas/Harness"
+        },
+        "harnessVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "prompt": {
+          "$ref": "#/components/schemas/Prompt"
+        },
+        "boxMemoryMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 128,
+          "maximum": 65536,
+          "description": "The memory in MiB the box boots with: the persona's boxMemoryMib, or BoxMemoryLimit.DefaultMib. A box\nthat is already warm keeps the memory it booted with. A supervisor given an offer without it boots\nthe box with memoryMib of its runtime config."
+        },
+        "boxDiskMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 64,
+          "maximum": 262144,
+          "description": "The disk in MiB the box boots with: the persona's boxDiskMib, or BoxDiskLimit.DefaultMib. A box that\nis already warm keeps the disk it booted with. A supervisor given an offer without it boots the\nbox with overlayMib of its runtime config, and refuses the turn PoolExhausted when the disk does\nnot fit its disk budget."
+        },
+        "prebuildCommitSha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$",
+          "description": "Set when the turn builds a prebuild: the box clones the repository at this commit and runs the\nrepository's setup step, /opt/tumpel/prebuild.mjs run, in place of the harness, its output lines\nbeing the turn's lines. The credential then holds only a GITHUB_TOKEN that reads the\nrepository's contents, and the snapshot the control plane asks for after the turn is the\nprebuild's layer."
+        }
+      },
+      "description": "A turn offer as the control plane stores it, before it adds the parts minted at each send."
+    },
     "TenantApi.SubmitClaudeSetupCodeInput": {
       "type": "object",
       "required": [
@@ -12800,6 +14658,45 @@
         },
         {
           "$ref": "#/components/schemas/TenantApi.ConnectNamespaceRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.OfferSentRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.HostHelloRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.HostUsageRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ReconcileHeldBoxesRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ForgetHostUsageRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.RunningTurnsByHostRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListHostUsageRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DeferredOffersRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.TurnMetricDimensionsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.PrepareOfferRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.HostPresenceRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.HostMessageRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.DeadlineReachedRequest"
         }
       ],
       "discriminator": {
@@ -12901,7 +14798,20 @@
           "gitHubActionsConnection": "#/components/schemas/TenantApi.GitHubActionsConnectionRequest",
           "connectGitHubActions": "#/components/schemas/TenantApi.ConnectGitHubActionsRequest",
           "namespaceConnection": "#/components/schemas/TenantApi.NamespaceConnectionRequest",
-          "connectNamespace": "#/components/schemas/TenantApi.ConnectNamespaceRequest"
+          "connectNamespace": "#/components/schemas/TenantApi.ConnectNamespaceRequest",
+          "offerSent": "#/components/schemas/TenantApi.OfferSentRequest",
+          "hostHello": "#/components/schemas/TenantApi.HostHelloRequest",
+          "hostUsage": "#/components/schemas/TenantApi.HostUsageRequest",
+          "reconcileHeldBoxes": "#/components/schemas/TenantApi.ReconcileHeldBoxesRequest",
+          "forgetHostUsage": "#/components/schemas/TenantApi.ForgetHostUsageRequest",
+          "runningTurnsByHost": "#/components/schemas/TenantApi.RunningTurnsByHostRequest",
+          "listHostUsage": "#/components/schemas/TenantApi.ListHostUsageRequest",
+          "deferredOffers": "#/components/schemas/TenantApi.DeferredOffersRequest",
+          "turnMetricDimensions": "#/components/schemas/TenantApi.TurnMetricDimensionsRequest",
+          "prepareOffer": "#/components/schemas/TenantApi.PrepareOfferRequest",
+          "hostPresence": "#/components/schemas/TenantApi.HostPresenceRequest",
+          "hostMessage": "#/components/schemas/TenantApi.HostMessageRequest",
+          "deadlineReached": "#/components/schemas/TenantApi.DeadlineReachedRequest"
         }
       },
       "description": "One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation."
@@ -13135,6 +15045,44 @@
         }
       }
     },
+    "TenantApi.TurnDeadline": {
+      "type": "object",
+      "required": [
+        "turnId",
+        "at"
+      ],
+      "properties": {
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "at": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.TurnHandoff": {
+      "type": "object",
+      "required": [
+        "type",
+        "hostId",
+        "offer"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnHandoff"
+          ]
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "offer": {
+          "$ref": "#/components/schemas/TenantApi.StoredTurnOffer"
+        }
+      }
+    },
     "TenantApi.TurnInFlight": {
       "type": "object",
       "required": [
@@ -13150,6 +15098,59 @@
         },
         "turnId": {
           "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.TurnMetricDimensionsInput": {
+      "type": "object",
+      "required": [
+        "turnIds"
+      ],
+      "properties": {
+        "turnIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        }
+      }
+    },
+    "TenantApi.TurnMetricDimensionsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "turnMetricDimensions"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.TurnMetricDimensionsInput"
+        }
+      }
+    },
+    "TenantApi.TurnMetricDimensionsResult": {
+      "type": "object",
+      "required": [
+        "dimensions"
+      ],
+      "properties": {
+        "dimensions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
         }
       }
     },
