@@ -110,10 +110,11 @@ enum PersonaFileLimit {
 
 @doc("""
   The memory of a box in MiB. A persona that names no boxMemoryMib runs its boxes with DefaultMib;
-  one that names it may ask for up to MaxMib.
+  one that names it may ask for MinMib up to MaxMib.
   """)
 enum BoxMemoryLimit {
-  DefaultMib: 4096,
+  MinMib: 512,
+  DefaultMib: 2048,
   MaxMib: 65536,
 }
 
@@ -1042,11 +1043,11 @@ model Persona {
   connectorIds: EntityId[];
 
   @doc("""
-    The memory in MiB of each box the persona's sessions boot, from BoxMemoryLimit.DefaultMib up to
+    The memory in MiB of each box the persona's sessions boot, from BoxMemoryLimit.MinMib up to
     BoxMemoryLimit.MaxMib; left out, the boxes get BoxMemoryLimit.DefaultMib. A session is placed only on a host
     whose available memory holds it, and a box already running keeps the memory it booted with.
     """)
-  @minValue(4096)
+  @minValue(512)
   @maxValue(65536)
   boxMemoryMib?: int32;
 
