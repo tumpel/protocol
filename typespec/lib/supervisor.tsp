@@ -357,6 +357,8 @@ model BoxBudgets {
   tumpel<boxCapacity - 1>, device k with gateway 172.16.<k>.1/30 and guest 172.16.<k>.2. Each box
   claims one device and returns it at teardown; a turn past the pool fails PoolExhausted.
   `memoryMib` is the memory of a box whose TurnOffer names no boxMemoryMib, 4096 by default.
+  `overlayMib` is the disk of a box whose TurnOffer names no boxDiskMib, 32768 by default; the drive
+  is a sparse file, so the host's disk holds only what the box wrote.
   `warmWindowSeconds` is how long a box stays paused after a turn, 900 by default. A turn for the
   session inside the window resumes it; once the window ends and the box's last completed turn is
   in a snapshot, the box is torn down and its drive deleted.
@@ -440,6 +442,10 @@ model GuestTurnStart {
     """)
   @pattern("^[0-9a-f]{40}$")
   prebuildCommitSha?: string;
+
+  @doc("The host's turn budget, budgets.turnSeconds of its runtime config, which the guest names to the harness beside the box's memory, disk and CPUs.")
+  @minValue(1)
+  turnSeconds?: int32;
 }
 
 @doc("The harness working directory holds the session's repository; the first-line budget starts here.")
@@ -466,6 +472,9 @@ enum GuestTurnEndReason {
 
   @doc("The host sent TurnCancel for the turn and the guest killed the harness; a guest older than guest protocol 12 never sends it.")
   Cancelled: "Cancelled",
+
+  @doc("The harness failed while the box's disk was full; the detail names its size. A guest older than guest protocol 13 never sends it.")
+  BoxDiskFull: "BoxDiskFull",
 }
 
 @doc("The guest could not clone the session's repository and did not start the harness. `detail` carries what git reported.")
@@ -494,6 +503,10 @@ model GuestTurnEnd {
     reported no usage; a guest older than guest protocol 11 sends none.
     """)
   metrics?: GuestMetric[];
+
+  @doc("Set on a Completed end when the box's disk has less than a hundredth of it free: its size and the boxDiskMib that raises it. A guest older than guest protocol 13 never sends it.")
+  @minLength(1)
+  warning?: string;
 }
 
 @doc("""
