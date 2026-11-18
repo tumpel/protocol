@@ -473,7 +473,7 @@ enum GuestTurnEndReason {
   @doc("The host sent TurnCancel for the turn and the guest killed the harness; a guest older than guest protocol 12 never sends it.")
   Cancelled: "Cancelled",
 
-  @doc("The box's disk was full when the turn ended; the detail names its size. A guest older than guest protocol 13 never sends it.")
+  @doc("The harness failed while the box's disk was full; the detail names its size. A guest older than guest protocol 13 never sends it.")
   BoxDiskFull: "BoxDiskFull",
 }
 
@@ -503,6 +503,10 @@ model GuestTurnEnd {
     reported no usage; a guest older than guest protocol 11 sends none.
     """)
   metrics?: GuestMetric[];
+
+  @doc("Set on a Completed end when the box's disk has less than a hundredth of it free: its size and the boxDiskMib that raises it. A guest older than guest protocol 13 never sends it.")
+  @minLength(1)
+  warning?: string;
 }
 
 @doc("""

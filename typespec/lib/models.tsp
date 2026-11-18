@@ -363,7 +363,7 @@ enum TurnFailureReason {
   @doc("The box ran out of memory and the kernel killed the harness; the detail names the box memory and the process the kernel picked, so the persona can run lighter builds or ask for more boxMemoryMib.")
   HarnessOutOfMemory: "HarnessOutOfMemory",
 
-  @doc("The box's disk filled up while the harness ran; the detail names the disk's size, so the persona can ask for more boxDiskMib.")
+  @doc("The harness failed while the box's disk was full; the detail names the disk's size, so the persona can ask for more boxDiskMib. A turn the harness completed on a full disk stays Completed and carries a warning instead.")
   BoxDiskFull: "BoxDiskFull",
 
   @doc("The harness exited without printing a successful result, so the turn did not finish its work; the detail carries the tail of the harness's standard error.")
@@ -688,6 +688,10 @@ model RunningTurn {
 model CompletedTurn {
   ...TurnBase;
   state: TurnState.Completed;
+
+  @doc("A condition the turn completed under that the persona should act on, such as a box disk with less than a hundredth of it free, with its size and the boxDiskMib that raises it. Absent when there was none.")
+  @minLength(1)
+  warning?: string;
 }
 
 @doc("A turn that ended Failed, with why.")

@@ -403,6 +403,10 @@ model TurnComplete {
   @doc("The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member.")
   @minLength(1)
   credentialFile?: string;
+
+  @doc("The guest's warning for a turn the harness completed, such as a box disk with less than a hundredth of it free; the control plane shows it on the turn read.")
+  @minLength(1)
+  warning?: string;
 }
 
 @doc("The box could not clone the session's repository; the turn fails RepositoryCloneFailed. `detail` carries what git reported.")

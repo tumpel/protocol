@@ -1671,6 +1671,11 @@
           "type": "string",
           "minLength": 1,
           "description": "The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member."
+        },
+        "warning": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The guest's warning for a turn the harness completed, such as a box disk with less than a hundredth of it free; the control plane shows it on the turn read."
         }
       },
       "description": "The harness finished the turn. `lastLineSeq` is the turn's final line; the control plane holds every line up to it before the turn reads Completed."
