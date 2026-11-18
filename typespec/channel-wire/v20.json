@@ -810,8 +810,7 @@
       "required": [
         "type",
         "sentAt",
-        "usage",
-        "heldSessionIds"
+        "usage"
       ],
       "properties": {
         "type": {
@@ -826,15 +825,9 @@
         },
         "usage": {
           "$ref": "#/components/schemas/HostUsage"
-        },
-        "heldSessionIds": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/EntityId"
-          }
         }
       },
-      "description": "The host sends one every 10 seconds after Welcome, whatever else it sends, with its usage. The\ncontrol plane keeps the last one per host for the host's tenant, which places a new session on\nthe Online host with the most free box slots, then the most memory available.\n`heldSessionIds` names every session the host holds a box for, whether the box runs a turn, waits\nwarm or still boots, and is empty when it holds none. The host sends every frame queued before it\nread the list ahead of the Heartbeat, so the first Heartbeat after Welcome follows the resent\nframes. On that Heartbeat the control plane fails each Running turn on the host whose session the\nlist does not name with BoxLost."
+      "description": "The host sends one every 10 seconds after Welcome, whatever else it sends, with its usage. The\ncontrol plane keeps the last one per host for the host's tenant, which places a new session on\nthe Online host with the most free box slots, then the most memory available."
     },
     "Channel.HostMessage": {
       "type": "object",
@@ -2225,8 +2218,7 @@
         "ImageNotReleased",
         "ImageFetchFailed",
         "ImageFetchTimedOut",
-        "HostUpdating",
-        "BoxLost"
+        "HostUpdating"
       ],
       "description": "Why a turn ended Failed. Each reason names the phase the turn stopped in."
     },
