@@ -146,6 +146,9 @@ enum ProblemCode {
   @doc("A persona lists the connector or a Running turn uses it; the detail names them.")
   ConnectorInUse: "ConnectorInUse",
 
+  @doc("The connector changed after the caller read it: the request's updatedAt is not the stored one. Read the connector again and send the write with its updatedAt.")
+  ConnectorChanged: "ConnectorChanged",
+
   @doc("The connector's protected-resource or authorization-server metadata could not be read within 10 seconds, or named a non-HTTPS, private or loopback address, or no S256 support; the detail names the server.")
   ConnectorDiscoveryFailed: "ConnectorDiscoveryFailed",
 
