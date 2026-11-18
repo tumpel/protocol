@@ -1,5 +1,8 @@
 const REF = "#/components/schemas/";
 
+export const CHANNEL_WIRE = { prefix: "Channel.", scalar: "ChannelProtocol", versionKey: "channelProtocolVersion" };
+export const TENANT_API_WIRE = { prefix: "TenantApi.", scalar: "TenantApiProtocol", versionKey: "tenantApiVersion" };
+
 const refs = (schema) =>
   [...JSON.stringify(schema).matchAll(/"\$ref":"#\/components\/schemas\/([^"]+)"/g)].map(([, name]) => name);
 
@@ -40,16 +43,16 @@ const schemaShape = (schema) => {
   return { scalar: JSON.stringify(canonical(schema)) };
 };
 
-export const channelProtocolRange = (schemas) => {
-  const protocol = schemas.ChannelProtocol;
+export const channelProtocolRange = (schemas, wire = CHANNEL_WIRE) => {
+  const protocol = schemas[wire.scalar];
   if (protocol?.["x-bound-names"]?.join() !== "Oldest,Version")
-    throw new Error("channel-wire: openapi.json has no ChannelProtocol bounded by Oldest and Version");
+    throw new Error(`wire: openapi.json has no ${wire.scalar} bounded by Oldest and Version`);
   return { oldest: protocol.minimum, version: protocol.maximum };
 };
 
-export const channelWireLock = (schemas) => {
+export const channelWireLock = (schemas, wire = CHANNEL_WIRE) => {
   const reachable = new Set();
-  const pending = Object.keys(schemas).filter((name) => name.startsWith("Channel."));
+  const pending = Object.keys(schemas).filter((name) => name.startsWith(wire.prefix));
   while (pending.length > 0) {
     const name = pending.pop();
     if (reachable.has(name)) continue;
@@ -59,21 +62,21 @@ export const channelWireLock = (schemas) => {
     pending.push(...refs(schemas[name]));
   }
   return {
-    channelProtocolVersion: channelProtocolRange(schemas).version,
+    [wire.versionKey]: channelProtocolRange(schemas, wire).version,
     schemas: sorted([...reachable].map((name) => [name, schemas[name]])),
   };
 };
 
-export const lockShape = (lock) => ({
-  channelProtocolVersion: lock.channelProtocolVersion,
+export const lockShape = (lock, wire = CHANNEL_WIRE) => ({
+  channelProtocolVersion: lock[wire.versionKey],
   schemas: sorted(
     Object.entries(lock.schemas)
-      .filter(([name]) => name !== "ChannelProtocol")
+      .filter(([name]) => name !== wire.scalar)
       .map(([name, schema]) => [name, schemaShape(schema)]),
   ),
 });
 
-export const channelWireShape = (schemas) => lockShape(channelWireLock(schemas));
+export const channelWireShape = (schemas, wire = CHANNEL_WIRE) => lockShape(channelWireLock(schemas, wire), wire);
 
 const flatten = (shape) =>
   new Map(
@@ -116,7 +119,7 @@ const protocolWindow = (oldest, version) =>
 
 const ascending = (versions) => versions.sort((a, b) => a - b);
 
-export const checkChannelLocks = (baseline, locks, current, oldest) => {
+export const checkChannelLocks = (baseline, locks, current, oldest, wire = CHANNEL_WIRE) => {
   const held = new Set([...locks.keys(), current.channelProtocolVersion]);
   const expected = protocolWindow(oldest, current.channelProtocolVersion);
   const missing = expected.filter((version) => !held.has(version));
@@ -129,8 +132,8 @@ export const checkChannelLocks = (baseline, locks, current, oldest) => {
       .map(([version]) => version),
   );
   const newest = baseline.get(Math.max(...baseline.keys()));
-  const wire = checkChannelWire(lockShape(JSON.parse(newest)), current);
-  const changes = wire.ok ? [] : wire.changes;
+  const checked = checkChannelWire(lockShape(JSON.parse(newest), wire), current);
+  const changes = checked.ok ? [] : checked.changes;
   if ([missing, unexpected, unbased, frozen, changes].every((found) => found.length === 0)) return { ok: true };
   return { ok: false, missing, unexpected, unbased, frozen, changes };
 };
