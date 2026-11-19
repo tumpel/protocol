@@ -22,6 +22,7 @@ export type CredentialRefusal =
   | { kind: "NoCredential"; accepted: AcceptedCredential[] }
   | { kind: "NoModelCredential"; model: string; provider: Provider; accepted: AcceptedCredential[] }
   | { kind: "Unsupported"; name: string; credentialKind: string; supported: string[] }
+  | { kind: "ModelUnsupported"; model: string; name: string; credentialKind: string; allowed: string[] }
   | { kind: "Expired"; name: string; expiresAt: string };
 
 export type CredentialCheck<T extends SecretKey | SecretMember> =
@@ -46,6 +47,7 @@ const accepts = (accepted: AcceptedCredential, member: { provider: string; kind:
 const pick = <T extends SecretKey | SecretMember>(
   accepted: AcceptedCredential[],
   members: readonly T[],
+  model: string | null,
   now: number,
 ): CredentialCheck<T> => {
   const credentials = members.filter(isCredential);
@@ -63,6 +65,16 @@ const pick = <T extends SecretKey | SecretMember>(
     };
   }
   const { each, credential } = held;
+  const support = each.modelSupport;
+  if (model !== null && support.kind === "Listed" && !support.models.includes(model)) {
+    return {
+      kind: "ModelUnsupported",
+      model,
+      name: credential.name,
+      credentialKind: credential.kind,
+      allowed: support.models,
+    };
+  }
   if (credential.kind === "SubscriptionToken" && Date.parse(credential.expiresAt) <= now) {
     return { kind: "Expired", name: credential.name, expiresAt: credential.expiresAt };
   }
@@ -86,7 +98,7 @@ export const checkCredential = <T extends SecretKey | SecretMember>(
   entry: CatalogEntry,
   members: readonly T[],
   now: number,
-): CredentialCheck<T> => pick(entry.credentials, members, now);
+): CredentialCheck<T> => pick(entry.credentials, members, null, now);
 
 export const checkModelCredential = <T extends SecretKey | SecretMember>(
   entry: CatalogEntry,
@@ -94,10 +106,10 @@ export const checkModelCredential = <T extends SecretKey | SecretMember>(
   model: string,
   now: number,
 ): CredentialCheck<T> => {
-  if (entry.credentialChoice === "CatalogOrder") return pick(entry.credentials, members, now);
+  if (entry.credentialChoice === "CatalogOrder") return pick(entry.credentials, members, model, now);
   const provider = modelProvider(model);
   const accepted = entry.credentials.filter((each) => each.provider === provider);
-  const checked = pick(accepted, members, now);
+  const checked = pick(accepted, members, model, now);
   if (checked.kind !== "NoCredential") return checked;
   return { kind: "NoModelCredential", model, provider, accepted };
 };
@@ -134,6 +146,14 @@ export const credentialProblem = (
       title: "Credential kind not accepted by the harness",
       detail: `${owner} holds ${refusal.name}, a ${refusal.credentialKind}, and ${harness} accepts only ${refusal.supported.join(", ")}`,
       fix: `Replace ${refusal.name} with a ${refusal.supported.join(" or ")} in that secret set, then ${retry}`,
+    };
+  }
+  if (refusal.kind === "ModelUnsupported") {
+    return {
+      code: "ModelUnsupported",
+      title: "Model not supported by the harness",
+      detail: `${harness} does not run model ${refusal.model} with ${refusal.credentialKind} ${refusal.name} of ${owner}; it runs ${refusal.allowed.join(", ")}`,
+      fix: `Name one of those models, then ${retry}`,
     };
   }
   return {

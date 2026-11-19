@@ -19,7 +19,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 3;
+const TenantApiVersion = 4;
 
 namespace TenantApi {
 
@@ -2897,6 +2897,14 @@ model UnsupportedCredentialRefusal {
   supported: string[];
 }
 
+model ModelUnsupportedCredentialRefusal {
+  kind: "ModelUnsupported";
+  `model`: ModelName;
+  name: string;
+  credentialKind: string;
+  allowed: ModelName[];
+}
+
 model ExpiredCredentialRefusal {
   kind: "Expired";
   name: string;
@@ -2906,7 +2914,7 @@ model ExpiredCredentialRefusal {
 model TurnCredentialRefused {
   kind: "CredentialRefused";
   personaId: EntityId;
-  refusal: NoCredentialRefusal | NoModelCredentialRefusal | UnsupportedCredentialRefusal | ExpiredCredentialRefusal;
+  refusal: NoCredentialRefusal | NoModelCredentialRefusal | UnsupportedCredentialRefusal | ModelUnsupportedCredentialRefusal | ExpiredCredentialRefusal;
 }
 
 model SendTurnResult {
