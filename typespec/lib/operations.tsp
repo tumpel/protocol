@@ -527,8 +527,9 @@ model SessionListQuery {
 
 model SessionStopQuery {
   @doc("""
-    Also end the turn in flight at once: it fails Cancelled, the host stops its harness, then
-    snapshots and frees the box as a plain stop does. Left out, a stop is refused while a turn is in flight.
+    Also cancel the session's turns: the running turn ends at once, it and every queued turn fail
+    Cancelled, the host stops its harness, then snapshots and frees the box as a plain stop does. Left
+    out, a stop is refused while any turn runs or waits.
     """)
   @query
   cancelTurn?: boolean;
@@ -1043,8 +1044,8 @@ namespace V1 {
     @doc("""
       Stops a session: its host snapshots the session and tears its box down, and the next send boots
       a fresh box from the snapshots. Answers Stopping before the box is gone; refused TurnInFlight
-      while a turn is in flight unless cancelTurn is true, which fails that turn Cancelled first, and
-      refused while the session's host is offline.
+      while any turn runs or waits unless cancelTurn is true, which fails the running turn and every
+      queued turn Cancelled first, and refused while the session's host is offline.
       """)
     @route("/{sessionId}/stop")
     @post
