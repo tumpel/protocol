@@ -8,6 +8,12 @@ repository.workspace = true
 readme = "README.md"
 include = ["/Cargo.toml", "/README.md", "/src/**", "/generated/**"]
 
+# The lib has no unit tests or benches. A test or bench build would compile the generated code
+# a second time, in parallel with the lib build, and the two together exceed 4 GiB.
+[lib]
+test = false
+bench = false
+
 [dependencies]
 chrono.workspace = true
 progenitor-client.workspace = true
