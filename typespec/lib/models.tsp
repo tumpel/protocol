@@ -725,6 +725,7 @@ model TurnOrigin {
   turnId: EntityId;
 }
 
+@doc("Who started a session: a person or a turn of another session. What the first prompt came from is SessionOrigin.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union SessionStartedBy {
   Person: PersonOrigin,

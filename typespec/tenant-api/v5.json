@@ -4901,7 +4901,8 @@
           "Person": "#/components/schemas/PersonOrigin",
           "Turn": "#/components/schemas/TurnOrigin"
         }
-      }
+      },
+      "description": "Who started a session: a person or a turn of another session. What the first prompt came from is SessionOrigin."
     },
     "SessionState": {
       "type": "string",
@@ -4950,6 +4951,26 @@
       "type": "string",
       "pattern": "^[a-z0-9][a-z0-9:._-]{0,62}$",
       "description": "A tag that groups sessions, such as crew:docs. A session carries at most 16."
+    },
+    "SessionTagsPatch": {
+      "type": "object",
+      "properties": {
+        "add": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "description": "Tags to add; a tag the session already has stays once."
+        },
+        "remove": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "description": "Tags to remove; a tag the session does not have is ignored."
+        }
+      },
+      "description": "Adds and removes tags of a session; every tag it names in neither list stays."
     },
     "Sha256Digest": {
       "type": "string",
@@ -11891,6 +11912,7 @@
       "type": "object",
       "required": [
         "principalId",
+        "startedBy",
         "hosts",
         "harness",
         "harnessVersion",
@@ -11900,6 +11922,9 @@
       "properties": {
         "principalId": {
           "$ref": "#/components/schemas/EntityId"
+        },
+        "startedBy": {
+          "$ref": "#/components/schemas/SessionStartedBy"
         },
         "hosts": {
           "type": "array",
@@ -12508,6 +12533,74 @@
         }
       }
     },
+    "TenantApi.PatchSessionTagsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId",
+        "patch",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "patch": {
+          "$ref": "#/components/schemas/SessionTagsPatch"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "A tag patch, which the tenant Durable Object reads, merges and writes in one transaction."
+    },
+    "TenantApi.PatchSessionTagsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "patchSessionTags"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.PatchSessionTagsInput"
+        }
+      }
+    },
+    "TenantApi.PatchSessionTagsResult": {
+      "type": "object",
+      "required": [
+        "tagged"
+      ],
+      "properties": {
+        "tagged": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionTagged"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionTagsOverLimit"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.PersonaChange": {
       "type": "object",
       "required": [
@@ -12517,6 +12610,7 @@
         "boxMemoryMib",
         "boxDiskMib",
         "boxRetention",
+        "tumpelMcp",
         "files"
       ],
       "properties": {
@@ -12546,6 +12640,9 @@
         },
         "boxRetention": {
           "$ref": "#/components/schemas/BoxRetention"
+        },
+        "tumpelMcp": {
+          "type": "boolean"
         },
         "files": {
           "type": "array",
@@ -12634,6 +12731,9 @@
         },
         "boxRetention": {
           "$ref": "#/components/schemas/BoxRetention"
+        },
+        "tumpelMcp": {
+          "type": "boolean"
         }
       },
       "description": "What a persona patch writes: each field it names replaces the stored one, and every field it leaves out, and every file, stays as it is."
@@ -12672,6 +12772,7 @@
         "boxMemoryMib",
         "boxDiskMib",
         "boxRetention",
+        "tumpelMcp",
         "files",
         "harness"
       ],
@@ -12702,6 +12803,9 @@
         },
         "boxRetention": {
           "$ref": "#/components/schemas/BoxRetention"
+        },
+        "tumpelMcp": {
+          "type": "boolean"
         },
         "files": {
           "type": "array",
@@ -14461,6 +14565,14 @@
         "lastTurnBefore": {
           "type": "integer",
           "format": "int64"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "Keep only the sessions that carry every tag named."
         }
       }
     },
@@ -14564,6 +14676,46 @@
         }
       }
     },
+    "TenantApi.SessionTagged": {
+      "type": "object",
+      "required": [
+        "kind",
+        "session"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Tagged"
+          ]
+        },
+        "session": {
+          "$ref": "#/components/schemas/Session"
+        }
+      }
+    },
+    "TenantApi.SessionTagsOverLimit": {
+      "type": "object",
+      "required": [
+        "kind",
+        "tags"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "TagsOverLimit"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          }
+        }
+      },
+      "description": "A patch whose result would hold more than 16 tags; the session keeps its tags."
+    },
     "TenantApi.SetSecretMemberInput": {
       "type": "object",
       "required": [
@@ -14639,6 +14791,74 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.SecretSetUnreadable"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.SetSessionTagsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId",
+        "tags",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.SetSessionTagsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "setSessionTags"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.SetSessionTagsInput"
+        }
+      }
+    },
+    "TenantApi.SetSessionTagsResult": {
+      "type": "object",
+      "required": [
+        "tagged"
+      ],
+      "properties": {
+        "tagged": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionTagged"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionNotFound"
             }
           ]
         }
@@ -15783,6 +16003,7 @@
         "secretSetId",
         "connectorIds",
         "boxRetention",
+        "tumpelMcp",
         "files",
         "createdAt",
         "updatedAt"
@@ -15823,6 +16044,9 @@
         },
         "boxRetention": {
           "$ref": "#/components/schemas/BoxRetention"
+        },
+        "tumpelMcp": {
+          "type": "boolean"
         },
         "files": {
           "type": "array",
@@ -16431,6 +16655,12 @@
           "$ref": "#/components/schemas/TenantApi.ArchiveSessionRequest"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.SetSessionTagsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.PatchSessionTagsRequest"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.DeleteSessionRequest"
         },
         {
@@ -16674,6 +16904,8 @@
           "sendTurn": "#/components/schemas/TenantApi.SendTurnRequest",
           "stopSession": "#/components/schemas/TenantApi.StopSessionRequest",
           "archiveSession": "#/components/schemas/TenantApi.ArchiveSessionRequest",
+          "setSessionTags": "#/components/schemas/TenantApi.SetSessionTagsRequest",
+          "patchSessionTags": "#/components/schemas/TenantApi.PatchSessionTagsRequest",
           "deleteSession": "#/components/schemas/TenantApi.DeleteSessionRequest",
           "getSession": "#/components/schemas/TenantApi.GetSessionRequest",
           "listSessions": "#/components/schemas/TenantApi.ListSessionsRequest",

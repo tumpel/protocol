@@ -17939,7 +17939,7 @@ pub mod types {
         #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
         pub tags: ::std::vec::Vec<SessionTag>,
     }
-    ///`SessionStartedBy`
+    ///Who started a session: a person or a turn of another session. What the first prompt came from is SessionOrigin.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SessionStartedBy {
@@ -29419,6 +29419,8 @@ pub mod types {
         #[serde(rename = "principalId")]
         pub principal_id: EntityId,
         pub start: SessionStart,
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
     }
     ///`TenantApiNoCredentialRefusal`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -30331,6 +30333,86 @@ pub mod types {
             Self::UncheckedToken(value)
         }
     }
+    ///A tag patch, which the tenant Durable Object reads, merges and writes in one transaction.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPatchSessionTagsInput {
+        pub now: i64,
+        pub patch: SessionTagsPatch,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiPatchSessionTagsRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPatchSessionTagsRequest {
+        pub input: TenantApiPatchSessionTagsInput,
+        pub operation: TenantApiPatchSessionTagsRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiPatchSessionTagsRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiPatchSessionTagsRequestOperation {
+        #[serde(rename = "patchSessionTags")]
+        PatchSessionTags,
+    }
+    impl ::std::fmt::Display for TenantApiPatchSessionTagsRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::PatchSessionTags => f.write_str("patchSessionTags"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiPatchSessionTagsRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "patchSessionTags" => Ok(Self::PatchSessionTags),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiPatchSessionTagsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPatchSessionTagsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiPatchSessionTagsResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPatchSessionTagsResult {
+        pub tagged: TenantApiPatchSessionTagsResultTagged,
+    }
+    ///`TenantApiPatchSessionTagsResultTagged`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiPatchSessionTagsResultTagged {
+        Tagged(TenantApiSessionTagged),
+        NotFound(TenantApiSessionNotFound),
+        TagsOverLimit(TenantApiSessionTagsOverLimit),
+    }
+    impl ::std::convert::From<TenantApiSessionTagged> for TenantApiPatchSessionTagsResultTagged {
+        fn from(value: TenantApiSessionTagged) -> Self {
+            Self::Tagged(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionNotFound> for TenantApiPatchSessionTagsResultTagged {
+        fn from(value: TenantApiSessionNotFound) -> Self {
+            Self::NotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionTagsOverLimit> for TenantApiPatchSessionTagsResultTagged {
+        fn from(value: TenantApiSessionTagsOverLimit) -> Self {
+            Self::TagsOverLimit(value)
+        }
+    }
     ///What a persona edit writes. The harness is fixed at create.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPersonaChange {
@@ -30346,6 +30428,8 @@ pub mod types {
         pub name: DisplayName,
         #[serde(rename = "secretSetId")]
         pub secret_set_id: EntityId,
+        #[serde(rename = "tumpelMcp")]
+        pub tumpel_mcp: bool,
     }
     ///`TenantApiPersonaDeleted`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -30477,6 +30561,8 @@ pub mod types {
         pub name: ::std::option::Option<DisplayName>,
         #[serde(rename = "secretSetId", skip_serializing_if = "::std::option::Option::is_none")]
         pub secret_set_id: ::std::option::Option<EntityId>,
+        #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
+        pub tumpel_mcp: ::std::option::Option<bool>,
     }
     ///`TenantApiPersonaUpdated`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -30502,6 +30588,8 @@ pub mod types {
         pub name: DisplayName,
         #[serde(rename = "secretSetId")]
         pub secret_set_id: EntityId,
+        #[serde(rename = "tumpelMcp")]
+        pub tumpel_mcp: bool,
     }
     ///`TenantApiPersonaWritten`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -33117,6 +33205,9 @@ pub mod types {
         pub last_turn_before: ::std::option::Option<i64>,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub state: ::std::option::Option<SessionState>,
+        ///Keep only the sessions that carry every tag named.
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub tags: ::std::vec::Vec<SessionTag>,
     }
     ///`TenantApiSessionFromIssueStartedOk`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -33350,6 +33441,84 @@ pub mod types {
             value.parse()
         }
     }
+    ///`TenantApiSessionTagged`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSessionTagged {
+        pub kind: TenantApiSessionTaggedKind,
+        pub session: Session,
+    }
+    ///`TenantApiSessionTaggedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSessionTaggedKind {
+        Tagged,
+    }
+    impl ::std::fmt::Display for TenantApiSessionTaggedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Tagged => f.write_str("Tagged"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSessionTaggedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Tagged" => Ok(Self::Tagged),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSessionTaggedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSessionTaggedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A patch whose result would hold more than 16 tags; the session keeps its tags.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSessionTagsOverLimit {
+        pub kind: TenantApiSessionTagsOverLimitKind,
+        pub tags: ::std::vec::Vec<SessionTag>,
+    }
+    ///`TenantApiSessionTagsOverLimitKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSessionTagsOverLimitKind {
+        TagsOverLimit,
+    }
+    impl ::std::fmt::Display for TenantApiSessionTagsOverLimitKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::TagsOverLimit => f.write_str("TagsOverLimit"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSessionTagsOverLimitKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "TagsOverLimit" => Ok(Self::TagsOverLimit),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSessionTagsOverLimitKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSessionTagsOverLimitKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`TenantApiSetSecretMemberInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSetSecretMemberInput {
@@ -33436,6 +33605,80 @@ pub mod types {
     impl ::std::convert::From<TenantApiSecretSetUnreadable> for TenantApiSetSecretMemberResultSet {
         fn from(value: TenantApiSecretSetUnreadable) -> Self {
             Self::SetUnreadable(value)
+        }
+    }
+    ///`TenantApiSetSessionTagsInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSetSessionTagsInput {
+        pub now: i64,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiSetSessionTagsRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSetSessionTagsRequest {
+        pub input: TenantApiSetSessionTagsInput,
+        pub operation: TenantApiSetSessionTagsRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiSetSessionTagsRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSetSessionTagsRequestOperation {
+        #[serde(rename = "setSessionTags")]
+        SetSessionTags,
+    }
+    impl ::std::fmt::Display for TenantApiSetSessionTagsRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SetSessionTags => f.write_str("setSessionTags"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSetSessionTagsRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "setSessionTags" => Ok(Self::SetSessionTags),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSetSessionTagsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSetSessionTagsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiSetSessionTagsResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSetSessionTagsResult {
+        pub tagged: TenantApiSetSessionTagsResultTagged,
+    }
+    ///`TenantApiSetSessionTagsResultTagged`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiSetSessionTagsResultTagged {
+        Tagged(TenantApiSessionTagged),
+        NotFound(TenantApiSessionNotFound),
+    }
+    impl ::std::convert::From<TenantApiSessionTagged> for TenantApiSetSessionTagsResultTagged {
+        fn from(value: TenantApiSessionTagged) -> Self {
+            Self::Tagged(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionNotFound> for TenantApiSetSessionTagsResultTagged {
+        fn from(value: TenantApiSessionNotFound) -> Self {
+            Self::NotFound(value)
         }
     }
     ///`TenantApiSetStaticTokenInput`
@@ -34997,6 +35240,8 @@ pub mod types {
         pub secret_set_id: EntityId,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
+        #[serde(rename = "tumpelMcp")]
+        pub tumpel_mcp: bool,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
     }
@@ -35650,6 +35895,8 @@ pub mod types {
         SendTurnRequest(TenantApiSendTurnRequest),
         StopSessionRequest(TenantApiStopSessionRequest),
         ArchiveSessionRequest(TenantApiArchiveSessionRequest),
+        SetSessionTagsRequest(TenantApiSetSessionTagsRequest),
+        PatchSessionTagsRequest(TenantApiPatchSessionTagsRequest),
         DeleteSessionRequest(TenantApiDeleteSessionRequest),
         GetSessionRequest(TenantApiGetSessionRequest),
         ListSessionsRequest(TenantApiListSessionsRequest),
@@ -36065,6 +36312,16 @@ pub mod types {
     impl ::std::convert::From<TenantApiArchiveSessionRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiArchiveSessionRequest) -> Self {
             Self::ArchiveSessionRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSetSessionTagsRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiSetSessionTagsRequest) -> Self {
+            Self::SetSessionTagsRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiPatchSessionTagsRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiPatchSessionTagsRequest) -> Self {
+            Self::PatchSessionTagsRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiDeleteSessionRequest> for TenantApiTenantRequest {
