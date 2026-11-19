@@ -64,7 +64,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 28;
+const ChannelProtocolVersion = 29;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -425,6 +425,9 @@ enum TurnFailureReason {
 
   @doc("A connector the session lists was disconnected before the turn began running; the detail names it. Reconnect it, or start a session on a persona without it.")
   ConnectorDisconnected: "ConnectorDisconnected",
+
+  @doc("The harness finished the turn, but the snapshot of the box after it was not stored, so the turn holds no durable record of its work and does not complete; the detail names why the snapshot failed. The control plane records it, so no host sends it.")
+  SnapshotNotStored: "SnapshotNotStored",
 }
 
 @doc("Why the box could not clone the session's repository.")

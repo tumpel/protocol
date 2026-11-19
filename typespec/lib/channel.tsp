@@ -412,7 +412,7 @@ model TurnLine {
   text: string;
 }
 
-@doc("The harness finished the turn. `lastLineSeq` is the turn's final line; the control plane holds every line up to it before the turn reads Completed.")
+@doc("The harness finished the turn. `lastLineSeq` is the turn's final line; the control plane holds every line up to it and stores the snapshot after it before the turn reads Completed, and fails the turn SnapshotNotStored when that snapshot is not stored.")
 model TurnComplete {
   type: "TurnComplete";
   turnId: EntityId;
