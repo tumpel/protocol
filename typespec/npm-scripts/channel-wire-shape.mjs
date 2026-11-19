@@ -96,10 +96,13 @@ const flatten = (shape) =>
 export const wireChanges = (previous, current) => {
   const before = flatten(previous);
   const after = flatten(current);
+  const fresh = Object.keys(current.schemas).filter((name) => previous.schemas[name] === undefined);
+  const inFresh = (key) =>
+    fresh.some((name) => key === name || key.startsWith(`${name}.`) || key.startsWith(`${name} variant `));
   return [
     ...[...before.keys()].filter((key) => !after.has(key)).map((key) => `removed ${key}`),
     ...[...after.keys()]
-      .filter((key) => !before.has(key) && !after.get(key).startsWith("optional "))
+      .filter((key) => !before.has(key) && !inFresh(key) && !after.get(key).startsWith("optional "))
       .map((key) => `added ${key}`),
     ...[...before.keys()]
       .filter((key) => after.has(key) && after.get(key) !== before.get(key))

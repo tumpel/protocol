@@ -67,7 +67,6 @@ test("a retyped field, a new message and a removed enum member fail without a bu
     changes: [
       "removed Harness.Codex",
       "added Channel.ControlMessage variant Channel.TurnClaimed",
-      "added Channel.TurnClaimed",
       "changed Channel.TurnOffer.image",
     ],
   });
@@ -129,6 +128,24 @@ test("an optional field added without a protocol bump passes, since both ends ig
   const optional = { ...OFFER, properties: { ...OFFER.properties, note: { type: "string" } } };
   const result = checkChannelWire(channelWireShape(schemas(14, OFFER)), channelWireShape(schemas(14, optional)));
   assert.deepEqual(result, { ok: true });
+});
+
+test("an optional field of a new enum added without a protocol bump passes, and that enum as a required field fails", () => {
+  const next = (required) => {
+    const shape = schemas(14, {
+      ...OFFER,
+      required: [...OFFER.required, ...required],
+      properties: { ...OFFER.properties, setup: { $ref: `${REF}SetupHarness` } },
+    });
+    shape.SetupHarness = { type: "string", enum: ["ClaudeCode", "Codex"] };
+    return channelWireShape(shape);
+  };
+  const previous = channelWireShape(schemas(14, OFFER));
+  assert.deepEqual(checkChannelWire(previous, next([])), { ok: true });
+  assert.deepEqual(checkChannelWire(previous, next(["setup"])), {
+    ok: false,
+    changes: ["added Channel.TurnOffer.setup"],
+  });
 });
 
 test("an optional field removed without a protocol bump fails", () => {

@@ -960,7 +960,7 @@ pub mod types {
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub harness: ::std::option::Option<Harness>,
+        pub harness: ::std::option::Option<ClaudeSetupHarness>,
         #[serde(rename = "harnessVersion")]
         pub harness_version: HarnessVersion,
         pub image: ChannelBootImage,

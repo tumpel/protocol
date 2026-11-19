@@ -334,7 +334,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "harness": {
-          "$ref": "#/components/schemas/Harness"
+          "$ref": "#/components/schemas/ClaudeSetupHarness"
         },
         "harnessVersion": {
           "$ref": "#/components/schemas/HarnessVersion"
@@ -2022,6 +2022,14 @@
         "Superseded"
       ],
       "description": "Why a Claude setup ended Failed. Each reason names the phase it stopped in."
+    },
+    "ClaudeSetupHarness": {
+      "type": "string",
+      "enum": [
+        "ClaudeCode",
+        "Codex"
+      ],
+      "description": "The harness a Claude setup signs in to: Claude Code with claude setup-token, or Codex with codex login --device-auth."
     },
     "DisplayName": {
       "type": "string",

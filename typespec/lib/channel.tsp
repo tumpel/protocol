@@ -682,7 +682,7 @@ model ClaudeSetupBoxOffer {
   claudeSetupId: EntityId;
   tenantId: EntityId;
   boxId: EntityId;
-  harness?: Harness;
+  harness?: ClaudeSetupHarness;
   harnessVersion: HarnessVersion;
   image: BootImage;
   tokenUrl: url;

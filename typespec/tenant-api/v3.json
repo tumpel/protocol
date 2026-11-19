@@ -400,7 +400,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "harness": {
-          "$ref": "#/components/schemas/Harness"
+          "$ref": "#/components/schemas/ClaudeSetupHarness"
         },
         "harnessVersion": {
           "$ref": "#/components/schemas/HarnessVersion"
