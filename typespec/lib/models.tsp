@@ -157,6 +157,10 @@ scalar PersonaFileContent extends string;
 @pattern("^[a-z0-9][a-z0-9._=-]{0,62}$")
 scalar HostLabel extends string;
 
+@doc("A tag that groups sessions, such as crew:docs. A session carries at most 16.")
+@pattern("^[a-z0-9][a-z0-9:._-]{0,62}$")
+scalar SessionTag extends string;
+
 enum HealthStatus {
   Ok: "Ok",
 }
@@ -633,6 +637,15 @@ model Session {
   @visibility(Lifecycle.Read)
   origin: SessionOrigin;
 
+  @doc("Who started the session: a person, or a turn of another session that called Tumpel with a turn token.")
+  @visibility(Lifecycle.Read)
+  startedBy: SessionStartedBy;
+
+  @doc("The tags the session carries, each once.")
+  @visibility(Lifecycle.Read)
+  @maxItems(16)
+  tags: SessionTag[];
+
   @visibility(Lifecycle.Read) harness: Harness;
   @visibility(Lifecycle.Read) harnessVersion: string;
   `model`: ModelName;
@@ -697,6 +710,25 @@ model SessionIssueOrigin {
 union SessionOrigin {
   Prompt: SessionPromptOrigin,
   Issue: SessionIssueOrigin,
+}
+
+@doc("A person started the session.")
+model PersonOrigin {
+  kind: "Person";
+  principalId: EntityId;
+}
+
+@doc("A turn of another session started the session, calling Tumpel with that turn's token.")
+model TurnOrigin {
+  kind: "Turn";
+  sessionId: EntityId;
+  turnId: EntityId;
+}
+
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union SessionStartedBy {
+  Person: PersonOrigin,
+  Turn: TurnOrigin,
 }
 
 @doc("Why a stop returned its session to Idle with its box kept.")
@@ -1171,6 +1203,10 @@ model Persona {
   @doc("What happens to the box of each of the persona's sessions after each turn, unless the start names another mode.")
   @visibility(Lifecycle.Read)
   boxRetention: BoxRetention;
+
+  @doc("Whether every session of the persona reaches the Tumpel MCP server as the built-in connector `tumpel`, calling it with a token of its turn.")
+  @visibility(Lifecycle.Read)
+  tumpelMcp: boolean;
 
   @doc("The harness's own config files, written under the harness home in the box before the harness starts.")
   @visibility(Lifecycle.Read)

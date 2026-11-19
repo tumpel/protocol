@@ -13917,6 +13917,46 @@ pub mod types {
             Self::Failed(value)
         }
     }
+    ///A person started the session.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct PersonOrigin {
+        pub kind: PersonOriginKind,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+    }
+    ///`PersonOriginKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum PersonOriginKind {
+        Person,
+    }
+    impl ::std::fmt::Display for PersonOriginKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Person => f.write_str("Person"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for PersonOriginKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Person" => Ok(Self::Person),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for PersonOriginKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for PersonOriginKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///A persona's harness, its config files and the secret set its sessions run on.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct Persona {
@@ -13950,6 +13990,9 @@ pub mod types {
         pub secret_set_id: EntityId,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
+        ///Whether every session of the persona reaches the Tumpel MCP server as the built-in connector `tumpel`, calling it with a token of its turn.
+        #[serde(rename = "tumpelMcp")]
+        pub tumpel_mcp: bool,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
     }
@@ -13981,6 +14024,9 @@ pub mod types {
         ///The secret set every session of the persona runs on; its members are all a turn's box receives.
         #[serde(rename = "secretSetId")]
         pub secret_set_id: EntityId,
+        ///Whether the persona's sessions reach the Tumpel MCP server; left out, false.
+        #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
+        pub tumpel_mcp: ::std::option::Option<bool>,
     }
     ///One config file of a persona, at a path relative to the harness home in the box. Its bytes live
     ///in the store under their sha256 digest; the box receives the path and digest of each file. Each
@@ -14338,8 +14384,11 @@ pub mod types {
         ///The secret set every session of the persona runs on; its members are all a turn's box receives.
         #[serde(rename = "secretSetId", skip_serializing_if = "::std::option::Option::is_none")]
         pub secret_set_id: ::std::option::Option<EntityId>,
+        ///Whether the persona's sessions reach the Tumpel MCP server; left out, it stays as it is.
+        #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
+        pub tumpel_mcp: ::std::option::Option<bool>,
     }
-    ///Replaces the persona's name, secret set, connectors, box memory, box retention and whole file set: a file the update leaves out is deleted, a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib, and a box retention it leaves out goes back to Auto. The harness is fixed at create.
+    ///Replaces the persona's name, secret set, connectors, box memory, box retention, Tumpel MCP and whole file set: a file the update leaves out is deleted, a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib, a box retention it leaves out goes back to Auto, and a tumpelMcp it leaves out goes back to false. The harness is fixed at create.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PersonaUpdate {
         ///The disk in MiB of each box the persona's sessions boot, from BoxDiskLimit.DefaultMib up to BoxDiskLimit.MaxMib; left
@@ -14363,6 +14412,9 @@ pub mod types {
         ///The secret set every session of the persona runs on; its members are all a turn's box receives.
         #[serde(rename = "secretSetId")]
         pub secret_set_id: EntityId,
+        ///Whether the persona's sessions reach the Tumpel MCP server; left out, false.
+        #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
+        pub tumpel_mcp: ::std::option::Option<bool>,
     }
     ///A repository's dependencies installed once by a build provider on the tenant's account, stored as
     ///one layer. The repository, the input digest and the guest image digest are its key: every commit
@@ -17491,7 +17543,12 @@ pub mod types {
         pub repository: RepositoryUrl,
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
+        ///Who started the session: a person, or a turn of another session that called Tumpel with a turn token.
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
         pub state: SessionState,
+        ///The tags the session carries, each once.
+        pub tags: ::std::vec::Vec<SessionTag>,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
         #[serde(rename = "updatedAt")]
@@ -17861,6 +17918,9 @@ pub mod types {
         pub prompt: Prompt,
         ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
         pub repository: RepositoryUrl,
+        ///The session's tags, each once; none when left out.
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub tags: ::std::vec::Vec<SessionTag>,
     }
     ///A start from an open GitHub issue: the control plane reads the issue and writes the first prompt, which asks for the branch ticket/<issueNumber>-<slug of the title> and a draft pull request that closes the issue.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -17875,6 +17935,26 @@ pub mod types {
         pub owner: GitHubLogin,
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
+        ///The session's tags, each once; none when left out.
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub tags: ::std::vec::Vec<SessionTag>,
+    }
+    ///`SessionStartedBy`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum SessionStartedBy {
+        PersonOrigin(PersonOrigin),
+        TurnOrigin(TurnOrigin),
+    }
+    impl ::std::convert::From<PersonOrigin> for SessionStartedBy {
+        fn from(value: PersonOrigin) -> Self {
+            Self::PersonOrigin(value)
+        }
+    }
+    impl ::std::convert::From<TurnOrigin> for SessionStartedBy {
+        fn from(value: TurnOrigin) -> Self {
+            Self::TurnOrigin(value)
+        }
     }
     ///`SessionState`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -17972,6 +18052,69 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
+    }
+    ///A tag that groups sessions, such as crew:docs. A session carries at most 16.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct SessionTag(::std::string::String);
+    impl ::std::ops::Deref for SessionTag {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<SessionTag> for ::std::string::String {
+        fn from(value: SessionTag) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for SessionTag {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
+                ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z0-9][a-z0-9:._-]{0,62}$").unwrap());
+            if PATTERN.find(value).is_none() {
+                return Err("doesn't match pattern \"^[a-z0-9][a-z0-9:._-]{0,62}$\"".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SessionTag {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SessionTag {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for SessionTag {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///Replaces every tag of a session.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SessionTags {
+        pub tags: ::std::vec::Vec<SessionTag>,
+    }
+    ///Adds and removes tags of a session; every tag it names in neither list stays.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
+    pub struct SessionTagsPatch {
+        ///Tags to add; a tag the session already has stays once.
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub add: ::std::vec::Vec<SessionTag>,
+        ///Tags to remove; a tag the session does not have is ignored.
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub remove: ::std::vec::Vec<SessionTag>,
     }
     ///A lower-case hex SHA-256 digest: the name of a file in the image cache, or of a persona file blob.
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -39135,6 +39278,48 @@ pub mod types {
             value.parse()
         }
     }
+    ///A turn of another session started the session, calling Tumpel with that turn's token.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TurnOrigin {
+        pub kind: TurnOriginKind,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+    }
+    ///`TurnOriginKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TurnOriginKind {
+        Turn,
+    }
+    impl ::std::fmt::Display for TurnOriginKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Turn => f.write_str("Turn"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TurnOriginKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Turn" => Ok(Self::Turn),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TurnOriginKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TurnOriginKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///One value of a Turn metric, with the turn and session it belongs to.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TurnPoint {
@@ -45234,7 +45419,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Lists the tenant's sessions, optionally only those in one state, on one host or with no turn since a time.
+    ///Lists the tenant's sessions, optionally only those in one state, on one host, with no turn since a time or carrying every tag named.
     ///
     ///Sends a `GET` request to `/v1/sessions`
     ///
@@ -45242,11 +45427,13 @@ impl Client {
     ///- `host_id`
     ///- `last_turn_before`: Keep only the sessions whose latest turn last changed state at or before this time.
     ///- `state`
+    ///- `tag`: Keep only the sessions that carry this tag; repeat it to keep those that carry every tag named.
     pub async fn sessions_list<'a>(
         &'a self,
         host_id: Option<&'a types::EntityId>,
         last_turn_before: Option<&'a ::chrono::DateTime<::chrono::FixedOffset>>,
         state: Option<types::SessionState>,
+        tag: Option<&'a ::std::vec::Vec<types::SessionTag>>,
     ) -> Result<ResponseValue<::std::vec::Vec<types::Session>>, Error<types::Problem>> {
         let url = format!("{}/v1/sessions", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
@@ -45265,6 +45452,7 @@ impl Client {
             .query(&progenitor_client::QueryParam::new("hostId", &host_id))
             .query(&progenitor_client::QueryParam::new("lastTurnBefore", &last_turn_before))
             .query(&progenitor_client::QueryParam::new("state", &state))
+            .query(&progenitor_client::QueryParam::new("tag", &tag))
             .headers(header_map)
             .build()?;
         let info = OperationInfo {
@@ -45715,6 +45903,108 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "sessions_list_stop_failures",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Replaces every tag of a session; refused InvalidRequest above 16 tags.
+    ///
+    ///Sends a `PUT` request to `/v1/sessions/{sessionId}/tags`
+    ///
+    pub async fn sessions_set_tags<'a>(
+        &'a self,
+        session_id: &'a types::EntityId,
+        body: &'a types::SessionTags,
+    ) -> Result<ResponseValue<types::Session>, Error<types::Problem>> {
+        let url = format!(
+            "{}/v1/sessions/{}/tags",
+            self.baseurl,
+            encode_path(&session_id.to_string()),
+        );
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .put(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "sessions_set_tags",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Adds and removes tags of a session and keeps every other tag; refused InvalidRequest when the result holds more than 16.
+    ///
+    ///Sends a `PATCH` request to `/v1/sessions/{sessionId}/tags`
+    ///
+    pub async fn sessions_patch_tags<'a>(
+        &'a self,
+        session_id: &'a types::EntityId,
+        body: &'a types::SessionTagsPatch,
+    ) -> Result<ResponseValue<types::Session>, Error<types::Problem>> {
+        let url = format!(
+            "{}/v1/sessions/{}/tags",
+            self.baseurl,
+            encode_path(&session_id.to_string()),
+        );
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .patch(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "sessions_patch_tags",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;
@@ -46912,5 +47202,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 4;
+    pub const VERSION: u16 = 5;
 }
