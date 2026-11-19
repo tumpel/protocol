@@ -672,6 +672,42 @@ model PersonaUpdate is Update<Persona> {
   boxRetention?: BoxRetention;
 }
 
+enum PersonaFilePatchKind {
+  @doc("Adds the file, or replaces the file at its path.")
+  Put: "Put",
+
+  @doc("Deletes the file at the path.")
+  Remove: "Remove",
+
+  @doc("Replaces the one occurrence of oldText in the file at the path with newText.")
+  Edit: "Edit",
+}
+
+model PutPersonaFilePatch {
+  kind: PersonaFilePatchKind.Put;
+  file: PersonaFileWrite;
+}
+
+model RemovePersonaFilePatch {
+  kind: PersonaFilePatchKind.Remove;
+  path: PersonaFilePath;
+}
+
+model EditPersonaFilePatch {
+  kind: PersonaFilePatchKind.Edit;
+  path: PersonaFilePath;
+  @minLength(1) oldText: string;
+  newText: string;
+}
+
+@doc("One change to one file of a persona; every other file is left as it is.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union PersonaFilePatch {
+  Put: PutPersonaFilePatch,
+  Remove: RemovePersonaFilePatch,
+  Edit: EditPersonaFilePatch,
+}
+
 @doc("Asks for a presigned upload of one persona file larger than PersonaFileLimit.InlineFileBytes, named by the sha256 of its bytes.")
 model PersonaFileUploadRequest {
   digest: Sha256Digest;
@@ -1152,6 +1188,17 @@ namespace V1 {
     @route("/{personaId}")
     @put
     update(...PersonaPath, @body body: PersonaUpdate): Persona | ProblemResponse;
+
+    @doc("""
+      Changes one file of a persona and leaves every other file, and its digest, as it is: Put adds
+      or replaces the file at its path, Remove deletes the file at the path, and Edit replaces the one
+      occurrence of oldText in the UTF-8 file at the path with newText. Refused NotFound when Remove
+      or Edit names no file of the persona, and InvalidRequest when oldText occurs other than once,
+      or the result breaks the limits and paths a create checks.
+      """)
+    @route("/{personaId}/file-patches")
+    @post
+    patchFile(...PersonaPath, @body body: PersonaFilePatch): Persona | ProblemResponse;
 
     @doc("Deletes a persona all of whose sessions are Failed; one with any session in another state is refused with 409 naming those sessions.")
     @route("/{personaId}")
