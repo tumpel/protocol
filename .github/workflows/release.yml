@@ -2,27 +2,62 @@ name: release
 
 on:
   push:
-    tags: ["v*"]
+    branches: [main]
 
 concurrency:
   group: release
   cancel-in-progress: false
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
 
 env:
   CARGO_TERM_COLOR: never
+  SHIPPED: >-
+    typespec packages/api Makefile Cargo.toml Cargo.lock
+    crates/tumpel-api/Cargo.toml crates/tumpel-api/src crates/xtask/Cargo.toml crates/xtask/src/main.rs
 
 jobs:
-  release:
+  plan:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: convco@0.7.2
+
+      - id: plan
+        name: Name the release candidate when a shipped file changed since the newest tag
+        run: |
+          set -f
+          stable=$(convco version --ignore-prereleases)
+          next=$(convco version --bump --ignore-prereleases $(printf -- '-P %s ' $SHIPPED))
+          nearest=$(git describe --tags --abbrev=0 --match 'v[0-9]*' --exclude 'v*-main.*')
+          if [ "$next" = "$stable" ] || git diff --quiet "$nearest" HEAD -- $SHIPPED; then
+            echo "release: nothing shipped needs a new version since $nearest" >&2
+            echo "version=" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=$next-rc.$(git rev-list --count "v$stable..HEAD")" | tee -a "$GITHUB_OUTPUT"
+          fi
+
+  candidate:
+    needs: plan
+    if: needs.plan.outputs.version != ''
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VERSION: ${{ needs.plan.outputs.version }}
+      TAG: v${{ needs.plan.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v7
         with:
@@ -31,37 +66,23 @@ jobs:
       - name: Install the pinned Rust toolchain
         run: rustup toolchain install
 
-      - name: Check that the tag matches the workspace version
-        run: |
-          version=$(sed -n 's/^version = "\(.*\)"$/\1/p' Cargo.toml)
-          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
-            echo "the tag is $GITHUB_REF_NAME but Cargo.toml names version $version; set [workspace.package] version to match and tag again" >&2
-            exit 1
-          fi
+      - name: Stamp the version into the workspace
+        run: sed -i "0,/^version = \".*\"$/s//version = \"$VERSION\"/" Cargo.toml
 
       - run: npm ci --no-audit --no-fund
-
-      - name: Generate the TypeSpec output and the tumpel-api sources
-        run: make generate
-
-      - name: Fail when generation rewrote a tracked file, such as a channel wire lock
-        run: git diff --exit-code
 
       - name: Build the npm tarballs and import them with plain node
         run: |
           make pack
           npm run pack:check
 
-      - name: Create the GitHub release with the tarballs and their sha256
+      - name: Publish the GitHub pre-release with the tarballs and their sha256
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/* --verify-tag --title "$GITHUB_REF_NAME" --generate-notes
-
-      - name: Get a crates.io token through trusted publishing
-        id: crates-io-auth
-        uses: rust-lang/crates-io-auth-action@v1.0.6
-
-      - name: Publish tumpel-api to crates.io
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
-        run: cargo publish -p tumpel-api --allow-dirty
+        run: |
+          draft=$(gh release view "$TAG" --json isDraft --jq .isDraft 2>/dev/null || echo none)
+          case "$draft" in
+            none) gh release create "$TAG" dist/* --title "$TAG" --generate-notes --target "$GITHUB_SHA" --prerelease --latest=false ;;
+            true) gh release upload "$TAG" dist/* --clobber && gh release edit "$TAG" --draft=false --prerelease --latest=false ;;
+            *) echo "release: $TAG is already published; its tarballs stay as they are" >&2; exit 1 ;;
+          esac

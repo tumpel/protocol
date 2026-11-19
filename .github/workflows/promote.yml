@@ -1,0 +1,95 @@
+name: promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate:
+        description: The release candidate tag to ship, such as v0.21.0-rc.3
+        required: true
+        type: string
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  id-token: write
+
+env:
+  CARGO_TERM_COLOR: never
+  CANDIDATE: ${{ inputs.candidate }}
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Name the stable version of the release candidate
+        run: |
+          [[ "$CANDIDATE" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)-rc\.[0-9]+$ ]] || { echo "promote: $CANDIDATE is no release candidate tag; pass vX.Y.Z-rc.N" >&2; exit 1; }
+          echo "VERSION=${BASH_REMATCH[1]}" >> "$GITHUB_ENV"
+          echo "TAG=v${BASH_REMATCH[1]}" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ inputs.candidate }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Install the pinned Rust toolchain
+        run: rustup toolchain install
+
+      - name: Stamp the version into the workspace
+        run: sed -i "0,/^version = \".*\"$/s//version = \"$VERSION\"/" Cargo.toml
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Generate the tumpel-api sources
+        run: make generate
+
+      - name: Build the npm tarballs and import them with plain node
+        run: |
+          make pack
+          npm run pack:check
+
+      - name: Tag the release candidate's commit with the stable version before anything is published
+        run: |
+          tagged=$(git ls-remote --tags origin "refs/tags/$TAG" | cut -f1)
+          if [ -z "$tagged" ]; then
+            git tag "$TAG" HEAD
+            git push origin "refs/tags/$TAG"
+          elif [ "$tagged" != "$(git rev-parse HEAD)" ]; then
+            echo "promote: $TAG already tags $tagged, not the commit of $CANDIDATE; promote a release candidate of that commit" >&2
+            exit 1
+          fi
+
+      - id: crates
+        name: Check whether crates.io has tumpel-api at this version
+        run: |
+          published=$(curl -fsS https://index.crates.io/tu/mp/tumpel-api | jq -r --arg v "$VERSION" 'select(.vers == $v) | .vers')
+          echo "published=$published" >> "$GITHUB_OUTPUT"
+
+      - if: steps.crates.outputs.published == ''
+        name: Get a crates.io token through trusted publishing
+        id: crates-io-auth
+        uses: rust-lang/crates-io-auth-action@v1.0.6
+
+      - if: steps.crates.outputs.published == ''
+        name: Publish tumpel-api to crates.io
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
+        run: cargo publish -p tumpel-api --allow-dirty
+
+      - name: Publish the stable GitHub release with the tarballs and their sha256
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          draft=$(gh release view "$TAG" --json isDraft --jq .isDraft 2>/dev/null || echo none)
+          case "$draft" in
+            none) gh release create "$TAG" dist/* --title "$TAG" --generate-notes --verify-tag --latest ;;
+            true) gh release upload "$TAG" dist/* --clobber && gh release edit "$TAG" --draft=false --latest ;;
+            *) echo "promote: $TAG is already published; its tarballs stay as they are" ;;
+          esac
