@@ -92,6 +92,17 @@ model UpdatePersonaInput {
   now: int64;
 }
 
+@doc("What a persona patch writes: each field it names replaces the stored one, and every field it leaves out, and every file, stays as it is.")
+model PersonaPatchChange is OptionalProperties<OmitProperties<PersonaChange, "files">>;
+
+@doc("A persona patch, which the tenant Durable Object reads, merges and writes in one transaction, so a concurrent write never loses a field neither names.")
+model PatchPersonaInput {
+  tenantId: EntityId;
+  personaId: EntityId;
+  patch: PersonaPatchChange;
+  now: int64;
+}
+
 model DeletePersonaInput {
   tenantId: EntityId;
   personaId: EntityId;
@@ -137,6 +148,15 @@ model UpdateSecretSetInput {
   tenantId: EntityId;
   secretSetId: EntityId;
   change: SecretSetUpdate;
+  githubUser: GitHubUser | null;
+  now: int64;
+}
+
+@doc("A secret set patch, which the tenant Durable Object reads, merges and writes in one transaction, so a concurrent write never loses a member neither names.")
+model PatchSecretSetInput {
+  tenantId: EntityId;
+  secretSetId: EntityId;
+  patch: SecretSetPatch;
   githubUser: GitHubUser | null;
   now: int64;
 }
@@ -1073,6 +1093,12 @@ model UpdatePersonaRequest {
   input: UpdatePersonaInput;
 }
 
+model PatchPersonaRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "patchPersona";
+  input: PatchPersonaInput;
+}
+
 model DeletePersonaRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "deletePersona";
@@ -1119,6 +1145,12 @@ model UpdateSecretSetRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "updateSecretSet";
   input: UpdateSecretSetInput;
+}
+
+model PatchSecretSetRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "patchSecretSet";
+  input: PatchSecretSetInput;
 }
 
 model SetSecretMemberRequest {
@@ -1788,6 +1820,7 @@ union TenantRequest {
   getPersona: GetPersonaRequest,
   createPersona: CreatePersonaRequest,
   updatePersona: UpdatePersonaRequest,
+  patchPersona: PatchPersonaRequest,
   deletePersona: DeletePersonaRequest,
   open: OpenRequest,
   supervisorUpdate: SupervisorUpdateRequest,
@@ -1796,6 +1829,7 @@ union TenantRequest {
   getSecretSet: GetSecretSetRequest,
   createSecretSet: CreateSecretSetRequest,
   updateSecretSet: UpdateSecretSetRequest,
+  patchSecretSet: PatchSecretSetRequest,
   setSecretMember: SetSecretMemberRequest,
   removeSecretMember: RemoveSecretMemberRequest,
   deleteSecretSet: DeleteSecretSetRequest,
@@ -1969,6 +2003,10 @@ model UpdatePersonaResult {
   written: PersonaUpdated | WriteConflict;
 }
 
+model PatchPersonaResult {
+  written: PersonaUpdated | WriteConflict;
+}
+
 model PersonaDeleted {
   kind: "Deleted";
 }
@@ -2067,6 +2105,10 @@ model DeletePersonaResult {
 
   model UpdateSecretSetResult {
     updated: SecretSetUpdated | SecretSetMissing | SecretSetConflict | SecretSetNoStoredValue | SecretSetUncheckedToken;
+  }
+
+  model PatchSecretSetResult {
+    patched: SecretSetUpdated | SecretSetMissing | SecretSetConflict | SecretSetNoStoredValue | SecretSetUncheckedToken;
   }
 
   model SecretMemberWritten {

@@ -487,6 +487,15 @@ model HostLabels {
   labels: HostLabel[];
 }
 
+@doc("Adds and removes labels of a host; every label it names in neither list stays.")
+model HostLabelsPatch {
+  @doc("Labels to add; a label the host already has stays once.")
+  add?: HostLabel[];
+
+  @doc("Labels to remove; a label the host does not have is ignored.")
+  remove?: HostLabel[];
+}
+
 model SessionStart is Create<Session> {
   prompt: Prompt;
   @doc("What happens to the box after each turn; left out, the session takes its persona's boxRetention.")
@@ -676,6 +685,12 @@ model PersonaUpdate is Update<Persona> {
   boxRetention?: BoxRetention;
 }
 
+@doc("Changes the persona fields it names and leaves every other field, and every file, as it is. The harness is fixed at create, and files change through a file patch.")
+model PersonaPatch is OptionalProperties<Update<Persona>> {
+  @doc("What happens to the box after each turn; left out, it stays as it is.")
+  boxRetention?: BoxRetention;
+}
+
 enum PersonaFilePatchKind {
   @doc("Adds the file, or replaces the file at its path.")
   Put: "Put",
@@ -744,6 +759,15 @@ model SecretSetCreate is Create<SecretSet> {
   """)
 model SecretSetUpdate is Update<SecretSet> {
   secrets: SecretMemberUpdate[];
+}
+
+@doc("""
+  Changes the set's name when it names one, and writes each member it lists as an update does: a
+  member sent without a value keeps the value stored under its previousName, or under its name when
+  it is not renamed. Every member it leaves out keeps its value.
+  """)
+model SecretSetPatch is OptionalProperties<Update<SecretSet>> {
+  secrets?: SecretMemberUpdate[];
 }
 
 @route("/healthz")
@@ -976,6 +1000,11 @@ namespace V1 {
     @route("/{hostId}/labels")
     @put
     setLabels(...HostPath, @body body: HostLabels): Host | ProblemResponse;
+
+    @doc("Adds and removes labels of a host and keeps every other label.")
+    @route("/{hostId}/labels")
+    @patch(#{ implicitOptionality: false })
+    patchLabels(...HostPath, @body body: HostLabelsPatch): Host | ProblemResponse;
   }
 
   @route("/releases")
@@ -1202,6 +1231,11 @@ namespace V1 {
     @route("/{personaId}")
     @put
     update(...PersonaPath, @body body: PersonaUpdate): Persona | ProblemResponse;
+
+    @doc("Changes the persona fields the patch names and leaves every other field and every file as it is; the harness is fixed at create.")
+    @route("/{personaId}")
+    @patch(#{ implicitOptionality: false })
+    patch(...PersonaPath, @body body: PersonaPatch): Persona | ProblemResponse;
 
     @doc("""
       Changes one file of a persona and leaves every other file, and its digest, as it is: Put adds
@@ -1628,6 +1662,11 @@ namespace V1 {
     @route("/{secretSetId}")
     @put
     update(...SecretSetPath, @body body: SecretSetUpdate): SecretSet | ProblemResponse;
+
+    @doc("Changes a secret set's name when the patch names one, and writes each member it lists; every member it leaves out keeps its value.")
+    @route("/{secretSetId}")
+    @patch(#{ implicitOptionality: false })
+    patch(...SecretSetPath, @body body: SecretSetPatch): SecretSet | ProblemResponse;
 
     @doc("Writes one member of a secret set with its value, replacing a member of the same name; every other member keeps its value.")
     @route("/{secretSetId}/members")

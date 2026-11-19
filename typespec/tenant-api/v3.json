@@ -4138,6 +4138,21 @@
       },
       "description": "A named set of secrets: at most one credential per provider, and any number of variables. Values are write-only."
     },
+    "SecretSetPatch": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "secrets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SecretMemberUpdate"
+          }
+        }
+      },
+      "description": "Changes the set's name when it names one, and writes each member it lists as an update does: a\nmember sent without a value keeps the value stored under its previousName, or under its name when\nit is not renamed. Every member it leaves out keeps its value."
+    },
     "SecretSetUpdate": {
       "type": "object",
       "required": [
@@ -11997,6 +12012,155 @@
         }
       }
     },
+    "TenantApi.PatchPersonaInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "personaId",
+        "patch",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "patch": {
+          "$ref": "#/components/schemas/TenantApi.PersonaPatchChange"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "A persona patch, which the tenant Durable Object reads, merges and writes in one transaction, so a concurrent write never loses a field neither names."
+    },
+    "TenantApi.PatchPersonaRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "patchPersona"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.PatchPersonaInput"
+        }
+      }
+    },
+    "TenantApi.PatchPersonaResult": {
+      "type": "object",
+      "required": [
+        "written"
+      ],
+      "properties": {
+        "written": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.PersonaUpdated"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.WriteConflict"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.PatchSecretSetInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "secretSetId",
+        "patch",
+        "githubUser",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "patch": {
+          "$ref": "#/components/schemas/SecretSetPatch"
+        },
+        "githubUser": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.GitHubUser"
+            }
+          ],
+          "nullable": true
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "A secret set patch, which the tenant Durable Object reads, merges and writes in one transaction, so a concurrent write never loses a member neither names."
+    },
+    "TenantApi.PatchSecretSetRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "patchSecretSet"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.PatchSecretSetInput"
+        }
+      }
+    },
+    "TenantApi.PatchSecretSetResult": {
+      "type": "object",
+      "required": [
+        "patched"
+      ],
+      "properties": {
+        "patched": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetUpdated"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetMissing"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetConflict"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetNoStoredValue"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SecretSetUncheckedToken"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.PersonaChange": {
       "type": "object",
       "required": [
@@ -12093,6 +12257,39 @@
           ]
         }
       }
+    },
+    "TenantApi.PersonaPatchChange": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "secretSetId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "connectorIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          }
+        },
+        "boxMemoryMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 512,
+          "maximum": 65536
+        },
+        "boxDiskMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 32768,
+          "maximum": 262144
+        },
+        "boxRetention": {
+          "$ref": "#/components/schemas/BoxRetention"
+        }
+      },
+      "description": "What a persona patch writes: each field it names replaces the stored one, and every field it leaves out, and every file, stays as it is."
     },
     "TenantApi.PersonaUpdated": {
       "type": "object",
@@ -15476,6 +15673,9 @@
           "$ref": "#/components/schemas/TenantApi.UpdatePersonaRequest"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.PatchPersonaRequest"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.DeletePersonaRequest"
         },
         {
@@ -15498,6 +15698,9 @@
         },
         {
           "$ref": "#/components/schemas/TenantApi.UpdateSecretSetRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.PatchSecretSetRequest"
         },
         {
           "$ref": "#/components/schemas/TenantApi.SetSecretMemberRequest"
@@ -15837,6 +16040,7 @@
           "getPersona": "#/components/schemas/TenantApi.GetPersonaRequest",
           "createPersona": "#/components/schemas/TenantApi.CreatePersonaRequest",
           "updatePersona": "#/components/schemas/TenantApi.UpdatePersonaRequest",
+          "patchPersona": "#/components/schemas/TenantApi.PatchPersonaRequest",
           "deletePersona": "#/components/schemas/TenantApi.DeletePersonaRequest",
           "open": "#/components/schemas/TenantApi.OpenRequest",
           "supervisorUpdate": "#/components/schemas/TenantApi.SupervisorUpdateRequest",
@@ -15845,6 +16049,7 @@
           "getSecretSet": "#/components/schemas/TenantApi.GetSecretSetRequest",
           "createSecretSet": "#/components/schemas/TenantApi.CreateSecretSetRequest",
           "updateSecretSet": "#/components/schemas/TenantApi.UpdateSecretSetRequest",
+          "patchSecretSet": "#/components/schemas/TenantApi.PatchSecretSetRequest",
           "setSecretMember": "#/components/schemas/TenantApi.SetSecretMemberRequest",
           "removeSecretMember": "#/components/schemas/TenantApi.RemoveSecretMemberRequest",
           "deleteSecretSet": "#/components/schemas/TenantApi.DeleteSecretSetRequest",
