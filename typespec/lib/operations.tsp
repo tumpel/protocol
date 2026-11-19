@@ -34,6 +34,12 @@ enum ProblemCode {
 
   @doc("The turn does not wait behind another turn of its session: it started or ended; the detail names its state.")
   TurnNotWaiting: "TurnNotWaiting",
+
+  @doc("The turn ended, so it takes no steer; the detail names its state.")
+  TurnNotRunning: "TurnNotRunning",
+
+  @doc("The turn's box takes no steer: its harness reads no prompt mid-turn, or its host or persona settings leave out the steer hook; the detail names which.")
+  SteerUnsupported: "SteerUnsupported",
   SessionStopping: "SessionStopping",
   SessionNotStopped: "SessionNotStopped",
   SessionArchived: "SessionArchived",
@@ -1149,6 +1155,21 @@ namespace V1 {
     @route("/turns/{turnId}/cancel")
     @post
     cancel(...TurnPath): Turn | ProblemResponse;
+
+    @doc("""
+      Sends a prompt to a running turn: the harness reads it after its next tool call, or before it
+      ends the turn, and keeps working inside the same turn. Answers Pending at once. Refused NotFound
+      when the turnId names no turn of the tenant, TurnNotRunning when the turn ended, and
+      SteerUnsupported when the turn's harness takes no steer.
+      """)
+    @route("/turns/{turnId}/steers")
+    @post
+    steer(...TurnPath, @body body: SteerCreate): Steer | ProblemResponse;
+
+    @doc("Lists a turn's steers, oldest first, with whether the harness took each one.")
+    @route("/turns/{turnId}/steers")
+    @get
+    listSteers(...TurnPath): Steer[] | ProblemResponse;
   }
 
   interface Transcripts {

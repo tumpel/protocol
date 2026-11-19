@@ -789,6 +789,28 @@ union Turn {
   Failed: FailedTurn,
 }
 
+enum SteerState {
+  @doc("The turn runs and its harness has not taken the steer yet.")
+  Pending: "Pending",
+
+  @doc("The harness took the steer inside the turn.")
+  Delivered: "Delivered",
+
+  @doc("The turn ended before its harness took the steer.")
+  TurnEnded: "TurnEnded",
+}
+
+@doc("A prompt sent to a turn while it runs; the harness reads it between its steps, inside the same turn.")
+model Steer {
+  @key @visibility(Lifecycle.Read) steerId: EntityId;
+  @visibility(Lifecycle.Read) turnId: EntityId;
+  prompt: Prompt;
+  @visibility(Lifecycle.Read) state: SteerState;
+  @visibility(Lifecycle.Read) createdAt: int64;
+}
+
+model SteerCreate is Create<Steer>;
+
 @doc("Why a turn ended Failed. Exists only for a turn in state Failed.")
 model TurnFailure {
   @key turnId: EntityId;

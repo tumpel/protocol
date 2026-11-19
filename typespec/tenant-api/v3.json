@@ -5041,6 +5041,71 @@
       },
       "description": "A remote MCP server the tenant connects once with one static token. Every session in the tenant\nwhose persona lists it reaches it through the box's loopback forwarder, which sends the token as\nAuthorization: Bearer. The URL is fixed at create; the token is write-only."
     },
+    "Steer": {
+      "type": "object",
+      "required": [
+        "steerId",
+        "turnId",
+        "prompt",
+        "state",
+        "createdAt"
+      ],
+      "properties": {
+        "steerId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "turnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "prompt": {
+          "$ref": "#/components/schemas/Prompt"
+        },
+        "state": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SteerState"
+            }
+          ],
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        }
+      },
+      "description": "A prompt sent to a turn while it runs; the harness reads it between its steps, inside the same turn."
+    },
+    "SteerCreate": {
+      "type": "object",
+      "required": [
+        "prompt"
+      ],
+      "properties": {
+        "prompt": {
+          "$ref": "#/components/schemas/Prompt"
+        }
+      },
+      "description": "A prompt sent to a turn while it runs; the harness reads it between its steps, inside the same turn."
+    },
+    "SteerState": {
+      "type": "string",
+      "enum": [
+        "Pending",
+        "Delivered",
+        "TurnEnded"
+      ]
+    },
     "StopFailure": {
       "type": "object",
       "required": [
@@ -11329,6 +11394,58 @@
         }
       }
     },
+    "TenantApi.ListSteersInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "turnId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ListSteersRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "listSteers"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ListSteersInput"
+        }
+      }
+    },
+    "TenantApi.ListSteersResult": {
+      "type": "object",
+      "required": [
+        "steers"
+      ],
+      "properties": {
+        "steers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Steer"
+          },
+          "nullable": true
+        }
+      }
+    },
     "TenantApi.ListStopFailuresInput": {
       "type": "object",
       "required": [
@@ -15182,6 +15299,143 @@
         }
       }
     },
+    "TenantApi.SteerInboxClosed": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Closed"
+          ]
+        }
+      }
+    },
+    "TenantApi.SteerSentOk": {
+      "type": "object",
+      "required": [
+        "kind",
+        "steer"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Sent"
+          ]
+        },
+        "steer": {
+          "$ref": "#/components/schemas/Steer"
+        }
+      }
+    },
+    "TenantApi.SteersTaken": {
+      "type": "object",
+      "required": [
+        "kind",
+        "prompts"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Taken"
+          ]
+        },
+        "prompts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Prompt"
+          }
+        }
+      }
+    },
+    "TenantApi.SteerTurnInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "turnId",
+        "steer",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "steer": {
+          "$ref": "#/components/schemas/SteerCreate"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.SteerTurnRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "steerTurn"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.SteerTurnInput"
+        }
+      }
+    },
+    "TenantApi.SteerTurnResult": {
+      "type": "object",
+      "required": [
+        "sent"
+      ],
+      "properties": {
+        "sent": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SteerSentOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.TurnNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.TurnNotRunning"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SteerUnsupported"
+            }
+          ]
+        }
+      }
+    },
+    "TenantApi.SteerUnsupported": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unsupported"
+          ]
+        }
+      }
+    },
     "TenantApi.StopSessionInput": {
       "type": "object",
       "required": [
@@ -15665,6 +15919,62 @@
         }
       }
     },
+    "TenantApi.TakeSteersInput": {
+      "type": "object",
+      "required": [
+        "turnId",
+        "now"
+      ],
+      "properties": {
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.TakeSteersRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "takeSteers"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.TakeSteersInput"
+        }
+      }
+    },
+    "TenantApi.TakeSteersResult": {
+      "type": "object",
+      "required": [
+        "taken"
+      ],
+      "properties": {
+        "taken": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SteersTaken"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SteerInboxClosed"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.TenantApiVersionUnsupported": {
       "type": "object",
       "required": [
@@ -15970,6 +16280,15 @@
           "$ref": "#/components/schemas/TenantApi.CancelTurnRequest"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.SteerTurnRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.ListSteersRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.TakeSteersRequest"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.WaitTurnsRequest"
         },
         {
@@ -16192,6 +16511,9 @@
           "listTurns": "#/components/schemas/TenantApi.ListTurnsRequest",
           "getTurn": "#/components/schemas/TenantApi.GetTurnRequest",
           "cancelTurn": "#/components/schemas/TenantApi.CancelTurnRequest",
+          "steerTurn": "#/components/schemas/TenantApi.SteerTurnRequest",
+          "listSteers": "#/components/schemas/TenantApi.ListSteersRequest",
+          "takeSteers": "#/components/schemas/TenantApi.TakeSteersRequest",
           "waitTurns": "#/components/schemas/TenantApi.WaitTurnsRequest",
           "listEvents": "#/components/schemas/TenantApi.ListEventsRequest",
           "listWebhookEndpoints": "#/components/schemas/TenantApi.ListWebhookEndpointsRequest",
@@ -16610,6 +16932,24 @@
           "enum": [
             "NotFound"
           ]
+        }
+      }
+    },
+    "TenantApi.TurnNotRunning": {
+      "type": "object",
+      "required": [
+        "kind",
+        "state"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "NotRunning"
+          ]
+        },
+        "state": {
+          "$ref": "#/components/schemas/TurnState"
         }
       }
     },
