@@ -19,7 +19,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 2;
+const TenantApiVersion = 3;
 
 namespace TenantApi {
 
@@ -766,6 +766,13 @@ model GetTurnInput {
   turnId: EntityId;
 }
 
+model CancelTurnInput {
+  tenantId: EntityId;
+  turnId: EntityId;
+  cancelledBy: string;
+  now: int64;
+}
+
 model WaitTurnsInput {
   tenantId: EntityId;
   turnIds: EntityId[];
@@ -1486,6 +1493,12 @@ model GetTurnRequest {
   input: GetTurnInput;
 }
 
+model CancelTurnRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "cancelTurn";
+  input: CancelTurnInput;
+}
+
 model WaitTurnsRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "waitTurns";
@@ -1845,6 +1858,7 @@ union TenantRequest {
   listSessions: ListSessionsRequest,
   listTurns: ListTurnsRequest,
   getTurn: GetTurnRequest,
+  cancelTurn: CancelTurnRequest,
   waitTurns: WaitTurnsRequest,
   listEvents: ListEventsRequest,
   listWebhookEndpoints: ListWebhookEndpointsRequest,
@@ -2804,7 +2818,7 @@ model TurnCredentialRefused {
 }
 
 model SendTurnResult {
-  sent: TurnSentOk | StartDraining | TurnStranded | StartUnplaced | StartConnectorDisconnected | ClaudeSetupReleaseUnreadable | SessionNotFound | TurnInFlight | SessionStopping | SessionArchivedState | SessionFailedState | TurnCredentialRefused;
+  sent: TurnSentOk | StartDraining | TurnStranded | StartUnplaced | StartConnectorDisconnected | ClaudeSetupReleaseUnreadable | SessionNotFound | SessionStopping | SessionArchivedState | SessionFailedState | TurnCredentialRefused;
 }
 
 model SessionStoppingWith {
@@ -2850,6 +2864,24 @@ model ListTurnsResult {
 
 model GetTurnResult {
   turn: Turn | null;
+}
+
+model TurnCancelledOk {
+  kind: "Cancelled";
+  turn: Turn;
+}
+
+model TurnNotFound {
+  kind: "NotFound";
+}
+
+model TurnNotWaiting {
+  kind: "NotWaiting";
+  state: TurnState;
+}
+
+model CancelTurnResult {
+  cancelled: TurnCancelledOk | TurnNotFound | TurnNotWaiting;
 }
 
 model TurnsRead {

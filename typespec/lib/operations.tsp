@@ -31,6 +31,9 @@ enum ProblemCode {
   CredentialExpired: "CredentialExpired",
   CredentialKindUnsupported: "CredentialKindUnsupported",
   TurnInFlight: "TurnInFlight",
+
+  @doc("The turn does not wait behind another turn of its session: it started or ended; the detail names its state.")
+  TurnNotWaiting: "TurnNotWaiting",
   SessionStopping: "SessionStopping",
   SessionNotStopped: "SessionNotStopped",
   SessionArchived: "SessionArchived",
@@ -524,8 +527,9 @@ model SessionListQuery {
 
 model SessionStopQuery {
   @doc("""
-    Also end the turn in flight at once: it fails Cancelled, the host stops its harness, then
-    snapshots and frees the box as a plain stop does. Left out, a stop is refused while a turn is in flight.
+    Also cancel the session's turns: the running turn ends at once, it and every queued turn fail
+    Cancelled, the host stops its harness, then snapshots and frees the box as a plain stop does. Left
+    out, a stop is refused while any turn runs or waits.
     """)
   @query
   cancelTurn?: boolean;
@@ -1040,8 +1044,8 @@ namespace V1 {
     @doc("""
       Stops a session: its host snapshots the session and tears its box down, and the next send boots
       a fresh box from the snapshots. Answers Stopping before the box is gone; refused TurnInFlight
-      while a turn is in flight unless cancelTurn is true, which fails that turn Cancelled first, and
-      refused while the session's host is offline.
+      while any turn runs or waits unless cancelTurn is true, which fails the running turn and every
+      queued turn Cancelled first, and refused while the session's host is offline.
       """)
     @route("/{sessionId}/stop")
     @post
@@ -1069,7 +1073,7 @@ namespace V1 {
   }
 
   interface Turns {
-    @doc("Sends a session its next prompt; answers before any output, and refuses while another turn of the session is in flight. When the session's host is offline, the turn boots on another online host of the tenant if the snapshots hold the last completed turn, and is refused HostOffline, naming the turns they miss, if not.")
+    @doc("Sends a session its next prompt; answers before any output. A turn sent while another turn of the session is in flight waits Offered, and waiting turns start in send order, each when the turn before it ends, with its time budget counted from its start. When the session's host is offline, the turn boots on another online host of the tenant if the snapshots hold the last completed turn, and is refused HostOffline, naming the turns they miss, if not.")
     @route("/sessions/{sessionId}/turns")
     @post
     send(...SessionPath, @body body: TurnSend): Turn | ProblemResponse;
@@ -1097,6 +1101,16 @@ namespace V1 {
     @route("/turns/{turnId}/failure")
     @get
     getFailure(...TurnPath): TurnFailure | ProblemResponse;
+
+    @doc("""
+      Cancels a turn that waits behind another turn of its session and has not started: it fails
+      Cancelled with a detail that names who cancelled it, and the turns behind it keep their order.
+      Refused NotFound when the turnId names no turn of the tenant, and TurnNotWaiting when the turn
+      started or ended.
+      """)
+    @route("/turns/{turnId}/cancel")
+    @post
+    cancel(...TurnPath): Turn | ProblemResponse;
   }
 
   interface Transcripts {
