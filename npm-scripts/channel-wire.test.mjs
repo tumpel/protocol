@@ -67,7 +67,6 @@ test("a retyped field, a new message and a removed enum member fail without a bu
     changes: [
       "removed Harness.Codex",
       "added Channel.ControlMessage variant Channel.TurnClaimed",
-      "added Channel.TurnClaimed",
       "changed Channel.TurnOffer.image",
     ],
   });
@@ -129,6 +128,25 @@ test("an optional field added without a protocol bump passes, since both ends ig
   const optional = { ...OFFER, properties: { ...OFFER.properties, note: { type: "string" } } };
   const result = checkChannelWire(channelWireShape(schemas(14, OFFER)), channelWireShape(schemas(14, optional)));
   assert.deepEqual(result, { ok: true });
+});
+
+test("a new model reached only through a new optional field passes without a protocol bump", () => {
+  const next = schemas(14, { ...OFFER, properties: { ...OFFER.properties, range: { $ref: `${REF}Range` } } });
+  next.Range = { type: "object", required: ["oldest"], properties: { oldest: { type: "integer" } } };
+  assert.deepEqual(checkChannelWire(channelWireShape(schemas(14, OFFER)), channelWireShape(next)), { ok: true });
+});
+
+test("a new model behind a new required field fails without a protocol bump", () => {
+  const next = schemas(14, {
+    ...OFFER,
+    required: [...OFFER.required, "range"],
+    properties: { ...OFFER.properties, range: { $ref: `${REF}Range` } },
+  });
+  next.Range = { type: "object", required: ["oldest"], properties: { oldest: { type: "integer" } } };
+  assert.deepEqual(checkChannelWire(channelWireShape(schemas(14, OFFER)), channelWireShape(next)), {
+    ok: false,
+    changes: ["added Channel.TurnOffer.range"],
+  });
 });
 
 test("an optional field removed without a protocol bump fails", () => {

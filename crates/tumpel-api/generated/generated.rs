@@ -1851,9 +1851,8 @@ pub mod types {
     ///its runtime config and `usage` what it holds as it connects; the control plane keeps both for
     ///the host's tenant before it reads the host Online. `channelProtocolOldest` is the oldest
     ///channel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves
-    ///it out speaks only `protocolVersion`. `guestProtocolOldest` to `guestProtocolVersion` is the
-    ///guest protocol range the host accepts from a box, sent both or neither. The control plane
-    ///records both ranges and shows them on the host.
+    ///it out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host
+    ///accepts from a box. The control plane records both ranges and shows them on the host.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelHello {
         #[serde(rename = "boxCapacity")]
@@ -1863,16 +1862,8 @@ pub mod types {
             skip_serializing_if = "::std::option::Option::is_none"
         )]
         pub channel_protocol_oldest: ::std::option::Option<::std::num::NonZeroU32>,
-        #[serde(
-            rename = "guestProtocolOldest",
-            skip_serializing_if = "::std::option::Option::is_none"
-        )]
-        pub guest_protocol_oldest: ::std::option::Option<::std::num::NonZeroU32>,
-        #[serde(
-            rename = "guestProtocolVersion",
-            skip_serializing_if = "::std::option::Option::is_none"
-        )]
-        pub guest_protocol_version: ::std::option::Option<::std::num::NonZeroU32>,
+        #[serde(rename = "guestProtocol", skip_serializing_if = "::std::option::Option::is_none")]
+        pub guest_protocol: ::std::option::Option<GuestProtocolRange>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "protocolVersion")]
@@ -9652,6 +9643,14 @@ pub mod types {
         fn try_from(value: String) -> ::std::result::Result<Self, Self::Error> {
             value.parse()
         }
+    }
+    ///The guest protocol versions a host accepts from a box, from `guestProtocolOldest` to `guestProtocolVersion`.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct GuestProtocolRange {
+        #[serde(rename = "guestProtocolOldest")]
+        pub guest_protocol_oldest: ::std::num::NonZeroU32,
+        #[serde(rename = "guestProtocolVersion")]
+        pub guest_protocol_version: ::std::num::NonZeroU32,
     }
     ///The host ends turn `turnId`: the guest reads its connection while a turn runs, kills the harness
     ///and every process it started, whatever the harness protocol, and sends TurnEnd Cancelled with the

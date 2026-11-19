@@ -56,9 +56,8 @@ model Challenge {
   its runtime config and `usage` what it holds as it connects; the control plane keeps both for
   the host's tenant before it reads the host Online. `channelProtocolOldest` is the oldest
   channel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves
-  it out speaks only `protocolVersion`. `guestProtocolOldest` to `guestProtocolVersion` is the
-  guest protocol range the host accepts from a box, sent both or neither. The control plane
-  records both ranges and shows them on the host.
+  it out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host
+  accepts from a box. The control plane records both ranges and shows them on the host.
   """)
 model Hello {
   type: "Hello";
@@ -69,8 +68,7 @@ model Hello {
   @minLength(1) signature: string;
   @minValue(1) @maxValue(256) boxCapacity: int32;
   usage: HostUsage;
-  @minValue(1) guestProtocolOldest?: int32;
-  @minValue(1) guestProtocolVersion?: int32;
+  guestProtocol?: GuestProtocolRange;
 }
 
 @doc("The control plane accepts the host. Both sides then resend their unacked frames.")
