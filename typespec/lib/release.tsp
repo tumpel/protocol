@@ -258,13 +258,24 @@ model RolloutHost {
 }
 
 @doc("""
+  The Online hosts whose newest channel protocol version is `channelProtocolVersion`. Raising
+  ChannelProtocol.Oldest above it refuses those hosts at their next Hello.
+  """)
+model RolloutChannelProtocol {
+  @minValue(1) channelProtocolVersion: int32;
+  @minValue(1) hostCount: int32;
+}
+
+@doc("""
   The stage-wide view of a release rollout: the commit the control plane Worker was deployed from,
   each host that has turns Offered or Running, and `drained` once no host has any.
+  `channelProtocols` counts the Online hosts per newest channel protocol version, oldest first.
   """)
 model ReleaseRollout {
   @pattern("^[0-9a-f]{40}$") deployedCommit: string;
   drained: boolean;
   hosts: RolloutHost[];
+  channelProtocols: RolloutChannelProtocol[];
 }
 
 @doc("The drainToken of the deploy drain in place.")

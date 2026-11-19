@@ -271,6 +271,43 @@ union SupervisorUpdateLatestFailure {
   Reported: SupervisorUpdateFailureReported,
 }
 
+@doc("The guest protocol versions a host accepts from a box, from `guestProtocolOldest` to `guestProtocolVersion`.")
+model GuestProtocolRange {
+  @minValue(1) guestProtocolOldest: int32;
+  @minValue(1) guestProtocolVersion: int32;
+}
+
+@doc("The host has not announced this protocol range since it enrolled.")
+model HostProtocolNotReported {
+  state: "NotReported";
+}
+
+@doc("The channel protocol versions the host announced at its latest Hello.")
+model HostChannelProtocolReported {
+  state: "Reported";
+  @minValue(1) channelProtocolOldest: int32;
+  @minValue(1) channelProtocolVersion: int32;
+}
+
+@doc("The guest protocol versions the host announced at its latest Hello.")
+model HostGuestProtocolReported {
+  state: "Reported";
+  @minValue(1) guestProtocolOldest: int32;
+  @minValue(1) guestProtocolVersion: int32;
+}
+
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
+union HostChannelProtocol {
+  NotReported: HostProtocolNotReported,
+  Reported: HostChannelProtocolReported,
+}
+
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
+union HostGuestProtocol {
+  NotReported: HostProtocolNotReported,
+  Reported: HostGuestProtocolReported,
+}
+
 enum HostArchitecture {
   Amd64: "Amd64",
   Arm64: "Arm64",
@@ -556,6 +593,14 @@ model Host {
   @doc("The latest supervisor update failure the host reported, kept by its tenant.")
   @visibility(Lifecycle.Read)
   supervisorUpdateFailure: SupervisorUpdateLatestFailure;
+
+  @doc("The channel protocol range the host announced at its latest Hello.")
+  @visibility(Lifecycle.Read)
+  channelProtocol: HostChannelProtocol;
+
+  @doc("The guest protocol range the host announced at its latest Hello.")
+  @visibility(Lifecycle.Read)
+  guestProtocol: HostGuestProtocol;
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;

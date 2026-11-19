@@ -55,18 +55,9 @@ if (!released.ok) fail(`could not read ${TENANT_API_LOCK_DIR_PATH} at ${release.
 const newest = Math.max(...released.locks.keys());
 if (released.locks.size > 0 && range.version === newest) {
   const before = lockShape(JSON.parse(released.locks.get(newest)), TENANT_API_WIRE);
-  const schemaOf = (key) =>
-    Object.keys(current.schemas)
-      .filter((name) => key === name || key.startsWith(`${name}.`) || key.startsWith(`${name} `))
-      .sort((x, y) => y.length - x.length)[0];
-  const additive = (change) => {
-    if (!change.startsWith("added ")) return false;
-    const key = change.slice("added ".length);
-    if (key.startsWith("TenantApi.TenantRequest variant ")) return true;
-    const name = schemaOf(key);
-    return name !== undefined && before.schemas[name] === undefined;
-  };
-  const changes = wireChanges(before, current).filter((change) => !additive(change));
+  const changes = wireChanges(before, current).filter(
+    (change) => !change.startsWith("added TenantApi.TenantRequest variant "),
+  );
   if (changes.length > 0)
     fail(
       `the Tenant API changed while TenantApiVersion stays ${range.version} (${changes.join(", ")}); a new operation is the only change that keeps the version, so raise TenantApiVersion and keep serving the previous version for one deploy`,

@@ -426,9 +426,9 @@ model CircleCIAuthorizationDeadlineReachedInput {
   deadline: CircleCIAuthorizationDeadline;
 }
 
-@doc("A host as the control plane stores it, without its supervisor update reports.")
+@doc("A host as the control plane stores it, without its supervisor update reports and protocol ranges.")
 model HostRecord {
-  ...OmitProperties<Host, "supervisorUpdateStep" | "supervisorUpdateFailure">;
+  ...OmitProperties<Host, "supervisorUpdateStep" | "supervisorUpdateFailure" | "channelProtocol" | "guestProtocol">;
 }
 
 model NewClaudeSetup {

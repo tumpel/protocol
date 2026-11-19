@@ -93,13 +93,19 @@ const flatten = (shape) =>
     }),
   );
 
+const schemaOf = (shape, key) =>
+  Object.keys(shape.schemas)
+    .filter((name) => key === name || key.startsWith(`${name}.`) || key.startsWith(`${name} `))
+    .sort((x, y) => y.length - x.length)[0];
+
 export const wireChanges = (previous, current) => {
   const before = flatten(previous);
   const after = flatten(current);
+  const inNewSchema = (key) => previous.schemas[schemaOf(current, key)] === undefined;
   return [
     ...[...before.keys()].filter((key) => !after.has(key)).map((key) => `removed ${key}`),
     ...[...after.keys()]
-      .filter((key) => !before.has(key) && !after.get(key).startsWith("optional "))
+      .filter((key) => !before.has(key) && !after.get(key).startsWith("optional ") && !inNewSchema(key))
       .map((key) => `added ${key}`),
     ...[...before.keys()]
       .filter((key) => after.has(key) && after.get(key) !== before.get(key))

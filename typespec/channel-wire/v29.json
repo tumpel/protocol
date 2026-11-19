@@ -777,6 +777,11 @@
           "format": "int32",
           "minimum": 1
         },
+        "channelProtocolOldest": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
         "supervisorVersion": {
           "type": "string",
           "minLength": 1
@@ -793,9 +798,12 @@
         },
         "usage": {
           "$ref": "#/components/schemas/HostUsage"
+        },
+        "guestProtocol": {
+          "$ref": "#/components/schemas/GuestProtocolRange"
         }
       },
-      "description": "The host's answer to Challenge. `signature` is the base64 Ed25519 signature, by the host key\nmade at enrolment, over these bytes in order: the ASCII string `tumpel-channel-hello-v1`, one\n0x00 byte, the ASCII bytes of the Challenge `nonce`, one 0x00 byte, and the UTF-8 bytes of\n`hostId`. The control plane rebuilds those bytes from the nonce it sent and verifies the\nsignature against the host's stored public key. It answers Welcome, and closes the connection\nwith BadSignature on a bad signature, Revoked for a revoked host, and UnsupportedVersion for a\nprotocol version outside ChannelProtocol.Oldest to ChannelProtocol.Version. `boxCapacity` is the host's box slots from\nits runtime config and `usage` what it holds as it connects; the control plane keeps both for\nthe host's tenant before it reads the host Online."
+      "description": "The host's answer to Challenge. `signature` is the base64 Ed25519 signature, by the host key\nmade at enrolment, over these bytes in order: the ASCII string `tumpel-channel-hello-v1`, one\n0x00 byte, the ASCII bytes of the Challenge `nonce`, one 0x00 byte, and the UTF-8 bytes of\n`hostId`. The control plane rebuilds those bytes from the nonce it sent and verifies the\nsignature against the host's stored public key. It answers Welcome, and closes the connection\nwith BadSignature on a bad signature, Revoked for a revoked host, and UnsupportedVersion for a\nprotocol version outside ChannelProtocol.Oldest to ChannelProtocol.Version. `boxCapacity` is the host's box slots from\nits runtime config and `usage` what it holds as it connects; the control plane keeps both for\nthe host's tenant before it reads the host Online. `channelProtocolOldest` is the oldest\nchannel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves\nit out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host\naccepts from a box. The control plane records both ranges and shows them on the host."
     },
     "Channel.HostEnvelope": {
       "type": "object",
@@ -2034,6 +2042,26 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 64
+    },
+    "GuestProtocolRange": {
+      "type": "object",
+      "required": [
+        "guestProtocolOldest",
+        "guestProtocolVersion"
+      ],
+      "properties": {
+        "guestProtocolOldest": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "guestProtocolVersion": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        }
+      },
+      "description": "The guest protocol versions a host accepts from a box, from `guestProtocolOldest` to `guestProtocolVersion`."
     },
     "Harness": {
       "type": "string",
