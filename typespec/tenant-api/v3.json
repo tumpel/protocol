@@ -10309,7 +10309,7 @@
           "readOnly": true
         }
       },
-      "description": "A host as the control plane stores it, without its supervisor update reports."
+      "description": "A host as the control plane stores it, without its supervisor update reports and protocol ranges."
     },
     "TenantApi.HostUsageInput": {
       "type": "object",

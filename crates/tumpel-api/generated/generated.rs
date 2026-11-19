@@ -1849,11 +1849,30 @@ pub mod types {
     ///with BadSignature on a bad signature, Revoked for a revoked host, and UnsupportedVersion for a
     ///protocol version outside ChannelProtocol.Oldest to ChannelProtocol.Version. `boxCapacity` is the host's box slots from
     ///its runtime config and `usage` what it holds as it connects; the control plane keeps both for
-    ///the host's tenant before it reads the host Online.
+    ///the host's tenant before it reads the host Online. `channelProtocolOldest` is the oldest
+    ///channel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves
+    ///it out speaks only `protocolVersion`. `guestProtocolOldest` to `guestProtocolVersion` is the
+    ///guest protocol range the host accepts from a box, sent both or neither. The control plane
+    ///records both ranges and shows them on the host.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelHello {
         #[serde(rename = "boxCapacity")]
         pub box_capacity: ::std::num::NonZeroU32,
+        #[serde(
+            rename = "channelProtocolOldest",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub channel_protocol_oldest: ::std::option::Option<::std::num::NonZeroU32>,
+        #[serde(
+            rename = "guestProtocolOldest",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub guest_protocol_oldest: ::std::option::Option<::std::num::NonZeroU32>,
+        #[serde(
+            rename = "guestProtocolVersion",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub guest_protocol_version: ::std::option::Option<::std::num::NonZeroU32>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "protocolVersion")]
@@ -10333,10 +10352,16 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct Host {
         pub architecture: HostArchitecture,
+        ///The channel protocol range the host announced at its latest Hello.
+        #[serde(rename = "channelProtocol")]
+        pub channel_protocol: HostChannelProtocol,
         #[serde(rename = "cpuCount")]
         pub cpu_count: ::std::num::NonZeroU32,
         #[serde(rename = "createdAt")]
         pub created_at: i64,
+        ///The guest protocol range the host announced at its latest Hello.
+        #[serde(rename = "guestProtocol")]
+        pub guest_protocol: HostGuestProtocol,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub labels: ::std::vec::Vec<HostLabel>,
@@ -10391,6 +10416,65 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for HostArchitecture {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`HostChannelProtocol`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum HostChannelProtocol {
+        ProtocolNotReported(HostProtocolNotReported),
+        ChannelProtocolReported(HostChannelProtocolReported),
+    }
+    impl ::std::convert::From<HostProtocolNotReported> for HostChannelProtocol {
+        fn from(value: HostProtocolNotReported) -> Self {
+            Self::ProtocolNotReported(value)
+        }
+    }
+    impl ::std::convert::From<HostChannelProtocolReported> for HostChannelProtocol {
+        fn from(value: HostChannelProtocolReported) -> Self {
+            Self::ChannelProtocolReported(value)
+        }
+    }
+    ///The channel protocol versions the host announced at its latest Hello.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct HostChannelProtocolReported {
+        #[serde(rename = "channelProtocolOldest")]
+        pub channel_protocol_oldest: ::std::num::NonZeroU32,
+        #[serde(rename = "channelProtocolVersion")]
+        pub channel_protocol_version: ::std::num::NonZeroU32,
+        pub state: HostChannelProtocolReportedState,
+    }
+    ///`HostChannelProtocolReportedState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum HostChannelProtocolReportedState {
+        Reported,
+    }
+    impl ::std::fmt::Display for HostChannelProtocolReportedState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Reported => f.write_str("Reported"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for HostChannelProtocolReportedState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Reported" => Ok(Self::Reported),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostChannelProtocolReportedState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostChannelProtocolReportedState {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -10551,6 +10635,65 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///`HostGuestProtocol`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum HostGuestProtocol {
+        ProtocolNotReported(HostProtocolNotReported),
+        GuestProtocolReported(HostGuestProtocolReported),
+    }
+    impl ::std::convert::From<HostProtocolNotReported> for HostGuestProtocol {
+        fn from(value: HostProtocolNotReported) -> Self {
+            Self::ProtocolNotReported(value)
+        }
+    }
+    impl ::std::convert::From<HostGuestProtocolReported> for HostGuestProtocol {
+        fn from(value: HostGuestProtocolReported) -> Self {
+            Self::GuestProtocolReported(value)
+        }
+    }
+    ///The guest protocol versions the host announced at its latest Hello.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct HostGuestProtocolReported {
+        #[serde(rename = "guestProtocolOldest")]
+        pub guest_protocol_oldest: ::std::num::NonZeroU32,
+        #[serde(rename = "guestProtocolVersion")]
+        pub guest_protocol_version: ::std::num::NonZeroU32,
+        pub state: HostGuestProtocolReportedState,
+    }
+    ///`HostGuestProtocolReportedState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum HostGuestProtocolReportedState {
+        Reported,
+    }
+    impl ::std::fmt::Display for HostGuestProtocolReportedState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Reported => f.write_str("Reported"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for HostGuestProtocolReportedState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Reported" => Ok(Self::Reported),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostGuestProtocolReportedState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostGuestProtocolReportedState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///A label a host carries for placement, such as gpu or region-eu.
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
@@ -10701,6 +10844,44 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for HostOnlineEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The host has not announced this protocol range since it enrolled.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct HostProtocolNotReported {
+        pub state: HostProtocolNotReportedState,
+    }
+    ///`HostProtocolNotReportedState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum HostProtocolNotReportedState {
+        NotReported,
+    }
+    impl ::std::fmt::Display for HostProtocolNotReportedState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::NotReported => f.write_str("NotReported"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for HostProtocolNotReportedState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "NotReported" => Ok(Self::NotReported),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostProtocolNotReportedState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostProtocolNotReportedState {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -16255,8 +16436,11 @@ pub mod types {
     }
     ///The stage-wide view of a release rollout: the commit the control plane Worker was deployed from,
     ///each host that has turns Offered or Running, and `drained` once no host has any.
+    ///`channelProtocols` counts the Online hosts per newest channel protocol version, oldest first.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ReleaseRollout {
+        #[serde(rename = "channelProtocols")]
+        pub channel_protocols: ::std::vec::Vec<RolloutChannelProtocol>,
         #[serde(rename = "deployedCommit")]
         pub deployed_commit: ReleaseRolloutDeployedCommit,
         pub drained: bool,
@@ -16581,6 +16765,15 @@ pub mod types {
                 .parse()
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
+    }
+    ///The Online hosts whose newest channel protocol version is `channelProtocolVersion`. Raising
+    ///ChannelProtocol.Oldest above it refuses those hosts at their next Hello.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct RolloutChannelProtocol {
+        #[serde(rename = "channelProtocolVersion")]
+        pub channel_protocol_version: ::std::num::NonZeroU32,
+        #[serde(rename = "hostCount")]
+        pub host_count: ::std::num::NonZeroU32,
     }
     ///A host with turns Offered or Running on it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -27271,7 +27464,7 @@ pub mod types {
             Self(value)
         }
     }
-    ///A host as the control plane stores it, without its supervisor update reports.
+    ///A host as the control plane stores it, without its supervisor update reports and protocol ranges.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiHostRecord {
         pub architecture: HostArchitecture,
