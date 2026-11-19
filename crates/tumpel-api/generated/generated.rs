@@ -946,7 +946,8 @@ pub mod types {
     ///credential, and run `claude setup-token` in it for Claude setup `claudeSetupId`. The host answers
     ///ClaudeSetupBoxUrl once the command prints its sign-in URL, hands the code of a ClaudeSetupBoxCode
     ///to the command's standard input, and answers ClaudeSetupBoxFailed when the box stops without
-    ///storing the token. Only the box writes the token: it POSTs it to `tokenUrl` with `tokenCredential`
+    ///storing the token. `harness` names the harness at `harnessVersion` that `image` boots, and an offer
+    ///without it names ClaudeCode. Only the box writes the token: it POSTs it to `tokenUrl` with `tokenCredential`
     ///as its bearer token, and the host never sees it. `tokenCredential` is bound to this setup and
     ///writes its token once, while the setup is Minting. The host stops the box at `expiresAt`, when it stores the token, or on
     ///ClaudeSetupBoxDiscard, and deletes its drive.
@@ -958,6 +959,8 @@ pub mod types {
         pub claude_setup_id: EntityId,
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub harness: ::std::option::Option<Harness>,
         #[serde(rename = "harnessVersion")]
         pub harness_version: HarnessVersion,
         pub image: ChannelBootImage,
