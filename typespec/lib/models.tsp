@@ -1025,9 +1025,26 @@ model HarnessCredential {
   @doc("For a CredentialFile, the file under the harness home the guest writes it to, mode 0600, in place of the variable; the harness may rewrite it, and a changed file is stored back in the secret set at the end of the turn.")
   path?: PersonaFilePath;
 
-  @doc("The models the harness runs with this credential. A session start or turn send naming another model is refused before a box boots. Absent when the provider serves more models than the catalog lists, and the provider checks the model.")
-  @minItems(1)
-  models?: ModelName[];
+  @doc("Which models the harness runs with this credential.")
+  modelSupport: ModelSupport;
+}
+
+@doc("The harness runs only the listed models with the credential. A session start or turn send naming another model is refused before a box boots.")
+model ModelSupportListed {
+  kind: "Listed";
+  @minItems(1) models: ModelName[];
+}
+
+@doc("The provider serves more models than the catalog lists, so any model passes to the provider and the provider checks it.")
+model ModelSupportProviderChecked {
+  kind: "ProviderChecked";
+}
+
+@doc("The models a harness runs with one credential.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union ModelSupport {
+  Listed: ModelSupportListed,
+  ProviderChecked: ModelSupportProviderChecked,
 }
 
 @doc("A variable a turn gets with a fixed value beside a credential, such as the base URL of the provider serving the harness's model API.")

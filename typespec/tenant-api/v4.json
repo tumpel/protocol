@@ -2669,7 +2669,8 @@
         "variable",
         "fixed",
         "arguments",
-        "costBasis"
+        "costBasis",
+        "modelSupport"
       ],
       "properties": {
         "provider": {
@@ -2704,13 +2705,13 @@
           ],
           "description": "For a CredentialFile, the file under the harness home the guest writes it to, mode 0600, in place of the variable; the harness may rewrite it, and a changed file is stored back in the secret set at the end of the turn."
         },
-        "models": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/ModelName"
-          },
-          "minItems": 1,
-          "description": "The models the harness runs with this credential. A session start or turn send naming another model is refused before a box boots. Absent when the provider serves more models than the catalog lists, and the provider checks the model."
+        "modelSupport": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ModelSupport"
+            }
+          ],
+          "description": "Which models the harness runs with this credential."
         }
       },
       "description": "A credential a harness accepts, and what a turn gets from it: the credential under `variable`,\nthe `fixed` variables beside it, and the `arguments` the guest adds to the harness command, such\nas the Codex model provider that reads `variable`. The arguments hold no secret."
@@ -2912,6 +2913,63 @@
         "Google",
         "OpenRouter"
       ]
+    },
+    "ModelSupport": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/ModelSupportListed"
+        },
+        {
+          "$ref": "#/components/schemas/ModelSupportProviderChecked"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Listed": "#/components/schemas/ModelSupportListed",
+          "ProviderChecked": "#/components/schemas/ModelSupportProviderChecked"
+        }
+      },
+      "description": "The models a harness runs with one credential."
+    },
+    "ModelSupportListed": {
+      "type": "object",
+      "required": [
+        "kind",
+        "models"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Listed"
+          ]
+        },
+        "models": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/ModelName"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The harness runs only the listed models with the credential. A session start or turn send naming another model is refused before a box boots."
+    },
+    "ModelSupportProviderChecked": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "ProviderChecked"
+          ]
+        }
+      },
+      "description": "The provider serves more models than the catalog lists, so any model passes to the provider and the provider checks it."
     },
     "NamespaceConnectionStart": {
       "type": "object",

@@ -10208,9 +10208,9 @@ pub mod types {
         pub cost_basis: CostBasis,
         pub fixed: ::std::vec::Vec<FixedVariable>,
         pub kind: CredentialKind,
-        ///The models the harness runs with this credential. A session start or turn send naming another model is refused before a box boots. Absent when the provider serves more models than the catalog lists, and the provider checks the model.
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub models: ::std::vec::Vec<ModelName>,
+        ///Which models the harness runs with this credential.
+        #[serde(rename = "modelSupport")]
+        pub model_support: ModelSupport,
         ///For a CredentialFile, the file under the harness home the guest writes it to, mode 0600, in place of the variable; the harness may rewrite it, and a changed file is stored back in the secret set at the end of the turn.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub path: ::std::option::Option<PersonaFilePath>,
@@ -12186,6 +12186,100 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for ModelProvider {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The models a harness runs with one credential.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum ModelSupport {
+        Listed(ModelSupportListed),
+        ProviderChecked(ModelSupportProviderChecked),
+    }
+    impl ::std::convert::From<ModelSupportListed> for ModelSupport {
+        fn from(value: ModelSupportListed) -> Self {
+            Self::Listed(value)
+        }
+    }
+    impl ::std::convert::From<ModelSupportProviderChecked> for ModelSupport {
+        fn from(value: ModelSupportProviderChecked) -> Self {
+            Self::ProviderChecked(value)
+        }
+    }
+    ///The harness runs only the listed models with the credential. A session start or turn send naming another model is refused before a box boots.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ModelSupportListed {
+        pub kind: ModelSupportListedKind,
+        pub models: ::std::vec::Vec<ModelName>,
+    }
+    ///`ModelSupportListedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ModelSupportListedKind {
+        Listed,
+    }
+    impl ::std::fmt::Display for ModelSupportListedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Listed => f.write_str("Listed"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ModelSupportListedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Listed" => Ok(Self::Listed),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ModelSupportListedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ModelSupportListedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The provider serves more models than the catalog lists, so any model passes to the provider and the provider checks it.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ModelSupportProviderChecked {
+        pub kind: ModelSupportProviderCheckedKind,
+    }
+    ///`ModelSupportProviderCheckedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ModelSupportProviderCheckedKind {
+        ProviderChecked,
+    }
+    impl ::std::fmt::Display for ModelSupportProviderCheckedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ProviderChecked => f.write_str("ProviderChecked"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ModelSupportProviderCheckedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "ProviderChecked" => Ok(Self::ProviderChecked),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ModelSupportProviderCheckedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ModelSupportProviderCheckedKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()

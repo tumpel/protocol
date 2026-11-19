@@ -65,13 +65,14 @@ const pick = <T extends SecretKey | SecretMember>(
     };
   }
   const { each, credential } = held;
-  if (model !== null && each.models !== undefined && !each.models.includes(model)) {
+  const support = each.modelSupport;
+  if (model !== null && support.kind === "Listed" && !support.models.includes(model)) {
     return {
       kind: "ModelUnsupported",
       model,
       name: credential.name,
       credentialKind: credential.kind,
-      allowed: each.models,
+      allowed: support.models,
     };
   }
   if (credential.kind === "SubscriptionToken" && Date.parse(credential.expiresAt) <= now) {
