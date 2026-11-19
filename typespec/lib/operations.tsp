@@ -1090,6 +1090,15 @@ namespace V1 {
     @post
     archive(...SessionPath): Session | ProblemResponse;
 
+    @doc("""
+      Deletes an idle, stopped, failed or archived session and everything stored for it: its turns,
+      transcript and snapshots. A snapshot chunk or prebuild layer another session or a prebuild still
+      holds stays. Refused SessionNotStopped and HostOffline as archive is.
+      """)
+    @route("/{sessionId}")
+    @delete
+    delete(...SessionPath): NoContentResponse | ProblemResponse;
+
     @doc("Lists the credential handovers of a session, oldest first: which variables each turn offer carried, never their values.")
     @route("/{sessionId}/credential-handovers")
     @get
@@ -1248,7 +1257,7 @@ namespace V1 {
     @post
     patchFile(...PersonaPath, @body body: PersonaFilePatch): Persona | ProblemResponse;
 
-    @doc("Deletes a persona all of whose sessions are Failed; one with any session in another state is refused with 409 naming those sessions.")
+    @doc("Deletes a persona and its files; a file another persona holds stays. Refused with 409 naming the persona's sessions that are neither Failed nor Archived.")
     @route("/{personaId}")
     @delete
     delete(...PersonaPath): NoContentResponse | ProblemResponse;

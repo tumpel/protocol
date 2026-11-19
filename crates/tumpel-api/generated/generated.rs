@@ -25705,6 +25705,84 @@ pub mod types {
             value.parse()
         }
     }
+    ///`TenantApiDeleteSessionInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiDeleteSessionInput {
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiDeleteSessionRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiDeleteSessionRequest {
+        pub input: TenantApiDeleteSessionInput,
+        pub operation: TenantApiDeleteSessionRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiDeleteSessionRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiDeleteSessionRequestOperation {
+        #[serde(rename = "deleteSession")]
+        DeleteSession,
+    }
+    impl ::std::fmt::Display for TenantApiDeleteSessionRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::DeleteSession => f.write_str("deleteSession"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiDeleteSessionRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "deleteSession" => Ok(Self::DeleteSession),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiDeleteSessionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiDeleteSessionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiDeleteSessionResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiDeleteSessionResult {
+        pub deleted: TenantApiDeleteSessionResultDeleted,
+    }
+    ///`TenantApiDeleteSessionResultDeleted`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiDeleteSessionResultDeleted {
+        Deleted(TenantApiSessionDeleted),
+        NotFound(TenantApiSessionNotFound),
+        NotStopped(TenantApiSessionNotStopped),
+    }
+    impl ::std::convert::From<TenantApiSessionDeleted> for TenantApiDeleteSessionResultDeleted {
+        fn from(value: TenantApiSessionDeleted) -> Self {
+            Self::Deleted(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionNotFound> for TenantApiDeleteSessionResultDeleted {
+        fn from(value: TenantApiSessionNotFound) -> Self {
+            Self::NotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionNotStopped> for TenantApiDeleteSessionResultDeleted {
+        fn from(value: TenantApiSessionNotStopped) -> Self {
+            Self::NotStopped(value)
+        }
+    }
     ///`TenantApiDeleteWebhookEndpointInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiDeleteWebhookEndpointInput {
@@ -32544,6 +32622,44 @@ pub mod types {
             value.parse()
         }
     }
+    ///`TenantApiSessionDeleted`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSessionDeleted {
+        pub kind: TenantApiSessionDeletedKind,
+    }
+    ///`TenantApiSessionDeletedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSessionDeletedKind {
+        Deleted,
+    }
+    impl ::std::fmt::Display for TenantApiSessionDeletedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Deleted => f.write_str("Deleted"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSessionDeletedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Deleted" => Ok(Self::Deleted),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSessionDeletedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSessionDeletedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`TenantApiSessionDueDeadline`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSessionDueDeadline {
@@ -34819,6 +34935,7 @@ pub mod types {
         SendTurnRequest(TenantApiSendTurnRequest),
         StopSessionRequest(TenantApiStopSessionRequest),
         ArchiveSessionRequest(TenantApiArchiveSessionRequest),
+        DeleteSessionRequest(TenantApiDeleteSessionRequest),
         GetSessionRequest(TenantApiGetSessionRequest),
         ListSessionsRequest(TenantApiListSessionsRequest),
         ListTurnsRequest(TenantApiListTurnsRequest),
@@ -35230,6 +35347,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiArchiveSessionRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiArchiveSessionRequest) -> Self {
             Self::ArchiveSessionRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiDeleteSessionRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiDeleteSessionRequest) -> Self {
+            Self::DeleteSessionRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiGetSessionRequest> for TenantApiTenantRequest {
@@ -42878,7 +43000,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Deletes a persona all of whose sessions are Failed; one with any session in another state is refused with 409 naming those sessions.
+    ///Deletes a persona and its files; a file another persona holds stays. Refused with 409 naming the persona's sessions that are neither Failed nor Archived.
     ///
     ///Sends a `DELETE` request to `/v1/personas/{personaId}`
     ///
@@ -44660,6 +44782,53 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Deletes an idle, stopped, failed or archived session and everything stored for it: its turns,
+    ///transcript and snapshots. A snapshot chunk or prebuild layer another session or a prebuild still
+    ///holds stays. Refused SessionNotStopped and HostOffline as archive is.
+    ///
+    ///Sends a `DELETE` request to `/v1/sessions/{sessionId}`
+    ///
+    pub async fn sessions_delete<'a>(
+        &'a self,
+        session_id: &'a types::EntityId,
+    ) -> Result<ResponseValue<()>, Error<types::Problem>> {
+        let url = format!("{}/v1/sessions/{}", self.baseurl, encode_path(&session_id.to_string()),);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .delete(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "sessions_delete",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            204u16 => Ok(ResponseValue::empty(response)),
             400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
