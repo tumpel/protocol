@@ -333,6 +333,9 @@
         "boxId": {
           "$ref": "#/components/schemas/EntityId"
         },
+        "harness": {
+          "$ref": "#/components/schemas/ClaudeSetupHarness"
+        },
         "harnessVersion": {
           "$ref": "#/components/schemas/HarnessVersion"
         },
@@ -352,7 +355,7 @@
           "format": "date-time"
         }
       },
-      "description": "Asks the host to boot box `boxId` from `image` with no repository, no persona files and no\ncredential, and run `claude setup-token` in it for Claude setup `claudeSetupId`. The host answers\nClaudeSetupBoxUrl once the command prints its sign-in URL, hands the code of a ClaudeSetupBoxCode\nto the command's standard input, and answers ClaudeSetupBoxFailed when the box stops without\nstoring the token. Only the box writes the token: it POSTs it to `tokenUrl` with `tokenCredential`\nas its bearer token, and the host never sees it. `tokenCredential` is bound to this setup and\nwrites its token once, while the setup is Minting. The host stops the box at `expiresAt`, when it stores the token, or on\nClaudeSetupBoxDiscard, and deletes its drive."
+      "description": "Asks the host to boot box `boxId` from `image` with no repository, no persona files and no\ncredential, and run `claude setup-token` in it for Claude setup `claudeSetupId`. The host answers\nClaudeSetupBoxUrl once the command prints its sign-in URL, hands the code of a ClaudeSetupBoxCode\nto the command's standard input, and answers ClaudeSetupBoxFailed when the box stops without\nstoring the token. `harness` names the harness at `harnessVersion` that `image` boots, and an offer\nwithout it names ClaudeCode. Only the box writes the token: it POSTs it to `tokenUrl` with `tokenCredential`\nas its bearer token, and the host never sees it. `tokenCredential` is bound to this setup and\nwrites its token once, while the setup is Minting. The host stops the box at `expiresAt`, when it stores the token, or on\nClaudeSetupBoxDiscard, and deletes its drive."
     },
     "Channel.ClaudeSetupBoxUrl": {
       "type": "object",
@@ -2027,6 +2030,14 @@
         "Superseded"
       ],
       "description": "Why a Claude setup ended Failed. Each reason names the phase it stopped in."
+    },
+    "ClaudeSetupHarness": {
+      "type": "string",
+      "enum": [
+        "ClaudeCode",
+        "Codex"
+      ],
+      "description": "The harness a Claude setup signs in to: Claude Code with claude setup-token, or Codex with codex login --device-auth."
     },
     "DisplayName": {
       "type": "string",

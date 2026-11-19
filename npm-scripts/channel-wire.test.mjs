@@ -149,6 +149,24 @@ test("a new model behind a new required field fails without a protocol bump", ()
   });
 });
 
+test("an optional field of a new enum added without a protocol bump passes, and that enum as a required field fails", () => {
+  const next = (required) => {
+    const shape = schemas(14, {
+      ...OFFER,
+      required: [...OFFER.required, ...required],
+      properties: { ...OFFER.properties, setup: { $ref: `${REF}SetupHarness` } },
+    });
+    shape.SetupHarness = { type: "string", enum: ["ClaudeCode", "Codex"] };
+    return channelWireShape(shape);
+  };
+  const previous = channelWireShape(schemas(14, OFFER));
+  assert.deepEqual(checkChannelWire(previous, next([])), { ok: true });
+  assert.deepEqual(checkChannelWire(previous, next(["setup"])), {
+    ok: false,
+    changes: ["added Channel.TurnOffer.setup"],
+  });
+});
+
 test("an optional field removed without a protocol bump fails", () => {
   const optional = { ...OFFER, properties: { ...OFFER.properties, note: { type: "string" } } };
   const result = checkChannelWire(channelWireShape(schemas(14, optional)), channelWireShape(schemas(14, OFFER)));
