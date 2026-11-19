@@ -760,6 +760,11 @@ model ArchiveSessionInput {
   now: int64;
 }
 
+model DeleteSessionInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+}
+
 model GetSessionInput {
   tenantId: EntityId;
   sessionId: EntityId;
@@ -1501,6 +1506,12 @@ model ArchiveSessionRequest {
   input: ArchiveSessionInput;
 }
 
+model DeleteSessionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "deleteSession";
+  input: DeleteSessionInput;
+}
+
 model GetSessionRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "getSession";
@@ -1888,6 +1899,7 @@ union TenantRequest {
   sendTurn: SendTurnRequest,
   stopSession: StopSessionRequest,
   archiveSession: ArchiveSessionRequest,
+  deleteSession: DeleteSessionRequest,
   getSession: GetSessionRequest,
   listSessions: ListSessionsRequest,
   listTurns: ListTurnsRequest,
@@ -2890,6 +2902,20 @@ model SessionNotStopped {
 
 model ArchiveSessionResult {
   archived: SessionArchivedOk | SessionNotFound | SessionNotStopped;
+}
+
+model SessionDeleted {
+  kind: "Deleted";
+}
+
+@doc("The session built a prebuild, whose layer its snapshots hold.")
+model SessionBuiltPrebuild {
+  kind: "BuiltPrebuild";
+  prebuildId: EntityId;
+}
+
+model DeleteSessionResult {
+  deleted: SessionDeleted | SessionNotFound | SessionNotStopped | SessionBuiltPrebuild;
 }
 
 model GetSessionResult {

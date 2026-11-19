@@ -8751,6 +8751,67 @@
         }
       }
     },
+    "TenantApi.DeleteSessionInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.DeleteSessionRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "deleteSession"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.DeleteSessionInput"
+        }
+      }
+    },
+    "TenantApi.DeleteSessionResult": {
+      "type": "object",
+      "required": [
+        "deleted"
+      ],
+      "properties": {
+        "deleted": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionDeleted"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionNotStopped"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionBuiltPrebuild"
+            }
+          ]
+        }
+      }
+    },
     "TenantApi.DeleteWebhookEndpointInput": {
       "type": "object",
       "required": [
@@ -14047,6 +14108,25 @@
         }
       }
     },
+    "TenantApi.SessionBuiltPrebuild": {
+      "type": "object",
+      "required": [
+        "kind",
+        "prebuildId"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "BuiltPrebuild"
+          ]
+        },
+        "prebuildId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "The session built a prebuild, whose layer its snapshots hold."
+    },
     "TenantApi.SessionDeadlineName": {
       "type": "string",
       "enum": [
@@ -14058,6 +14138,20 @@
         "TeardownAnswer",
         "HostOffline"
       ]
+    },
+    "TenantApi.SessionDeleted": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Deleted"
+          ]
+        }
+      }
     },
     "TenantApi.SessionDueDeadline": {
       "type": "object",
@@ -15877,6 +15971,9 @@
           "$ref": "#/components/schemas/TenantApi.ArchiveSessionRequest"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.DeleteSessionRequest"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.GetSessionRequest"
         },
         {
@@ -16108,6 +16205,7 @@
           "sendTurn": "#/components/schemas/TenantApi.SendTurnRequest",
           "stopSession": "#/components/schemas/TenantApi.StopSessionRequest",
           "archiveSession": "#/components/schemas/TenantApi.ArchiveSessionRequest",
+          "deleteSession": "#/components/schemas/TenantApi.DeleteSessionRequest",
           "getSession": "#/components/schemas/TenantApi.GetSessionRequest",
           "listSessions": "#/components/schemas/TenantApi.ListSessionsRequest",
           "listTurns": "#/components/schemas/TenantApi.ListTurnsRequest",
