@@ -10604,6 +10604,16 @@ pub mod types {
     pub struct HostLabels {
         pub labels: ::std::vec::Vec<HostLabel>,
     }
+    ///Adds and removes labels of a host; every label it names in neither list stays.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
+    pub struct HostLabelsPatch {
+        ///Labels to add; a label the host already has stays once.
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub add: ::std::vec::Vec<HostLabel>,
+        ///Labels to remove; a label the host does not have is ignored.
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub remove: ::std::vec::Vec<HostLabel>,
+    }
     ///`HostOfflineEvent`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct HostOfflineEvent {
@@ -14024,6 +14034,31 @@ pub mod types {
             Self::StoredPersonaFile(value)
         }
     }
+    ///Changes the persona fields it names and leaves every other field, and every file, as it is. The harness is fixed at create, and files change through a file patch.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
+    pub struct PersonaPatch {
+        ///The disk in MiB of each box the persona's sessions boot, from BoxDiskLimit.DefaultMib up to BoxDiskLimit.MaxMib; left
+        ///out, the boxes get BoxDiskLimit.DefaultMib. A host refuses a box whose disk does not fit its disk
+        ///budget, and a box already running keeps the disk it booted with.
+        #[serde(rename = "boxDiskMib", skip_serializing_if = "::std::option::Option::is_none")]
+        pub box_disk_mib: ::std::option::Option<i32>,
+        ///The memory in MiB of each box the persona's sessions boot, from BoxMemoryLimit.MinMib up to
+        ///BoxMemoryLimit.MaxMib; left out, the boxes get BoxMemoryLimit.DefaultMib. A session is placed only on a host
+        ///whose available memory holds it, and a box already running keeps the memory it booted with.
+        #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
+        pub box_memory_mib: ::std::option::Option<i32>,
+        ///What happens to the box after each turn; left out, it stays as it is.
+        #[serde(rename = "boxRetention", skip_serializing_if = "::std::option::Option::is_none")]
+        pub box_retention: ::std::option::Option<BoxRetention>,
+        ///The connectors every session of the persona reaches, each once; a repeated id is refused InvalidRequest and another tenant's NotFound. A session copies the list when it starts; a later edit changes later sessions only.
+        #[serde(rename = "connectorIds", default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub connector_ids: ::std::vec::Vec<EntityId>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub name: ::std::option::Option<DisplayName>,
+        ///The secret set every session of the persona runs on; its members are all a turn's box receives.
+        #[serde(rename = "secretSetId", skip_serializing_if = "::std::option::Option::is_none")]
+        pub secret_set_id: ::std::option::Option<EntityId>,
+    }
     ///Replaces the persona's name, secret set, connectors, box memory, box retention and whole file set: a file the update leaves out is deleted, a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib, and a box retention it leaves out goes back to Auto. The harness is fixed at create.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PersonaUpdate {
@@ -16799,6 +16834,16 @@ pub mod types {
     pub struct SecretSetCreate {
         pub name: DisplayName,
         pub secrets: ::std::vec::Vec<SecretValue>,
+    }
+    ///Changes the set's name when it names one, and writes each member it lists as an update does: a
+    ///member sent without a value keeps the value stored under its previousName, or under its name when
+    ///it is not renamed. Every member it leaves out keeps its value.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
+    pub struct SecretSetPatch {
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub name: ::std::option::Option<DisplayName>,
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub secrets: ::std::vec::Vec<SecretMemberUpdate>,
     }
     ///Sets the set's name and its list of members. A member the update leaves out is deleted with its
     ///value. A member sent without a value keeps the value stored under its previousName, or under its
@@ -29441,6 +29486,174 @@ pub mod types {
     pub struct TenantApiOpenRouterSecretSetsResult {
         pub names: ::std::vec::Vec<::std::string::String>,
     }
+    ///A persona patch, which the tenant Durable Object reads, merges and writes in one transaction, so a concurrent write never loses a field neither names.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPatchPersonaInput {
+        pub now: i64,
+        pub patch: TenantApiPersonaPatchChange,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiPatchPersonaRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPatchPersonaRequest {
+        pub input: TenantApiPatchPersonaInput,
+        pub operation: TenantApiPatchPersonaRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiPatchPersonaRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiPatchPersonaRequestOperation {
+        #[serde(rename = "patchPersona")]
+        PatchPersona,
+    }
+    impl ::std::fmt::Display for TenantApiPatchPersonaRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::PatchPersona => f.write_str("patchPersona"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiPatchPersonaRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "patchPersona" => Ok(Self::PatchPersona),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiPatchPersonaRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPatchPersonaRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiPatchPersonaResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPatchPersonaResult {
+        pub written: TenantApiPatchPersonaResultWritten,
+    }
+    ///`TenantApiPatchPersonaResultWritten`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiPatchPersonaResultWritten {
+        PersonaUpdated(TenantApiPersonaUpdated),
+        WriteConflict(TenantApiWriteConflict),
+    }
+    impl ::std::convert::From<TenantApiPersonaUpdated> for TenantApiPatchPersonaResultWritten {
+        fn from(value: TenantApiPersonaUpdated) -> Self {
+            Self::PersonaUpdated(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiWriteConflict> for TenantApiPatchPersonaResultWritten {
+        fn from(value: TenantApiWriteConflict) -> Self {
+            Self::WriteConflict(value)
+        }
+    }
+    ///A secret set patch, which the tenant Durable Object reads, merges and writes in one transaction, so a concurrent write never loses a member neither names.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPatchSecretSetInput {
+        #[serde(rename = "githubUser", deserialize_with = "::std::option::Option::deserialize")]
+        pub github_user: ::std::option::Option<TenantApiGitHubUser>,
+        pub now: i64,
+        pub patch: SecretSetPatch,
+        #[serde(rename = "secretSetId")]
+        pub secret_set_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiPatchSecretSetRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPatchSecretSetRequest {
+        pub input: TenantApiPatchSecretSetInput,
+        pub operation: TenantApiPatchSecretSetRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiPatchSecretSetRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiPatchSecretSetRequestOperation {
+        #[serde(rename = "patchSecretSet")]
+        PatchSecretSet,
+    }
+    impl ::std::fmt::Display for TenantApiPatchSecretSetRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::PatchSecretSet => f.write_str("patchSecretSet"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiPatchSecretSetRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "patchSecretSet" => Ok(Self::PatchSecretSet),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiPatchSecretSetRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPatchSecretSetRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiPatchSecretSetResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPatchSecretSetResult {
+        pub patched: TenantApiPatchSecretSetResultPatched,
+    }
+    ///`TenantApiPatchSecretSetResultPatched`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiPatchSecretSetResultPatched {
+        Updated(TenantApiSecretSetUpdated),
+        Missing(TenantApiSecretSetMissing),
+        Conflict(TenantApiSecretSetConflict),
+        NoStoredValue(TenantApiSecretSetNoStoredValue),
+        UncheckedToken(TenantApiSecretSetUncheckedToken),
+    }
+    impl ::std::convert::From<TenantApiSecretSetUpdated> for TenantApiPatchSecretSetResultPatched {
+        fn from(value: TenantApiSecretSetUpdated) -> Self {
+            Self::Updated(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSecretSetMissing> for TenantApiPatchSecretSetResultPatched {
+        fn from(value: TenantApiSecretSetMissing) -> Self {
+            Self::Missing(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSecretSetConflict> for TenantApiPatchSecretSetResultPatched {
+        fn from(value: TenantApiSecretSetConflict) -> Self {
+            Self::Conflict(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSecretSetNoStoredValue> for TenantApiPatchSecretSetResultPatched {
+        fn from(value: TenantApiSecretSetNoStoredValue) -> Self {
+            Self::NoStoredValue(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSecretSetUncheckedToken> for TenantApiPatchSecretSetResultPatched {
+        fn from(value: TenantApiSecretSetUncheckedToken) -> Self {
+            Self::UncheckedToken(value)
+        }
+    }
     ///What a persona edit writes. The harness is fixed at create.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPersonaChange {
@@ -29571,6 +29784,22 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
+    }
+    ///What a persona patch writes: each field it names replaces the stored one, and every field it leaves out, and every file, stays as it is.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
+    pub struct TenantApiPersonaPatchChange {
+        #[serde(rename = "boxDiskMib", skip_serializing_if = "::std::option::Option::is_none")]
+        pub box_disk_mib: ::std::option::Option<i32>,
+        #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
+        pub box_memory_mib: ::std::option::Option<i32>,
+        #[serde(rename = "boxRetention", skip_serializing_if = "::std::option::Option::is_none")]
+        pub box_retention: ::std::option::Option<BoxRetention>,
+        #[serde(rename = "connectorIds", default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub connector_ids: ::std::vec::Vec<EntityId>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub name: ::std::option::Option<DisplayName>,
+        #[serde(rename = "secretSetId", skip_serializing_if = "::std::option::Option::is_none")]
+        pub secret_set_id: ::std::option::Option<EntityId>,
     }
     ///`TenantApiPersonaUpdated`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -34327,6 +34556,7 @@ pub mod types {
         GetPersonaRequest(TenantApiGetPersonaRequest),
         CreatePersonaRequest(TenantApiCreatePersonaRequest),
         UpdatePersonaRequest(TenantApiUpdatePersonaRequest),
+        PatchPersonaRequest(TenantApiPatchPersonaRequest),
         DeletePersonaRequest(TenantApiDeletePersonaRequest),
         OpenRequest(TenantApiOpenRequest),
         SupervisorUpdateRequest(TenantApiSupervisorUpdateRequest),
@@ -34335,6 +34565,7 @@ pub mod types {
         GetSecretSetRequest(TenantApiGetSecretSetRequest),
         CreateSecretSetRequest(TenantApiCreateSecretSetRequest),
         UpdateSecretSetRequest(TenantApiUpdateSecretSetRequest),
+        PatchSecretSetRequest(TenantApiPatchSecretSetRequest),
         SetSecretMemberRequest(TenantApiSetSecretMemberRequest),
         RemoveSecretMemberRequest(TenantApiRemoveSecretMemberRequest),
         DeleteSecretSetRequest(TenantApiDeleteSecretSetRequest),
@@ -34466,6 +34697,11 @@ pub mod types {
             Self::UpdatePersonaRequest(value)
         }
     }
+    impl ::std::convert::From<TenantApiPatchPersonaRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiPatchPersonaRequest) -> Self {
+            Self::PatchPersonaRequest(value)
+        }
+    }
     impl ::std::convert::From<TenantApiDeletePersonaRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiDeletePersonaRequest) -> Self {
             Self::DeletePersonaRequest(value)
@@ -34504,6 +34740,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiUpdateSecretSetRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiUpdateSecretSetRequest) -> Self {
             Self::UpdateSecretSetRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiPatchSecretSetRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiPatchSecretSetRequest) -> Self {
+            Self::PatchSecretSetRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiSetSecretMemberRequest> for TenantApiTenantRequest {
@@ -41234,6 +41475,53 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
+    ///Adds and removes labels of a host and keeps every other label.
+    ///
+    ///Sends a `PATCH` request to `/v1/hosts/{hostId}/labels`
+    ///
+    pub async fn hosts_patch_labels<'a>(
+        &'a self,
+        host_id: &'a types::EntityId,
+        body: &'a types::HostLabelsPatch,
+    ) -> Result<ResponseValue<types::Host>, Error<types::Problem>> {
+        let url = format!("{}/v1/hosts/{}/labels", self.baseurl, encode_path(&host_id.to_string()),);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .patch(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "hosts_patch_labels",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
     ///Revokes a host: its channel closes and it cannot connect again.
     ///
     ///Sends a `POST` request to `/v1/hosts/{hostId}/revoke`
@@ -42428,6 +42716,53 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Changes the persona fields the patch names and leaves every other field and every file as it is; the harness is fixed at create.
+    ///
+    ///Sends a `PATCH` request to `/v1/personas/{personaId}`
+    ///
+    pub async fn personas_patch<'a>(
+        &'a self,
+        persona_id: &'a types::EntityId,
+        body: &'a types::PersonaPatch,
+    ) -> Result<ResponseValue<types::Persona>, Error<types::Problem>> {
+        let url = format!("{}/v1/personas/{}", self.baseurl, encode_path(&persona_id.to_string()),);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .patch(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "personas_patch",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
             400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -43782,6 +44117,57 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Changes a secret set's name when the patch names one, and writes each member it lists; every member it leaves out keeps its value.
+    ///
+    ///Sends a `PATCH` request to `/v1/secret-sets/{secretSetId}`
+    ///
+    pub async fn secret_sets_patch<'a>(
+        &'a self,
+        secret_set_id: &'a types::EntityId,
+        body: &'a types::SecretSetPatch,
+    ) -> Result<ResponseValue<types::SecretSet>, Error<types::Problem>> {
+        let url = format!(
+            "{}/v1/secret-sets/{}",
+            self.baseurl,
+            encode_path(&secret_set_id.to_string()),
+        );
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .patch(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "secret_sets_patch",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
             400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),

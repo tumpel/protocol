@@ -15,7 +15,7 @@ env:
   CARGO_TERM_COLOR: never
   SHIPPED: >-
     typespec packages/api Makefile Cargo.toml Cargo.lock
-    crates/tumpel-api/Cargo.toml crates/tumpel-api/src crates/xtask/Cargo.toml crates/xtask/src/main.rs
+    crates/tumpel-api/Cargo.toml crates/tumpel-api/src crates/tumpel-api/generated crates/xtask/Cargo.toml crates/xtask/src/main.rs
 
 jobs:
   plan:
