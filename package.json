@@ -25,7 +25,6 @@
     "check": "npm run lint && npm run comments:check && npm run secrets:check && npm run conventions:check && npm run clippy && npm run fmt:check",
     "pretest": "make generate",
     "test": "node --test --test-timeout=30000 npm-scripts/*.test.mjs && cargo test --workspace",
-    "prepare": "git config core.hooksPath .githooks",
     "pack:check": "node npm-scripts/pack-check.mjs"
   },
   "devDependencies": {
