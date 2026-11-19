@@ -15364,6 +15364,8 @@ pub mod types {
         CredentialKindUnsupported,
         TurnInFlight,
         TurnNotWaiting,
+        TurnNotRunning,
+        SteerUnsupported,
         SessionStopping,
         SessionNotStopped,
         SessionArchived,
@@ -15447,6 +15449,8 @@ pub mod types {
                 Self::CredentialKindUnsupported => f.write_str("CredentialKindUnsupported"),
                 Self::TurnInFlight => f.write_str("TurnInFlight"),
                 Self::TurnNotWaiting => f.write_str("TurnNotWaiting"),
+                Self::TurnNotRunning => f.write_str("TurnNotRunning"),
+                Self::SteerUnsupported => f.write_str("SteerUnsupported"),
                 Self::SessionStopping => f.write_str("SessionStopping"),
                 Self::SessionNotStopped => f.write_str("SessionNotStopped"),
                 Self::SessionArchived => f.write_str("SessionArchived"),
@@ -15527,6 +15531,8 @@ pub mod types {
                 "CredentialKindUnsupported" => Ok(Self::CredentialKindUnsupported),
                 "TurnInFlight" => Ok(Self::TurnInFlight),
                 "TurnNotWaiting" => Ok(Self::TurnNotWaiting),
+                "TurnNotRunning" => Ok(Self::TurnNotRunning),
+                "SteerUnsupported" => Ok(Self::SteerUnsupported),
                 "SessionStopping" => Ok(Self::SessionStopping),
                 "SessionNotStopped" => Ok(Self::SessionNotStopped),
                 "SessionArchived" => Ok(Self::SessionArchived),
@@ -18550,6 +18556,62 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct StaticConnectorTokenWrite {
         pub value: SecretText,
+    }
+    ///A prompt sent to a turn while it runs; the harness reads it between its steps, inside the same turn.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct Steer {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub prompt: Prompt,
+        pub state: SteerState,
+        #[serde(rename = "steerId")]
+        pub steer_id: EntityId,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+    }
+    ///A prompt sent to a turn while it runs; the harness reads it between its steps, inside the same turn.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SteerCreate {
+        pub prompt: Prompt,
+    }
+    ///`SteerState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SteerState {
+        Pending,
+        Delivered,
+        TurnEnded,
+    }
+    impl ::std::fmt::Display for SteerState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Pending => f.write_str("Pending"),
+                Self::Delivered => f.write_str("Delivered"),
+                Self::TurnEnded => f.write_str("TurnEnded"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SteerState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Pending" => Ok(Self::Pending),
+                "Delivered" => Ok(Self::Delivered),
+                "TurnEnded" => Ok(Self::TurnEnded),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SteerState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SteerState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
     }
     ///A stop that failed and returned its session to Idle with its box kept.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -28459,6 +28521,62 @@ pub mod types {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
         pub snapshots: ::std::option::Option<::std::vec::Vec<Snapshot>>,
     }
+    ///`TenantApiListSteersInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiListSteersInput {
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+    }
+    ///`TenantApiListSteersRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiListSteersRequest {
+        pub input: TenantApiListSteersInput,
+        pub operation: TenantApiListSteersRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiListSteersRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiListSteersRequestOperation {
+        #[serde(rename = "listSteers")]
+        ListSteers,
+    }
+    impl ::std::fmt::Display for TenantApiListSteersRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ListSteers => f.write_str("listSteers"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiListSteersRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "listSteers" => Ok(Self::ListSteers),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiListSteersRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiListSteersRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiListSteersResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiListSteersResult {
+        #[serde(deserialize_with = "::std::option::Option::deserialize")]
+        pub steers: ::std::option::Option<::std::vec::Vec<Steer>>,
+    }
     ///`TenantApiListStopFailuresInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiListStopFailuresInput {
@@ -33821,6 +33939,246 @@ pub mod types {
             value.parse()
         }
     }
+    ///`TenantApiSteerInboxClosed`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSteerInboxClosed {
+        pub kind: TenantApiSteerInboxClosedKind,
+    }
+    ///`TenantApiSteerInboxClosedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSteerInboxClosedKind {
+        Closed,
+    }
+    impl ::std::fmt::Display for TenantApiSteerInboxClosedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Closed => f.write_str("Closed"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSteerInboxClosedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Closed" => Ok(Self::Closed),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSteerInboxClosedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSteerInboxClosedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiSteerSentOk`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSteerSentOk {
+        pub kind: TenantApiSteerSentOkKind,
+        pub steer: Steer,
+    }
+    ///`TenantApiSteerSentOkKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSteerSentOkKind {
+        Sent,
+    }
+    impl ::std::fmt::Display for TenantApiSteerSentOkKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Sent => f.write_str("Sent"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSteerSentOkKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Sent" => Ok(Self::Sent),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSteerSentOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSteerSentOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiSteerTurnInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSteerTurnInput {
+        pub now: i64,
+        pub steer: SteerCreate,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+    }
+    ///`TenantApiSteerTurnRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSteerTurnRequest {
+        pub input: TenantApiSteerTurnInput,
+        pub operation: TenantApiSteerTurnRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiSteerTurnRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSteerTurnRequestOperation {
+        #[serde(rename = "steerTurn")]
+        SteerTurn,
+    }
+    impl ::std::fmt::Display for TenantApiSteerTurnRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SteerTurn => f.write_str("steerTurn"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSteerTurnRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "steerTurn" => Ok(Self::SteerTurn),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSteerTurnRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSteerTurnRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiSteerTurnResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSteerTurnResult {
+        pub sent: TenantApiSteerTurnResultSent,
+    }
+    ///`TenantApiSteerTurnResultSent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiSteerTurnResultSent {
+        SteerSentOk(TenantApiSteerSentOk),
+        TurnNotFound(TenantApiTurnNotFound),
+        TurnNotRunning(TenantApiTurnNotRunning),
+        SteerUnsupported(TenantApiSteerUnsupported),
+    }
+    impl ::std::convert::From<TenantApiSteerSentOk> for TenantApiSteerTurnResultSent {
+        fn from(value: TenantApiSteerSentOk) -> Self {
+            Self::SteerSentOk(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTurnNotFound> for TenantApiSteerTurnResultSent {
+        fn from(value: TenantApiTurnNotFound) -> Self {
+            Self::TurnNotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTurnNotRunning> for TenantApiSteerTurnResultSent {
+        fn from(value: TenantApiTurnNotRunning) -> Self {
+            Self::TurnNotRunning(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSteerUnsupported> for TenantApiSteerTurnResultSent {
+        fn from(value: TenantApiSteerUnsupported) -> Self {
+            Self::SteerUnsupported(value)
+        }
+    }
+    ///`TenantApiSteerUnsupported`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSteerUnsupported {
+        pub kind: TenantApiSteerUnsupportedKind,
+    }
+    ///`TenantApiSteerUnsupportedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSteerUnsupportedKind {
+        Unsupported,
+    }
+    impl ::std::fmt::Display for TenantApiSteerUnsupportedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Unsupported => f.write_str("Unsupported"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSteerUnsupportedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Unsupported" => Ok(Self::Unsupported),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSteerUnsupportedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSteerUnsupportedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiSteersTaken`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSteersTaken {
+        pub kind: TenantApiSteersTakenKind,
+        pub prompts: ::std::vec::Vec<Prompt>,
+    }
+    ///`TenantApiSteersTakenKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSteersTakenKind {
+        Taken,
+    }
+    impl ::std::fmt::Display for TenantApiSteersTakenKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Taken => f.write_str("Taken"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSteersTakenKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Taken" => Ok(Self::Taken),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSteersTakenKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSteersTakenKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`TenantApiStopSessionInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiStopSessionInput {
@@ -34444,6 +34802,77 @@ pub mod types {
         #[serde(rename = "byHost")]
         pub by_host: ::std::collections::HashMap<::std::string::String, TenantApiSupervisorUpdates>,
     }
+    ///`TenantApiTakeSteersInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTakeSteersInput {
+        pub now: i64,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+    }
+    ///`TenantApiTakeSteersRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTakeSteersRequest {
+        pub input: TenantApiTakeSteersInput,
+        pub operation: TenantApiTakeSteersRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiTakeSteersRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTakeSteersRequestOperation {
+        #[serde(rename = "takeSteers")]
+        TakeSteers,
+    }
+    impl ::std::fmt::Display for TenantApiTakeSteersRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::TakeSteers => f.write_str("takeSteers"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTakeSteersRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "takeSteers" => Ok(Self::TakeSteers),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTakeSteersRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTakeSteersRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiTakeSteersResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTakeSteersResult {
+        pub taken: TenantApiTakeSteersResultTaken,
+    }
+    ///`TenantApiTakeSteersResultTaken`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiTakeSteersResultTaken {
+        SteersTaken(TenantApiSteersTaken),
+        SteerInboxClosed(TenantApiSteerInboxClosed),
+    }
+    impl ::std::convert::From<TenantApiSteersTaken> for TenantApiTakeSteersResultTaken {
+        fn from(value: TenantApiSteersTaken) -> Self {
+            Self::SteersTaken(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSteerInboxClosed> for TenantApiTakeSteersResultTaken {
+        fn from(value: TenantApiSteerInboxClosed) -> Self {
+            Self::SteerInboxClosed(value)
+        }
+    }
     ///The request names a version outside the instance's window, or an older version an adapter cannot translate. The caller answers a retryable failure.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTenantApiVersionUnsupported {
@@ -34629,6 +35058,9 @@ pub mod types {
         ListTurnsRequest(TenantApiListTurnsRequest),
         GetTurnRequest(TenantApiGetTurnRequest),
         CancelTurnRequest(TenantApiCancelTurnRequest),
+        SteerTurnRequest(TenantApiSteerTurnRequest),
+        ListSteersRequest(TenantApiListSteersRequest),
+        TakeSteersRequest(TenantApiTakeSteersRequest),
         WaitTurnsRequest(TenantApiWaitTurnsRequest),
         ListEventsRequest(TenantApiListEventsRequest),
         ListWebhookEndpointsRequest(TenantApiListWebhookEndpointsRequest),
@@ -35060,6 +35492,21 @@ pub mod types {
     impl ::std::convert::From<TenantApiCancelTurnRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiCancelTurnRequest) -> Self {
             Self::CancelTurnRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSteerTurnRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiSteerTurnRequest) -> Self {
+            Self::SteerTurnRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiListSteersRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiListSteersRequest) -> Self {
+            Self::ListSteersRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTakeSteersRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiTakeSteersRequest) -> Self {
+            Self::TakeSteersRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiWaitTurnsRequest> for TenantApiTenantRequest {
@@ -35787,6 +36234,45 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiTurnNotFoundKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiTurnNotRunning`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTurnNotRunning {
+        pub kind: TenantApiTurnNotRunningKind,
+        pub state: TurnState,
+    }
+    ///`TenantApiTurnNotRunningKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTurnNotRunningKind {
+        NotRunning,
+    }
+    impl ::std::fmt::Display for TenantApiTurnNotRunningKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::NotRunning => f.write_str("NotRunning"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTurnNotRunningKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "NotRunning" => Ok(Self::NotRunning),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTurnNotRunningKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTurnNotRunningKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -45435,6 +45921,101 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "turns_get_failure",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Lists a turn's steers, oldest first, with whether the harness took each one.
+    ///
+    ///Sends a `GET` request to `/v1/turns/{turnId}/steers`
+    ///
+    pub async fn turns_list_steers<'a>(
+        &'a self,
+        turn_id: &'a types::EntityId,
+    ) -> Result<ResponseValue<::std::vec::Vec<types::Steer>>, Error<types::Problem>> {
+        let url = format!("{}/v1/turns/{}/steers", self.baseurl, encode_path(&turn_id.to_string()),);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .get(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "turns_list_steers",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Sends a prompt to a running turn: the harness reads it after its next tool call, or before it
+    ///ends the turn, and keeps working inside the same turn. Answers Pending at once. Refused NotFound
+    ///when the turnId names no turn of the tenant, TurnNotRunning when the turn ended, and
+    ///SteerUnsupported when the turn's harness takes no steer.
+    ///
+    ///Sends a `POST` request to `/v1/turns/{turnId}/steers`
+    ///
+    pub async fn turns_steer<'a>(
+        &'a self,
+        turn_id: &'a types::EntityId,
+        body: &'a types::SteerCreate,
+    ) -> Result<ResponseValue<types::Steer>, Error<types::Problem>> {
+        let url = format!("{}/v1/turns/{}/steers", self.baseurl, encode_path(&turn_id.to_string()),);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .post(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "turns_steer",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;

@@ -786,6 +786,23 @@ model GetTurnInput {
   turnId: EntityId;
 }
 
+model SteerTurnInput {
+  tenantId: EntityId;
+  turnId: EntityId;
+  steer: SteerCreate;
+  now: int64;
+}
+
+model ListSteersInput {
+  tenantId: EntityId;
+  turnId: EntityId;
+}
+
+model TakeSteersInput {
+  turnId: EntityId;
+  now: int64;
+}
+
 model CancelTurnInput {
   tenantId: EntityId;
   turnId: EntityId;
@@ -1531,6 +1548,24 @@ model CancelTurnRequest {
   input: CancelTurnInput;
 }
 
+model SteerTurnRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "steerTurn";
+  input: SteerTurnInput;
+}
+
+model ListSteersRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listSteers";
+  input: ListSteersInput;
+}
+
+model TakeSteersRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "takeSteers";
+  input: TakeSteersInput;
+}
+
 model WaitTurnsRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "waitTurns";
@@ -1893,6 +1928,9 @@ union TenantRequest {
   listTurns: ListTurnsRequest,
   getTurn: GetTurnRequest,
   cancelTurn: CancelTurnRequest,
+  steerTurn: SteerTurnRequest,
+  listSteers: ListSteersRequest,
+  takeSteers: TakeSteersRequest,
   waitTurns: WaitTurnsRequest,
   listEvents: ListEventsRequest,
   listWebhookEndpoints: ListWebhookEndpointsRequest,
@@ -2924,6 +2962,41 @@ model TurnNotWaiting {
 
 model CancelTurnResult {
   cancelled: TurnCancelledOk | TurnNotFound | TurnNotWaiting;
+}
+
+model SteerSentOk {
+  kind: "Sent";
+  steer: Steer;
+}
+
+model TurnNotRunning {
+  kind: "NotRunning";
+  state: TurnState;
+}
+
+model SteerUnsupported {
+  kind: "Unsupported";
+}
+
+model SteerTurnResult {
+  sent: SteerSentOk | TurnNotFound | TurnNotRunning | SteerUnsupported;
+}
+
+model ListSteersResult {
+  steers: Steer[] | null;
+}
+
+model SteersTaken {
+  kind: "Taken";
+  prompts: Prompt[];
+}
+
+model SteerInboxClosed {
+  kind: "Closed";
+}
+
+model TakeSteersResult {
+  taken: SteersTaken | SteerInboxClosed;
 }
 
 model TurnsRead {
