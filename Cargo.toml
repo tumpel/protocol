@@ -32,3 +32,9 @@ expect_used = "deny"
 panic = "deny"
 todo = "deny"
 unimplemented = "deny"
+
+[profile.dev]
+debug = 0
+
+[profile.test]
+debug = 0
