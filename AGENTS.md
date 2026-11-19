@@ -17,4 +17,4 @@ Always follow `rules/errors.md` and `rules/coding-standards.md`.
 - `npm run check` runs every check. `npm run fix` formats.
 - `npm test` runs the channel-wire guard tests and the Rust tests.
 - `npm run pack` builds the npm tarballs into `dist/`.
-- A `vX.Y.Z` tag releases: the version must match `[workspace.package]` in `Cargo.toml`.
+- Releases are mechanical; never bump the version in `Cargo.toml`, tag or publish by hand. A merge to `main` that changes a shipped file publishes a GitHub pre-release `vX.Y.Z-rc.N`, versioned from the conventional commit types (breaking major, `feat` minor, `fix` and `perf` patch). Only the manual `promote` workflow ships a release candidate to crates.io as `vX.Y.Z`. A rerun releases the same version.
