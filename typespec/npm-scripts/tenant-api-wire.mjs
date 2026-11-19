@@ -47,9 +47,14 @@ if (stale.length > 0)
   fail(
     `TenantApiProtocol speaks ${range.oldest} to ${range.version} but the locks hold ${stale.map((version) => `v${version}`).join(", ")}; delete them`,
   );
-const newest = Math.max(...baseline.locks.keys());
-if (baseline.locks.size > 0 && range.version === newest) {
-  const before = lockShape(JSON.parse(baseline.locks.get(newest)), TENANT_API_WIRE);
+const release = git(root, ["describe", "--tags", "--abbrev=0", "--match", "v[0-9]*", base.stdout.trim()]);
+const released = release.ok
+  ? baselineLockTexts(root, release.stdout.trim(), TENANT_API_LOCK_DIR_PATH)
+  : { ok: true, locks: baseline.locks };
+if (!released.ok) fail(`could not read ${TENANT_API_LOCK_DIR_PATH} at ${release.stdout.trim()} (${released.error})`);
+const newest = Math.max(...released.locks.keys());
+if (released.locks.size > 0 && range.version === newest) {
+  const before = lockShape(JSON.parse(released.locks.get(newest)), TENANT_API_WIRE);
   const schemaOf = (key) =>
     Object.keys(current.schemas)
       .filter((name) => key === name || key.startsWith(`${name}.`) || key.startsWith(`${name} `))
