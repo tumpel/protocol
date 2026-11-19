@@ -30,6 +30,9 @@ enum ProblemCode {
   NoCredential: "NoCredential",
   CredentialExpired: "CredentialExpired",
   CredentialKindUnsupported: "CredentialKindUnsupported",
+
+  @doc("The harness does not run the named model with the credential the turn would use; the detail lists the models it runs.")
+  ModelUnsupported: "ModelUnsupported",
   TurnInFlight: "TurnInFlight",
 
   @doc("The turn does not wait behind another turn of its session: it started or ended; the detail names its state.")
