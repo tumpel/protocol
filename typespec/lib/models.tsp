@@ -420,7 +420,7 @@ enum TurnFailureReason {
   @doc("The host's first Heartbeat after it reconnected named no box for the turn's session, for example after its supervisor restarted, so the turn's work since its last snapshot is gone; the detail names the host.")
   BoxLost: "BoxLost",
 
-  @doc("A person stopped the session with cancelTurn while the turn was in flight; the detail names who.")
+  @doc("A person stopped the session with cancelTurn while the turn was in flight or waiting, or cancelled the turn while it waited; the detail names who.")
   Cancelled: "Cancelled",
 
   @doc("A connector the session lists was disconnected before the turn began running; the detail names it. Reconnect it, or start a session on a persona without it.")
