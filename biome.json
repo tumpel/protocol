@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!target", "!typespec/channel-wire", "!typespec/tenant-api"]
+    "includes": ["**", "!target", "!typespec/channel-wire", "!typespec/tenant-api", "!crates/tumpel-api/generated"]
   },
   "formatter": {
     "enabled": true,

@@ -1,0 +1,358 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "TenantConfig.json",
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "format": "uri",
+            "description": "The address of a copy of this schema, so an editor validates the file."
+        },
+        "personas": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/ConfigPersona"
+            }
+        },
+        "secretSets": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/ConfigSecretSet"
+            }
+        },
+        "harnessPins": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/HarnessPinCreate"
+            }
+        },
+        "hosts": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/ConfigHost"
+            }
+        }
+    },
+    "required": [
+        "personas",
+        "secretSets",
+        "harnessPins",
+        "hosts"
+    ],
+    "description": "A tenant's whole configuration, kept in one JSON file under version control. `tumpel config\nplan` and `apply` make the tenant match it: a persona, secret set or pin the file leaves out is\ndeleted, and an enrolled host the file leaves out loses its labels. Personas and secret sets are\nmatched by name, pins by harness and hosts by hostId; a persona names its secret set by name.",
+    "additionalProperties": false,
+    "$defs": {
+        "ConfigPersona": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "$ref": "#/$defs/DisplayName"
+                },
+                "harness": {
+                    "$ref": "#/$defs/Harness",
+                    "description": "The harness every session of the persona runs, at the version the tenant pins. It is fixed when the persona is created."
+                },
+                "boxMemoryMib": {
+                    "type": "integer",
+                    "minimum": 512,
+                    "maximum": 65536,
+                    "description": "The memory in MiB of each box the persona's sessions boot, from BoxMemoryLimit.MinMib up to\nBoxMemoryLimit.MaxMib; left out, the boxes get BoxMemoryLimit.DefaultMib. A session is placed only on a host\nwhose available memory holds it, and a box already running keeps the memory it booted with."
+                },
+                "boxDiskMib": {
+                    "type": "integer",
+                    "minimum": 32768,
+                    "maximum": 262144,
+                    "description": "The disk in MiB of each box the persona's sessions boot, from BoxDiskLimit.DefaultMib up to BoxDiskLimit.MaxMib; left\nout, the boxes get BoxDiskLimit.DefaultMib. A host refuses a box whose disk does not fit its disk\nbudget, and a box already running keeps the disk it booted with."
+                },
+                "boxRetention": {
+                    "$ref": "#/$defs/BoxRetention",
+                    "description": "What happens to the box after each turn; left out, the persona's sessions get Auto."
+                },
+                "secretSetName": {
+                    "$ref": "#/$defs/DisplayName"
+                },
+                "connectorNames": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DisplayName"
+                    },
+                    "description": "The connectors of the persona, by name. The tenant creates and connects them; config apply never writes a connector or its credential, and fails the plan on a name the tenant has no connector for."
+                },
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/ConfigPersonaFile"
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "harness",
+                "secretSetName",
+                "connectorNames",
+                "files"
+            ],
+            "description": "A persona of the file. It names its harness, its secret set by the set's name in the same file, its connectors by the names the tenant gave them, and its files.",
+            "additionalProperties": false
+        },
+        "ConfigSecretSet": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "$ref": "#/$defs/DisplayName"
+                },
+                "secrets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/ConfigSecret"
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "secrets"
+            ],
+            "additionalProperties": false
+        },
+        "HarnessPinCreate": {
+            "type": "object",
+            "properties": {
+                "harness": {
+                    "$ref": "#/$defs/Harness"
+                },
+                "harnessVersion": {
+                    "$ref": "#/$defs/HarnessVersion"
+                }
+            },
+            "required": [
+                "harness",
+                "harnessVersion"
+            ],
+            "description": "The harness version a tenant runs for one harness. It names an entry of the harness catalog.",
+            "additionalProperties": false
+        },
+        "ConfigHost": {
+            "type": "object",
+            "properties": {
+                "hostId": {
+                    "$ref": "#/$defs/EntityId"
+                },
+                "labels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/HostLabel"
+                    }
+                }
+            },
+            "required": [
+                "hostId",
+                "labels"
+            ],
+            "description": "The labels of one enrolled host, named by the hostId `tumpel host list` prints.",
+            "additionalProperties": false
+        },
+        "DisplayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+        },
+        "Harness": {
+            "type": "string",
+            "enum": [
+                "ClaudeCode",
+                "Codex",
+                "OpenCode",
+                "PiDev",
+                "MistralAgent"
+            ]
+        },
+        "BoxRetention": {
+            "type": "string",
+            "enum": [
+                "Off",
+                "Warm",
+                "Auto"
+            ],
+            "description": "What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode."
+        },
+        "ConfigPersonaFile": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "$ref": "#/$defs/PersonaFilePath"
+                },
+                "from": {
+                    "$ref": "#/$defs/LocalFilePath"
+                }
+            },
+            "required": [
+                "path",
+                "from"
+            ],
+            "description": "One persona file: `path` is where the harness reads it, relative to its home in the box, and\n`from` the local file whose bytes it holds. The config file never holds the bytes; apply reads\nthem and uploads the files whose digest changed.",
+            "additionalProperties": false
+        },
+        "ConfigSecret": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/ConfigSecretVariable"
+                },
+                {
+                    "$ref": "#/$defs/ConfigApiKey"
+                },
+                {
+                    "$ref": "#/$defs/ConfigSubscriptionToken"
+                }
+            ],
+            "description": "One member of a secret set: its kind, name and provider, and the variable its value is read from."
+        },
+        "HarnessVersion": {
+            "type": "string",
+            "minLength": 1
+        },
+        "EntityId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+        },
+        "HostLabel": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._=-]{0,62}$",
+            "description": "A label a host carries for placement, such as gpu or region-eu."
+        },
+        "PersonaFilePath": {
+            "type": "string",
+            "maxLength": 200,
+            "pattern": "^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$",
+            "description": "A path relative to the harness home in the box, such as .claude/settings.json. The harness catalog lists the paths each harness accepts."
+        },
+        "LocalFilePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "A path on the machine that applies the file, relative to the tenant config file."
+        },
+        "ConfigSecretVariable": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "const": "Variable"
+                },
+                "name": {
+                    "$ref": "#/$defs/SecretName"
+                },
+                "valueFrom": {
+                    "$ref": "#/$defs/SecretValueSource"
+                }
+            },
+            "required": [
+                "kind",
+                "name",
+                "valueFrom"
+            ],
+            "additionalProperties": false
+        },
+        "ConfigApiKey": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "const": "ApiKey"
+                },
+                "name": {
+                    "$ref": "#/$defs/SecretName"
+                },
+                "provider": {
+                    "$ref": "#/$defs/ModelProvider"
+                },
+                "valueFrom": {
+                    "$ref": "#/$defs/SecretValueSource"
+                }
+            },
+            "required": [
+                "kind",
+                "name",
+                "provider",
+                "valueFrom"
+            ],
+            "additionalProperties": false
+        },
+        "ConfigSubscriptionToken": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "const": "SubscriptionToken"
+                },
+                "name": {
+                    "$ref": "#/$defs/SecretName"
+                },
+                "provider": {
+                    "$ref": "#/$defs/ModelProvider"
+                },
+                "expiresAt": {
+                    "$ref": "#/$defs/ConfigExpiry"
+                },
+                "valueFrom": {
+                    "$ref": "#/$defs/SecretValueSource"
+                }
+            },
+            "required": [
+                "kind",
+                "name",
+                "provider",
+                "expiresAt",
+                "valueFrom"
+            ],
+            "additionalProperties": false
+        },
+        "SecretName": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[A-Z_][A-Z0-9_]*$",
+            "description": "The name of a secret set member, which is also the environment variable a box gets its value in."
+        },
+        "SecretValueSource": {
+            "type": "object",
+            "properties": {
+                "env": {
+                    "$ref": "#/$defs/EnvironmentVariableName"
+                }
+            },
+            "required": [
+                "env"
+            ],
+            "description": "Where a secret value comes from when the file is applied. The value itself is never in the file.",
+            "additionalProperties": false
+        },
+        "ModelProvider": {
+            "type": "string",
+            "enum": [
+                "Anthropic",
+                "OpenAi",
+                "Mistral",
+                "Google",
+                "OpenRouter"
+            ]
+        },
+        "ConfigExpiry": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                {
+                    "$ref": "#/$defs/SecretValueSource"
+                }
+            ],
+            "description": "When a subscription token stops working: an offset date-time, or the environment variable that holds one when the file is read."
+        },
+        "EnvironmentVariableName": {
+            "type": "string",
+            "maxLength": 200,
+            "pattern": "^[A-Z_][A-Z0-9_]*$",
+            "description": "The name of an environment variable, such as ANTHROPIC_API_KEY."
+        }
+    }
+}

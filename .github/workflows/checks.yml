@@ -61,6 +61,12 @@ jobs:
         run: git diff --exit-code typespec/channel-wire
 
       - if: steps.changes.outputs.code == 'true'
+        name: Fail when the committed tumpel-api sources are stale against the TypeSpec
+        run: |
+          git add --intent-to-add crates/tumpel-api/generated
+          git diff --exit-code --stat crates/tumpel-api/generated
+
+      - if: steps.changes.outputs.code == 'true'
         run: npm run check
 
       - if: steps.changes.outputs.code == 'true'

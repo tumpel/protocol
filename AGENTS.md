@@ -13,7 +13,7 @@ Always follow `rules/errors.md` and `rules/coding-standards.md`.
 ## Commands
 
 - `npm install` installs dependencies and enables the pre-commit hook.
-- `npm run generate` regenerates the TypeSpec output under `build/` and the Rust sources of `tumpel-api`.
+- `npm run generate` regenerates the TypeSpec output under `build/` and the Rust sources of `tumpel-api`. Commit the Rust sources: a Cargo git dependency builds from them, and CI fails when they are stale.
 - `npm run check` runs every check. `npm run fix` formats.
 - `npm test` runs the channel-wire guard tests and the Rust tests.
 - `npm run pack` builds the npm tarballs into `dist/`.
