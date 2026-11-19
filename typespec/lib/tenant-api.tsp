@@ -2908,14 +2908,8 @@ model SessionDeleted {
   kind: "Deleted";
 }
 
-@doc("The session built a prebuild, whose layer its snapshots hold.")
-model SessionBuiltPrebuild {
-  kind: "BuiltPrebuild";
-  prebuildId: EntityId;
-}
-
 model DeleteSessionResult {
-  deleted: SessionDeleted | SessionNotFound | SessionNotStopped | SessionBuiltPrebuild;
+  deleted: SessionDeleted | SessionNotFound | SessionNotStopped;
 }
 
 model GetSessionResult {

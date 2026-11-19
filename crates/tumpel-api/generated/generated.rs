@@ -25572,7 +25572,6 @@ pub mod types {
         Deleted(TenantApiSessionDeleted),
         NotFound(TenantApiSessionNotFound),
         NotStopped(TenantApiSessionNotStopped),
-        BuiltPrebuild(TenantApiSessionBuiltPrebuild),
     }
     impl ::std::convert::From<TenantApiSessionDeleted> for TenantApiDeleteSessionResultDeleted {
         fn from(value: TenantApiSessionDeleted) -> Self {
@@ -25587,11 +25586,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiSessionNotStopped> for TenantApiDeleteSessionResultDeleted {
         fn from(value: TenantApiSessionNotStopped) -> Self {
             Self::NotStopped(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiSessionBuiltPrebuild> for TenantApiDeleteSessionResultDeleted {
-        fn from(value: TenantApiSessionBuiltPrebuild) -> Self {
-            Self::BuiltPrebuild(value)
         }
     }
     ///`TenantApiDeleteWebhookEndpointInput`
@@ -32377,46 +32371,6 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiSessionArchivedStateKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The session built a prebuild, whose layer its snapshots hold.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiSessionBuiltPrebuild {
-        pub kind: TenantApiSessionBuiltPrebuildKind,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-    }
-    ///`TenantApiSessionBuiltPrebuildKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiSessionBuiltPrebuildKind {
-        BuiltPrebuild,
-    }
-    impl ::std::fmt::Display for TenantApiSessionBuiltPrebuildKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::BuiltPrebuild => f.write_str("BuiltPrebuild"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiSessionBuiltPrebuildKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "BuiltPrebuild" => Ok(Self::BuiltPrebuild),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiSessionBuiltPrebuildKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSessionBuiltPrebuildKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -42851,7 +42805,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Deletes a persona and its files; a file another persona holds stays. Refused with 409 naming the persona's sessions while any remains, whatever its state; delete those sessions first.
+    ///Deletes a persona and its files; a file another persona holds stays. Refused with 409 naming the persona's sessions that are neither Failed nor Archived.
     ///
     ///Sends a `DELETE` request to `/v1/personas/{personaId}`
     ///
@@ -44646,8 +44600,8 @@ impl Client {
         }
     }
     ///Deletes an idle, stopped, failed or archived session and everything stored for it: its turns,
-    ///transcript and snapshots. A snapshot chunk another session still holds stays. Refused
-    ///SessionNotStopped and HostOffline as archive is, and Conflict for a session that built a prebuild.
+    ///transcript and snapshots. A snapshot chunk or prebuild layer another session or a prebuild still
+    ///holds stays. Refused SessionNotStopped and HostOffline as archive is.
     ///
     ///Sends a `DELETE` request to `/v1/sessions/{sessionId}`
     ///

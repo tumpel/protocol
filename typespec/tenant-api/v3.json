@@ -8804,9 +8804,6 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.SessionNotStopped"
-            },
-            {
-              "$ref": "#/components/schemas/TenantApi.SessionBuiltPrebuild"
             }
           ]
         }
@@ -14107,25 +14104,6 @@
           ]
         }
       }
-    },
-    "TenantApi.SessionBuiltPrebuild": {
-      "type": "object",
-      "required": [
-        "kind",
-        "prebuildId"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "BuiltPrebuild"
-          ]
-        },
-        "prebuildId": {
-          "$ref": "#/components/schemas/EntityId"
-        }
-      },
-      "description": "The session built a prebuild, whose layer its snapshots hold."
     },
     "TenantApi.SessionDeadlineName": {
       "type": "string",

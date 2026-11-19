@@ -1092,8 +1092,8 @@ namespace V1 {
 
     @doc("""
       Deletes an idle, stopped, failed or archived session and everything stored for it: its turns,
-      transcript and snapshots. A snapshot chunk another session still holds stays. Refused
-      SessionNotStopped and HostOffline as archive is, and Conflict for a session that built a prebuild.
+      transcript and snapshots. A snapshot chunk or prebuild layer another session or a prebuild still
+      holds stays. Refused SessionNotStopped and HostOffline as archive is.
       """)
     @route("/{sessionId}")
     @delete
@@ -1257,7 +1257,7 @@ namespace V1 {
     @post
     patchFile(...PersonaPath, @body body: PersonaFilePatch): Persona | ProblemResponse;
 
-    @doc("Deletes a persona and its files; a file another persona holds stays. Refused with 409 naming the persona's sessions while any remains, whatever its state; delete those sessions first.")
+    @doc("Deletes a persona and its files; a file another persona holds stays. Refused with 409 naming the persona's sessions that are neither Failed nor Archived.")
     @route("/{personaId}")
     @delete
     delete(...PersonaPath): NoContentResponse | ProblemResponse;
