@@ -6008,6 +6008,9 @@ pub mod types {
         pub name: DisplayName,
         #[serde(rename = "secretSetName")]
         pub secret_set_name: DisplayName,
+        ///Whether the persona's sessions reach the Tumpel MCP server; left out, false.
+        #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
+        pub tumpel_mcp: ::std::option::Option<bool>,
     }
     ///One persona file: `path` is where the harness reads it, relative to its home in the box, and
     ///`from` the local file whose bytes it holds. The config file never holds the bytes; apply reads
@@ -16034,6 +16037,9 @@ pub mod types {
         pub code: ProblemCode,
         pub detail: ::std::string::String,
         pub fix: ::std::string::String,
+        ///The oldest event the log keeps, present when code is EventCursorExpired.
+        #[serde(rename = "oldestEventId", skip_serializing_if = "::std::option::Option::is_none")]
+        pub oldest_event_id: ::std::option::Option<Sequence>,
         pub title: ::std::string::String,
     }
     ///`ProblemCode`

@@ -76,7 +76,7 @@ model ConfigPersonaFile {
 @doc("A persona of the file. It names its harness, its secret set by the set's name in the same file, its connectors by the names the tenant gave them, and its files.")
 @extension("additionalProperties", false)
 model ConfigPersona {
-  ...OmitProperties<PersonaCreate, "secretSetId" | "connectorIds" | "files" | "tumpelMcp">;
+  ...OmitProperties<PersonaCreate, "secretSetId" | "connectorIds" | "files">;
   secretSetName: DisplayName;
 
   @doc("The connectors of the persona, by name. The tenant creates and connects them; config apply never writes a connector or its credential, and fails the plan on a name the tenant has no connector for.")
