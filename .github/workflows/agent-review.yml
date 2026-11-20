@@ -1,0 +1,21 @@
+name: agent-review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  statuses: write
+
+jobs:
+  pending:
+    runs-on: ubuntu-latest
+    steps:
+      - run: >
+          gh api "repos/$GITHUB_REPOSITORY/statuses/$HEAD_SHA"
+          -f state=pending
+          -f context=agent-review
+          -f description="Waiting for agent review"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
