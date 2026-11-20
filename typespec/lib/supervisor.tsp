@@ -356,7 +356,7 @@ model BoxBudgets {
   `boxCapacity` is the size of the TAP pool `tumpel-supervisor install` makes: devices tumpel0 up to
   tumpel<boxCapacity - 1>, device k with gateway 172.16.<k>.1/30 and guest 172.16.<k>.2. Each box
   claims one device and returns it at teardown; a turn past the pool fails PoolExhausted.
-  `memoryMib` is the memory of a box whose TurnOffer names no boxMemoryMib, 4096 by default.
+  `memoryMib` is the memory of a box whose TurnOffer names no boxMemoryMib, BoxMemoryLimit.DefaultMib by default.
   `overlayMib` is the disk of a box whose TurnOffer names no boxDiskMib, 32768 by default; the drive
   is a sparse file, so the host's disk holds only what the box wrote.
   A paused box stays until BoxTeardown or BoxDiscard names it, and a box that does not fit is
