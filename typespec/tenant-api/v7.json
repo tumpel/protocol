@@ -16269,7 +16269,7 @@
           }
         }
       },
-      "description": "A patch whose result would hold more than 16 tags; the session keeps its tags."
+      "description": "A patch or a start whose tags, with the crew tags a start inherits, would number more than 16; nothing changes."
     },
     "TenantApi.SetSecretMemberInput": {
       "type": "object",
@@ -17148,6 +17148,9 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.ClaudeSetupReleaseUnreadable"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionTagsOverLimit"
             }
           ]
         }
@@ -17217,6 +17220,9 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.ClaudeSetupReleaseUnreadable"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionTagsOverLimit"
             }
           ]
         }

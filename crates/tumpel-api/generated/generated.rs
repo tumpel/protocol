@@ -35259,7 +35259,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///A patch whose result would hold more than 16 tags; the session keeps its tags.
+    ///A patch or a start whose tags, with the crew tags a start inherits, would number more than 16; nothing changes.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSessionTagsOverLimit {
         pub kind: TenantApiSessionTagsOverLimitKind,
@@ -36403,6 +36403,7 @@ pub mod types {
         StartUnplaced(TenantApiStartUnplaced),
         StartConnectorDisconnected(TenantApiStartConnectorDisconnected),
         ClaudeSetupReleaseUnreadable(TenantApiClaudeSetupReleaseUnreadable),
+        SessionTagsOverLimit(TenantApiSessionTagsOverLimit),
     }
     impl ::std::convert::From<TenantApiSessionFromIssueStartedOk> for TenantApiStartSessionFromIssueResultStarted {
         fn from(value: TenantApiSessionFromIssueStartedOk) -> Self {
@@ -36427,6 +36428,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiClaudeSetupReleaseUnreadable> for TenantApiStartSessionFromIssueResultStarted {
         fn from(value: TenantApiClaudeSetupReleaseUnreadable) -> Self {
             Self::ClaudeSetupReleaseUnreadable(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionTagsOverLimit> for TenantApiStartSessionFromIssueResultStarted {
+        fn from(value: TenantApiSessionTagsOverLimit) -> Self {
+            Self::SessionTagsOverLimit(value)
         }
     }
     ///`TenantApiStartSessionInput`
@@ -36493,6 +36499,7 @@ pub mod types {
         StartUnplaced(TenantApiStartUnplaced),
         StartConnectorDisconnected(TenantApiStartConnectorDisconnected),
         ClaudeSetupReleaseUnreadable(TenantApiClaudeSetupReleaseUnreadable),
+        SessionTagsOverLimit(TenantApiSessionTagsOverLimit),
     }
     impl ::std::convert::From<TenantApiSessionStartedOk> for TenantApiStartSessionResultStarted {
         fn from(value: TenantApiSessionStartedOk) -> Self {
@@ -36517,6 +36524,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiClaudeSetupReleaseUnreadable> for TenantApiStartSessionResultStarted {
         fn from(value: TenantApiClaudeSetupReleaseUnreadable) -> Self {
             Self::ClaudeSetupReleaseUnreadable(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionTagsOverLimit> for TenantApiStartSessionResultStarted {
+        fn from(value: TenantApiSessionTagsOverLimit) -> Self {
+            Self::SessionTagsOverLimit(value)
         }
     }
     ///`TenantApiStartUnplaced`
