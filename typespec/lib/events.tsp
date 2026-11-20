@@ -2,6 +2,7 @@ import "@typespec/http";
 import "./models.tsp";
 import "./prebuild.tsp";
 import "./subscriptions.tsp";
+import "./triggers.tsp";
 
 using TypeSpec.Http;
 
@@ -47,6 +48,9 @@ enum TenantEventType {
 
   @doc("A subscription entered Ended.")
   SubscriptionEnded: "SubscriptionEnded",
+
+  @doc("A trigger matched a delivery and started no session.")
+  TriggerStartRefused: "TriggerStartRefused",
 }
 
 @doc("""
@@ -160,6 +164,14 @@ model SubscriptionEndedEvent {
   reason: SubscriptionEndReason;
 }
 
+model TriggerStartRefusedEvent {
+  event: "TriggerStartRefused";
+  ...TenantEventEnvelope;
+  triggerId: EntityId;
+  deliveryId: TriggerDeliveryId;
+  refusal: TriggerStartRefusal;
+}
+
 @doc("""
   A record that something happened in a tenant. The control plane appends it in the same
   transaction as the state change it reports. It holds ids and the fact that changed; read the
@@ -180,6 +192,7 @@ union TenantEvent {
   PrebuildFailed: PrebuildFailedEvent,
   SubscriptionPaused: SubscriptionPausedEvent,
   SubscriptionEnded: SubscriptionEndedEvent,
+  TriggerStartRefused: TriggerStartRefusedEvent,
 }
 
 @doc("""
@@ -208,6 +221,10 @@ model EventQuery {
   @doc("Keep events of this session.")
   @query
   sessionId?: EntityId;
+
+  @doc("Keep events of this trigger.")
+  @query
+  triggerId?: EntityId;
 
   @doc("The most seconds to wait when no event matches yet.")
   @query
