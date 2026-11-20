@@ -134,6 +134,9 @@ enum ProblemCode {
   @doc("No host of the tenant is Online with a free box slot and a guest image of the pinned Claude Code for its architecture.")
   NoHostOnline: "NoHostOnline",
 
+  @doc("A trigger matched an event whose payload lacks a field its prompt names, so it started no session. Test the trigger on a sample payload and fix the placeholder.")
+  TriggerFieldMissing: "TriggerFieldMissing",
+
   @doc("The Claude setup is not in the state the operation needs, such as a code sent twice or after the setup ended.")
   ClaudeSetupNotWaiting: "ClaudeSetupNotWaiting",
 
@@ -575,6 +578,10 @@ model SessionListQuery {
   @query(#{ explode: true })
   @maxItems(16)
   tag?: SessionTag[];
+
+  @doc("Keep only the sessions this trigger started.")
+  @query
+  triggerId?: EntityId;
 }
 
 model SessionStopQuery {
@@ -1113,7 +1120,7 @@ namespace V1 {
     @post
     startFromIssue(@body body: SessionStartFromIssue): StartedSessionFromIssue | ProblemResponse;
 
-    @doc("Lists the tenant's sessions, optionally only those in one state, on one host, with no turn since a time or carrying every tag named.")
+    @doc("Lists the tenant's sessions, optionally only those in one state, on one host, with no turn since a time, carrying every tag named or started by one trigger.")
     @get
     list(...SessionListQuery): Session[] | ProblemResponse;
 
@@ -1566,8 +1573,9 @@ namespace V1 {
       them, and changes nothing. A persona, secret set or pin the config leaves out is deleted, and
       an enrolled host it leaves out loses its labels. Refused InvalidRequest when the plan stops: a
       name repeats, a persona with a session that is not Failed is left out, a persona's harness differs, a host
-      is not enrolled, a file digest or expiry value the config names is missing, or secretValues
-      is not empty and leaves out a variable the config names.
+      is not enrolled, a file digest or expiry value the config names is missing, a trigger names a
+      persona the config lacks, or secretValues is not empty and leaves out a variable the config
+      names.
       """)
     @route("/plan")
     @post
@@ -1582,7 +1590,9 @@ namespace V1 {
       the commit and is refused HostRevoked for its labels. An empty secretValues keeps the stored values of every kept secret set; any other
       must cover every variable the config names and writes every kept set again. Refused
       InvalidRequest, changing nothing, when the plan stops, secretValues is not empty and leaves out
-      a variable, or it is empty and a set the plan creates or updates needs values.
+      a variable, or it is empty and a set the plan creates or updates needs values. A config that
+      creates, changes or deletes a trigger is refused OwnerRequired for a Member and Forbidden with
+      a turn token; each trigger it writes runs as the caller.
       """)
     @route("/apply")
     @post

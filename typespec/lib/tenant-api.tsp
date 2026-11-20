@@ -6,6 +6,8 @@ import "./build-provider.tsp";
 import "./events.tsp";
 import "./notifications.tsp";
 import "./subscriptions.tsp";
+import "./triggers.tsp";
+import "./config.tsp";
 
 namespace Tumpel;
 
@@ -20,7 +22,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 6;
+const TenantApiVersion = 7;
 
 namespace TenantApi {
 
@@ -228,6 +230,25 @@ model UnpinWrite {
   harness: string;
 }
 
+@doc("Creates a trigger that names its persona by name, so it may name a persona the same apply creates.")
+model CreateTriggerWrite {
+  kind: "CreateTrigger";
+  trigger: ConfigTrigger;
+  principalId: EntityId;
+}
+
+model UpdateTriggerWrite {
+  kind: "UpdateTrigger";
+  triggerId: EntityId;
+  trigger: ConfigTrigger;
+  principalId: EntityId;
+}
+
+model DeleteTriggerWrite {
+  kind: "DeleteTrigger";
+  triggerId: EntityId;
+}
+
 @doc("One write of a config apply, which the tenant Durable Object commits with the others in one transaction.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union ConfigWrite {
@@ -239,6 +260,9 @@ union ConfigWrite {
   DeletePersona: DeletePersonaWrite,
   Pin: PinWrite,
   Unpin: UnpinWrite,
+  CreateTrigger: CreateTriggerWrite,
+  UpdateTrigger: UpdateTriggerWrite,
+  DeleteTrigger: DeleteTriggerWrite,
 }
 
 model ApplyConfigInput {
@@ -957,6 +981,67 @@ model DeleteSubscriptionInput {
 model CompleteSubscriptionInput {
   tenantId: EntityId;
   subscriptionId: EntityId;
+  now: int64;
+}
+
+model CreateTriggerInput {
+  tenantId: EntityId;
+  trigger: TriggerCreate;
+
+  @doc("The Owner who creates the trigger, whom its sessions run as.")
+  principalId: EntityId;
+
+  now: int64;
+}
+
+model ListTriggersInput {
+  tenantId: EntityId;
+}
+
+model GetTriggerInput {
+  tenantId: EntityId;
+  triggerId: EntityId;
+}
+
+@doc("A trigger patch, which the tenant Durable Object reads, merges and writes in one transaction.")
+model UpdateTriggerInput {
+  tenantId: EntityId;
+  triggerId: EntityId;
+  patch: TriggerPatch;
+
+  @doc("The Owner who changes the trigger, whom its sessions run as from now on.")
+  principalId: EntityId;
+
+  now: int64;
+}
+
+model DeleteTriggerInput {
+  tenantId: EntityId;
+  triggerId: EntityId;
+  now: int64;
+}
+
+@doc("The source adapter matched the delivery, filled the prompt and prepared the start as Sessions_start does, as the trigger's principal.")
+model TriggerFiredStart {
+  kind: "Start";
+  session: OmitProperties<NewSession, "startedBy">;
+}
+
+@doc("The source adapter matched the delivery and refused the start itself, such as for a prompt field the event lacks.")
+model TriggerFiredRefused {
+  kind: "Refused";
+  refusal: TriggerStartRefusal;
+}
+
+@doc("""
+  One delivery a trigger matched. The tenant Durable Object starts the session with the origin as
+  its startedBy, at most once per triggerId and deliveryId, or appends TriggerStartRefused when the
+  adapter or the start refuses it.
+  """)
+model TriggerFiredInput {
+  tenantId: EntityId;
+  origin: TriggerOrigin;
+  fired: TriggerFiredStart | TriggerFiredRefused;
   now: int64;
 }
 
@@ -1771,6 +1856,42 @@ model CompleteSubscriptionRequest {
   input: CompleteSubscriptionInput;
 }
 
+model CreateTriggerRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "createTrigger";
+  input: CreateTriggerInput;
+}
+
+model ListTriggersRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listTriggers";
+  input: ListTriggersInput;
+}
+
+model GetTriggerRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getTrigger";
+  input: GetTriggerInput;
+}
+
+model UpdateTriggerRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "updateTrigger";
+  input: UpdateTriggerInput;
+}
+
+model DeleteTriggerRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "deleteTrigger";
+  input: DeleteTriggerInput;
+}
+
+model TriggerFiredRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "triggerFired";
+  input: TriggerFiredInput;
+}
+
 model GetTurnFailureRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "getTurnFailure";
@@ -2086,6 +2207,12 @@ union TenantRequest {
   resumeSubscription: ResumeSubscriptionRequest,
   deleteSubscription: DeleteSubscriptionRequest,
   completeSubscription: CompleteSubscriptionRequest,
+  createTrigger: CreateTriggerRequest,
+  listTriggers: ListTriggersRequest,
+  getTrigger: GetTriggerRequest,
+  updateTrigger: UpdateTriggerRequest,
+  deleteTrigger: DeleteTriggerRequest,
+  triggerFired: TriggerFiredRequest,
   getTurnFailure: GetTurnFailureRequest,
   listStopFailures: ListStopFailuresRequest,
   listSnapshots: ListSnapshotsRequest,
@@ -3307,6 +3434,68 @@ model DeleteSubscriptionResult {
 
 model CompleteSubscriptionResult {
   completed: SubscriptionChangedOk | SubscriptionNotFound | SubscriptionEndedState;
+}
+
+model TriggerCreatedOk {
+  kind: "Created";
+  trigger: Trigger;
+}
+
+model TriggerUpdatedOk {
+  kind: "Updated";
+  trigger: Trigger;
+}
+
+model TriggerNotFound {
+  kind: "NotFound";
+}
+
+@doc("The tenant has another trigger of the name.")
+model TriggerNameTaken {
+  kind: "NameTaken";
+}
+
+@doc("The tenant has no persona with the trigger's personaId.")
+model TriggerPersonaNotFound {
+  kind: "PersonaNotFound";
+}
+
+model CreateTriggerResult {
+  created: TriggerCreatedOk | TriggerNameTaken | TriggerPersonaNotFound;
+}
+
+model ListTriggersResult {
+  triggers: Trigger[];
+}
+
+model GetTriggerResult {
+  @doc("Null when the tenant has no trigger with the id.")
+  trigger: Trigger | null;
+}
+
+model UpdateTriggerResult {
+  updated: TriggerUpdatedOk | TriggerNotFound | TriggerNameTaken | TriggerPersonaNotFound;
+}
+
+model DeleteTriggerResult {
+  @doc("False when the tenant has no trigger with the id.")
+  deleted: boolean;
+}
+
+@doc("An earlier delivery with the same id already started a session, so this one starts nothing.")
+model TriggerDeliveryRepeated {
+  kind: "Repeated";
+  sessionId: EntityId;
+}
+
+@doc("The start was refused and TriggerStartRefused appended with the refusal.")
+model TriggerStartRefusedOk {
+  kind: "Refused";
+  refusal: TriggerStartRefusal;
+}
+
+model TriggerFiredResult {
+  fired: SessionStartedOk | TriggerDeliveryRepeated | TriggerNotFound | TriggerStartRefusedOk;
 }
 
 model GetTurnFailureResult {

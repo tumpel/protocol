@@ -1,6 +1,7 @@
 import "@typespec/json-schema";
 import "./models.tsp";
 import "./operations.tsp";
+import "./triggers.tsp";
 
 using TypeSpec.JsonSchema;
 
@@ -82,6 +83,13 @@ model ConfigPersona {
   connectorNames: DisplayName[];
   files: ConfigPersonaFile[];
 }
+@doc("A trigger of the file. It names its persona by the persona's name in the same file.")
+@extension("additionalProperties", false)
+model ConfigTrigger {
+  ...OmitProperties<TriggerCreate, "personaId">;
+  personaName: DisplayName;
+}
+
 @@extension(HarnessPinCreate, "additionalProperties", false);
 
 @doc("The labels of one enrolled host, named by the hostId `tumpel host list` prints.")
@@ -107,6 +115,13 @@ model TenantConfig {
   secretSets: ConfigSecretSet[];
   harnessPins: HarnessPinCreate[];
   hosts: ConfigHost[];
+
+  @doc("""
+    The tenant's triggers, matched by name; a trigger the list leaves out is deleted. Left out,
+    apply keeps the tenant's triggers as they are. Only an Owner applies a config that creates,
+    changes or deletes a trigger.
+    """)
+  triggers?: ConfigTrigger[];
 }
 
 @doc("The value of one environment variable a secret of the config names in valueFrom, entered where the config is applied.")
@@ -192,14 +207,15 @@ enum ConfigResource {
   SecretSet: "SecretSet",
   HarnessPin: "HarnessPin",
   Host: "Host",
+  Trigger: "Trigger",
 }
 
-@doc("One change of a plan: what it does to which persona, secret set, pin or host, and the line tumpel config plan prints for it.")
+@doc("One change of a plan: what it does to which persona, secret set, pin, host or trigger, and the line tumpel config plan prints for it.")
 model ConfigChange {
   action: ConfigChangeAction;
   resource: ConfigResource;
 
-  @doc("The persona or secret set name, the harness of a pin, or the hostId of a host.")
+  @doc("The persona, secret set or trigger name, the harness of a pin, or the hostId of a host.")
   name: string;
 
   description: string;

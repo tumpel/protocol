@@ -1,5 +1,6 @@
 import "@typespec/openapi";
 import "@typespec/http";
+import "./triggers.tsp";
 
 using TypeSpec.Http;
 
@@ -637,7 +638,7 @@ model Session {
   @visibility(Lifecycle.Read)
   origin: SessionOrigin;
 
-  @doc("Who started the session: a person, or a turn of another session that called Tumpel with a turn token.")
+  @doc("Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.")
   @visibility(Lifecycle.Read)
   startedBy: SessionStartedBy;
 
@@ -725,11 +726,19 @@ model TurnOrigin {
   turnId: EntityId;
 }
 
-@doc("Who started a session: a person or a turn of another session. What the first prompt came from is SessionOrigin.")
+@doc("A trigger started the session when one delivery of an event matched it. The session runs as the trigger's principalId.")
+model TriggerOrigin {
+  kind: "Trigger";
+  triggerId: EntityId;
+  deliveryId: TriggerDeliveryId;
+}
+
+@doc("Who started a session: a person, a turn of another session or a trigger. What the first prompt came from is SessionOrigin.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union SessionStartedBy {
   Person: PersonOrigin,
   Turn: TurnOrigin,
+  Trigger: TriggerOrigin,
 }
 
 @doc("Why a stop returned its session to Idle with its box kept.")

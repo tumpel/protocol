@@ -5874,12 +5874,12 @@ pub mod types {
             value.parse()
         }
     }
-    ///One change of a plan: what it does to which persona, secret set, pin or host, and the line tumpel config plan prints for it.
+    ///One change of a plan: what it does to which persona, secret set, pin, host or trigger, and the line tumpel config plan prints for it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ConfigChange {
         pub action: ConfigChangeAction,
         pub description: ::std::string::String,
-        ///The persona or secret set name, the harness of a pin, or the hostId of a host.
+        ///The persona, secret set or trigger name, the harness of a pin, or the hostId of a host.
         pub name: ::std::string::String,
         pub resource: ConfigResource,
     }
@@ -6029,6 +6029,7 @@ pub mod types {
         SecretSet,
         HarnessPin,
         Host,
+        Trigger,
     }
     impl ::std::fmt::Display for ConfigResource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6037,6 +6038,7 @@ pub mod types {
                 Self::SecretSet => f.write_str("SecretSet"),
                 Self::HarnessPin => f.write_str("HarnessPin"),
                 Self::Host => f.write_str("Host"),
+                Self::Trigger => f.write_str("Trigger"),
             }
         }
     }
@@ -6048,6 +6050,7 @@ pub mod types {
                 "SecretSet" => Ok(Self::SecretSet),
                 "HarnessPin" => Ok(Self::HarnessPin),
                 "Host" => Ok(Self::Host),
+                "Trigger" => Ok(Self::Trigger),
                 _ => Err("invalid value".into()),
             }
         }
@@ -6183,6 +6186,21 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
+    }
+    ///A trigger of the file. It names its persona by the persona's name in the same file.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ConfigTrigger {
+        ///The conditions on the event's payload that must all hold; none matches every event of the type.
+        pub conditions: ::std::vec::Vec<TriggerCondition>,
+        pub event: TriggerEvent,
+        ///The model of every session the trigger starts; it must be one the persona's harness runs.
+        pub model: ModelName,
+        ///Unique in the tenant, such as agent-review.
+        pub name: DisplayName,
+        #[serde(rename = "personaName")]
+        pub persona_name: DisplayName,
+        pub prompt: TriggerPrompt,
+        pub source: TriggerSource,
     }
     ///`ConnectedConnection`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -7391,6 +7409,46 @@ pub mod types {
             ::std::string::String::deserialize(deserializer)?
                 .parse()
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///Tests a trigger that is not stored yet, such as an unsaved form, against a payload.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct DraftTriggerTest {
+        pub kind: DraftTriggerTestKind,
+        pub payload: TriggerPayload,
+        pub trigger: TriggerCreate,
+    }
+    ///`DraftTriggerTestKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum DraftTriggerTestKind {
+        Draft,
+    }
+    impl ::std::fmt::Display for DraftTriggerTestKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Draft => f.write_str("Draft"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for DraftTriggerTestKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Draft" => Ok(Self::Draft),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for DraftTriggerTestKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for DraftTriggerTestKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
         }
     }
     ///`EditPersonaFilePatch`
@@ -15956,6 +16014,7 @@ pub mod types {
         SubscriptionEnded,
         SubscriptionCursorExpired,
         NoHostOnline,
+        TriggerFieldMissing,
         ClaudeSetupNotWaiting,
         ClaudeSetupBoxTokenRefused,
         DeployInProgress,
@@ -16039,6 +16098,7 @@ pub mod types {
                 Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
                 Self::SubscriptionCursorExpired => f.write_str("SubscriptionCursorExpired"),
                 Self::NoHostOnline => f.write_str("NoHostOnline"),
+                Self::TriggerFieldMissing => f.write_str("TriggerFieldMissing"),
                 Self::ClaudeSetupNotWaiting => f.write_str("ClaudeSetupNotWaiting"),
                 Self::ClaudeSetupBoxTokenRefused => f.write_str("ClaudeSetupBoxTokenRefused"),
                 Self::DeployInProgress => f.write_str("DeployInProgress"),
@@ -16124,6 +16184,7 @@ pub mod types {
                 "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
                 "SubscriptionCursorExpired" => Ok(Self::SubscriptionCursorExpired),
                 "NoHostOnline" => Ok(Self::NoHostOnline),
+                "TriggerFieldMissing" => Ok(Self::TriggerFieldMissing),
                 "ClaudeSetupNotWaiting" => Ok(Self::ClaudeSetupNotWaiting),
                 "ClaudeSetupBoxTokenRefused" => Ok(Self::ClaudeSetupBoxTokenRefused),
                 "DeployInProgress" => Ok(Self::DeployInProgress),
@@ -17765,7 +17826,7 @@ pub mod types {
         pub repository: RepositoryUrl,
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
-        ///Who started the session: a person, or a turn of another session that called Tumpel with a turn token.
+        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
         #[serde(rename = "startedBy")]
         pub started_by: SessionStartedBy,
         pub state: SessionState,
@@ -18161,12 +18222,13 @@ pub mod types {
         #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
         pub tags: ::std::vec::Vec<SessionTag>,
     }
-    ///Who started a session: a person or a turn of another session. What the first prompt came from is SessionOrigin.
+    ///Who started a session: a person, a turn of another session or a trigger. What the first prompt came from is SessionOrigin.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SessionStartedBy {
         PersonOrigin(PersonOrigin),
         TurnOrigin(TurnOrigin),
+        TriggerOrigin(TriggerOrigin),
     }
     impl ::std::convert::From<PersonOrigin> for SessionStartedBy {
         fn from(value: PersonOrigin) -> Self {
@@ -18176,6 +18238,11 @@ pub mod types {
     impl ::std::convert::From<TurnOrigin> for SessionStartedBy {
         fn from(value: TurnOrigin) -> Self {
             Self::TurnOrigin(value)
+        }
+    }
+    impl ::std::convert::From<TriggerOrigin> for SessionStartedBy {
+        fn from(value: TriggerOrigin) -> Self {
+            Self::TriggerOrigin(value)
         }
     }
     ///`SessionState`
@@ -19504,6 +19571,47 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for StoredPersonaFileSource {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///Tests a stored trigger against a payload.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct StoredTriggerTest {
+        pub kind: StoredTriggerTestKind,
+        pub payload: TriggerPayload,
+        #[serde(rename = "triggerId")]
+        pub trigger_id: EntityId,
+    }
+    ///`StoredTriggerTestKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum StoredTriggerTestKind {
+        Stored,
+    }
+    impl ::std::fmt::Display for StoredTriggerTestKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Stored => f.write_str("Stored"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for StoredTriggerTestKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Stored" => Ok(Self::Stored),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for StoredTriggerTestKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for StoredTriggerTestKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -24450,6 +24558,9 @@ pub mod types {
         DeletePersonaWrite(TenantApiDeletePersonaWrite),
         PinWrite(TenantApiPinWrite),
         UnpinWrite(TenantApiUnpinWrite),
+        CreateTriggerWrite(TenantApiCreateTriggerWrite),
+        UpdateTriggerWrite(TenantApiUpdateTriggerWrite),
+        DeleteTriggerWrite(TenantApiDeleteTriggerWrite),
     }
     impl ::std::convert::From<TenantApiCreateSecretSetWrite> for TenantApiConfigWrite {
         fn from(value: TenantApiCreateSecretSetWrite) -> Self {
@@ -24489,6 +24600,21 @@ pub mod types {
     impl ::std::convert::From<TenantApiUnpinWrite> for TenantApiConfigWrite {
         fn from(value: TenantApiUnpinWrite) -> Self {
             Self::UnpinWrite(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiCreateTriggerWrite> for TenantApiConfigWrite {
+        fn from(value: TenantApiCreateTriggerWrite) -> Self {
+            Self::CreateTriggerWrite(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiUpdateTriggerWrite> for TenantApiConfigWrite {
+        fn from(value: TenantApiUpdateTriggerWrite) -> Self {
+            Self::UpdateTriggerWrite(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiDeleteTriggerWrite> for TenantApiConfigWrite {
+        fn from(value: TenantApiDeleteTriggerWrite) -> Self {
+            Self::DeleteTriggerWrite(value)
         }
     }
     ///`TenantApiConnectCircleCiInput`
@@ -26244,6 +26370,128 @@ pub mod types {
             Self::SessionFailedState(value)
         }
     }
+    ///`TenantApiCreateTriggerInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiCreateTriggerInput {
+        pub now: i64,
+        ///The Owner who creates the trigger, whom its sessions run as.
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        pub trigger: TriggerCreate,
+    }
+    ///`TenantApiCreateTriggerRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiCreateTriggerRequest {
+        pub input: TenantApiCreateTriggerInput,
+        pub operation: TenantApiCreateTriggerRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiCreateTriggerRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiCreateTriggerRequestOperation {
+        #[serde(rename = "createTrigger")]
+        CreateTrigger,
+    }
+    impl ::std::fmt::Display for TenantApiCreateTriggerRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::CreateTrigger => f.write_str("createTrigger"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiCreateTriggerRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "createTrigger" => Ok(Self::CreateTrigger),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiCreateTriggerRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCreateTriggerRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiCreateTriggerResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiCreateTriggerResult {
+        pub created: TenantApiCreateTriggerResultCreated,
+    }
+    ///`TenantApiCreateTriggerResultCreated`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiCreateTriggerResultCreated {
+        CreatedOk(TenantApiTriggerCreatedOk),
+        NameTaken(TenantApiTriggerNameTaken),
+        PersonaNotFound(TenantApiTriggerPersonaNotFound),
+    }
+    impl ::std::convert::From<TenantApiTriggerCreatedOk> for TenantApiCreateTriggerResultCreated {
+        fn from(value: TenantApiTriggerCreatedOk) -> Self {
+            Self::CreatedOk(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerNameTaken> for TenantApiCreateTriggerResultCreated {
+        fn from(value: TenantApiTriggerNameTaken) -> Self {
+            Self::NameTaken(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerPersonaNotFound> for TenantApiCreateTriggerResultCreated {
+        fn from(value: TenantApiTriggerPersonaNotFound) -> Self {
+            Self::PersonaNotFound(value)
+        }
+    }
+    ///Creates a trigger that names its persona by name, so it may name a persona the same apply creates.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiCreateTriggerWrite {
+        pub kind: TenantApiCreateTriggerWriteKind,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        pub trigger: ConfigTrigger,
+    }
+    ///`TenantApiCreateTriggerWriteKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiCreateTriggerWriteKind {
+        CreateTrigger,
+    }
+    impl ::std::fmt::Display for TenantApiCreateTriggerWriteKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::CreateTrigger => f.write_str("CreateTrigger"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiCreateTriggerWriteKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "CreateTrigger" => Ok(Self::CreateTrigger),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiCreateTriggerWriteKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCreateTriggerWriteKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`TenantApiCreateWebhookEndpointInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCreateWebhookEndpointInput {
@@ -27042,6 +27290,103 @@ pub mod types {
     pub struct TenantApiDeleteSubscriptionResult {
         ///False when the tenant has no subscription with the id.
         pub deleted: bool,
+    }
+    ///`TenantApiDeleteTriggerInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiDeleteTriggerInput {
+        pub now: i64,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "triggerId")]
+        pub trigger_id: EntityId,
+    }
+    ///`TenantApiDeleteTriggerRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiDeleteTriggerRequest {
+        pub input: TenantApiDeleteTriggerInput,
+        pub operation: TenantApiDeleteTriggerRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiDeleteTriggerRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiDeleteTriggerRequestOperation {
+        #[serde(rename = "deleteTrigger")]
+        DeleteTrigger,
+    }
+    impl ::std::fmt::Display for TenantApiDeleteTriggerRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::DeleteTrigger => f.write_str("deleteTrigger"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiDeleteTriggerRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "deleteTrigger" => Ok(Self::DeleteTrigger),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiDeleteTriggerRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiDeleteTriggerRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiDeleteTriggerResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiDeleteTriggerResult {
+        ///False when the tenant has no trigger with the id.
+        pub deleted: bool,
+    }
+    ///`TenantApiDeleteTriggerWrite`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiDeleteTriggerWrite {
+        pub kind: TenantApiDeleteTriggerWriteKind,
+        #[serde(rename = "triggerId")]
+        pub trigger_id: EntityId,
+    }
+    ///`TenantApiDeleteTriggerWriteKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiDeleteTriggerWriteKind {
+        DeleteTrigger,
+    }
+    impl ::std::fmt::Display for TenantApiDeleteTriggerWriteKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::DeleteTrigger => f.write_str("DeleteTrigger"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiDeleteTriggerWriteKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "DeleteTrigger" => Ok(Self::DeleteTrigger),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiDeleteTriggerWriteKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiDeleteTriggerWriteKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
     }
     ///`TenantApiDeleteWebhookEndpointInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -28047,6 +28392,63 @@ pub mod types {
         ///Null when the tenant has no subscription with the id.
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
         pub subscription: ::std::option::Option<Subscription>,
+    }
+    ///`TenantApiGetTriggerInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiGetTriggerInput {
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "triggerId")]
+        pub trigger_id: EntityId,
+    }
+    ///`TenantApiGetTriggerRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiGetTriggerRequest {
+        pub input: TenantApiGetTriggerInput,
+        pub operation: TenantApiGetTriggerRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiGetTriggerRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiGetTriggerRequestOperation {
+        #[serde(rename = "getTrigger")]
+        GetTrigger,
+    }
+    impl ::std::fmt::Display for TenantApiGetTriggerRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::GetTrigger => f.write_str("getTrigger"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiGetTriggerRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "getTrigger" => Ok(Self::GetTrigger),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiGetTriggerRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiGetTriggerRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiGetTriggerResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiGetTriggerResult {
+        ///Null when the tenant has no trigger with the id.
+        #[serde(deserialize_with = "::std::option::Option::deserialize")]
+        pub trigger: ::std::option::Option<Trigger>,
     }
     ///`TenantApiGetTurnFailureInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -30214,6 +30616,59 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiListSubscriptionsResult {
         pub subscriptions: ::std::vec::Vec<Subscription>,
+    }
+    ///`TenantApiListTriggersInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiListTriggersInput {
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiListTriggersRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiListTriggersRequest {
+        pub input: TenantApiListTriggersInput,
+        pub operation: TenantApiListTriggersRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiListTriggersRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiListTriggersRequestOperation {
+        #[serde(rename = "listTriggers")]
+        ListTriggers,
+    }
+    impl ::std::fmt::Display for TenantApiListTriggersRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ListTriggers => f.write_str("listTriggers"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiListTriggersRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "listTriggers" => Ok(Self::ListTriggers),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiListTriggersRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiListTriggersRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiListTriggersResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiListTriggersResult {
+        pub triggers: ::std::vec::Vec<Trigger>,
     }
     ///`TenantApiListTurnsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -37361,6 +37816,12 @@ pub mod types {
         ResumeSubscriptionRequest(TenantApiResumeSubscriptionRequest),
         DeleteSubscriptionRequest(TenantApiDeleteSubscriptionRequest),
         CompleteSubscriptionRequest(TenantApiCompleteSubscriptionRequest),
+        CreateTriggerRequest(TenantApiCreateTriggerRequest),
+        ListTriggersRequest(TenantApiListTriggersRequest),
+        GetTriggerRequest(TenantApiGetTriggerRequest),
+        UpdateTriggerRequest(TenantApiUpdateTriggerRequest),
+        DeleteTriggerRequest(TenantApiDeleteTriggerRequest),
+        TriggerFiredRequest(TenantApiTriggerFiredRequest),
         GetTurnFailureRequest(TenantApiGetTurnFailureRequest),
         ListStopFailuresRequest(TenantApiListStopFailuresRequest),
         ListSnapshotsRequest(TenantApiListSnapshotsRequest),
@@ -37907,6 +38368,36 @@ pub mod types {
             Self::CompleteSubscriptionRequest(value)
         }
     }
+    impl ::std::convert::From<TenantApiCreateTriggerRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiCreateTriggerRequest) -> Self {
+            Self::CreateTriggerRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiListTriggersRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiListTriggersRequest) -> Self {
+            Self::ListTriggersRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiGetTriggerRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiGetTriggerRequest) -> Self {
+            Self::GetTriggerRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiUpdateTriggerRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiUpdateTriggerRequest) -> Self {
+            Self::UpdateTriggerRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiDeleteTriggerRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiDeleteTriggerRequest) -> Self {
+            Self::DeleteTriggerRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerFiredRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiTriggerFiredRequest) -> Self {
+            Self::TriggerFiredRequest(value)
+        }
+    }
     impl ::std::convert::From<TenantApiGetTurnFailureRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiGetTurnFailureRequest) -> Self {
             Self::GetTurnFailureRequest(value)
@@ -38280,6 +38771,471 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiTranscriptLinesKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiTriggerCreatedOk`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerCreatedOk {
+        pub kind: TenantApiTriggerCreatedOkKind,
+        pub trigger: Trigger,
+    }
+    ///`TenantApiTriggerCreatedOkKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerCreatedOkKind {
+        Created,
+    }
+    impl ::std::fmt::Display for TenantApiTriggerCreatedOkKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Created => f.write_str("Created"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerCreatedOkKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Created" => Ok(Self::Created),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerCreatedOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerCreatedOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///An earlier delivery with the same id already started a session, so this one starts nothing.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerDeliveryRepeated {
+        pub kind: TenantApiTriggerDeliveryRepeatedKind,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+    }
+    ///`TenantApiTriggerDeliveryRepeatedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerDeliveryRepeatedKind {
+        Repeated,
+    }
+    impl ::std::fmt::Display for TenantApiTriggerDeliveryRepeatedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Repeated => f.write_str("Repeated"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerDeliveryRepeatedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Repeated" => Ok(Self::Repeated),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerDeliveryRepeatedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerDeliveryRepeatedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///One delivery a trigger matched. The tenant Durable Object starts the session with the origin as
+    ///its startedBy, at most once per triggerId and deliveryId, or appends TriggerStartRefused when the
+    ///adapter or the start refuses it.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerFiredInput {
+        pub fired: TenantApiTriggerFiredInputFired,
+        pub now: i64,
+        pub origin: TriggerOrigin,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiTriggerFiredInputFired`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiTriggerFiredInputFired {
+        Start(TenantApiTriggerFiredStart),
+        Refused(TenantApiTriggerFiredRefused),
+    }
+    impl ::std::convert::From<TenantApiTriggerFiredStart> for TenantApiTriggerFiredInputFired {
+        fn from(value: TenantApiTriggerFiredStart) -> Self {
+            Self::Start(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerFiredRefused> for TenantApiTriggerFiredInputFired {
+        fn from(value: TenantApiTriggerFiredRefused) -> Self {
+            Self::Refused(value)
+        }
+    }
+    ///The source adapter matched the delivery and refused the start itself, such as for a prompt field the event lacks.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerFiredRefused {
+        pub kind: TenantApiTriggerFiredRefusedKind,
+        pub refusal: TriggerStartRefusal,
+    }
+    ///`TenantApiTriggerFiredRefusedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerFiredRefusedKind {
+        Refused,
+    }
+    impl ::std::fmt::Display for TenantApiTriggerFiredRefusedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Refused => f.write_str("Refused"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerFiredRefusedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Refused" => Ok(Self::Refused),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerFiredRefusedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerFiredRefusedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiTriggerFiredRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerFiredRequest {
+        pub input: TenantApiTriggerFiredInput,
+        pub operation: TenantApiTriggerFiredRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiTriggerFiredRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerFiredRequestOperation {
+        #[serde(rename = "triggerFired")]
+        TriggerFired,
+    }
+    impl ::std::fmt::Display for TenantApiTriggerFiredRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::TriggerFired => f.write_str("triggerFired"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerFiredRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "triggerFired" => Ok(Self::TriggerFired),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerFiredRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerFiredRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiTriggerFiredResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerFiredResult {
+        pub fired: TenantApiTriggerFiredResultFired,
+    }
+    ///`TenantApiTriggerFiredResultFired`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiTriggerFiredResultFired {
+        SessionStartedOk(TenantApiSessionStartedOk),
+        TriggerDeliveryRepeated(TenantApiTriggerDeliveryRepeated),
+        TriggerNotFound(TenantApiTriggerNotFound),
+        TriggerStartRefusedOk(TenantApiTriggerStartRefusedOk),
+    }
+    impl ::std::convert::From<TenantApiSessionStartedOk> for TenantApiTriggerFiredResultFired {
+        fn from(value: TenantApiSessionStartedOk) -> Self {
+            Self::SessionStartedOk(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerDeliveryRepeated> for TenantApiTriggerFiredResultFired {
+        fn from(value: TenantApiTriggerDeliveryRepeated) -> Self {
+            Self::TriggerDeliveryRepeated(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerNotFound> for TenantApiTriggerFiredResultFired {
+        fn from(value: TenantApiTriggerNotFound) -> Self {
+            Self::TriggerNotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerStartRefusedOk> for TenantApiTriggerFiredResultFired {
+        fn from(value: TenantApiTriggerStartRefusedOk) -> Self {
+            Self::TriggerStartRefusedOk(value)
+        }
+    }
+    ///The source adapter matched the delivery, filled the prompt and prepared the start as Sessions_start does, as the trigger's principal.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerFiredStart {
+        pub kind: TenantApiTriggerFiredStartKind,
+        pub session: TenantApiTriggerFiredStartSession,
+    }
+    ///`TenantApiTriggerFiredStartKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerFiredStartKind {
+        Start,
+    }
+    impl ::std::fmt::Display for TenantApiTriggerFiredStartKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Start => f.write_str("Start"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerFiredStartKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Start" => Ok(Self::Start),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerFiredStartKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerFiredStartKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The template for omitting properties.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerFiredStartSession {
+        pub endpoint: ::std::string::String,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ::std::string::String,
+        pub hosts: ::std::vec::Vec<TenantApiHostRecord>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        pub start: SessionStart,
+    }
+    ///The tenant has another trigger of the name.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerNameTaken {
+        pub kind: TenantApiTriggerNameTakenKind,
+    }
+    ///`TenantApiTriggerNameTakenKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerNameTakenKind {
+        NameTaken,
+    }
+    impl ::std::fmt::Display for TenantApiTriggerNameTakenKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::NameTaken => f.write_str("NameTaken"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerNameTakenKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "NameTaken" => Ok(Self::NameTaken),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerNameTakenKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerNameTakenKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiTriggerNotFound`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerNotFound {
+        pub kind: TenantApiTriggerNotFoundKind,
+    }
+    ///`TenantApiTriggerNotFoundKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerNotFoundKind {
+        NotFound,
+    }
+    impl ::std::fmt::Display for TenantApiTriggerNotFoundKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::NotFound => f.write_str("NotFound"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerNotFoundKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "NotFound" => Ok(Self::NotFound),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerNotFoundKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerNotFoundKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The tenant has no persona with the trigger's personaId.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerPersonaNotFound {
+        pub kind: TenantApiTriggerPersonaNotFoundKind,
+    }
+    ///`TenantApiTriggerPersonaNotFoundKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerPersonaNotFoundKind {
+        PersonaNotFound,
+    }
+    impl ::std::fmt::Display for TenantApiTriggerPersonaNotFoundKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::PersonaNotFound => f.write_str("PersonaNotFound"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerPersonaNotFoundKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "PersonaNotFound" => Ok(Self::PersonaNotFound),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerPersonaNotFoundKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerPersonaNotFoundKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The start was refused and TriggerStartRefused appended with the refusal.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerStartRefusedOk {
+        pub kind: TenantApiTriggerStartRefusedOkKind,
+        pub refusal: TriggerStartRefusal,
+    }
+    ///`TenantApiTriggerStartRefusedOkKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerStartRefusedOkKind {
+        Refused,
+    }
+    impl ::std::fmt::Display for TenantApiTriggerStartRefusedOkKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Refused => f.write_str("Refused"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerStartRefusedOkKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Refused" => Ok(Self::Refused),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerStartRefusedOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerStartRefusedOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiTriggerUpdatedOk`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerUpdatedOk {
+        pub kind: TenantApiTriggerUpdatedOkKind,
+        pub trigger: Trigger,
+    }
+    ///`TenantApiTriggerUpdatedOkKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerUpdatedOkKind {
+        Updated,
+    }
+    impl ::std::fmt::Display for TenantApiTriggerUpdatedOkKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Updated => f.write_str("Updated"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerUpdatedOkKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Updated" => Ok(Self::Updated),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerUpdatedOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerUpdatedOkKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -39745,6 +40701,138 @@ pub mod types {
             Self::UncheckedToken(value)
         }
     }
+    ///A trigger patch, which the tenant Durable Object reads, merges and writes in one transaction.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiUpdateTriggerInput {
+        pub now: i64,
+        pub patch: TriggerPatch,
+        ///The Owner who changes the trigger, whom its sessions run as from now on.
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "triggerId")]
+        pub trigger_id: EntityId,
+    }
+    ///`TenantApiUpdateTriggerRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiUpdateTriggerRequest {
+        pub input: TenantApiUpdateTriggerInput,
+        pub operation: TenantApiUpdateTriggerRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiUpdateTriggerRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUpdateTriggerRequestOperation {
+        #[serde(rename = "updateTrigger")]
+        UpdateTrigger,
+    }
+    impl ::std::fmt::Display for TenantApiUpdateTriggerRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::UpdateTrigger => f.write_str("updateTrigger"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUpdateTriggerRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "updateTrigger" => Ok(Self::UpdateTrigger),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUpdateTriggerRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUpdateTriggerRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiUpdateTriggerResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiUpdateTriggerResult {
+        pub updated: TenantApiUpdateTriggerResultUpdated,
+    }
+    ///`TenantApiUpdateTriggerResultUpdated`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiUpdateTriggerResultUpdated {
+        UpdatedOk(TenantApiTriggerUpdatedOk),
+        NotFound(TenantApiTriggerNotFound),
+        NameTaken(TenantApiTriggerNameTaken),
+        PersonaNotFound(TenantApiTriggerPersonaNotFound),
+    }
+    impl ::std::convert::From<TenantApiTriggerUpdatedOk> for TenantApiUpdateTriggerResultUpdated {
+        fn from(value: TenantApiTriggerUpdatedOk) -> Self {
+            Self::UpdatedOk(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerNotFound> for TenantApiUpdateTriggerResultUpdated {
+        fn from(value: TenantApiTriggerNotFound) -> Self {
+            Self::NotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerNameTaken> for TenantApiUpdateTriggerResultUpdated {
+        fn from(value: TenantApiTriggerNameTaken) -> Self {
+            Self::NameTaken(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerPersonaNotFound> for TenantApiUpdateTriggerResultUpdated {
+        fn from(value: TenantApiTriggerPersonaNotFound) -> Self {
+            Self::PersonaNotFound(value)
+        }
+    }
+    ///`TenantApiUpdateTriggerWrite`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiUpdateTriggerWrite {
+        pub kind: TenantApiUpdateTriggerWriteKind,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        pub trigger: ConfigTrigger,
+        #[serde(rename = "triggerId")]
+        pub trigger_id: EntityId,
+    }
+    ///`TenantApiUpdateTriggerWriteKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUpdateTriggerWriteKind {
+        UpdateTrigger,
+    }
+    impl ::std::fmt::Display for TenantApiUpdateTriggerWriteKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::UpdateTrigger => f.write_str("UpdateTrigger"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUpdateTriggerWriteKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "UpdateTrigger" => Ok(Self::UpdateTrigger),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUpdateTriggerWriteKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUpdateTriggerWriteKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`TenantApiUploadJobAbsent`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUploadJobAbsent {
@@ -40336,6 +41424,11 @@ pub mod types {
         pub schema: ::std::option::Option<::std::string::String>,
         #[serde(rename = "secretSets")]
         pub secret_sets: ::std::vec::Vec<ConfigSecretSet>,
+        ///The tenant's triggers, matched by name; a trigger the list leaves out is deleted. Left out,
+        ///apply keeps the tenant's triggers as they are. Only an Owner applies a config that creates,
+        ///changes or deletes a trigger.
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub triggers: ::std::vec::Vec<ConfigTrigger>,
     }
     ///A tenant config to apply, with what the file itself never holds: each persona file it names,
     ///the value of each environment variable its secret sets name, and the value of each expiry
@@ -40383,6 +41476,7 @@ pub mod types {
         PrebuildFailedEvent(PrebuildFailedEvent),
         SubscriptionPausedEvent(SubscriptionPausedEvent),
         SubscriptionEndedEvent(SubscriptionEndedEvent),
+        TriggerStartRefusedEvent(TriggerStartRefusedEvent),
     }
     impl ::std::convert::From<TurnStartedEvent> for TenantEvent {
         fn from(value: TurnStartedEvent) -> Self {
@@ -40449,6 +41543,11 @@ pub mod types {
             Self::SubscriptionEndedEvent(value)
         }
     }
+    impl ::std::convert::From<TriggerStartRefusedEvent> for TenantEvent {
+        fn from(value: TriggerStartRefusedEvent) -> Self {
+            Self::TriggerStartRefusedEvent(value)
+        }
+    }
     ///What every tenant event carries. `eventId` orders the tenant's events: each is greater than every
     ///event before it, so a reader resumes after the last id it saw.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -40476,6 +41575,7 @@ pub mod types {
         PrebuildFailed,
         SubscriptionPaused,
         SubscriptionEnded,
+        TriggerStartRefused,
     }
     impl ::std::fmt::Display for TenantEventType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -40493,6 +41593,7 @@ pub mod types {
                 Self::PrebuildFailed => f.write_str("PrebuildFailed"),
                 Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
                 Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
+                Self::TriggerStartRefused => f.write_str("TriggerStartRefused"),
             }
         }
     }
@@ -40513,6 +41614,7 @@ pub mod types {
                 "PrebuildFailed" => Ok(Self::PrebuildFailed),
                 "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
                 "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
+                "TriggerStartRefused" => Ok(Self::TriggerStartRefused),
                 _ => Err("invalid value".into()),
             }
         }
@@ -40645,6 +41747,521 @@ pub mod types {
         fn from(value: CompactTranscriptPage) -> Self {
             Self::CompactTranscriptPage(value)
         }
+    }
+    ///Starts a fresh session whenever an event of its source and type arrives on which every condition
+    ///holds. The session runs on the persona and model the trigger names, with the prompt filled from
+    ///the event, on the event's repository.html_url, as the principal who last created or changed the
+    ///trigger. Each delivery starts at most one session. Tumpel only listens: the session reports back
+    ///to the source because its prompt tells it to.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct Trigger {
+        ///The conditions on the event's payload that must all hold; none matches every event of the type.
+        pub conditions: ::std::vec::Vec<TriggerCondition>,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub event: TriggerEvent,
+        ///The model of every session the trigger starts; it must be one the persona's harness runs.
+        pub model: ModelName,
+        ///Unique in the tenant, such as agent-review.
+        pub name: DisplayName,
+        ///The persona of every session the trigger starts. A start after the persona is deleted is refused.
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The Owner who created or last changed the trigger. Every session the trigger starts runs as this principal.
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        pub prompt: TriggerPrompt,
+        pub source: TriggerSource,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "triggerId")]
+        pub trigger_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///Holds when the event's value at `field` equals one of `values`. When the path crosses an array,
+    ///it holds when any element equals one. A path the event leaves absent or null holds for no value.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TriggerCondition {
+        pub field: TriggerFieldPath,
+        pub values: ::std::vec::Vec<TriggerConditionValue>,
+    }
+    ///A value a condition compares against: the JSON text of a scalar, so true matches a boolean and 42 a number.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct TriggerConditionValue(::std::string::String);
+    impl ::std::ops::Deref for TriggerConditionValue {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TriggerConditionValue> for ::std::string::String {
+        fn from(value: TriggerConditionValue) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for TriggerConditionValue {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 500usize {
+                return Err("longer than 500 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TriggerConditionValue {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TriggerConditionValue {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for TriggerConditionValue {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///One condition of a test with what the payload holds at its field.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TriggerConditionVerdict {
+        ///The JSON text of each value the payload holds at the field: one for a scalar, one per element when the path crosses an array, none when the path leads nowhere.
+        pub actual: ::std::vec::Vec<::std::string::String>,
+        pub field: TriggerFieldPath,
+        pub holds: bool,
+        pub values: ::std::vec::Vec<TriggerConditionValue>,
+    }
+    ///Starts a fresh session whenever an event of its source and type arrives on which every condition
+    ///holds. The session runs on the persona and model the trigger names, with the prompt filled from
+    ///the event, on the event's repository.html_url, as the principal who last created or changed the
+    ///trigger. Each delivery starts at most one session. Tumpel only listens: the session reports back
+    ///to the source because its prompt tells it to.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TriggerCreate {
+        ///The conditions on the event's payload that must all hold; none matches every event of the type.
+        pub conditions: ::std::vec::Vec<TriggerCondition>,
+        pub event: TriggerEvent,
+        ///The model of every session the trigger starts; it must be one the persona's harness runs.
+        pub model: ModelName,
+        ///Unique in the tenant, such as agent-review.
+        pub name: DisplayName,
+        ///The persona of every session the trigger starts. A start after the persona is deleted is refused.
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        pub prompt: TriggerPrompt,
+        pub source: TriggerSource,
+    }
+    ///The id the source gives one delivery of an event, such as GitHub's X-GitHub-Delivery. A redelivery keeps it.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct TriggerDeliveryId(::std::string::String);
+    impl ::std::ops::Deref for TriggerDeliveryId {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TriggerDeliveryId> for ::std::string::String {
+        fn from(value: TriggerDeliveryId) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for TriggerDeliveryId {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 200usize {
+                return Err("longer than 200 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TriggerDeliveryId {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TriggerDeliveryId {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for TriggerDeliveryId {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///A GitHub webhook event type a trigger listens to, as GitHub names it in X-GitHub-Event.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TriggerEvent {
+        #[serde(rename = "pull_request")]
+        PullRequest,
+        #[serde(rename = "push")]
+        Push,
+        #[serde(rename = "status")]
+        Status,
+        #[serde(rename = "issues")]
+        Issues,
+    }
+    impl ::std::fmt::Display for TriggerEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::PullRequest => f.write_str("pull_request"),
+                Self::Push => f.write_str("push"),
+                Self::Status => f.write_str("status"),
+                Self::Issues => f.write_str("issues"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TriggerEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "pull_request" => Ok(Self::PullRequest),
+                "push" => Ok(Self::Push),
+                "status" => Ok(Self::Status),
+                "issues" => Ok(Self::Issues),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TriggerEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TriggerEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A dotted path into an event's JSON payload, such as pull_request.base.ref. A path that crosses
+    ///an array reaches every element, so pull_request.labels.name reaches each label's name.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct TriggerFieldPath(::std::string::String);
+    impl ::std::ops::Deref for TriggerFieldPath {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TriggerFieldPath> for ::std::string::String {
+        fn from(value: TriggerFieldPath) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for TriggerFieldPath {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 200usize {
+                return Err("longer than 200 characters".into());
+            }
+            static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
+                ::regress::Regex::new("^[A-Za-z0-9_\\-]+(\\.[A-Za-z0-9_\\-]+)*$").unwrap()
+            });
+            if PATTERN.find(value).is_none() {
+                return Err("doesn't match pattern \"^[A-Za-z0-9_\\-]+(\\.[A-Za-z0-9_\\-]+)*$\"".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TriggerFieldPath {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TriggerFieldPath {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for TriggerFieldPath {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///A trigger started the session when one delivery of an event matched it. The session runs as the trigger's principalId.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TriggerOrigin {
+        #[serde(rename = "deliveryId")]
+        pub delivery_id: TriggerDeliveryId,
+        pub kind: TriggerOriginKind,
+        #[serde(rename = "triggerId")]
+        pub trigger_id: EntityId,
+    }
+    ///`TriggerOriginKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TriggerOriginKind {
+        Trigger,
+    }
+    impl ::std::fmt::Display for TriggerOriginKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Trigger => f.write_str("Trigger"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TriggerOriginKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Trigger" => Ok(Self::Trigger),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TriggerOriginKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TriggerOriginKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///Changes the trigger fields it names and leaves every other field as it is. Conditions, when named, replace the whole list.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
+    pub struct TriggerPatch {
+        ///The conditions on the event's payload that must all hold; none matches every event of the type.
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub conditions: ::std::vec::Vec<TriggerCondition>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub event: ::std::option::Option<TriggerEvent>,
+        ///The model of every session the trigger starts; it must be one the persona's harness runs.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub model: ::std::option::Option<ModelName>,
+        ///Unique in the tenant, such as agent-review.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub name: ::std::option::Option<DisplayName>,
+        ///The persona of every session the trigger starts. A start after the persona is deleted is refused.
+        #[serde(rename = "personaId", skip_serializing_if = "::std::option::Option::is_none")]
+        pub persona_id: ::std::option::Option<EntityId>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub prompt: ::std::option::Option<TriggerPrompt>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub source: ::std::option::Option<TriggerSource>,
+    }
+    ///An event's JSON payload as the source sent it, such as the body of a GitHub webhook delivery.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct TriggerPayload(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
+    impl ::std::ops::Deref for TriggerPayload {
+        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
+        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TriggerPayload> for ::serde_json::Map<::std::string::String, ::serde_json::Value> {
+        fn from(value: TriggerPayload) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>> for TriggerPayload {
+        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
+            Self(value)
+        }
+    }
+    ///A prompt with {{field}} placeholders, each a TriggerFieldPath filled with the event's value at
+    ///that path. An array fills as a comma-separated list. A placeholder the event lacks refuses the
+    ///start.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct TriggerPrompt(::std::string::String);
+    impl ::std::ops::Deref for TriggerPrompt {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TriggerPrompt> for ::std::string::String {
+        fn from(value: TriggerPrompt) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for TriggerPrompt {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 100000usize {
+                return Err("longer than 100000 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TriggerPrompt {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TriggerPrompt {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for TriggerPrompt {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///Where a trigger's events come from: GitHub, through the stage's GitHub App.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TriggerSource {
+        GitHub,
+    }
+    impl ::std::fmt::Display for TriggerSource {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::GitHub => f.write_str("GitHub"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TriggerSource {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "GitHub" => Ok(Self::GitHub),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TriggerSource {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TriggerSource {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///Why a trigger matched a delivery and started no session.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TriggerStartRefusal {
+        ///The code Sessions_start answers for the same refusal, or TriggerFieldMissing when the prompt names a field the event lacks.
+        pub code: ProblemCode,
+        ///What failed and the fix, in plain words.
+        pub detail: ::std::string::String,
+    }
+    ///`TriggerStartRefusedEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TriggerStartRefusedEvent {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        #[serde(rename = "deliveryId")]
+        pub delivery_id: TriggerDeliveryId,
+        pub event: TriggerStartRefusedEventEvent,
+        #[serde(rename = "eventId")]
+        pub event_id: Sequence,
+        pub refusal: TriggerStartRefusal,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "triggerId")]
+        pub trigger_id: EntityId,
+    }
+    ///`TriggerStartRefusedEventEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TriggerStartRefusedEventEvent {
+        TriggerStartRefused,
+    }
+    impl ::std::fmt::Display for TriggerStartRefusedEventEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::TriggerStartRefused => f.write_str("TriggerStartRefused"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TriggerStartRefusedEventEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "TriggerStartRefused" => Ok(Self::TriggerStartRefused),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TriggerStartRefusedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TriggerStartRefusedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A trigger and a pasted payload to match it against. The payload carries no event type, so the test takes it to be of the trigger's event.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TriggerTest {
+        StoredTriggerTest(StoredTriggerTest),
+        DraftTriggerTest(DraftTriggerTest),
+    }
+    impl ::std::convert::From<StoredTriggerTest> for TriggerTest {
+        fn from(value: StoredTriggerTest) -> Self {
+            Self::StoredTriggerTest(value)
+        }
+    }
+    impl ::std::convert::From<DraftTriggerTest> for TriggerTest {
+        fn from(value: DraftTriggerTest) -> Self {
+            Self::DraftTriggerTest(value)
+        }
+    }
+    ///What a trigger would do with a payload. A test starts nothing.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TriggerTestResult {
+        pub conditions: ::std::vec::Vec<TriggerConditionVerdict>,
+        ///Whether every condition holds, so a delivery of the payload would start a session.
+        pub matched: bool,
+        ///Each placeholder of the prompt the payload lacks; a delivery with any is refused TriggerFieldMissing.
+        #[serde(rename = "missingFields")]
+        pub missing_fields: ::std::vec::Vec<TriggerFieldPath>,
+        ///The prompt the session would get. A placeholder the payload lacks stays as written.
+        pub prompt: ::std::string::String,
     }
     ///One prompt and the harness's completion of it, run on a session's box.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -47172,7 +48789,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Lists the tenant's sessions, optionally only those in one state, on one host, with no turn since a time or carrying every tag named.
+    ///Lists the tenant's sessions, optionally only those in one state, on one host, with no turn since a time, carrying every tag named or started by one trigger.
     ///
     ///Sends a `GET` request to `/v1/sessions`
     ///
@@ -47181,12 +48798,14 @@ impl Client {
     ///- `last_turn_before`: Keep only the sessions whose latest turn last changed state at or before this time.
     ///- `state`
     ///- `tag`: Keep only the sessions that carry this tag; repeat it to keep those that carry every tag named.
+    ///- `trigger_id`: Keep only the sessions this trigger started.
     pub async fn sessions_list<'a>(
         &'a self,
         host_id: Option<&'a types::EntityId>,
         last_turn_before: Option<&'a ::chrono::DateTime<::chrono::FixedOffset>>,
         state: Option<types::SessionState>,
         tag: Option<&'a ::std::vec::Vec<types::SessionTag>>,
+        trigger_id: Option<&'a types::EntityId>,
     ) -> Result<ResponseValue<::std::vec::Vec<types::Session>>, Error<types::Problem>> {
         let url = format!("{}/v1/sessions", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
@@ -47206,6 +48825,7 @@ impl Client {
             .query(&progenitor_client::QueryParam::new("lastTurnBefore", &last_turn_before))
             .query(&progenitor_client::QueryParam::new("state", &state))
             .query(&progenitor_client::QueryParam::new("tag", &tag))
+            .query(&progenitor_client::QueryParam::new("triggerId", &trigger_id))
             .headers(header_map)
             .build()?;
         let info = OperationInfo {
@@ -48451,7 +50071,9 @@ impl Client {
     ///the commit and is refused HostRevoked for its labels. An empty secretValues keeps the stored values of every kept secret set; any other
     ///must cover every variable the config names and writes every kept set again. Refused
     ///InvalidRequest, changing nothing, when the plan stops, secretValues is not empty and leaves out
-    ///a variable, or it is empty and a set the plan creates or updates needs values.
+    ///a variable, or it is empty and a set the plan creates or updates needs values. A config that
+    ///creates, changes or deletes a trigger is refused OwnerRequired for a Member and Forbidden with
+    ///a turn token; each trigger it writes runs as the caller.
     ///
     ///Sends a `POST` request to `/v1/tenant-config/apply`
     ///
@@ -48501,8 +50123,9 @@ impl Client {
     ///them, and changes nothing. A persona, secret set or pin the config leaves out is deleted, and
     ///an enrolled host it leaves out loses its labels. Refused InvalidRequest when the plan stops: a
     ///name repeats, a persona with a session that is not Failed is left out, a persona's harness differs, a host
-    ///is not enrolled, a file digest or expiry value the config names is missing, or secretValues
-    ///is not empty and leaves out a variable the config names.
+    ///is not enrolled, a file digest or expiry value the config names is missing, a trigger names a
+    ///persona the config lacks, or secretValues is not empty and leaves out a variable the config
+    ///names.
     ///
     ///Sends a `POST` request to `/v1/tenant-config/plan`
     ///
@@ -48577,6 +50200,285 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "tenants_sign_up",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Lists the tenant's triggers.
+    ///
+    ///Sends a `GET` request to `/v1/triggers`
+    ///
+    pub async fn triggers_list<'a>(
+        &'a self,
+    ) -> Result<ResponseValue<::std::vec::Vec<types::Trigger>>, Error<types::Problem>> {
+        let url = format!("{}/v1/triggers", self.baseurl,);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .get(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "triggers_list",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Creates a trigger that runs as the caller. Only an Owner creates one: a Member is refused
+    ///OwnerRequired and a call with a turn token Forbidden. Refused NotFound for an unknown persona,
+    ///ModelUnsupported for a model the persona's harness does not run, and Conflict when the tenant
+    ///has a trigger of the same name.
+    ///
+    ///Sends a `POST` request to `/v1/triggers`
+    ///
+    pub async fn triggers_create<'a>(
+        &'a self,
+        body: &'a types::TriggerCreate,
+    ) -> Result<ResponseValue<types::Trigger>, Error<types::Problem>> {
+        let url = format!("{}/v1/triggers", self.baseurl,);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .post(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "triggers_create",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Matches a stored or draft trigger against a pasted payload and answers each condition's
+    ///verdict and the prompt it would fill. It starts nothing, and every member may call it.
+    ///Refused NotFound for an unknown stored trigger.
+    ///
+    ///Sends a `POST` request to `/v1/triggers/test`
+    ///
+    pub async fn triggers_test<'a>(
+        &'a self,
+        body: &'a types::TriggerTest,
+    ) -> Result<ResponseValue<types::TriggerTestResult>, Error<types::Problem>> {
+        let url = format!("{}/v1/triggers/test", self.baseurl,);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .post(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "triggers_test",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Reads one trigger.
+    ///
+    ///Sends a `GET` request to `/v1/triggers/{triggerId}`
+    ///
+    pub async fn triggers_get<'a>(
+        &'a self,
+        trigger_id: &'a types::EntityId,
+    ) -> Result<ResponseValue<types::Trigger>, Error<types::Problem>> {
+        let url = format!("{}/v1/triggers/{}", self.baseurl, encode_path(&trigger_id.to_string()),);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .get(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "triggers_get",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Deletes a trigger; sessions it started stay. Only an Owner deletes one, and refusals are those of create.
+    ///
+    ///Sends a `DELETE` request to `/v1/triggers/{triggerId}`
+    ///
+    pub async fn triggers_delete<'a>(
+        &'a self,
+        trigger_id: &'a types::EntityId,
+    ) -> Result<ResponseValue<()>, Error<types::Problem>> {
+        let url = format!("{}/v1/triggers/{}", self.baseurl, encode_path(&trigger_id.to_string()),);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .delete(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "triggers_delete",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            204u16 => Ok(ResponseValue::empty(response)),
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Changes the fields the patch names and keeps the rest; the trigger then runs as the caller.
+    ///Only an Owner changes one, and refusals are those of create.
+    ///
+    ///Sends a `PATCH` request to `/v1/triggers/{triggerId}`
+    ///
+    pub async fn triggers_update<'a>(
+        &'a self,
+        trigger_id: &'a types::EntityId,
+        body: &'a types::TriggerPatch,
+    ) -> Result<ResponseValue<types::Trigger>, Error<types::Problem>> {
+        let url = format!("{}/v1/triggers/{}", self.baseurl, encode_path(&trigger_id.to_string()),);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .patch(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "triggers_update",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;
@@ -49306,5 +51208,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 6;
+    pub const VERSION: u16 = 7;
 }
