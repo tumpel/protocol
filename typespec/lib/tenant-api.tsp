@@ -5,6 +5,7 @@ import "./prebuild.tsp";
 import "./build-provider.tsp";
 import "./events.tsp";
 import "./notifications.tsp";
+import "./subscriptions.tsp";
 
 namespace Tumpel;
 
@@ -19,7 +20,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 5;
+const TenantApiVersion = 6;
 
 namespace TenantApi {
 
@@ -913,6 +914,52 @@ model PushTargetInput {
   pushSubscriptionId: EntityId;
 }
 
+model CreateSubscriptionInput {
+  tenantId: EntityId;
+  subscription: SubscriptionCreate;
+  now: int64;
+}
+
+model SubscriptionFilter {
+  sessionId?: EntityId;
+  state?: SubscriptionState;
+}
+
+model ListSubscriptionsInput {
+  tenantId: EntityId;
+  filter: SubscriptionFilter;
+}
+
+model GetSubscriptionInput {
+  tenantId: EntityId;
+  subscriptionId: EntityId;
+}
+
+model PauseSubscriptionInput {
+  tenantId: EntityId;
+  subscriptionId: EntityId;
+  ...SubscriptionPause;
+  now: int64;
+}
+
+model ResumeSubscriptionInput {
+  tenantId: EntityId;
+  subscriptionId: EntityId;
+  now: int64;
+}
+
+model DeleteSubscriptionInput {
+  tenantId: EntityId;
+  subscriptionId: EntityId;
+  now: int64;
+}
+
+model CompleteSubscriptionInput {
+  tenantId: EntityId;
+  subscriptionId: EntityId;
+  now: int64;
+}
+
 model GetTurnFailureInput {
   tenantId: EntityId;
   turnId: EntityId;
@@ -1682,6 +1729,48 @@ model PushTargetRequest {
   input: PushTargetInput;
 }
 
+model CreateSubscriptionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "createSubscription";
+  input: CreateSubscriptionInput;
+}
+
+model ListSubscriptionsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "listSubscriptions";
+  input: ListSubscriptionsInput;
+}
+
+model GetSubscriptionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "getSubscription";
+  input: GetSubscriptionInput;
+}
+
+model PauseSubscriptionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "pauseSubscription";
+  input: PauseSubscriptionInput;
+}
+
+model ResumeSubscriptionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "resumeSubscription";
+  input: ResumeSubscriptionInput;
+}
+
+model DeleteSubscriptionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "deleteSubscription";
+  input: DeleteSubscriptionInput;
+}
+
+model CompleteSubscriptionRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "completeSubscription";
+  input: CompleteSubscriptionInput;
+}
+
 model GetTurnFailureRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "getTurnFailure";
@@ -1990,6 +2079,13 @@ union TenantRequest {
   deletePushSubscription: DeletePushSubscriptionRequest,
   forgetPushSubscription: ForgetPushSubscriptionRequest,
   pushTarget: PushTargetRequest,
+  createSubscription: CreateSubscriptionRequest,
+  listSubscriptions: ListSubscriptionsRequest,
+  getSubscription: GetSubscriptionRequest,
+  pauseSubscription: PauseSubscriptionRequest,
+  resumeSubscription: ResumeSubscriptionRequest,
+  deleteSubscription: DeleteSubscriptionRequest,
+  completeSubscription: CompleteSubscriptionRequest,
   getTurnFailure: GetTurnFailureRequest,
   listStopFailures: ListStopFailuresRequest,
   listSnapshots: ListSnapshotsRequest,
@@ -3155,6 +3251,62 @@ model ForgetPushSubscriptionResult {}
 model PushTargetResult {
   @doc("Null when the subscription is gone.")
   target: PushDeliveryTarget | null;
+}
+
+model SubscriptionCreatedOk {
+  kind: "Created";
+  subscription: Subscription;
+}
+
+model CreateSubscriptionResult {
+  created: SubscriptionCreatedOk | SessionNotFound | SessionArchivedState | SessionFailedState;
+}
+
+model ListSubscriptionsResult {
+  subscriptions: Subscription[];
+}
+
+model GetSubscriptionResult {
+  @doc("Null when the tenant has no subscription with the id.")
+  subscription: Subscription | null;
+}
+
+model SubscriptionChangedOk {
+  kind: "Changed";
+  subscription: Subscription;
+}
+
+model SubscriptionNotFound {
+  kind: "NotFound";
+}
+
+model SubscriptionEndedState {
+  kind: "Ended";
+  subscription: Subscription;
+}
+
+@doc("The subscription's cursor is older than the oldest event the log keeps; it stays Paused.")
+model SubscriptionCursorExpired {
+  kind: "CursorExpired";
+  cursorEventId: Sequence;
+  oldestEventId: Sequence;
+}
+
+model PauseSubscriptionResult {
+  paused: SubscriptionChangedOk | SubscriptionNotFound | SubscriptionEndedState;
+}
+
+model ResumeSubscriptionResult {
+  resumed: SubscriptionChangedOk | SubscriptionNotFound | SubscriptionEndedState | SubscriptionCursorExpired;
+}
+
+model DeleteSubscriptionResult {
+  @doc("False when the tenant has no subscription with the id.")
+  deleted: boolean;
+}
+
+model CompleteSubscriptionResult {
+  completed: SubscriptionChangedOk | SubscriptionNotFound | SubscriptionEndedState;
 }
 
 model GetTurnFailureResult {

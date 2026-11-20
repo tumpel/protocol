@@ -1,6 +1,7 @@
 import "@typespec/http";
 import "./models.tsp";
 import "./prebuild.tsp";
+import "./subscriptions.tsp";
 
 using TypeSpec.Http;
 
@@ -40,6 +41,12 @@ enum TenantEventType {
 
   @doc("A prebuild entered Failed.")
   PrebuildFailed: "PrebuildFailed",
+
+  @doc("A subscription entered Paused.")
+  SubscriptionPaused: "SubscriptionPaused",
+
+  @doc("A subscription entered Ended.")
+  SubscriptionEnded: "SubscriptionEnded",
 }
 
 @doc("""
@@ -131,6 +138,28 @@ model PrebuildFailedEvent {
   phase: PrebuildFailurePhase;
 }
 
+model SubscriptionPausedEvent {
+  event: "SubscriptionPaused";
+  ...TenantEventEnvelope;
+  subscriptionId: EntityId;
+
+  @doc("The session the subscription sends its turns to.")
+  sessionId: EntityId;
+
+  reason: SubscriptionPauseReason;
+}
+
+model SubscriptionEndedEvent {
+  event: "SubscriptionEnded";
+  ...TenantEventEnvelope;
+  subscriptionId: EntityId;
+
+  @doc("The session the subscription sent its turns to.")
+  sessionId: EntityId;
+
+  reason: SubscriptionEndReason;
+}
+
 @doc("""
   A record that something happened in a tenant. The control plane appends it in the same
   transaction as the state change it reports. It holds ids and the fact that changed; read the
@@ -149,6 +178,8 @@ union TenantEvent {
   HostOffline: HostOfflineEvent,
   PrebuildDone: PrebuildDoneEvent,
   PrebuildFailed: PrebuildFailedEvent,
+  SubscriptionPaused: SubscriptionPausedEvent,
+  SubscriptionEnded: SubscriptionEndedEvent,
 }
 
 @doc("""

@@ -125,6 +125,12 @@ enum ProblemCode {
   @doc("The afterEventId of an events read is older than the oldest event the log keeps.")
   EventCursorExpired: "EventCursorExpired",
 
+  @doc("The subscription is Ended and takes no pause, resume or completion; the detail names its reason. Create a new one to go on.")
+  SubscriptionEnded: "SubscriptionEnded",
+
+  @doc("The subscription stayed Paused past the 7 days the event log keeps, so events after its cursor are gone. Delete it and create a new one.")
+  SubscriptionCursorExpired: "SubscriptionCursorExpired",
+
   @doc("No host of the tenant is Online with a free box slot and a guest image of the pinned Claude Code for its architecture.")
   NoHostOnline: "NoHostOnline",
 

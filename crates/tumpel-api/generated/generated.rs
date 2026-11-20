@@ -5,6 +5,76 @@ pub use progenitor_client::{ByteStream, ClientInfo, Error, ResponseValue};
 /// Types used as operation parameters and responses.
 #[allow(clippy::all)]
 pub mod types {
+    ///`ActiveSubscription`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ActiveSubscription {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.
+        #[serde(rename = "crewFailuresInARow")]
+        pub crew_failures_in_a_row: i32,
+        ///The tags a session must all carry to be part of the crew.
+        #[serde(rename = "crewTags")]
+        pub crew_tags: ::std::vec::Vec<SessionTag>,
+        ///The last event a completed delivery turn held. A create sets it to the end of the log.
+        #[serde(rename = "cursorEventId")]
+        pub cursor_event_id: Sequence,
+        ///Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.
+        #[serde(rename = "deliveryFailuresInARow")]
+        pub delivery_failures_in_a_row: i32,
+        ///The event types that start a delivery turn.
+        pub events: ::std::vec::Vec<SubscriptionEventType>,
+        ///When the subscription ends Expired.
+        #[serde(rename = "expiresAt")]
+        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
+        pub goal: Goal,
+        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        pub prompt: Prompt,
+        ///The session that receives the delivery turns. Its harness must take a goal.
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub state: ActiveSubscriptionState,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`ActiveSubscriptionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ActiveSubscriptionState {
+        Active,
+    }
+    impl ::std::fmt::Display for ActiveSubscriptionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Active => f.write_str("Active"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ActiveSubscriptionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Active" => Ok(Self::Active),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ActiveSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ActiveSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`ApiKeyKey`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ApiKeyKey {
@@ -7469,6 +7539,79 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///`EndedSubscription`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct EndedSubscription {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.
+        #[serde(rename = "crewFailuresInARow")]
+        pub crew_failures_in_a_row: i32,
+        ///The tags a session must all carry to be part of the crew.
+        #[serde(rename = "crewTags")]
+        pub crew_tags: ::std::vec::Vec<SessionTag>,
+        ///The last event a completed delivery turn held. A create sets it to the end of the log.
+        #[serde(rename = "cursorEventId")]
+        pub cursor_event_id: Sequence,
+        ///Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.
+        #[serde(rename = "deliveryFailuresInARow")]
+        pub delivery_failures_in_a_row: i32,
+        #[serde(rename = "endedAt")]
+        pub ended_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The event types that start a delivery turn.
+        pub events: ::std::vec::Vec<SubscriptionEventType>,
+        ///When the subscription ends Expired.
+        #[serde(rename = "expiresAt")]
+        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
+        pub goal: Goal,
+        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        pub prompt: Prompt,
+        pub reason: SubscriptionEndReason,
+        ///The session that receives the delivery turns. Its harness must take a goal.
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub state: EndedSubscriptionState,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`EndedSubscriptionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum EndedSubscriptionState {
+        Ended,
+    }
+    impl ::std::fmt::Display for EndedSubscriptionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Ended => f.write_str("Ended"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for EndedSubscriptionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Ended" => Ok(Self::Ended),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for EndedSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for EndedSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///A one-time, tenant-scoped token that enrols one host before it expires.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct EnrolmentToken {
@@ -13917,6 +14060,79 @@ pub mod types {
             Self::Failed(value)
         }
     }
+    ///`PausedSubscription`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct PausedSubscription {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.
+        #[serde(rename = "crewFailuresInARow")]
+        pub crew_failures_in_a_row: i32,
+        ///The tags a session must all carry to be part of the crew.
+        #[serde(rename = "crewTags")]
+        pub crew_tags: ::std::vec::Vec<SessionTag>,
+        ///The last event a completed delivery turn held. A create sets it to the end of the log.
+        #[serde(rename = "cursorEventId")]
+        pub cursor_event_id: Sequence,
+        ///Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.
+        #[serde(rename = "deliveryFailuresInARow")]
+        pub delivery_failures_in_a_row: i32,
+        ///The event types that start a delivery turn.
+        pub events: ::std::vec::Vec<SubscriptionEventType>,
+        ///When the subscription ends Expired.
+        #[serde(rename = "expiresAt")]
+        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
+        pub goal: Goal,
+        #[serde(rename = "pausedAt")]
+        pub paused_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        pub prompt: Prompt,
+        pub reason: SubscriptionPauseReason,
+        ///The session that receives the delivery turns. Its harness must take a goal.
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub state: PausedSubscriptionState,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`PausedSubscriptionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum PausedSubscriptionState {
+        Paused,
+    }
+    impl ::std::fmt::Display for PausedSubscriptionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Paused => f.write_str("Paused"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for PausedSubscriptionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Paused" => Ok(Self::Paused),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for PausedSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for PausedSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///A person started the session.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PersonOrigin {
@@ -15737,6 +15953,8 @@ pub mod types {
         LastOwner,
         InvitationExpired,
         EventCursorExpired,
+        SubscriptionEnded,
+        SubscriptionCursorExpired,
         NoHostOnline,
         ClaudeSetupNotWaiting,
         ClaudeSetupBoxTokenRefused,
@@ -15818,6 +16036,8 @@ pub mod types {
                 Self::LastOwner => f.write_str("LastOwner"),
                 Self::InvitationExpired => f.write_str("InvitationExpired"),
                 Self::EventCursorExpired => f.write_str("EventCursorExpired"),
+                Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
+                Self::SubscriptionCursorExpired => f.write_str("SubscriptionCursorExpired"),
                 Self::NoHostOnline => f.write_str("NoHostOnline"),
                 Self::ClaudeSetupNotWaiting => f.write_str("ClaudeSetupNotWaiting"),
                 Self::ClaudeSetupBoxTokenRefused => f.write_str("ClaudeSetupBoxTokenRefused"),
@@ -15901,6 +16121,8 @@ pub mod types {
                 "LastOwner" => Ok(Self::LastOwner),
                 "InvitationExpired" => Ok(Self::InvitationExpired),
                 "EventCursorExpired" => Ok(Self::EventCursorExpired),
+                "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
+                "SubscriptionCursorExpired" => Ok(Self::SubscriptionCursorExpired),
                 "NoHostOnline" => Ok(Self::NoHostOnline),
                 "ClaudeSetupNotWaiting" => Ok(Self::ClaudeSetupNotWaiting),
                 "ClaudeSetupBoxTokenRefused" => Ok(Self::ClaudeSetupBoxTokenRefused),
@@ -19296,6 +19518,519 @@ pub mod types {
         ///The new value of the member. Left out, the member keeps the value it has stored.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub value: ::std::option::Option<SecretText>,
+    }
+    ///A plan and a goal tied to one session, which receives a delivery turn whenever a session of its
+    ///crew records one of the listed events. The crew is every other session that carries every crew
+    ///tag at the moment of the event and holds no Active subscription itself. Each delivery turn holds
+    ///the plan and the events after the cursor, one JSON line each, and works toward the goal.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum Subscription {
+        ActiveSubscription(ActiveSubscription),
+        PausedSubscription(PausedSubscription),
+        EndedSubscription(EndedSubscription),
+    }
+    impl ::std::convert::From<ActiveSubscription> for Subscription {
+        fn from(value: ActiveSubscription) -> Self {
+            Self::ActiveSubscription(value)
+        }
+    }
+    impl ::std::convert::From<PausedSubscription> for Subscription {
+        fn from(value: PausedSubscription) -> Self {
+            Self::PausedSubscription(value)
+        }
+    }
+    impl ::std::convert::From<EndedSubscription> for Subscription {
+        fn from(value: EndedSubscription) -> Self {
+            Self::EndedSubscription(value)
+        }
+    }
+    ///The fields every subscription carries, whatever its state. Every field but the counts is fixed at create.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionBase {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.
+        #[serde(rename = "crewFailuresInARow")]
+        pub crew_failures_in_a_row: i32,
+        ///The tags a session must all carry to be part of the crew.
+        #[serde(rename = "crewTags")]
+        pub crew_tags: ::std::vec::Vec<SessionTag>,
+        ///The last event a completed delivery turn held. A create sets it to the end of the log.
+        #[serde(rename = "cursorEventId")]
+        pub cursor_event_id: Sequence,
+        ///Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.
+        #[serde(rename = "deliveryFailuresInARow")]
+        pub delivery_failures_in_a_row: i32,
+        ///The event types that start a delivery turn.
+        pub events: ::std::vec::Vec<SubscriptionEventType>,
+        ///When the subscription ends Expired.
+        #[serde(rename = "expiresAt")]
+        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
+        pub goal: Goal,
+        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        pub prompt: Prompt,
+        ///The session that receives the delivery turns. Its harness must take a goal.
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///The fields every subscription carries, whatever its state. Every field but the counts is fixed at create.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionCreate {
+        ///The tags a session must all carry to be part of the crew.
+        #[serde(rename = "crewTags")]
+        pub crew_tags: ::std::vec::Vec<SessionTag>,
+        ///The event types that start a delivery turn.
+        pub events: ::std::vec::Vec<SubscriptionEventType>,
+        ///When the subscription ends Expired.
+        #[serde(rename = "expiresAt")]
+        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
+        pub goal: Goal,
+        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        pub prompt: Prompt,
+        ///The session that receives the delivery turns. Its harness must take a goal.
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+    }
+    ///Why a subscription is Ended.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SubscriptionEndReason {
+        SessionArchived,
+        SessionFailed,
+        Expired,
+        GoalMet,
+    }
+    impl ::std::fmt::Display for SubscriptionEndReason {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SessionArchived => f.write_str("SessionArchived"),
+                Self::SessionFailed => f.write_str("SessionFailed"),
+                Self::Expired => f.write_str("Expired"),
+                Self::GoalMet => f.write_str("GoalMet"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionEndReason {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "SessionArchived" => Ok(Self::SessionArchived),
+                "SessionFailed" => Ok(Self::SessionFailed),
+                "Expired" => Ok(Self::Expired),
+                "GoalMet" => Ok(Self::GoalMet),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionEndReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionEndReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`SubscriptionEndedEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionEndedEvent {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub event: SubscriptionEndedEventEvent,
+        #[serde(rename = "eventId")]
+        pub event_id: Sequence,
+        pub reason: SubscriptionEndReason,
+        ///The session the subscription sent its turns to.
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`SubscriptionEndedEventEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SubscriptionEndedEventEvent {
+        SubscriptionEnded,
+    }
+    impl ::std::fmt::Display for SubscriptionEndedEventEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionEndedEventEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionEndedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionEndedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///An event type a subscription reacts to: one whose event names a session.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SubscriptionEventType {
+        TurnStarted,
+        TurnCompleted,
+        TurnFailed,
+        SessionIdle,
+        SessionStopped,
+        SessionFailed,
+        SessionArchived,
+        SubscriptionPaused,
+        SubscriptionEnded,
+    }
+    impl ::std::fmt::Display for SubscriptionEventType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::TurnStarted => f.write_str("TurnStarted"),
+                Self::TurnCompleted => f.write_str("TurnCompleted"),
+                Self::TurnFailed => f.write_str("TurnFailed"),
+                Self::SessionIdle => f.write_str("SessionIdle"),
+                Self::SessionStopped => f.write_str("SessionStopped"),
+                Self::SessionFailed => f.write_str("SessionFailed"),
+                Self::SessionArchived => f.write_str("SessionArchived"),
+                Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
+                Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionEventType {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "TurnStarted" => Ok(Self::TurnStarted),
+                "TurnCompleted" => Ok(Self::TurnCompleted),
+                "TurnFailed" => Ok(Self::TurnFailed),
+                "SessionIdle" => Ok(Self::SessionIdle),
+                "SessionStopped" => Ok(Self::SessionStopped),
+                "SessionFailed" => Ok(Self::SessionFailed),
+                "SessionArchived" => Ok(Self::SessionArchived),
+                "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
+                "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionEventType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionEventType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///Pauses a subscription with a note for the person who resumes it.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionPause {
+        pub message: SubscriptionPauseMessage,
+    }
+    ///The note a session leaves when it pauses its own subscription to wait for a decision, which reaches the person with SubscriptionPaused.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct SubscriptionPauseMessage(::std::string::String);
+    impl ::std::ops::Deref for SubscriptionPauseMessage {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<SubscriptionPauseMessage> for ::std::string::String {
+        fn from(value: SubscriptionPauseMessage) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionPauseMessage {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 500usize {
+                return Err("longer than 500 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionPauseMessage {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPauseMessage {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for SubscriptionPauseMessage {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///Why a subscription is Paused.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum SubscriptionPauseReason {
+        ByRequest(SubscriptionPausedByRequest),
+        DeliveryFailed(SubscriptionPausedDeliveryFailed),
+        CrewFailing(SubscriptionPausedCrewFailing),
+    }
+    impl ::std::convert::From<SubscriptionPausedByRequest> for SubscriptionPauseReason {
+        fn from(value: SubscriptionPausedByRequest) -> Self {
+            Self::ByRequest(value)
+        }
+    }
+    impl ::std::convert::From<SubscriptionPausedDeliveryFailed> for SubscriptionPauseReason {
+        fn from(value: SubscriptionPausedDeliveryFailed) -> Self {
+            Self::DeliveryFailed(value)
+        }
+    }
+    impl ::std::convert::From<SubscriptionPausedCrewFailing> for SubscriptionPauseReason {
+        fn from(value: SubscriptionPausedCrewFailing) -> Self {
+            Self::CrewFailing(value)
+        }
+    }
+    ///Someone paused the subscription with Subscriptions_pause, leaving a message.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionPausedByRequest {
+        pub kind: SubscriptionPausedByRequestKind,
+        pub message: SubscriptionPauseMessage,
+    }
+    ///`SubscriptionPausedByRequestKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SubscriptionPausedByRequestKind {
+        ByRequest,
+    }
+    impl ::std::fmt::Display for SubscriptionPausedByRequestKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ByRequest => f.write_str("ByRequest"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionPausedByRequestKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "ByRequest" => Ok(Self::ByRequest),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionPausedByRequestKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedByRequestKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///10 turns or sessions of the crew in a row failed.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionPausedCrewFailing {
+        pub kind: SubscriptionPausedCrewFailingKind,
+    }
+    ///`SubscriptionPausedCrewFailingKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SubscriptionPausedCrewFailingKind {
+        CrewFailing,
+    }
+    impl ::std::fmt::Display for SubscriptionPausedCrewFailingKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::CrewFailing => f.write_str("CrewFailing"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionPausedCrewFailingKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "CrewFailing" => Ok(Self::CrewFailing),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionPausedCrewFailingKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedCrewFailingKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///3 delivery turns in a row failed; the last one is turnId, whose failure Turns_getFailure reads.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionPausedDeliveryFailed {
+        pub kind: SubscriptionPausedDeliveryFailedKind,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+    }
+    ///`SubscriptionPausedDeliveryFailedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SubscriptionPausedDeliveryFailedKind {
+        DeliveryFailed,
+    }
+    impl ::std::fmt::Display for SubscriptionPausedDeliveryFailedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::DeliveryFailed => f.write_str("DeliveryFailed"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionPausedDeliveryFailedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "DeliveryFailed" => Ok(Self::DeliveryFailed),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionPausedDeliveryFailedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedDeliveryFailedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`SubscriptionPausedEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionPausedEvent {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub event: SubscriptionPausedEventEvent,
+        #[serde(rename = "eventId")]
+        pub event_id: Sequence,
+        pub reason: SubscriptionPauseReason,
+        ///The session the subscription sends its turns to.
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`SubscriptionPausedEventEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SubscriptionPausedEventEvent {
+        SubscriptionPaused,
+    }
+    impl ::std::fmt::Display for SubscriptionPausedEventEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionPausedEventEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionPausedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`SubscriptionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SubscriptionState {
+        Active,
+        Paused,
+        Ended,
+    }
+    impl ::std::fmt::Display for SubscriptionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Active => f.write_str("Active"),
+                Self::Paused => f.write_str("Paused"),
+                Self::Ended => f.write_str("Ended"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Active" => Ok(Self::Active),
+                "Paused" => Ok(Self::Paused),
+                "Ended" => Ok(Self::Ended),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
     }
     ///`SubscriptionTokenKey`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -23508,6 +24243,85 @@ pub mod types {
             Self::OtherLayer(value)
         }
     }
+    ///`TenantApiCompleteSubscriptionInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiCompleteSubscriptionInput {
+        pub now: i64,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiCompleteSubscriptionRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiCompleteSubscriptionRequest {
+        pub input: TenantApiCompleteSubscriptionInput,
+        pub operation: TenantApiCompleteSubscriptionRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiCompleteSubscriptionRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiCompleteSubscriptionRequestOperation {
+        #[serde(rename = "completeSubscription")]
+        CompleteSubscription,
+    }
+    impl ::std::fmt::Display for TenantApiCompleteSubscriptionRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::CompleteSubscription => f.write_str("completeSubscription"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiCompleteSubscriptionRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "completeSubscription" => Ok(Self::CompleteSubscription),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiCompleteSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCompleteSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiCompleteSubscriptionResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiCompleteSubscriptionResult {
+        pub completed: TenantApiCompleteSubscriptionResultCompleted,
+    }
+    ///`TenantApiCompleteSubscriptionResultCompleted`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiCompleteSubscriptionResultCompleted {
+        ChangedOk(TenantApiSubscriptionChangedOk),
+        NotFound(TenantApiSubscriptionNotFound),
+        EndedState(TenantApiSubscriptionEndedState),
+    }
+    impl ::std::convert::From<TenantApiSubscriptionChangedOk> for TenantApiCompleteSubscriptionResultCompleted {
+        fn from(value: TenantApiSubscriptionChangedOk) -> Self {
+            Self::ChangedOk(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSubscriptionNotFound> for TenantApiCompleteSubscriptionResultCompleted {
+        fn from(value: TenantApiSubscriptionNotFound) -> Self {
+            Self::NotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSubscriptionEndedState> for TenantApiCompleteSubscriptionResultCompleted {
+        fn from(value: TenantApiSubscriptionEndedState) -> Self {
+            Self::EndedState(value)
+        }
+    }
     ///`TenantApiConfigApplied`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConfigApplied {
@@ -25346,6 +26160,90 @@ pub mod types {
             value.parse()
         }
     }
+    ///`TenantApiCreateSubscriptionInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiCreateSubscriptionInput {
+        pub now: i64,
+        pub subscription: SubscriptionCreate,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiCreateSubscriptionRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiCreateSubscriptionRequest {
+        pub input: TenantApiCreateSubscriptionInput,
+        pub operation: TenantApiCreateSubscriptionRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiCreateSubscriptionRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiCreateSubscriptionRequestOperation {
+        #[serde(rename = "createSubscription")]
+        CreateSubscription,
+    }
+    impl ::std::fmt::Display for TenantApiCreateSubscriptionRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::CreateSubscription => f.write_str("createSubscription"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiCreateSubscriptionRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "createSubscription" => Ok(Self::CreateSubscription),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiCreateSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCreateSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiCreateSubscriptionResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiCreateSubscriptionResult {
+        pub created: TenantApiCreateSubscriptionResultCreated,
+    }
+    ///`TenantApiCreateSubscriptionResultCreated`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiCreateSubscriptionResultCreated {
+        SubscriptionCreatedOk(TenantApiSubscriptionCreatedOk),
+        SessionNotFound(TenantApiSessionNotFound),
+        SessionArchivedState(TenantApiSessionArchivedState),
+        SessionFailedState(TenantApiSessionFailedState),
+    }
+    impl ::std::convert::From<TenantApiSubscriptionCreatedOk> for TenantApiCreateSubscriptionResultCreated {
+        fn from(value: TenantApiSubscriptionCreatedOk) -> Self {
+            Self::SubscriptionCreatedOk(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionNotFound> for TenantApiCreateSubscriptionResultCreated {
+        fn from(value: TenantApiSessionNotFound) -> Self {
+            Self::SessionNotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionArchivedState> for TenantApiCreateSubscriptionResultCreated {
+        fn from(value: TenantApiSessionArchivedState) -> Self {
+            Self::SessionArchivedState(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionFailedState> for TenantApiCreateSubscriptionResultCreated {
+        fn from(value: TenantApiSessionFailedState) -> Self {
+            Self::SessionFailedState(value)
+        }
+    }
     ///`TenantApiCreateWebhookEndpointInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCreateWebhookEndpointInput {
@@ -26087,6 +26985,63 @@ pub mod types {
         fn from(value: TenantApiSessionNotStopped) -> Self {
             Self::NotStopped(value)
         }
+    }
+    ///`TenantApiDeleteSubscriptionInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiDeleteSubscriptionInput {
+        pub now: i64,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiDeleteSubscriptionRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiDeleteSubscriptionRequest {
+        pub input: TenantApiDeleteSubscriptionInput,
+        pub operation: TenantApiDeleteSubscriptionRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiDeleteSubscriptionRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiDeleteSubscriptionRequestOperation {
+        #[serde(rename = "deleteSubscription")]
+        DeleteSubscription,
+    }
+    impl ::std::fmt::Display for TenantApiDeleteSubscriptionRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::DeleteSubscription => f.write_str("deleteSubscription"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiDeleteSubscriptionRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "deleteSubscription" => Ok(Self::DeleteSubscription),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiDeleteSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiDeleteSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiDeleteSubscriptionResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiDeleteSubscriptionResult {
+        ///False when the tenant has no subscription with the id.
+        pub deleted: bool,
     }
     ///`TenantApiDeleteWebhookEndpointInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -27035,6 +27990,63 @@ pub mod types {
     pub struct TenantApiGetSnapshotResult {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
         pub snapshot: ::std::option::Option<Snapshot>,
+    }
+    ///`TenantApiGetSubscriptionInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiGetSubscriptionInput {
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiGetSubscriptionRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiGetSubscriptionRequest {
+        pub input: TenantApiGetSubscriptionInput,
+        pub operation: TenantApiGetSubscriptionRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiGetSubscriptionRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiGetSubscriptionRequestOperation {
+        #[serde(rename = "getSubscription")]
+        GetSubscription,
+    }
+    impl ::std::fmt::Display for TenantApiGetSubscriptionRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::GetSubscription => f.write_str("getSubscription"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiGetSubscriptionRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "getSubscription" => Ok(Self::GetSubscription),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiGetSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiGetSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiGetSubscriptionResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiGetSubscriptionResult {
+        ///Null when the tenant has no subscription with the id.
+        #[serde(deserialize_with = "::std::option::Option::deserialize")]
+        pub subscription: ::std::option::Option<Subscription>,
     }
     ///`TenantApiGetTurnFailureInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -29149,6 +30161,60 @@ pub mod types {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
         pub failures: ::std::option::Option<::std::vec::Vec<StopFailure>>,
     }
+    ///`TenantApiListSubscriptionsInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiListSubscriptionsInput {
+        pub filter: TenantApiSubscriptionFilter,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiListSubscriptionsRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiListSubscriptionsRequest {
+        pub input: TenantApiListSubscriptionsInput,
+        pub operation: TenantApiListSubscriptionsRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiListSubscriptionsRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiListSubscriptionsRequestOperation {
+        #[serde(rename = "listSubscriptions")]
+        ListSubscriptions,
+    }
+    impl ::std::fmt::Display for TenantApiListSubscriptionsRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ListSubscriptions => f.write_str("listSubscriptions"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiListSubscriptionsRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "listSubscriptions" => Ok(Self::ListSubscriptions),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiListSubscriptionsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiListSubscriptionsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiListSubscriptionsResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiListSubscriptionsResult {
+        pub subscriptions: ::std::vec::Vec<Subscription>,
+    }
     ///`TenantApiListTurnsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiListTurnsInput {
@@ -30411,6 +31477,86 @@ pub mod types {
     impl ::std::convert::From<TenantApiSessionTagsOverLimit> for TenantApiPatchSessionTagsResultTagged {
         fn from(value: TenantApiSessionTagsOverLimit) -> Self {
             Self::TagsOverLimit(value)
+        }
+    }
+    ///`TenantApiPauseSubscriptionInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPauseSubscriptionInput {
+        pub message: SubscriptionPauseMessage,
+        pub now: i64,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiPauseSubscriptionRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPauseSubscriptionRequest {
+        pub input: TenantApiPauseSubscriptionInput,
+        pub operation: TenantApiPauseSubscriptionRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiPauseSubscriptionRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiPauseSubscriptionRequestOperation {
+        #[serde(rename = "pauseSubscription")]
+        PauseSubscription,
+    }
+    impl ::std::fmt::Display for TenantApiPauseSubscriptionRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::PauseSubscription => f.write_str("pauseSubscription"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiPauseSubscriptionRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "pauseSubscription" => Ok(Self::PauseSubscription),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiPauseSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPauseSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiPauseSubscriptionResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiPauseSubscriptionResult {
+        pub paused: TenantApiPauseSubscriptionResultPaused,
+    }
+    ///`TenantApiPauseSubscriptionResultPaused`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiPauseSubscriptionResultPaused {
+        ChangedOk(TenantApiSubscriptionChangedOk),
+        NotFound(TenantApiSubscriptionNotFound),
+        EndedState(TenantApiSubscriptionEndedState),
+    }
+    impl ::std::convert::From<TenantApiSubscriptionChangedOk> for TenantApiPauseSubscriptionResultPaused {
+        fn from(value: TenantApiSubscriptionChangedOk) -> Self {
+            Self::ChangedOk(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSubscriptionNotFound> for TenantApiPauseSubscriptionResultPaused {
+        fn from(value: TenantApiSubscriptionNotFound) -> Self {
+            Self::NotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSubscriptionEndedState> for TenantApiPauseSubscriptionResultPaused {
+        fn from(value: TenantApiSubscriptionEndedState) -> Self {
+            Self::EndedState(value)
         }
     }
     ///What a persona edit writes. The harness is fixed at create.
@@ -32069,6 +33215,91 @@ pub mod types {
     pub struct TenantApiRepositoryRef {
         pub name: ::std::string::String,
         pub owner: ::std::string::String,
+    }
+    ///`TenantApiResumeSubscriptionInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiResumeSubscriptionInput {
+        pub now: i64,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiResumeSubscriptionRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiResumeSubscriptionRequest {
+        pub input: TenantApiResumeSubscriptionInput,
+        pub operation: TenantApiResumeSubscriptionRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiResumeSubscriptionRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiResumeSubscriptionRequestOperation {
+        #[serde(rename = "resumeSubscription")]
+        ResumeSubscription,
+    }
+    impl ::std::fmt::Display for TenantApiResumeSubscriptionRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ResumeSubscription => f.write_str("resumeSubscription"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiResumeSubscriptionRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "resumeSubscription" => Ok(Self::ResumeSubscription),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiResumeSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiResumeSubscriptionRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiResumeSubscriptionResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiResumeSubscriptionResult {
+        pub resumed: TenantApiResumeSubscriptionResultResumed,
+    }
+    ///`TenantApiResumeSubscriptionResultResumed`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiResumeSubscriptionResultResumed {
+        ChangedOk(TenantApiSubscriptionChangedOk),
+        NotFound(TenantApiSubscriptionNotFound),
+        EndedState(TenantApiSubscriptionEndedState),
+        CursorExpired(TenantApiSubscriptionCursorExpired),
+    }
+    impl ::std::convert::From<TenantApiSubscriptionChangedOk> for TenantApiResumeSubscriptionResultResumed {
+        fn from(value: TenantApiSubscriptionChangedOk) -> Self {
+            Self::ChangedOk(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSubscriptionNotFound> for TenantApiResumeSubscriptionResultResumed {
+        fn from(value: TenantApiSubscriptionNotFound) -> Self {
+            Self::NotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSubscriptionEndedState> for TenantApiResumeSubscriptionResultResumed {
+        fn from(value: TenantApiSubscriptionEndedState) -> Self {
+            Self::EndedState(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSubscriptionCursorExpired> for TenantApiResumeSubscriptionResultResumed {
+        fn from(value: TenantApiSubscriptionCursorExpired) -> Self {
+            Self::CursorExpired(value)
+        }
     }
     ///`TenantApiRewriteSecretSetWrite`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -35492,6 +36723,211 @@ pub mod types {
             Self::AuthorizationNotWaiting(value)
         }
     }
+    ///`TenantApiSubscriptionChangedOk`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSubscriptionChangedOk {
+        pub kind: TenantApiSubscriptionChangedOkKind,
+        pub subscription: Subscription,
+    }
+    ///`TenantApiSubscriptionChangedOkKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSubscriptionChangedOkKind {
+        Changed,
+    }
+    impl ::std::fmt::Display for TenantApiSubscriptionChangedOkKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Changed => f.write_str("Changed"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSubscriptionChangedOkKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Changed" => Ok(Self::Changed),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSubscriptionChangedOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSubscriptionChangedOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiSubscriptionCreatedOk`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSubscriptionCreatedOk {
+        pub kind: TenantApiSubscriptionCreatedOkKind,
+        pub subscription: Subscription,
+    }
+    ///`TenantApiSubscriptionCreatedOkKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSubscriptionCreatedOkKind {
+        Created,
+    }
+    impl ::std::fmt::Display for TenantApiSubscriptionCreatedOkKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Created => f.write_str("Created"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSubscriptionCreatedOkKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Created" => Ok(Self::Created),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSubscriptionCreatedOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSubscriptionCreatedOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The subscription's cursor is older than the oldest event the log keeps; it stays Paused.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSubscriptionCursorExpired {
+        #[serde(rename = "cursorEventId")]
+        pub cursor_event_id: Sequence,
+        pub kind: TenantApiSubscriptionCursorExpiredKind,
+        #[serde(rename = "oldestEventId")]
+        pub oldest_event_id: Sequence,
+    }
+    ///`TenantApiSubscriptionCursorExpiredKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSubscriptionCursorExpiredKind {
+        CursorExpired,
+    }
+    impl ::std::fmt::Display for TenantApiSubscriptionCursorExpiredKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::CursorExpired => f.write_str("CursorExpired"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSubscriptionCursorExpiredKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "CursorExpired" => Ok(Self::CursorExpired),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSubscriptionCursorExpiredKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSubscriptionCursorExpiredKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiSubscriptionEndedState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSubscriptionEndedState {
+        pub kind: TenantApiSubscriptionEndedStateKind,
+        pub subscription: Subscription,
+    }
+    ///`TenantApiSubscriptionEndedStateKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSubscriptionEndedStateKind {
+        Ended,
+    }
+    impl ::std::fmt::Display for TenantApiSubscriptionEndedStateKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Ended => f.write_str("Ended"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSubscriptionEndedStateKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Ended" => Ok(Self::Ended),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSubscriptionEndedStateKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSubscriptionEndedStateKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiSubscriptionFilter`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
+    pub struct TenantApiSubscriptionFilter {
+        #[serde(rename = "sessionId", skip_serializing_if = "::std::option::Option::is_none")]
+        pub session_id: ::std::option::Option<EntityId>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub state: ::std::option::Option<SubscriptionState>,
+    }
+    ///`TenantApiSubscriptionNotFound`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSubscriptionNotFound {
+        pub kind: TenantApiSubscriptionNotFoundKind,
+    }
+    ///`TenantApiSubscriptionNotFoundKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSubscriptionNotFoundKind {
+        NotFound,
+    }
+    impl ::std::fmt::Display for TenantApiSubscriptionNotFoundKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::NotFound => f.write_str("NotFound"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSubscriptionNotFoundKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "NotFound" => Ok(Self::NotFound),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSubscriptionNotFoundKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSubscriptionNotFoundKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`TenantApiSupervisorUpdateInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSupervisorUpdateInput {
@@ -35918,6 +37354,13 @@ pub mod types {
         DeletePushSubscriptionRequest(TenantApiDeletePushSubscriptionRequest),
         ForgetPushSubscriptionRequest(TenantApiForgetPushSubscriptionRequest),
         PushTargetRequest(TenantApiPushTargetRequest),
+        CreateSubscriptionRequest(TenantApiCreateSubscriptionRequest),
+        ListSubscriptionsRequest(TenantApiListSubscriptionsRequest),
+        GetSubscriptionRequest(TenantApiGetSubscriptionRequest),
+        PauseSubscriptionRequest(TenantApiPauseSubscriptionRequest),
+        ResumeSubscriptionRequest(TenantApiResumeSubscriptionRequest),
+        DeleteSubscriptionRequest(TenantApiDeleteSubscriptionRequest),
+        CompleteSubscriptionRequest(TenantApiCompleteSubscriptionRequest),
         GetTurnFailureRequest(TenantApiGetTurnFailureRequest),
         ListStopFailuresRequest(TenantApiListStopFailuresRequest),
         ListSnapshotsRequest(TenantApiListSnapshotsRequest),
@@ -36427,6 +37870,41 @@ pub mod types {
     impl ::std::convert::From<TenantApiPushTargetRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiPushTargetRequest) -> Self {
             Self::PushTargetRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiCreateSubscriptionRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiCreateSubscriptionRequest) -> Self {
+            Self::CreateSubscriptionRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiListSubscriptionsRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiListSubscriptionsRequest) -> Self {
+            Self::ListSubscriptionsRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiGetSubscriptionRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiGetSubscriptionRequest) -> Self {
+            Self::GetSubscriptionRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiPauseSubscriptionRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiPauseSubscriptionRequest) -> Self {
+            Self::PauseSubscriptionRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiResumeSubscriptionRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiResumeSubscriptionRequest) -> Self {
+            Self::ResumeSubscriptionRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiDeleteSubscriptionRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiDeleteSubscriptionRequest) -> Self {
+            Self::DeleteSubscriptionRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiCompleteSubscriptionRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiCompleteSubscriptionRequest) -> Self {
+            Self::CompleteSubscriptionRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiGetTurnFailureRequest> for TenantApiTenantRequest {
@@ -38903,6 +40381,8 @@ pub mod types {
         HostOfflineEvent(HostOfflineEvent),
         PrebuildDoneEvent(PrebuildDoneEvent),
         PrebuildFailedEvent(PrebuildFailedEvent),
+        SubscriptionPausedEvent(SubscriptionPausedEvent),
+        SubscriptionEndedEvent(SubscriptionEndedEvent),
     }
     impl ::std::convert::From<TurnStartedEvent> for TenantEvent {
         fn from(value: TurnStartedEvent) -> Self {
@@ -38959,6 +40439,16 @@ pub mod types {
             Self::PrebuildFailedEvent(value)
         }
     }
+    impl ::std::convert::From<SubscriptionPausedEvent> for TenantEvent {
+        fn from(value: SubscriptionPausedEvent) -> Self {
+            Self::SubscriptionPausedEvent(value)
+        }
+    }
+    impl ::std::convert::From<SubscriptionEndedEvent> for TenantEvent {
+        fn from(value: SubscriptionEndedEvent) -> Self {
+            Self::SubscriptionEndedEvent(value)
+        }
+    }
     ///What every tenant event carries. `eventId` orders the tenant's events: each is greater than every
     ///event before it, so a reader resumes after the last id it saw.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -38984,6 +40474,8 @@ pub mod types {
         HostOffline,
         PrebuildDone,
         PrebuildFailed,
+        SubscriptionPaused,
+        SubscriptionEnded,
     }
     impl ::std::fmt::Display for TenantEventType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38999,6 +40491,8 @@ pub mod types {
                 Self::HostOffline => f.write_str("HostOffline"),
                 Self::PrebuildDone => f.write_str("PrebuildDone"),
                 Self::PrebuildFailed => f.write_str("PrebuildFailed"),
+                Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
+                Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
             }
         }
     }
@@ -39017,6 +40511,8 @@ pub mod types {
                 "HostOffline" => Ok(Self::HostOffline),
                 "PrebuildDone" => Ok(Self::PrebuildDone),
                 "PrebuildFailed" => Ok(Self::PrebuildFailed),
+                "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
+                "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
                 _ => Err("invalid value".into()),
             }
         }
@@ -46596,6 +48092,357 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
+    ///Lists the tenant's subscriptions, optionally only those of one session or in one state.
+    ///
+    ///Sends a `GET` request to `/v1/subscriptions`
+    ///
+    pub async fn subscriptions_list<'a>(
+        &'a self,
+        session_id: Option<&'a types::EntityId>,
+        state: Option<types::SubscriptionState>,
+    ) -> Result<ResponseValue<::std::vec::Vec<types::Subscription>>, Error<types::Problem>> {
+        let url = format!("{}/v1/subscriptions", self.baseurl,);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .get(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .query(&progenitor_client::QueryParam::new("sessionId", &session_id))
+            .query(&progenitor_client::QueryParam::new("state", &state))
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "subscriptions_list",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Creates an Active subscription whose cursor starts at the end of the event log. Only a person
+    ///creates one: a call with a turn token is refused Forbidden. Refused InvalidRequest when the
+    ///session's harness takes no goal, or when the plan and the goal leave no room for one event;
+    ///SessionArchived or SessionFailed when the session is.
+    ///
+    ///Sends a `POST` request to `/v1/subscriptions`
+    ///
+    pub async fn subscriptions_create<'a>(
+        &'a self,
+        body: &'a types::SubscriptionCreate,
+    ) -> Result<ResponseValue<types::Subscription>, Error<types::Problem>> {
+        let url = format!("{}/v1/subscriptions", self.baseurl,);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .post(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "subscriptions_create",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Reads one subscription with its failure counts and why it is Paused or Ended.
+    ///
+    ///Sends a `GET` request to `/v1/subscriptions/{subscriptionId}`
+    ///
+    pub async fn subscriptions_get<'a>(
+        &'a self,
+        subscription_id: &'a types::EntityId,
+    ) -> Result<ResponseValue<types::Subscription>, Error<types::Problem>> {
+        let url = format!(
+            "{}/v1/subscriptions/{}",
+            self.baseurl,
+            encode_path(&subscription_id.to_string()),
+        );
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .get(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "subscriptions_get",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Deletes a subscription and cancels its waiting delivery turn. Its own session deletes it with a turn token too.
+    ///
+    ///Sends a `DELETE` request to `/v1/subscriptions/{subscriptionId}`
+    ///
+    pub async fn subscriptions_delete<'a>(
+        &'a self,
+        subscription_id: &'a types::EntityId,
+    ) -> Result<ResponseValue<()>, Error<types::Problem>> {
+        let url = format!(
+            "{}/v1/subscriptions/{}",
+            self.baseurl,
+            encode_path(&subscription_id.to_string()),
+        );
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .delete(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "subscriptions_delete",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            204u16 => Ok(ResponseValue::empty(response)),
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Ends a subscription with reason GoalMet and cancels its waiting delivery turn. Its own session
+    ///calls it with a turn token once the goal holds. Refused SubscriptionEnded when it is Ended.
+    ///
+    ///Sends a `POST` request to `/v1/subscriptions/{subscriptionId}/complete`
+    ///
+    pub async fn subscriptions_complete<'a>(
+        &'a self,
+        subscription_id: &'a types::EntityId,
+    ) -> Result<ResponseValue<types::Subscription>, Error<types::Problem>> {
+        let url = format!(
+            "{}/v1/subscriptions/{}/complete",
+            self.baseurl,
+            encode_path(&subscription_id.to_string()),
+        );
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .post(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "subscriptions_complete",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Pauses a subscription with reason ByRequest and its message, and cancels its waiting delivery
+    ///turn; its events wait after the cursor. Pausing a Paused subscription replaces its reason. The
+    ///subscription's own session pauses it with a turn token to wait for a decision. Refused
+    ///SubscriptionEnded when it is Ended.
+    ///
+    ///Sends a `POST` request to `/v1/subscriptions/{subscriptionId}/pause`
+    ///
+    pub async fn subscriptions_pause<'a>(
+        &'a self,
+        subscription_id: &'a types::EntityId,
+        body: &'a types::SubscriptionPause,
+    ) -> Result<ResponseValue<types::Subscription>, Error<types::Problem>> {
+        let url = format!(
+            "{}/v1/subscriptions/{}/pause",
+            self.baseurl,
+            encode_path(&subscription_id.to_string()),
+        );
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .post(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "subscriptions_pause",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Resumes a Paused subscription: it sets crewFailuresInARow to 0 and delivers the events after
+    ///its cursor. Resuming an Active subscription answers it as it is. Only a person resumes one: a
+    ///call with a turn token is refused Forbidden. Refused SubscriptionEnded when it is Ended, and
+    ///SubscriptionCursorExpired when its cursor is older than the event log keeps.
+    ///
+    ///Sends a `POST` request to `/v1/subscriptions/{subscriptionId}/resume`
+    ///
+    pub async fn subscriptions_resume<'a>(
+        &'a self,
+        subscription_id: &'a types::EntityId,
+    ) -> Result<ResponseValue<types::Subscription>, Error<types::Problem>> {
+        let url = format!(
+            "{}/v1/subscriptions/{}/resume",
+            self.baseurl,
+            encode_path(&subscription_id.to_string()),
+        );
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .post(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "subscriptions_resume",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
     ///Replaces the tenant config with the one sent, all of it or nothing, as tumpel config apply
     ///does: writes everything the config describes and deletes what it leaves out. Every change is
     ///checked first, then personas, secret sets, secret values and pins are written in one
@@ -47459,5 +49306,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 5;
+    pub const VERSION: u16 = 6;
 }
