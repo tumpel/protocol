@@ -11,6 +11,19 @@ namespace Tumpel;
 @maxLength(500)
 scalar SubscriptionPauseMessage extends string;
 
+@doc("An event type a subscription reacts to: one whose event names a session.")
+enum SubscriptionEventType {
+  TurnStarted: "TurnStarted",
+  TurnCompleted: "TurnCompleted",
+  TurnFailed: "TurnFailed",
+  SessionIdle: "SessionIdle",
+  SessionStopped: "SessionStopped",
+  SessionFailed: "SessionFailed",
+  SessionArchived: "SessionArchived",
+  SubscriptionPaused: "SubscriptionPaused",
+  SubscriptionEnded: "SubscriptionEnded",
+}
+
 enum SubscriptionState {
   @doc("Each matching event of the crew reaches the session in a delivery turn.")
   Active: "Active",
@@ -62,38 +75,8 @@ enum SubscriptionEndReason {
   GoalMet: "GoalMet",
 }
 
-model SubscriptionActive {
-  state: SubscriptionState.Active;
-}
-
-model SubscriptionPaused {
-  state: SubscriptionState.Paused;
-  reason: SubscriptionPauseReason;
-  pausedAt: offsetDateTime;
-}
-
-model SubscriptionEnded {
-  state: SubscriptionState.Ended;
-  reason: SubscriptionEndReason;
-  endedAt: offsetDateTime;
-}
-
-@doc("Whether a subscription delivers, with why it is Paused or Ended.")
-@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
-union SubscriptionStatus {
-  Active: SubscriptionActive,
-  Paused: SubscriptionPaused,
-  Ended: SubscriptionEnded,
-}
-
-@doc("""
-  A plan and a goal tied to one session, which receives a delivery turn whenever a session of its
-  crew records one of the listed events. The crew is every other session that carries every crew
-  tag at the moment of the event and holds no Active subscription itself. Each delivery turn holds
-  the plan and the events after the cursor, one JSON line each, and works toward the goal. Every
-  field but the status and the counts is fixed at create.
-  """)
-model Subscription {
+@doc("The fields every subscription carries, whatever its state. Every field but the counts is fixed at create.")
+model SubscriptionBase {
   @key @visibility(Lifecycle.Read) subscriptionId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
 
@@ -109,13 +92,12 @@ model Subscription {
   @visibility(Lifecycle.Read, Lifecycle.Create)
   goal: Goal;
 
-  @doc("The event types that start a delivery turn, each a type whose event names a session.")
+  @doc("The event types that start a delivery turn.")
   @minItems(1)
   @visibility(Lifecycle.Read, Lifecycle.Create)
-  events: TenantEventType[];
+  events: SubscriptionEventType[];
 
   @doc("The tags a session must all carry to be part of the crew.")
-  @minItems(1)
   @maxItems(16)
   @visibility(Lifecycle.Read, Lifecycle.Create)
   crewTags: SessionTag[];
@@ -138,12 +120,43 @@ model Subscription {
   @visibility(Lifecycle.Read)
   deliveryFailuresInARow: int32;
 
-  @visibility(Lifecycle.Read) status: SubscriptionStatus;
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
 
-model SubscriptionCreate is Create<Subscription>;
+model ActiveSubscription {
+  ...SubscriptionBase;
+  state: SubscriptionState.Active;
+}
+
+model PausedSubscription {
+  ...SubscriptionBase;
+  state: SubscriptionState.Paused;
+  reason: SubscriptionPauseReason;
+  pausedAt: offsetDateTime;
+}
+
+model EndedSubscription {
+  ...SubscriptionBase;
+  state: SubscriptionState.Ended;
+  reason: SubscriptionEndReason;
+  endedAt: offsetDateTime;
+}
+
+@doc("""
+  A plan and a goal tied to one session, which receives a delivery turn whenever a session of its
+  crew records one of the listed events. The crew is every other session that carries every crew
+  tag at the moment of the event and holds no Active subscription itself. Each delivery turn holds
+  the plan and the events after the cursor, one JSON line each, and works toward the goal.
+  """)
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
+union Subscription {
+  Active: ActiveSubscription,
+  Paused: PausedSubscription,
+  Ended: EndedSubscription,
+}
+
+model SubscriptionCreate is Create<SubscriptionBase>;
 
 @doc("Pauses a subscription with a note for the person who resumes it.")
 model SubscriptionPause {
@@ -165,8 +178,8 @@ namespace V1 {
     @doc("""
       Creates an Active subscription whose cursor starts at the end of the event log. Only a person
       creates one: a call with a turn token is refused Forbidden. Refused InvalidRequest when the
-      session's harness takes no goal, when an event type names no session, or when the plan and the
-      goal leave no room for one event; SessionArchived or SessionFailed when the session is.
+      session's harness takes no goal, or when the plan and the goal leave no room for one event;
+      SessionArchived or SessionFailed when the session is.
       """)
     @post
     create(@body body: SubscriptionCreate): Subscription | ProblemResponse;
@@ -191,7 +204,7 @@ namespace V1 {
     pause(...SubscriptionPath, @body body: SubscriptionPause): Subscription | ProblemResponse;
 
     @doc("""
-      Resumes a Paused subscription: it sets both failure counts to 0 and delivers the events after
+      Resumes a Paused subscription: it sets crewFailuresInARow to 0 and delivers the events after
       its cursor. Resuming an Active subscription answers it as it is. Only a person resumes one: a
       call with a turn token is refused Forbidden. Refused SubscriptionEnded when it is Ended, and
       SubscriptionCursorExpired when its cursor is older than the event log keeps.

@@ -5,6 +5,76 @@ pub use progenitor_client::{ByteStream, ClientInfo, Error, ResponseValue};
 /// Types used as operation parameters and responses.
 #[allow(clippy::all)]
 pub mod types {
+    ///`ActiveSubscription`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ActiveSubscription {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.
+        #[serde(rename = "crewFailuresInARow")]
+        pub crew_failures_in_a_row: i32,
+        ///The tags a session must all carry to be part of the crew.
+        #[serde(rename = "crewTags")]
+        pub crew_tags: ::std::vec::Vec<SessionTag>,
+        ///The last event a completed delivery turn held. A create sets it to the end of the log.
+        #[serde(rename = "cursorEventId")]
+        pub cursor_event_id: Sequence,
+        ///Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.
+        #[serde(rename = "deliveryFailuresInARow")]
+        pub delivery_failures_in_a_row: i32,
+        ///The event types that start a delivery turn.
+        pub events: ::std::vec::Vec<SubscriptionEventType>,
+        ///When the subscription ends Expired.
+        #[serde(rename = "expiresAt")]
+        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
+        pub goal: Goal,
+        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        pub prompt: Prompt,
+        ///The session that receives the delivery turns. Its harness must take a goal.
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub state: ActiveSubscriptionState,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`ActiveSubscriptionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ActiveSubscriptionState {
+        Active,
+    }
+    impl ::std::fmt::Display for ActiveSubscriptionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Active => f.write_str("Active"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ActiveSubscriptionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Active" => Ok(Self::Active),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ActiveSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ActiveSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`ApiKeyKey`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ApiKeyKey {
@@ -7469,6 +7539,79 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///`EndedSubscription`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct EndedSubscription {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.
+        #[serde(rename = "crewFailuresInARow")]
+        pub crew_failures_in_a_row: i32,
+        ///The tags a session must all carry to be part of the crew.
+        #[serde(rename = "crewTags")]
+        pub crew_tags: ::std::vec::Vec<SessionTag>,
+        ///The last event a completed delivery turn held. A create sets it to the end of the log.
+        #[serde(rename = "cursorEventId")]
+        pub cursor_event_id: Sequence,
+        ///Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.
+        #[serde(rename = "deliveryFailuresInARow")]
+        pub delivery_failures_in_a_row: i32,
+        #[serde(rename = "endedAt")]
+        pub ended_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The event types that start a delivery turn.
+        pub events: ::std::vec::Vec<SubscriptionEventType>,
+        ///When the subscription ends Expired.
+        #[serde(rename = "expiresAt")]
+        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
+        pub goal: Goal,
+        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        pub prompt: Prompt,
+        pub reason: SubscriptionEndReason,
+        ///The session that receives the delivery turns. Its harness must take a goal.
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub state: EndedSubscriptionState,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`EndedSubscriptionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum EndedSubscriptionState {
+        Ended,
+    }
+    impl ::std::fmt::Display for EndedSubscriptionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Ended => f.write_str("Ended"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for EndedSubscriptionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Ended" => Ok(Self::Ended),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for EndedSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for EndedSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///A one-time, tenant-scoped token that enrols one host before it expires.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct EnrolmentToken {
@@ -13917,6 +14060,79 @@ pub mod types {
             Self::Failed(value)
         }
     }
+    ///`PausedSubscription`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct PausedSubscription {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.
+        #[serde(rename = "crewFailuresInARow")]
+        pub crew_failures_in_a_row: i32,
+        ///The tags a session must all carry to be part of the crew.
+        #[serde(rename = "crewTags")]
+        pub crew_tags: ::std::vec::Vec<SessionTag>,
+        ///The last event a completed delivery turn held. A create sets it to the end of the log.
+        #[serde(rename = "cursorEventId")]
+        pub cursor_event_id: Sequence,
+        ///Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.
+        #[serde(rename = "deliveryFailuresInARow")]
+        pub delivery_failures_in_a_row: i32,
+        ///The event types that start a delivery turn.
+        pub events: ::std::vec::Vec<SubscriptionEventType>,
+        ///When the subscription ends Expired.
+        #[serde(rename = "expiresAt")]
+        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
+        pub goal: Goal,
+        #[serde(rename = "pausedAt")]
+        pub paused_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        pub prompt: Prompt,
+        pub reason: SubscriptionPauseReason,
+        ///The session that receives the delivery turns. Its harness must take a goal.
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub state: PausedSubscriptionState,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`PausedSubscriptionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum PausedSubscriptionState {
+        Paused,
+    }
+    impl ::std::fmt::Display for PausedSubscriptionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Paused => f.write_str("Paused"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for PausedSubscriptionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Paused" => Ok(Self::Paused),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for PausedSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for PausedSubscriptionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///A person started the session.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PersonOrigin {
@@ -19306,10 +19522,32 @@ pub mod types {
     ///A plan and a goal tied to one session, which receives a delivery turn whenever a session of its
     ///crew records one of the listed events. The crew is every other session that carries every crew
     ///tag at the moment of the event and holds no Active subscription itself. Each delivery turn holds
-    ///the plan and the events after the cursor, one JSON line each, and works toward the goal. Every
-    ///field but the status and the counts is fixed at create.
+    ///the plan and the events after the cursor, one JSON line each, and works toward the goal.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct Subscription {
+    #[serde(untagged)]
+    pub enum Subscription {
+        ActiveSubscription(ActiveSubscription),
+        PausedSubscription(PausedSubscription),
+        EndedSubscription(EndedSubscription),
+    }
+    impl ::std::convert::From<ActiveSubscription> for Subscription {
+        fn from(value: ActiveSubscription) -> Self {
+            Self::ActiveSubscription(value)
+        }
+    }
+    impl ::std::convert::From<PausedSubscription> for Subscription {
+        fn from(value: PausedSubscription) -> Self {
+            Self::PausedSubscription(value)
+        }
+    }
+    impl ::std::convert::From<EndedSubscription> for Subscription {
+        fn from(value: EndedSubscription) -> Self {
+            Self::EndedSubscription(value)
+        }
+    }
+    ///The fields every subscription carries, whatever its state. Every field but the counts is fixed at create.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionBase {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.
@@ -19324,8 +19562,8 @@ pub mod types {
         ///Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.
         #[serde(rename = "deliveryFailuresInARow")]
         pub delivery_failures_in_a_row: i32,
-        ///The event types that start a delivery turn, each a type whose event names a session.
-        pub events: ::std::vec::Vec<TenantEventType>,
+        ///The event types that start a delivery turn.
+        pub events: ::std::vec::Vec<SubscriptionEventType>,
         ///When the subscription ends Expired.
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
@@ -19336,7 +19574,6 @@ pub mod types {
         ///The session that receives the delivery turns. Its harness must take a goal.
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
-        pub status: SubscriptionStatus,
         #[serde(rename = "subscriptionId")]
         pub subscription_id: EntityId,
         #[serde(rename = "tenantId")]
@@ -19344,56 +19581,14 @@ pub mod types {
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
     }
-    ///`SubscriptionActive`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct SubscriptionActive {
-        pub state: SubscriptionActiveState,
-    }
-    ///`SubscriptionActiveState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum SubscriptionActiveState {
-        Active,
-    }
-    impl ::std::fmt::Display for SubscriptionActiveState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Active => f.write_str("Active"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for SubscriptionActiveState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Active" => Ok(Self::Active),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for SubscriptionActiveState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionActiveState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///A plan and a goal tied to one session, which receives a delivery turn whenever a session of its
-    ///crew records one of the listed events. The crew is every other session that carries every crew
-    ///tag at the moment of the event and holds no Active subscription itself. Each delivery turn holds
-    ///the plan and the events after the cursor, one JSON line each, and works toward the goal. Every
-    ///field but the status and the counts is fixed at create.
+    ///The fields every subscription carries, whatever its state. Every field but the counts is fixed at create.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SubscriptionCreate {
         ///The tags a session must all carry to be part of the crew.
         #[serde(rename = "crewTags")]
         pub crew_tags: ::std::vec::Vec<SessionTag>,
-        ///The event types that start a delivery turn, each a type whose event names a session.
-        pub events: ::std::vec::Vec<TenantEventType>,
+        ///The event types that start a delivery turn.
+        pub events: ::std::vec::Vec<SubscriptionEventType>,
         ///When the subscription ends Expired.
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
@@ -19447,14 +19642,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`SubscriptionEnded`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct SubscriptionEnded {
-        #[serde(rename = "endedAt")]
-        pub ended_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub reason: SubscriptionEndReason,
-        pub state: SubscriptionEndedState,
-    }
     ///`SubscriptionEndedEvent`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SubscriptionEndedEvent {
@@ -19505,34 +19692,58 @@ pub mod types {
             value.parse()
         }
     }
-    ///`SubscriptionEndedState`
+    ///An event type a subscription reacts to: one whose event names a session.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum SubscriptionEndedState {
-        Ended,
+    pub enum SubscriptionEventType {
+        TurnStarted,
+        TurnCompleted,
+        TurnFailed,
+        SessionIdle,
+        SessionStopped,
+        SessionFailed,
+        SessionArchived,
+        SubscriptionPaused,
+        SubscriptionEnded,
     }
-    impl ::std::fmt::Display for SubscriptionEndedState {
+    impl ::std::fmt::Display for SubscriptionEventType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::Ended => f.write_str("Ended"),
+                Self::TurnStarted => f.write_str("TurnStarted"),
+                Self::TurnCompleted => f.write_str("TurnCompleted"),
+                Self::TurnFailed => f.write_str("TurnFailed"),
+                Self::SessionIdle => f.write_str("SessionIdle"),
+                Self::SessionStopped => f.write_str("SessionStopped"),
+                Self::SessionFailed => f.write_str("SessionFailed"),
+                Self::SessionArchived => f.write_str("SessionArchived"),
+                Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
+                Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
             }
         }
     }
-    impl ::std::str::FromStr for SubscriptionEndedState {
+    impl ::std::str::FromStr for SubscriptionEventType {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
-                "Ended" => Ok(Self::Ended),
+                "TurnStarted" => Ok(Self::TurnStarted),
+                "TurnCompleted" => Ok(Self::TurnCompleted),
+                "TurnFailed" => Ok(Self::TurnFailed),
+                "SessionIdle" => Ok(Self::SessionIdle),
+                "SessionStopped" => Ok(Self::SessionStopped),
+                "SessionFailed" => Ok(Self::SessionFailed),
+                "SessionArchived" => Ok(Self::SessionArchived),
+                "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
+                "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
                 _ => Err("invalid value".into()),
             }
         }
     }
-    impl ::std::convert::TryFrom<&str> for SubscriptionEndedState {
+    impl ::std::convert::TryFrom<&str> for SubscriptionEventType {
         type Error = self::error::ConversionError;
         fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
-    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionEndedState {
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionEventType {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -19614,14 +19825,6 @@ pub mod types {
         fn from(value: SubscriptionPausedCrewFailing) -> Self {
             Self::CrewFailing(value)
         }
-    }
-    ///`SubscriptionPaused`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct SubscriptionPaused {
-        #[serde(rename = "pausedAt")]
-        pub paused_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub reason: SubscriptionPauseReason,
-        pub state: SubscriptionPausedState,
     }
     ///Someone paused the subscription with Subscriptions_pause, leaving a message.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -19790,39 +19993,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`SubscriptionPausedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum SubscriptionPausedState {
-        Paused,
-    }
-    impl ::std::fmt::Display for SubscriptionPausedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Paused => f.write_str("Paused"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for SubscriptionPausedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Paused" => Ok(Self::Paused),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for SubscriptionPausedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`SubscriptionState`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionState {
@@ -19860,29 +20030,6 @@ pub mod types {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
-        }
-    }
-    ///Whether a subscription delivers, with why it is Paused or Ended.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum SubscriptionStatus {
-        Active(SubscriptionActive),
-        Paused(SubscriptionPaused),
-        Ended(SubscriptionEnded),
-    }
-    impl ::std::convert::From<SubscriptionActive> for SubscriptionStatus {
-        fn from(value: SubscriptionActive) -> Self {
-            Self::Active(value)
-        }
-    }
-    impl ::std::convert::From<SubscriptionPaused> for SubscriptionStatus {
-        fn from(value: SubscriptionPaused) -> Self {
-            Self::Paused(value)
-        }
-    }
-    impl ::std::convert::From<SubscriptionEnded> for SubscriptionStatus {
-        fn from(value: SubscriptionEnded) -> Self {
-            Self::Ended(value)
         }
     }
     ///`SubscriptionTokenKey`
@@ -47995,8 +48142,8 @@ impl Client {
     }
     ///Creates an Active subscription whose cursor starts at the end of the event log. Only a person
     ///creates one: a call with a turn token is refused Forbidden. Refused InvalidRequest when the
-    ///session's harness takes no goal, when an event type names no session, or when the plan and the
-    ///goal leave no room for one event; SessionArchived or SessionFailed when the session is.
+    ///session's harness takes no goal, or when the plan and the goal leave no room for one event;
+    ///SessionArchived or SessionFailed when the session is.
     ///
     ///Sends a `POST` request to `/v1/subscriptions`
     ///
@@ -48244,7 +48391,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Resumes a Paused subscription: it sets both failure counts to 0 and delivers the events after
+    ///Resumes a Paused subscription: it sets crewFailuresInARow to 0 and delivers the events after
     ///its cursor. Resuming an Active subscription answers it as it is. Only a person resumes one: a
     ///call with a turn token is refused Forbidden. Refused SubscriptionEnded when it is Ended, and
     ///SubscriptionCursorExpired when its cursor is older than the event log keeps.

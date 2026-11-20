@@ -1,6 +1,127 @@
 {
   "tenantApiVersion": 6,
   "schemas": {
+    "ActiveSubscription": {
+      "type": "object",
+      "required": [
+        "subscriptionId",
+        "tenantId",
+        "sessionId",
+        "prompt",
+        "goal",
+        "events",
+        "crewTags",
+        "expiresAt",
+        "cursorEventId",
+        "crewFailuresInARow",
+        "deliveryFailuresInARow",
+        "createdAt",
+        "updatedAt",
+        "state"
+      ],
+      "properties": {
+        "subscriptionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session that receives the delivery turns. Its harness must take a goal."
+        },
+        "prompt": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Prompt"
+            }
+          ],
+          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
+        },
+        "goal": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Goal"
+            }
+          ],
+          "description": "The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds."
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SubscriptionEventType"
+          },
+          "minItems": 1,
+          "description": "The event types that start a delivery turn."
+        },
+        "crewTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags a session must all carry to be part of the crew."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the subscription ends Expired."
+        },
+        "cursorEventId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "description": "The last event a completed delivery turn held. A create sets it to the end of the log.",
+          "readOnly": true
+        },
+        "crewFailuresInARow": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0,
+          "description": "Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.",
+          "readOnly": true
+        },
+        "deliveryFailuresInARow": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0,
+          "description": "Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Active"
+          ]
+        }
+      }
+    },
     "ApiKeyKey": {
       "type": "object",
       "required": [
@@ -2432,6 +2553,136 @@
       "minLength": 3,
       "maxLength": 320
     },
+    "EndedSubscription": {
+      "type": "object",
+      "required": [
+        "subscriptionId",
+        "tenantId",
+        "sessionId",
+        "prompt",
+        "goal",
+        "events",
+        "crewTags",
+        "expiresAt",
+        "cursorEventId",
+        "crewFailuresInARow",
+        "deliveryFailuresInARow",
+        "createdAt",
+        "updatedAt",
+        "state",
+        "reason",
+        "endedAt"
+      ],
+      "properties": {
+        "subscriptionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session that receives the delivery turns. Its harness must take a goal."
+        },
+        "prompt": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Prompt"
+            }
+          ],
+          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
+        },
+        "goal": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Goal"
+            }
+          ],
+          "description": "The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds."
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SubscriptionEventType"
+          },
+          "minItems": 1,
+          "description": "The event types that start a delivery turn."
+        },
+        "crewTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags a session must all carry to be part of the crew."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the subscription ends Expired."
+        },
+        "cursorEventId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "description": "The last event a completed delivery turn held. A create sets it to the end of the log.",
+          "readOnly": true
+        },
+        "crewFailuresInARow": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0,
+          "description": "Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.",
+          "readOnly": true
+        },
+        "deliveryFailuresInARow": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0,
+          "description": "Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Ended"
+          ]
+        },
+        "reason": {
+          "$ref": "#/components/schemas/SubscriptionEndReason"
+        },
+        "endedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "EntityId": {
       "type": "string",
       "minLength": 1,
@@ -3329,6 +3580,136 @@
         }
       },
       "description": "Where an OpenRouter authorization is: the authorization URL while it waits for the callback, the exchange time limit while it spends the code, the key label once Completed, the reason once Failed."
+    },
+    "PausedSubscription": {
+      "type": "object",
+      "required": [
+        "subscriptionId",
+        "tenantId",
+        "sessionId",
+        "prompt",
+        "goal",
+        "events",
+        "crewTags",
+        "expiresAt",
+        "cursorEventId",
+        "crewFailuresInARow",
+        "deliveryFailuresInARow",
+        "createdAt",
+        "updatedAt",
+        "state",
+        "reason",
+        "pausedAt"
+      ],
+      "properties": {
+        "subscriptionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session that receives the delivery turns. Its harness must take a goal."
+        },
+        "prompt": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Prompt"
+            }
+          ],
+          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
+        },
+        "goal": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Goal"
+            }
+          ],
+          "description": "The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds."
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SubscriptionEventType"
+          },
+          "minItems": 1,
+          "description": "The event types that start a delivery turn."
+        },
+        "crewTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags a session must all carry to be part of the crew."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the subscription ends Expired."
+        },
+        "cursorEventId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "description": "The last event a completed delivery turn held. A create sets it to the end of the log.",
+          "readOnly": true
+        },
+        "crewFailuresInARow": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0,
+          "description": "Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.",
+          "readOnly": true
+        },
+        "deliveryFailuresInARow": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0,
+          "description": "Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Paused"
+          ]
+        },
+        "reason": {
+          "$ref": "#/components/schemas/SubscriptionPauseReason"
+        },
+        "pausedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
     },
     "PersonaFilePath": {
       "type": "string",
@@ -5317,142 +5698,26 @@
     },
     "Subscription": {
       "type": "object",
-      "required": [
-        "subscriptionId",
-        "tenantId",
-        "sessionId",
-        "prompt",
-        "goal",
-        "events",
-        "crewTags",
-        "expiresAt",
-        "cursorEventId",
-        "crewFailuresInARow",
-        "deliveryFailuresInARow",
-        "status",
-        "createdAt",
-        "updatedAt"
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/ActiveSubscription"
+        },
+        {
+          "$ref": "#/components/schemas/PausedSubscription"
+        },
+        {
+          "$ref": "#/components/schemas/EndedSubscription"
+        }
       ],
-      "properties": {
-        "subscriptionId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "readOnly": true
-        },
-        "tenantId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "readOnly": true
-        },
-        "sessionId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "description": "The session that receives the delivery turns. Its harness must take a goal."
-        },
-        "prompt": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/Prompt"
-            }
-          ],
-          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
-        },
-        "goal": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/Goal"
-            }
-          ],
-          "description": "The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds."
-        },
-        "events": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/TenantEventType"
-          },
-          "minItems": 1,
-          "description": "The event types that start a delivery turn, each a type whose event names a session."
-        },
-        "crewTags": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/SessionTag"
-          },
-          "minItems": 1,
-          "maxItems": 16,
-          "description": "The tags a session must all carry to be part of the crew."
-        },
-        "expiresAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "When the subscription ends Expired."
-        },
-        "cursorEventId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/Sequence"
-            }
-          ],
-          "description": "The last event a completed delivery turn held. A create sets it to the end of the log.",
-          "readOnly": true
-        },
-        "crewFailuresInARow": {
-          "type": "integer",
-          "format": "int32",
-          "minimum": 0,
-          "description": "Crew turns and sessions that failed since a crew turn last completed; at 10 the subscription pauses CrewFailing.",
-          "readOnly": true
-        },
-        "deliveryFailuresInARow": {
-          "type": "integer",
-          "format": "int32",
-          "minimum": 0,
-          "description": "Delivery turns that failed since one last completed; at 3 the subscription pauses DeliveryFailed.",
-          "readOnly": true
-        },
-        "status": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/SubscriptionStatus"
-            }
-          ],
-          "readOnly": true
-        },
-        "createdAt": {
-          "type": "integer",
-          "format": "int64",
-          "readOnly": true
-        },
-        "updatedAt": {
-          "type": "integer",
-          "format": "int64",
-          "readOnly": true
+      "discriminator": {
+        "propertyName": "state",
+        "mapping": {
+          "Active": "#/components/schemas/ActiveSubscription",
+          "Paused": "#/components/schemas/PausedSubscription",
+          "Ended": "#/components/schemas/EndedSubscription"
         }
       },
-      "description": "A plan and a goal tied to one session, which receives a delivery turn whenever a session of its\ncrew records one of the listed events. The crew is every other session that carries every crew\ntag at the moment of the event and holds no Active subscription itself. Each delivery turn holds\nthe plan and the events after the cursor, one JSON line each, and works toward the goal. Every\nfield but the status and the counts is fixed at create."
-    },
-    "SubscriptionActive": {
-      "type": "object",
-      "required": [
-        "state"
-      ],
-      "properties": {
-        "state": {
-          "type": "string",
-          "enum": [
-            "Active"
-          ]
-        }
-      }
+      "description": "A plan and a goal tied to one session, which receives a delivery turn whenever a session of its\ncrew records one of the listed events. The crew is every other session that carries every crew\ntag at the moment of the event and holds no Active subscription itself. Each delivery turn holds\nthe plan and the events after the cursor, one JSON line each, and works toward the goal."
     },
     "SubscriptionCreate": {
       "type": "object",
@@ -5492,17 +5757,16 @@
         "events": {
           "type": "array",
           "items": {
-            "$ref": "#/components/schemas/TenantEventType"
+            "$ref": "#/components/schemas/SubscriptionEventType"
           },
           "minItems": 1,
-          "description": "The event types that start a delivery turn, each a type whose event names a session."
+          "description": "The event types that start a delivery turn."
         },
         "crewTags": {
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/SessionTag"
           },
-          "minItems": 1,
           "maxItems": 16,
           "description": "The tags a session must all carry to be part of the crew."
         },
@@ -5512,30 +5776,7 @@
           "description": "When the subscription ends Expired."
         }
       },
-      "description": "A plan and a goal tied to one session, which receives a delivery turn whenever a session of its\ncrew records one of the listed events. The crew is every other session that carries every crew\ntag at the moment of the event and holds no Active subscription itself. Each delivery turn holds\nthe plan and the events after the cursor, one JSON line each, and works toward the goal. Every\nfield but the status and the counts is fixed at create."
-    },
-    "SubscriptionEnded": {
-      "type": "object",
-      "required": [
-        "state",
-        "reason",
-        "endedAt"
-      ],
-      "properties": {
-        "state": {
-          "type": "string",
-          "enum": [
-            "Ended"
-          ]
-        },
-        "reason": {
-          "$ref": "#/components/schemas/SubscriptionEndReason"
-        },
-        "endedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
+      "description": "The fields every subscription carries, whatever its state. Every field but the counts is fixed at create."
     },
     "SubscriptionEndedEvent": {
       "type": "object",
@@ -5591,28 +5832,20 @@
       ],
       "description": "Why a subscription is Ended."
     },
-    "SubscriptionPaused": {
-      "type": "object",
-      "required": [
-        "state",
-        "reason",
-        "pausedAt"
+    "SubscriptionEventType": {
+      "type": "string",
+      "enum": [
+        "TurnStarted",
+        "TurnCompleted",
+        "TurnFailed",
+        "SessionIdle",
+        "SessionStopped",
+        "SessionFailed",
+        "SessionArchived",
+        "SubscriptionPaused",
+        "SubscriptionEnded"
       ],
-      "properties": {
-        "state": {
-          "type": "string",
-          "enum": [
-            "Paused"
-          ]
-        },
-        "reason": {
-          "$ref": "#/components/schemas/SubscriptionPauseReason"
-        },
-        "pausedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
+      "description": "An event type a subscription reacts to: one whose event names a session."
     },
     "SubscriptionPausedByRequest": {
       "type": "object",
@@ -5747,29 +5980,6 @@
         "Paused",
         "Ended"
       ]
-    },
-    "SubscriptionStatus": {
-      "type": "object",
-      "oneOf": [
-        {
-          "$ref": "#/components/schemas/SubscriptionActive"
-        },
-        {
-          "$ref": "#/components/schemas/SubscriptionPaused"
-        },
-        {
-          "$ref": "#/components/schemas/SubscriptionEnded"
-        }
-      ],
-      "discriminator": {
-        "propertyName": "state",
-        "mapping": {
-          "Active": "#/components/schemas/SubscriptionActive",
-          "Paused": "#/components/schemas/SubscriptionPaused",
-          "Ended": "#/components/schemas/SubscriptionEnded"
-        }
-      },
-      "description": "Whether a subscription delivers, with why it is Paused or Ended."
     },
     "SubscriptionTokenKey": {
       "type": "object",
@@ -10479,7 +10689,6 @@
       ],
       "properties": {
         "subscription": {
-          "type": "object",
           "allOf": [
             {
               "$ref": "#/components/schemas/Subscription"
