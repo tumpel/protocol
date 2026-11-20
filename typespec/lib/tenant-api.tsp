@@ -882,6 +882,9 @@ model ListEventsInput {
   @doc("The session whose events to keep; null keeps every session's.")
   sessionId: EntityId | null;
 
+  @doc("The trigger whose events to keep; null keeps every trigger's.")
+  triggerId: EntityId | null;
+
   @minValue(0)
   @maxValue(50)
   waitSeconds: int32;
@@ -1024,15 +1027,15 @@ model DeleteTriggerInput {
   now: int64;
 }
 
-@doc("A session start as the adapter prepares it, without startedBy: the tenant Durable Object sets the trigger's origin.")
-model TriggerSessionStart {
-  ...OmitProperties<NewSession, "startedBy">;
-}
+@doc("The source adapter matched the delivery and filled the prompt from its payload.")
+model TriggerFiredMatched {
+  kind: "Matched";
 
-@doc("The source adapter matched the delivery, filled the prompt and prepared the start as Sessions_start does, as the trigger's principal.")
-model TriggerFiredStart {
-  kind: "Start";
-  session: TriggerSessionStart;
+  @doc("The repository the event names, such as GitHub's repository.html_url; the session clones it.")
+  repository: RepositoryUrl;
+
+  @doc("The trigger's prompt with every placeholder filled from the payload.")
+  prompt: Prompt;
 }
 
 @doc("The source adapter matched the delivery and refused the start itself, such as for a prompt field the event lacks.")
@@ -1042,14 +1045,16 @@ model TriggerFiredRefused {
 }
 
 @doc("""
-  One delivery a trigger matched. The tenant Durable Object starts the session with the origin as
-  its startedBy, at most once per triggerId and deliveryId, or appends TriggerStartRefused when the
-  adapter or the start refuses it.
+  One delivery a trigger matched. The tenant Durable Object reads the trigger's persona, model and
+  principalId as they are now and starts the session through the path of Sessions_start, with a
+  TriggerOrigin as its startedBy, at most once per triggerId and deliveryId. It appends
+  TriggerStartRefused when the adapter or the start refuses the delivery.
   """)
 model TriggerFiredInput {
   tenantId: EntityId;
-  origin: TriggerOrigin;
-  fired: TriggerFiredStart | TriggerFiredRefused;
+  triggerId: EntityId;
+  deliveryId: TriggerDeliveryId;
+  fired: TriggerFiredMatched | TriggerFiredRefused;
   now: int64;
 }
 

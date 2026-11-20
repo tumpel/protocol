@@ -2173,8 +2173,6 @@
       "required": [
         "name",
         "source",
-        "event",
-        "conditions",
         "model",
         "prompt",
         "personaName"
@@ -2191,17 +2189,6 @@
         "source": {
           "$ref": "#/components/schemas/TriggerSource"
         },
-        "event": {
-          "$ref": "#/components/schemas/TriggerEvent"
-        },
-        "conditions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/TriggerCondition"
-          },
-          "maxItems": 20,
-          "description": "The conditions on the event's payload that must all hold; none matches every event of the type."
-        },
         "model": {
           "allOf": [
             {
@@ -2211,7 +2198,12 @@
           "description": "The model of every session the trigger starts; it must be one the persona's harness runs."
         },
         "prompt": {
-          "$ref": "#/components/schemas/TriggerPrompt"
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Prompt"
+            }
+          ],
+          "description": "The first prompt, with {{field}} placeholders, each a TriggerFieldPath filled with the event's\nvalue at that path. An array fills as a comma-separated list. A placeholder the event lacks\nrefuses the start."
         },
         "personaName": {
           "$ref": "#/components/schemas/DisplayName"
@@ -2949,6 +2941,44 @@
       "format": "int64",
       "minimum": 1,
       "description": "The number of an issue in its repository."
+    },
+    "GitHubTriggerEvent": {
+      "type": "string",
+      "enum": [
+        "pull_request",
+        "push",
+        "status",
+        "issues"
+      ],
+      "description": "A GitHub webhook event type a trigger listens to, as GitHub names it in X-GitHub-Event."
+    },
+    "GitHubTriggerSource": {
+      "type": "object",
+      "required": [
+        "kind",
+        "event",
+        "conditions"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "GitHub"
+          ]
+        },
+        "event": {
+          "$ref": "#/components/schemas/GitHubTriggerEvent"
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TriggerCondition"
+          },
+          "maxItems": 20,
+          "description": "None matches every event of the type."
+        }
+      },
+      "description": "Events of the stage's GitHub App: the event type and the conditions on its payload that must all hold."
     },
     "Goal": {
       "type": "string",
@@ -12308,6 +12338,7 @@
         "afterEventId",
         "events",
         "sessionId",
+        "triggerId",
         "waitSeconds"
       ],
       "properties": {
@@ -12340,6 +12371,16 @@
           ],
           "nullable": true,
           "description": "The session whose events to keep; null keeps every session's."
+        },
+        "triggerId": {
+          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "nullable": true,
+          "description": "The trigger whose events to keep; null keeps every trigger's."
         },
         "waitSeconds": {
           "type": "integer",
@@ -18869,7 +18910,8 @@
       "type": "object",
       "required": [
         "tenantId",
-        "origin",
+        "triggerId",
+        "deliveryId",
         "fired",
         "now"
       ],
@@ -18877,13 +18919,16 @@
         "tenantId": {
           "$ref": "#/components/schemas/EntityId"
         },
-        "origin": {
-          "$ref": "#/components/schemas/TriggerOrigin"
+        "triggerId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "deliveryId": {
+          "$ref": "#/components/schemas/TriggerDeliveryId"
         },
         "fired": {
           "anyOf": [
             {
-              "$ref": "#/components/schemas/TenantApi.TriggerFiredStart"
+              "$ref": "#/components/schemas/TenantApi.TriggerFiredMatched"
             },
             {
               "$ref": "#/components/schemas/TenantApi.TriggerFiredRefused"
@@ -18895,7 +18940,40 @@
           "format": "int64"
         }
       },
-      "description": "One delivery a trigger matched. The tenant Durable Object starts the session with the origin as\nits startedBy, at most once per triggerId and deliveryId, or appends TriggerStartRefused when the\nadapter or the start refuses it."
+      "description": "One delivery a trigger matched. The tenant Durable Object reads the trigger's persona, model and\nprincipalId as they are now and starts the session through the path of Sessions_start, with a\nTriggerOrigin as its startedBy, at most once per triggerId and deliveryId. It appends\nTriggerStartRefused when the adapter or the start refuses the delivery."
+    },
+    "TenantApi.TriggerFiredMatched": {
+      "type": "object",
+      "required": [
+        "kind",
+        "repository",
+        "prompt"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Matched"
+          ]
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "The repository the event names, such as GitHub's repository.html_url; the session clones it."
+        },
+        "prompt": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Prompt"
+            }
+          ],
+          "description": "The trigger's prompt with every placeholder filled from the payload."
+        }
+      },
+      "description": "The source adapter matched the delivery and filled the prompt from its payload."
     },
     "TenantApi.TriggerFiredRefused": {
       "type": "object",
@@ -18962,25 +19040,6 @@
         }
       }
     },
-    "TenantApi.TriggerFiredStart": {
-      "type": "object",
-      "required": [
-        "kind",
-        "session"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "Start"
-          ]
-        },
-        "session": {
-          "$ref": "#/components/schemas/TenantApi.TriggerSessionStart"
-        }
-      },
-      "description": "The source adapter matched the delivery, filled the prompt and prepared the start as Sessions_start does, as the trigger's principal."
-    },
     "TenantApi.TriggerNameTaken": {
       "type": "object",
       "required": [
@@ -19024,41 +19083,6 @@
         }
       },
       "description": "The tenant has no persona with the trigger's personaId."
-    },
-    "TenantApi.TriggerSessionStart": {
-      "type": "object",
-      "required": [
-        "principalId",
-        "hosts",
-        "harness",
-        "harnessVersion",
-        "endpoint",
-        "start"
-      ],
-      "properties": {
-        "principalId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "hosts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/TenantApi.HostRecord"
-          }
-        },
-        "harness": {
-          "$ref": "#/components/schemas/Harness"
-        },
-        "harnessVersion": {
-          "type": "string"
-        },
-        "endpoint": {
-          "type": "string"
-        },
-        "start": {
-          "$ref": "#/components/schemas/SessionStart"
-        }
-      },
-      "description": "A session start as the adapter prepares it, without startedBy: the tenant Durable Object sets the trigger's origin."
     },
     "TenantApi.TriggerStartRefusedOk": {
       "type": "object",
@@ -20582,8 +20606,6 @@
         "tenantId",
         "name",
         "source",
-        "event",
-        "conditions",
         "personaId",
         "model",
         "prompt",
@@ -20619,17 +20641,6 @@
         "source": {
           "$ref": "#/components/schemas/TriggerSource"
         },
-        "event": {
-          "$ref": "#/components/schemas/TriggerEvent"
-        },
-        "conditions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/TriggerCondition"
-          },
-          "maxItems": 20,
-          "description": "The conditions on the event's payload that must all hold; none matches every event of the type."
-        },
         "personaId": {
           "allOf": [
             {
@@ -20647,7 +20658,12 @@
           "description": "The model of every session the trigger starts; it must be one the persona's harness runs."
         },
         "prompt": {
-          "$ref": "#/components/schemas/TriggerPrompt"
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Prompt"
+            }
+          ],
+          "description": "The first prompt, with {{field}} placeholders, each a TriggerFieldPath filled with the event's\nvalue at that path. An array fills as a comma-separated list. A placeholder the event lacks\nrefuses the start."
         },
         "principalId": {
           "allOf": [
@@ -20702,8 +20718,6 @@
       "required": [
         "name",
         "source",
-        "event",
-        "conditions",
         "personaId",
         "model",
         "prompt"
@@ -20719,17 +20733,6 @@
         },
         "source": {
           "$ref": "#/components/schemas/TriggerSource"
-        },
-        "event": {
-          "$ref": "#/components/schemas/TriggerEvent"
-        },
-        "conditions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/TriggerCondition"
-          },
-          "maxItems": 20,
-          "description": "The conditions on the event's payload that must all hold; none matches every event of the type."
         },
         "personaId": {
           "allOf": [
@@ -20748,7 +20751,12 @@
           "description": "The model of every session the trigger starts; it must be one the persona's harness runs."
         },
         "prompt": {
-          "$ref": "#/components/schemas/TriggerPrompt"
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Prompt"
+            }
+          ],
+          "description": "The first prompt, with {{field}} placeholders, each a TriggerFieldPath filled with the event's\nvalue at that path. An array fills as a comma-separated list. A placeholder the event lacks\nrefuses the start."
         }
       },
       "description": "Starts a fresh session whenever an event of its source and type arrives on which every condition\nholds. The session runs on the persona and model the trigger names, with the prompt filled from\nthe event, on the event's repository.html_url, as the principal who last created or changed the\ntrigger. Each delivery starts at most one session. Tumpel only listens: the session reports back\nto the source because its prompt tells it to."
@@ -20758,16 +20766,6 @@
       "minLength": 1,
       "maxLength": 200,
       "description": "The id the source gives one delivery of an event, such as GitHub's X-GitHub-Delivery. A redelivery keeps it."
-    },
-    "TriggerEvent": {
-      "type": "string",
-      "enum": [
-        "pull_request",
-        "push",
-        "status",
-        "issues"
-      ],
-      "description": "A GitHub webhook event type a trigger listens to, as GitHub names it in X-GitHub-Event."
     },
     "TriggerFieldPath": {
       "type": "string",
@@ -20812,17 +20810,6 @@
         "source": {
           "$ref": "#/components/schemas/TriggerSource"
         },
-        "event": {
-          "$ref": "#/components/schemas/TriggerEvent"
-        },
-        "conditions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/TriggerCondition"
-          },
-          "maxItems": 20,
-          "description": "The conditions on the event's payload that must all hold; none matches every event of the type."
-        },
         "personaId": {
           "allOf": [
             {
@@ -20840,23 +20827,30 @@
           "description": "The model of every session the trigger starts; it must be one the persona's harness runs."
         },
         "prompt": {
-          "$ref": "#/components/schemas/TriggerPrompt"
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Prompt"
+            }
+          ],
+          "description": "The first prompt, with {{field}} placeholders, each a TriggerFieldPath filled with the event's\nvalue at that path. An array fills as a comma-separated list. A placeholder the event lacks\nrefuses the start."
         }
       },
       "description": "Changes the trigger fields it names and leaves every other field as it is. Conditions, when named, replace the whole list."
     },
-    "TriggerPrompt": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 100000,
-      "description": "A prompt with {{field}} placeholders, each a TriggerFieldPath filled with the event's value at\nthat path. An array fills as a comma-separated list. A placeholder the event lacks refuses the\nstart."
-    },
     "TriggerSource": {
-      "type": "string",
-      "enum": [
-        "GitHub"
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/GitHubTriggerSource"
+        }
       ],
-      "description": "Where a trigger's events come from: GitHub, through the stage's GitHub App."
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "GitHub": "#/components/schemas/GitHubTriggerSource"
+        }
+      },
+      "description": "Where a trigger's events come from and which of them it matches. Each source names its own event types and filter."
     },
     "TriggerStartRefusal": {
       "type": "object",

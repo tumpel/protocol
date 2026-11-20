@@ -168,23 +168,13 @@
                 "source": {
                     "$ref": "#/$defs/TriggerSource"
                 },
-                "event": {
-                    "$ref": "#/$defs/TriggerEvent"
-                },
-                "conditions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/$defs/TriggerCondition"
-                    },
-                    "maxItems": 20,
-                    "description": "The conditions on the event's payload that must all hold; none matches every event of the type."
-                },
                 "model": {
                     "$ref": "#/$defs/ModelName",
                     "description": "The model of every session the trigger starts; it must be one the persona's harness runs."
                 },
                 "prompt": {
-                    "$ref": "#/$defs/TriggerPrompt"
+                    "$ref": "#/$defs/Prompt",
+                    "description": "The first prompt, with {{field}} placeholders, each a TriggerFieldPath filled with the event's\nvalue at that path. An array fills as a comma-separated list. A placeholder the event lacks\nrefuses the start."
                 },
                 "personaName": {
                     "$ref": "#/$defs/DisplayName"
@@ -193,8 +183,6 @@
             "required": [
                 "name",
                 "source",
-                "event",
-                "conditions",
                 "model",
                 "prompt",
                 "personaName"
@@ -272,53 +260,22 @@
             "description": "A label a host carries for placement, such as gpu or region-eu."
         },
         "TriggerSource": {
-            "type": "string",
-            "enum": [
-                "GitHub"
-            ],
-            "description": "Where a trigger's events come from: GitHub, through the stage's GitHub App."
-        },
-        "TriggerEvent": {
-            "type": "string",
-            "enum": [
-                "pull_request",
-                "push",
-                "status",
-                "issues"
-            ],
-            "description": "A GitHub webhook event type a trigger listens to, as GitHub names it in X-GitHub-Event."
-        },
-        "TriggerCondition": {
-            "type": "object",
-            "properties": {
-                "field": {
-                    "$ref": "#/$defs/TriggerFieldPath"
-                },
-                "values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/$defs/TriggerConditionValue"
-                    },
-                    "minItems": 1,
-                    "maxItems": 20
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/GitHubTriggerSource"
                 }
-            },
-            "required": [
-                "field",
-                "values"
             ],
-            "description": "Holds when the event's value at `field` equals one of `values`. When the path crosses an array,\nit holds when any element equals one. A path the event leaves absent or null holds for no value."
+            "description": "Where a trigger's events come from and which of them it matches. Each source names its own event types and filter."
         },
         "ModelName": {
             "type": "string",
             "minLength": 1,
             "maxLength": 200
         },
-        "TriggerPrompt": {
+        "Prompt": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 100000,
-            "description": "A prompt with {{field}} placeholders, each a TriggerFieldPath filled with the event's value at\nthat path. An array fills as a comma-separated list. A placeholder the event lacks refuses the\nstart."
+            "maxLength": 100000
         },
         "PersonaFilePath": {
             "type": "string",
@@ -407,16 +364,31 @@
             ],
             "additionalProperties": false
         },
-        "TriggerFieldPath": {
-            "type": "string",
-            "maxLength": 200,
-            "pattern": "^[A-Za-z0-9_\\-]+(\\.[A-Za-z0-9_\\-]+)*$",
-            "description": "A dotted path into an event's JSON payload, such as pull_request.base.ref. A path that crosses\nan array reaches every element, so pull_request.labels.name reaches each label's name."
-        },
-        "TriggerConditionValue": {
-            "type": "string",
-            "maxLength": 500,
-            "description": "A value a condition compares against: the JSON text of a scalar, so true matches a boolean and 42 a number."
+        "GitHubTriggerSource": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "const": "GitHub"
+                },
+                "event": {
+                    "$ref": "#/$defs/GitHubTriggerEvent"
+                },
+                "conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/TriggerCondition"
+                    },
+                    "maxItems": 20,
+                    "description": "None matches every event of the type."
+                }
+            },
+            "required": [
+                "kind",
+                "event",
+                "conditions"
+            ],
+            "description": "Events of the stage's GitHub App: the event type and the conditions on its payload that must all hold."
         },
         "SecretName": {
             "type": "string",
@@ -459,11 +431,53 @@
             ],
             "description": "When a subscription token stops working: an offset date-time, or the environment variable that holds one when the file is read."
         },
+        "GitHubTriggerEvent": {
+            "type": "string",
+            "enum": [
+                "pull_request",
+                "push",
+                "status",
+                "issues"
+            ],
+            "description": "A GitHub webhook event type a trigger listens to, as GitHub names it in X-GitHub-Event."
+        },
+        "TriggerCondition": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "$ref": "#/$defs/TriggerFieldPath"
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/TriggerConditionValue"
+                    },
+                    "minItems": 1,
+                    "maxItems": 20
+                }
+            },
+            "required": [
+                "field",
+                "values"
+            ],
+            "description": "Holds when the event's value at `field` equals one of `values`. When the path crosses an array,\nit holds when any element equals one. A path the event leaves absent or null holds for no value."
+        },
         "EnvironmentVariableName": {
             "type": "string",
             "maxLength": 200,
             "pattern": "^[A-Z_][A-Z0-9_]*$",
             "description": "The name of an environment variable, such as ANTHROPIC_API_KEY."
+        },
+        "TriggerFieldPath": {
+            "type": "string",
+            "maxLength": 200,
+            "pattern": "^[A-Za-z0-9_\\-]+(\\.[A-Za-z0-9_\\-]+)*$",
+            "description": "A dotted path into an event's JSON payload, such as pull_request.base.ref. A path that crosses\nan array reaches every element, so pull_request.labels.name reaches each label's name."
+        },
+        "TriggerConditionValue": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "A value a condition compares against: the JSON text of a scalar, so true matches a boolean and 42 a number."
         }
     }
 }

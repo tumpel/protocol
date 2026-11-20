@@ -6,13 +6,8 @@ using TypeSpec.Http;
 
 namespace Tumpel;
 
-@doc("Where a trigger's events come from: GitHub, through the stage's GitHub App.")
-enum TriggerSource {
-  GitHub: "GitHub",
-}
-
 @doc("A GitHub webhook event type a trigger listens to, as GitHub names it in X-GitHub-Event.")
-enum TriggerEvent {
+enum GitHubTriggerEvent {
   PullRequest: "pull_request",
   Push: "push",
   Status: "status",
@@ -31,15 +26,6 @@ scalar TriggerFieldPath extends string;
 @maxLength(500)
 scalar TriggerConditionValue extends string;
 
-@doc("""
-  A prompt with {{field}} placeholders, each a TriggerFieldPath filled with the event's value at
-  that path. An array fills as a comma-separated list. A placeholder the event lacks refuses the
-  start.
-  """)
-@minLength(1)
-@maxLength(100000)
-scalar TriggerPrompt extends string;
-
 @doc("The id the source gives one delivery of an event, such as GitHub's X-GitHub-Delivery. A redelivery keeps it.")
 @minLength(1)
 @maxLength(200)
@@ -57,6 +43,22 @@ model TriggerCondition {
   values: TriggerConditionValue[];
 }
 
+@doc("Events of the stage's GitHub App: the event type and the conditions on its payload that must all hold.")
+model GitHubTriggerSource {
+  kind: "GitHub";
+  event: GitHubTriggerEvent;
+
+  @doc("None matches every event of the type.")
+  @maxItems(20)
+  conditions: TriggerCondition[];
+}
+
+@doc("Where a trigger's events come from and which of them it matches. Each source names its own event types and filter.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union TriggerSource {
+  GitHub: GitHubTriggerSource,
+}
+
 @doc("""
   Starts a fresh session whenever an event of its source and type arrives on which every condition
   holds. The session runs on the persona and model the trigger names, with the prompt filled from
@@ -72,11 +74,6 @@ model Trigger {
   name: DisplayName;
 
   source: TriggerSource;
-  event: TriggerEvent;
-
-  @doc("The conditions on the event's payload that must all hold; none matches every event of the type.")
-  @maxItems(20)
-  conditions: TriggerCondition[];
 
   @doc("The persona of every session the trigger starts. A start after the persona is deleted is refused.")
   personaId: EntityId;
@@ -84,7 +81,12 @@ model Trigger {
   @doc("The model of every session the trigger starts; it must be one the persona's harness runs.")
   `model`: ModelName;
 
-  prompt: TriggerPrompt;
+  @doc("""
+    The first prompt, with {{field}} placeholders, each a TriggerFieldPath filled with the event's
+    value at that path. An array fills as a comma-separated list. A placeholder the event lacks
+    refuses the start.
+    """)
+  prompt: Prompt;
 
   @doc("The Owner who created or last changed the trigger. Every session the trigger starts runs as this principal.")
   @visibility(Lifecycle.Read)
@@ -120,7 +122,7 @@ model DraftTriggerTest {
   payload: TriggerPayload;
 }
 
-@doc("A trigger and a pasted payload to match it against. The payload carries no event type, so the test takes it to be of the trigger's event.")
+@doc("A trigger and a pasted payload to match it against. The payload carries no event type, so the test takes it to be of the event its source names.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union TriggerTest {
   Stored: StoredTriggerTest,

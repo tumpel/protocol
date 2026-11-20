@@ -222,6 +222,10 @@ model EventQuery {
   @query
   sessionId?: EntityId;
 
+  @doc("Keep events of this trigger.")
+  @query
+  triggerId?: EntityId;
+
   @doc("The most seconds to wait when no event matches yet.")
   @query
   @minValue(0)
