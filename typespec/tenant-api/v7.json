@@ -20841,7 +20841,7 @@
           "description": "The first prompt, with {{field}} placeholders, each a TriggerFieldPath filled with the event's\nvalue at that path. An array fills as a comma-separated list. A placeholder the event lacks\nrefuses the start."
         }
       },
-      "description": "Changes the trigger fields it names and leaves every other field as it is. Conditions, when named, replace the whole list."
+      "description": "Changes the trigger fields it names and leaves every other field as it is. A named source replaces the whole source, its event and conditions included."
     },
     "TriggerSource": {
       "type": "object",

@@ -98,7 +98,7 @@ model Trigger {
 
 model TriggerCreate is Create<Trigger>;
 
-@doc("Changes the trigger fields it names and leaves every other field as it is. Conditions, when named, replace the whole list.")
+@doc("Changes the trigger fields it names and leaves every other field as it is. A named source replaces the whole source, its event and conditions included.")
 model TriggerPatch is OptionalProperties<Update<Trigger>>;
 
 model TriggerPath {

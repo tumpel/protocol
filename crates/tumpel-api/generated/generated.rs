@@ -42105,7 +42105,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///Changes the trigger fields it names and leaves every other field as it is. Conditions, when named, replace the whole list.
+    ///Changes the trigger fields it names and leaves every other field as it is. A named source replaces the whole source, its event and conditions included.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
     pub struct TriggerPatch {
         ///The model of every session the trigger starts; it must be one the persona's harness runs.
