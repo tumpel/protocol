@@ -206,6 +206,24 @@ model EventPage {
   lastEventId: Sequence;
 }
 
+@doc("The event cursor is older than the oldest event the log keeps.")
+model EventCursorExpiredProblem {
+  ...OmitProperties<Problem, "code">;
+  code: ProblemCode.EventCursorExpired;
+  oldestEventId: Sequence;
+}
+
+union EventProblem {
+  CursorExpired: EventCursorExpiredProblem,
+  Other: Problem,
+}
+
+@error
+model EventProblemResponse {
+  @statusCode statusCode: 400 | 401 | 403 | 404 | 409 | 410 | 422 | 429 | 503;
+  @body body: EventProblem;
+}
+
 model EventQuery {
   @doc("""
     The id after which this page starts. Leave it out to start at the current end of the log. An
@@ -242,6 +260,6 @@ namespace V1 {
       is its eventId, resumed after the Last-Event-ID a reconnect sends.
       """)
     @get
-    list(...EventQuery): EventPage | ProblemResponse;
+    list(...EventQuery): EventPage | EventProblemResponse;
   }
 }

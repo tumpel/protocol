@@ -204,9 +204,6 @@ model Problem {
   title: string;
   detail: string;
   fix: string;
-
-  @doc("The oldest event the log keeps, present when code is EventCursorExpired.")
-  oldestEventId?: Sequence;
 }
 
 @error
