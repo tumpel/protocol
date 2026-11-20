@@ -1021,10 +1021,15 @@ model DeleteTriggerInput {
   now: int64;
 }
 
+@doc("A session start as the adapter prepares it, without startedBy: the tenant Durable Object sets the trigger's origin.")
+model TriggerSessionStart {
+  ...OmitProperties<NewSession, "startedBy">;
+}
+
 @doc("The source adapter matched the delivery, filled the prompt and prepared the start as Sessions_start does, as the trigger's principal.")
 model TriggerFiredStart {
   kind: "Start";
-  session: OmitProperties<NewSession, "startedBy">;
+  session: TriggerSessionStart;
 }
 
 @doc("The source adapter matched the delivery and refused the start itself, such as for a prompt field the event lacks.")

@@ -39002,7 +39002,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTriggerFiredStart {
         pub kind: TenantApiTriggerFiredStartKind,
-        pub session: TenantApiTriggerFiredStartSession,
+        pub session: TenantApiTriggerSessionStart,
     }
     ///`TenantApiTriggerFiredStartKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -39036,18 +39036,6 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
-    }
-    ///The template for omitting properties.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiTriggerFiredStartSession {
-        pub endpoint: ::std::string::String,
-        pub harness: Harness,
-        #[serde(rename = "harnessVersion")]
-        pub harness_version: ::std::string::String,
-        pub hosts: ::std::vec::Vec<TenantApiHostRecord>,
-        #[serde(rename = "principalId")]
-        pub principal_id: EntityId,
-        pub start: SessionStart,
     }
     ///The tenant has another trigger of the name.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -39162,6 +39150,18 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
+    }
+    ///A session start as the adapter prepares it, without startedBy: the tenant Durable Object sets the trigger's origin.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerSessionStart {
+        pub endpoint: ::std::string::String,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ::std::string::String,
+        pub hosts: ::std::vec::Vec<TenantApiHostRecord>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        pub start: SessionStart,
     }
     ///The start was refused and TriggerStartRefused appended with the refusal.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]

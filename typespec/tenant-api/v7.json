@@ -18968,39 +18968,7 @@
           ]
         },
         "session": {
-          "type": "object",
-          "required": [
-            "principalId",
-            "hosts",
-            "harness",
-            "harnessVersion",
-            "endpoint",
-            "start"
-          ],
-          "properties": {
-            "principalId": {
-              "$ref": "#/components/schemas/EntityId"
-            },
-            "hosts": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/TenantApi.HostRecord"
-              }
-            },
-            "harness": {
-              "$ref": "#/components/schemas/Harness"
-            },
-            "harnessVersion": {
-              "type": "string"
-            },
-            "endpoint": {
-              "type": "string"
-            },
-            "start": {
-              "$ref": "#/components/schemas/SessionStart"
-            }
-          },
-          "description": "The template for omitting properties."
+          "$ref": "#/components/schemas/TenantApi.TriggerSessionStart"
         }
       },
       "description": "The source adapter matched the delivery, filled the prompt and prepared the start as Sessions_start does, as the trigger's principal."
@@ -19048,6 +19016,41 @@
         }
       },
       "description": "The tenant has no persona with the trigger's personaId."
+    },
+    "TenantApi.TriggerSessionStart": {
+      "type": "object",
+      "required": [
+        "principalId",
+        "hosts",
+        "harness",
+        "harnessVersion",
+        "endpoint",
+        "start"
+      ],
+      "properties": {
+        "principalId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.HostRecord"
+          }
+        },
+        "harness": {
+          "$ref": "#/components/schemas/Harness"
+        },
+        "harnessVersion": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/components/schemas/SessionStart"
+        }
+      },
+      "description": "A session start as the adapter prepares it, without startedBy: the tenant Durable Object sets the trigger's origin."
     },
     "TenantApi.TriggerStartRefusedOk": {
       "type": "object",
