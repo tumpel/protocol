@@ -34894,6 +34894,9 @@ pub mod types {
         ///Keep only the sessions that carry every tag named.
         #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
         pub tags: ::std::vec::Vec<SessionTag>,
+        ///Keep only the sessions this trigger started.
+        #[serde(rename = "triggerId", skip_serializing_if = "::std::option::Option::is_none")]
+        pub trigger_id: ::std::option::Option<EntityId>,
     }
     ///`TenantApiSessionFromIssueStartedOk`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]

@@ -16079,6 +16079,14 @@
           },
           "maxItems": 16,
           "description": "Keep only the sessions that carry every tag named."
+        },
+        "triggerId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "Keep only the sessions this trigger started."
         }
       }
     },

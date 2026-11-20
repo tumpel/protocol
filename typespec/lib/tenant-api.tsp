@@ -820,6 +820,9 @@ model SessionFilter {
   @doc("Keep only the sessions that carry every tag named.")
   @maxItems(16)
   tags?: SessionTag[];
+
+  @doc("Keep only the sessions this trigger started.")
+  triggerId?: EntityId;
 }
 
 model ListSessionsInput {
