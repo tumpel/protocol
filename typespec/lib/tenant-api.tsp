@@ -19,7 +19,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 4;
+const TenantApiVersion = 5;
 
 namespace TenantApi {
 
@@ -48,6 +48,7 @@ model StoredPersona {
   @minValue(512) @maxValue(65536) boxMemoryMib?: int32;
   @minValue(32768) @maxValue(262144) boxDiskMib?: int32;
   boxRetention: BoxRetention;
+  tumpelMcp: boolean;
   files: StoredFileRead[];
   createdAt: int64;
   updatedAt: int64;
@@ -61,6 +62,7 @@ model PersonaChange {
   @minValue(512) @maxValue(65536) boxMemoryMib: int32;
   @minValue(32768) @maxValue(262144) boxDiskMib: int32;
   boxRetention: BoxRetention;
+  tumpelMcp: boolean;
   files: StoredFile[];
 }
 
@@ -620,6 +622,7 @@ model PrebuildCommitStart {
 
 model NewSession {
   principalId: EntityId;
+  startedBy: SessionStartedBy;
   hosts: HostRecord[];
   harness: Harness;
   harnessVersion: string;
@@ -760,6 +763,21 @@ model ArchiveSessionInput {
   now: int64;
 }
 
+model SetSessionTagsInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+  ...SessionTags;
+  now: int64;
+}
+
+@doc("A tag patch, which the tenant Durable Object reads, merges and writes in one transaction.")
+model PatchSessionTagsInput {
+  tenantId: EntityId;
+  sessionId: EntityId;
+  patch: SessionTagsPatch;
+  now: int64;
+}
+
 model DeleteSessionInput {
   tenantId: EntityId;
   sessionId: EntityId;
@@ -774,6 +792,9 @@ model SessionFilter {
   state?: SessionState;
   hostId?: EntityId;
   lastTurnBefore?: int64;
+  @doc("Keep only the sessions that carry every tag named.")
+  @maxItems(16)
+  tags?: SessionTag[];
 }
 
 model ListSessionsInput {
@@ -1523,6 +1544,18 @@ model ArchiveSessionRequest {
   input: ArchiveSessionInput;
 }
 
+model SetSessionTagsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "setSessionTags";
+  input: SetSessionTagsInput;
+}
+
+model PatchSessionTagsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "patchSessionTags";
+  input: PatchSessionTagsInput;
+}
+
 model DeleteSessionRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "deleteSession";
@@ -1934,6 +1967,8 @@ union TenantRequest {
   sendTurn: SendTurnRequest,
   stopSession: StopSessionRequest,
   archiveSession: ArchiveSessionRequest,
+  setSessionTags: SetSessionTagsRequest,
+  patchSessionTags: PatchSessionTagsRequest,
   deleteSession: DeleteSessionRequest,
   getSession: GetSessionRequest,
   listSessions: ListSessionsRequest,
@@ -2948,6 +2983,25 @@ model SessionNotStopped {
 
 model ArchiveSessionResult {
   archived: SessionArchivedOk | SessionNotFound | SessionNotStopped;
+}
+
+model SessionTagged {
+  kind: "Tagged";
+  session: Session;
+}
+
+@doc("A patch whose result would hold more than 16 tags; the session keeps its tags.")
+model SessionTagsOverLimit {
+  kind: "TagsOverLimit";
+  tags: SessionTag[];
+}
+
+model SetSessionTagsResult {
+  tagged: SessionTagged | SessionNotFound;
+}
+
+model PatchSessionTagsResult {
+  tagged: SessionTagged | SessionNotFound | SessionTagsOverLimit;
 }
 
 model SessionDeleted {

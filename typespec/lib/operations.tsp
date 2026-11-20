@@ -509,6 +509,10 @@ model SessionStart is Create<Session> {
   prompt: Prompt;
   @doc("What happens to the box after each turn; left out, the session takes its persona's boxRetention.")
   boxRetention?: BoxRetention;
+
+  @doc("The session's tags, each once; none when left out.")
+  @maxItems(16)
+  tags?: SessionTag[];
 }
 
 @doc("A start from an open GitHub issue: the control plane reads the issue and writes the first prompt, which asks for the branch ticket/<issueNumber>-<slug of the title> and a draft pull request that closes the issue.")
@@ -520,6 +524,25 @@ model SessionStartFromIssue {
   `model`: ModelName;
   @doc("What happens to the box after each turn; left out, the session takes its persona's boxRetention.")
   boxRetention?: BoxRetention;
+
+  @doc("The session's tags, each once; none when left out.")
+  @maxItems(16)
+  tags?: SessionTag[];
+}
+
+@doc("Replaces every tag of a session.")
+model SessionTags {
+  @maxItems(16)
+  tags: SessionTag[];
+}
+
+@doc("Adds and removes tags of a session; every tag it names in neither list stays.")
+model SessionTagsPatch {
+  @doc("Tags to add; a tag the session already has stays once.")
+  add?: SessionTag[];
+
+  @doc("Tags to remove; a tag the session does not have is ignored.")
+  remove?: SessionTag[];
 }
 
 @doc("The answer to a start, sent before the harness writes anything.")
@@ -541,6 +564,11 @@ model SessionListQuery {
   @doc("Keep only the sessions whose latest turn last changed state at or before this time.")
   @query
   lastTurnBefore?: offsetDateTime;
+
+  @doc("Keep only the sessions that carry this tag; repeat it to keep those that carry every tag named.")
+  @query(#{ explode: true })
+  @maxItems(16)
+  tag?: SessionTag[];
 }
 
 model SessionStopQuery {
@@ -685,19 +713,28 @@ model PersonaCreate is Create<Persona> {
 
   @doc("What happens to the box after each turn; left out, the persona's sessions get Auto.")
   boxRetention?: BoxRetention;
+
+  @doc("Whether the persona's sessions reach the Tumpel MCP server; left out, false.")
+  tumpelMcp?: boolean;
 }
 
-@doc("Replaces the persona's name, secret set, connectors, box memory, box retention and whole file set: a file the update leaves out is deleted, a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib, and a box retention it leaves out goes back to Auto. The harness is fixed at create.")
+@doc("Replaces the persona's name, secret set, connectors, box memory, box retention, Tumpel MCP and whole file set: a file the update leaves out is deleted, a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib, a box retention it leaves out goes back to Auto, and a tumpelMcp it leaves out goes back to false. The harness is fixed at create.")
 model PersonaUpdate is Update<Persona> {
   files: PersonaFileWrite[];
   @doc("What happens to the box after each turn; left out, the persona's sessions get Auto.")
   boxRetention?: BoxRetention;
+
+  @doc("Whether the persona's sessions reach the Tumpel MCP server; left out, false.")
+  tumpelMcp?: boolean;
 }
 
 @doc("Changes the persona fields it names and leaves every other field, and every file, as it is. The harness is fixed at create, and files change through a file patch.")
 model PersonaPatch is OptionalProperties<Update<Persona>> {
   @doc("What happens to the box after each turn; left out, it stays as it is.")
   boxRetention?: BoxRetention;
+
+  @doc("Whether the persona's sessions reach the Tumpel MCP server; left out, it stays as it is.")
+  tumpelMcp?: boolean;
 }
 
 enum PersonaFilePatchKind {
@@ -1070,7 +1107,7 @@ namespace V1 {
     @post
     startFromIssue(@body body: SessionStartFromIssue): StartedSessionFromIssue | ProblemResponse;
 
-    @doc("Lists the tenant's sessions, optionally only those in one state, on one host or with no turn since a time.")
+    @doc("Lists the tenant's sessions, optionally only those in one state, on one host, with no turn since a time or carrying every tag named.")
     @get
     list(...SessionListQuery): Session[] | ProblemResponse;
 
@@ -1107,6 +1144,16 @@ namespace V1 {
     @route("/{sessionId}")
     @delete
     delete(...SessionPath): NoContentResponse | ProblemResponse;
+
+    @doc("Replaces every tag of a session; refused InvalidRequest above 16 tags.")
+    @route("/{sessionId}/tags")
+    @put
+    setTags(...SessionPath, @body body: SessionTags): Session | ProblemResponse;
+
+    @doc("Adds and removes tags of a session and keeps every other tag; refused InvalidRequest when the result holds more than 16.")
+    @route("/{sessionId}/tags")
+    @patch(#{ implicitOptionality: false })
+    patchTags(...SessionPath, @body body: SessionTagsPatch): Session | ProblemResponse;
 
     @doc("Lists the credential handovers of a session, oldest first: which variables each turn offer carried, never their values.")
     @route("/{sessionId}/credential-handovers")
