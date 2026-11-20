@@ -20,7 +20,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 6;
+const TenantApiVersion = 7;
 
 namespace TenantApi {
 
@@ -2966,7 +2966,7 @@ model SessionStartedOk {
 }
 
 model StartSessionResult {
-  started: SessionStartedOk | StartDraining | StartUnplaced | StartConnectorDisconnected | ClaudeSetupReleaseUnreadable;
+  started: SessionStartedOk | StartDraining | StartUnplaced | StartConnectorDisconnected | ClaudeSetupReleaseUnreadable | SessionTagsOverLimit;
 }
 
 model SessionFromIssueStartedOk {
@@ -2975,7 +2975,7 @@ model SessionFromIssueStartedOk {
 }
 
 model StartSessionFromIssueResult {
-  started: SessionFromIssueStartedOk | StartDraining | StartUnplaced | StartConnectorDisconnected | ClaudeSetupReleaseUnreadable;
+  started: SessionFromIssueStartedOk | StartDraining | StartUnplaced | StartConnectorDisconnected | ClaudeSetupReleaseUnreadable | SessionTagsOverLimit;
 }
 
 model TurnSentOk {
@@ -3086,7 +3086,7 @@ model SessionTagged {
   session: Session;
 }
 
-@doc("A patch whose result would hold more than 16 tags; the session keeps its tags.")
+@doc("A patch or a start whose tags, with the crew tags a start inherits, would number more than 16; nothing changes.")
 model SessionTagsOverLimit {
   kind: "TagsOverLimit";
   tags: SessionTag[];
