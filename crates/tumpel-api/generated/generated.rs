@@ -6008,6 +6008,9 @@ pub mod types {
         pub name: DisplayName,
         #[serde(rename = "secretSetName")]
         pub secret_set_name: DisplayName,
+        ///Whether the persona's sessions reach the Tumpel MCP server; left out, false.
+        #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
+        pub tumpel_mcp: ::std::option::Option<bool>,
     }
     ///One persona file: `path` is where the harness reads it, relative to its home in the box, and
     ///`from` the local file whose bytes it holds. The config file never holds the bytes; apply reads
@@ -7829,6 +7832,49 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///The event cursor is older than the oldest event the log keeps.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct EventCursorExpiredProblem {
+        pub code: EventCursorExpiredProblemCode,
+        pub detail: ::std::string::String,
+        pub fix: ::std::string::String,
+        #[serde(rename = "oldestEventId")]
+        pub oldest_event_id: Sequence,
+        pub title: ::std::string::String,
+    }
+    ///`EventCursorExpiredProblemCode`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum EventCursorExpiredProblemCode {
+        EventCursorExpired,
+    }
+    impl ::std::fmt::Display for EventCursorExpiredProblemCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::EventCursorExpired => f.write_str("EventCursorExpired"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for EventCursorExpiredProblemCode {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "EventCursorExpired" => Ok(Self::EventCursorExpired),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for EventCursorExpiredProblemCode {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for EventCursorExpiredProblemCode {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///A page of the tenant's events, oldest first, at most 100. `lastEventId` is the id the read
     ///reached; pass it as `afterEventId` to read on.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -7836,6 +7882,23 @@ pub mod types {
         pub events: ::std::vec::Vec<TenantEvent>,
         #[serde(rename = "lastEventId")]
         pub last_event_id: Sequence,
+    }
+    ///`EventProblem`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum EventProblem {
+        EventCursorExpiredProblem(EventCursorExpiredProblem),
+        Problem(Problem),
+    }
+    impl ::std::convert::From<EventCursorExpiredProblem> for EventProblem {
+        fn from(value: EventCursorExpiredProblem) -> Self {
+            Self::EventCursorExpiredProblem(value)
+        }
+    }
+    impl ::std::convert::From<Problem> for EventProblem {
+        fn from(value: Problem) -> Self {
+            Self::Problem(value)
+        }
     }
     ///A connection whose credential stopped working; prebuilds on it fail until the tenant connects again.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -45094,7 +45157,7 @@ impl Client {
         session_id: Option<&'a types::EntityId>,
         trigger_id: Option<&'a types::EntityId>,
         wait_seconds: i32,
-    ) -> Result<ResponseValue<types::EventPage>, Error<types::Problem>> {
+    ) -> Result<ResponseValue<types::EventPage>, Error<types::EventProblem>> {
         let url = format!("{}/v1/events", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
         header_map.append(

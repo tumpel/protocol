@@ -75,6 +75,10 @@
                     "$ref": "#/$defs/BoxRetention",
                     "description": "What happens to the box after each turn; left out, the persona's sessions get Auto."
                 },
+                "tumpelMcp": {
+                    "type": "boolean",
+                    "description": "Whether the persona's sessions reach the Tumpel MCP server; left out, false."
+                },
                 "secretSetName": {
                     "$ref": "#/$defs/DisplayName"
                 },

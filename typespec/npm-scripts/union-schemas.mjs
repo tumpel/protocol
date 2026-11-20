@@ -22,19 +22,19 @@ navigateProgram(program, {
     const variants = [...declared.variants.values()].map((variant) => variant.type);
     if (!variants.every((type) => type.kind === "Model" && type.name)) return;
     const [discriminated] = getDiscriminatedUnion(program, declared);
-    if (discriminated === undefined) {
-      throw new Error(`union ${declared.name} has no discriminator; add @discriminated to it in its .tsp file`);
-    }
     unions.push({
       name: declared.name,
       members: variants.map((type) => `${type.name}Schema`),
-      discriminator: discriminated.options.discriminatorPropertyName,
+      discriminator: discriminated?.options.discriminatorPropertyName,
     });
   },
 });
 
-const declarations = unions.map(
-  ({ name, members, discriminator }) =>
-    `export const ${name}Schema = z.discriminatedUnion(${JSON.stringify(discriminator)}, [${members.join(", ")}]);\n`,
-);
+const declarations = unions.map(({ name, members, discriminator }) => {
+  const schema =
+    discriminator === undefined
+      ? `z.union([${members.join(", ")}])`
+      : `z.discriminatedUnion(${JSON.stringify(discriminator)}, [${members.join(", ")}])`;
+  return `export const ${name}Schema = ${schema};\n`;
+});
 if (declarations.length > 0) appendFileSync(schemasFile, `\n${declarations.join("\n")}`);
