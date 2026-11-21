@@ -787,10 +787,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelChallengeNonce(::std::string::String);
-    impl ::std::ops::Deref for ChannelChallengeNonce {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelChallengeNonce {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelChallengeNonce {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelChallengeNonce {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelChallengeNonce {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelChallengeNonce> for ::std::string::String {
@@ -802,10 +817,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("ChannelChallengeNonce: longer than 16384 characters".into());
             }
             if value.chars().count() < 43usize {
-                return Err("shorter than 43 characters".into());
+                return Err("ChannelChallengeNonce: shorter than 43 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1050,10 +1065,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelClaudeSetupBoxOfferTokenCredential(::std::string::String);
-    impl ::std::ops::Deref for ChannelClaudeSetupBoxOfferTokenCredential {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelClaudeSetupBoxOfferTokenCredential {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelClaudeSetupBoxOfferTokenCredential {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelClaudeSetupBoxOfferTokenCredential {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelClaudeSetupBoxOfferTokenCredential {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelClaudeSetupBoxOfferTokenCredential> for ::std::string::String {
@@ -1065,10 +1095,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("ChannelClaudeSetupBoxOfferTokenCredential: longer than 16384 characters".into());
             }
             if value.chars().count() < 43usize {
-                return Err("shorter than 43 characters".into());
+                return Err("ChannelClaudeSetupBoxOfferTokenCredential: shorter than 43 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1177,10 +1207,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelClaudeSetupBoxUrlUserCode(::std::string::String);
-    impl ::std::ops::Deref for ChannelClaudeSetupBoxUrlUserCode {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelClaudeSetupBoxUrlUserCode {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelClaudeSetupBoxUrlUserCode {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelClaudeSetupBoxUrlUserCode {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelClaudeSetupBoxUrlUserCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelClaudeSetupBoxUrlUserCode> for ::std::string::String {
@@ -1192,10 +1237,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 64usize {
-                return Err("longer than 64 characters".into());
+                return Err("ChannelClaudeSetupBoxUrlUserCode: longer than 64 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelClaudeSetupBoxUrlUserCode: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1446,10 +1491,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelDispatchConnectorTokenCredential(::std::string::String);
-    impl ::std::ops::Deref for ChannelDispatchConnectorTokenCredential {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelDispatchConnectorTokenCredential {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelDispatchConnectorTokenCredential {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelDispatchConnectorTokenCredential {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelDispatchConnectorTokenCredential {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelDispatchConnectorTokenCredential> for ::std::string::String {
@@ -1461,10 +1521,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("ChannelDispatchConnectorTokenCredential: longer than 16384 characters".into());
             }
             if value.chars().count() < 43usize {
-                return Err("shorter than 43 characters".into());
+                return Err("ChannelDispatchConnectorTokenCredential: shorter than 43 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1524,10 +1584,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelDispatchGrantCredentialFilePath(::std::string::String);
-    impl ::std::ops::Deref for ChannelDispatchGrantCredentialFilePath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelDispatchGrantCredentialFilePath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelDispatchGrantCredentialFilePath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelDispatchGrantCredentialFilePath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelDispatchGrantCredentialFilePath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelDispatchGrantCredentialFilePath> for ::std::string::String {
@@ -1539,10 +1614,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("ChannelDispatchGrantCredentialFilePath: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelDispatchGrantCredentialFilePath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1573,10 +1648,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelDispatchGrantCredentialFileValue(::std::string::String);
-    impl ::std::ops::Deref for ChannelDispatchGrantCredentialFileValue {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelDispatchGrantCredentialFileValue {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelDispatchGrantCredentialFileValue {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelDispatchGrantCredentialFileValue {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelDispatchGrantCredentialFileValue {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelDispatchGrantCredentialFileValue> for ::std::string::String {
@@ -1588,10 +1678,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 65536usize {
-                return Err("longer than 65536 characters".into());
+                return Err("ChannelDispatchGrantCredentialFileValue: longer than 65536 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelDispatchGrantCredentialFileValue: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1628,10 +1718,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelDispatchVariableName(::std::string::String);
-    impl ::std::ops::Deref for ChannelDispatchVariableName {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelDispatchVariableName {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelDispatchVariableName {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelDispatchVariableName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelDispatchVariableName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelDispatchVariableName> for ::std::string::String {
@@ -1643,10 +1748,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ChannelDispatchVariableName: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelDispatchVariableName: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1677,10 +1782,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelDispatchVariableValue(::std::string::String);
-    impl ::std::ops::Deref for ChannelDispatchVariableValue {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelDispatchVariableValue {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelDispatchVariableValue {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelDispatchVariableValue {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelDispatchVariableValue {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelDispatchVariableValue> for ::std::string::String {
@@ -1692,10 +1812,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 65536usize {
-                return Err("longer than 65536 characters".into());
+                return Err("ChannelDispatchVariableValue: longer than 65536 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelDispatchVariableValue: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1740,10 +1860,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelFrameRefusedReason(::std::string::String);
-    impl ::std::ops::Deref for ChannelFrameRefusedReason {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelFrameRefusedReason {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelFrameRefusedReason {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelFrameRefusedReason {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelFrameRefusedReason {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelFrameRefusedReason> for ::std::string::String {
@@ -1755,10 +1890,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("ChannelFrameRefusedReason: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelFrameRefusedReason: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1976,10 +2111,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelHelloSignature(::std::string::String);
-    impl ::std::ops::Deref for ChannelHelloSignature {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelHelloSignature {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelHelloSignature {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelHelloSignature {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelHelloSignature {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelHelloSignature> for ::std::string::String {
@@ -1991,10 +2141,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("ChannelHelloSignature: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelHelloSignature: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -2025,10 +2175,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelHelloSupervisorVersion(::std::string::String);
-    impl ::std::ops::Deref for ChannelHelloSupervisorVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelHelloSupervisorVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelHelloSupervisorVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelHelloSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelHelloSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelHelloSupervisorVersion> for ::std::string::String {
@@ -2040,10 +2205,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ChannelHelloSupervisorVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelHelloSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -2489,10 +2654,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelReleasePublishedReleaseVersion(::std::string::String);
-    impl ::std::ops::Deref for ChannelReleasePublishedReleaseVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelReleasePublishedReleaseVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelReleasePublishedReleaseVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelReleasePublishedReleaseVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelReleasePublishedReleaseVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelReleasePublishedReleaseVersion> for ::std::string::String {
@@ -2504,10 +2684,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ChannelReleasePublishedReleaseVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelReleasePublishedReleaseVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3194,10 +3374,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelSupervisorUpdateStepReleaseVersion(::std::string::String);
-    impl ::std::ops::Deref for ChannelSupervisorUpdateStepReleaseVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelSupervisorUpdateStepReleaseVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelSupervisorUpdateStepReleaseVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelSupervisorUpdateStepReleaseVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelSupervisorUpdateStepReleaseVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelSupervisorUpdateStepReleaseVersion> for ::std::string::String {
@@ -3209,10 +3404,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ChannelSupervisorUpdateStepReleaseVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelSupervisorUpdateStepReleaseVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3475,10 +3670,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelTurnCompleteCredentialFile(::std::string::String);
-    impl ::std::ops::Deref for ChannelTurnCompleteCredentialFile {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelTurnCompleteCredentialFile {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelTurnCompleteCredentialFile {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelTurnCompleteCredentialFile {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelTurnCompleteCredentialFile {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelTurnCompleteCredentialFile> for ::std::string::String {
@@ -3490,10 +3700,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 65536usize {
-                return Err("longer than 65536 characters".into());
+                return Err("ChannelTurnCompleteCredentialFile: longer than 65536 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelTurnCompleteCredentialFile: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3557,10 +3767,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelTurnCompleteWarning(::std::string::String);
-    impl ::std::ops::Deref for ChannelTurnCompleteWarning {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelTurnCompleteWarning {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelTurnCompleteWarning {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelTurnCompleteWarning {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelTurnCompleteWarning {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelTurnCompleteWarning> for ::std::string::String {
@@ -3572,10 +3797,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("ChannelTurnCompleteWarning: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelTurnCompleteWarning: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3620,10 +3845,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelTurnFailedCredentialFile(::std::string::String);
-    impl ::std::ops::Deref for ChannelTurnFailedCredentialFile {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelTurnFailedCredentialFile {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelTurnFailedCredentialFile {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelTurnFailedCredentialFile {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelTurnFailedCredentialFile {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelTurnFailedCredentialFile> for ::std::string::String {
@@ -3635,10 +3875,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 65536usize {
-                return Err("longer than 65536 characters".into());
+                return Err("ChannelTurnFailedCredentialFile: longer than 65536 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelTurnFailedCredentialFile: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3841,10 +4081,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelTurnOfferHarnessVersion(::std::string::String);
-    impl ::std::ops::Deref for ChannelTurnOfferHarnessVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelTurnOfferHarnessVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelTurnOfferHarnessVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelTurnOfferHarnessVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelTurnOfferHarnessVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelTurnOfferHarnessVersion> for ::std::string::String {
@@ -3856,10 +4111,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ChannelTurnOfferHarnessVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelTurnOfferHarnessVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3894,10 +4149,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelTurnOfferPrebuildCommitSha(::std::string::String);
-    impl ::std::ops::Deref for ChannelTurnOfferPrebuildCommitSha {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ChannelTurnOfferPrebuildCommitSha {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ChannelTurnOfferPrebuildCommitSha {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelTurnOfferPrebuildCommitSha {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelTurnOfferPrebuildCommitSha {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ChannelTurnOfferPrebuildCommitSha> for ::std::string::String {
@@ -3909,12 +4179,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ChannelTurnOfferPrebuildCommitSha: longer than 256 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err("ChannelTurnOfferPrebuildCommitSha: doesn't match pattern \"^[0-9a-f]{40}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -4836,10 +5106,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CircleCiProjectSlug(::std::string::String);
-    impl ::std::ops::Deref for CircleCiProjectSlug {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl CircleCiProjectSlug {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for CircleCiProjectSlug {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CircleCiProjectSlug {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CircleCiProjectSlug {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<CircleCiProjectSlug> for ::std::string::String {
@@ -4851,13 +5136,16 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("CircleCiProjectSlug: longer than 200 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^(gh|github|circleci)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$").unwrap()
             });
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^(gh|github|circleci)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$\"".into());
+                return Err(
+                    "CircleCiProjectSlug: doesn't match pattern \"^(gh|github|circleci)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$\""
+                        .into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
@@ -4888,10 +5176,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CircleCiRedirectedUrl(::std::string::String);
-    impl ::std::ops::Deref for CircleCiRedirectedUrl {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl CircleCiRedirectedUrl {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for CircleCiRedirectedUrl {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CircleCiRedirectedUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CircleCiRedirectedUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<CircleCiRedirectedUrl> for ::std::string::String {
@@ -4903,10 +5206,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4000usize {
-                return Err("longer than 4000 characters".into());
+                return Err("CircleCiRedirectedUrl: longer than 4000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("CircleCiRedirectedUrl: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -4937,10 +5240,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CircleCiUuid(::std::string::String);
-    impl ::std::ops::Deref for CircleCiUuid {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl CircleCiUuid {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for CircleCiUuid {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CircleCiUuid {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CircleCiUuid {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<CircleCiUuid> for ::std::string::String {
@@ -4952,14 +5270,15 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 36usize {
-                return Err("longer than 36 characters".into());
+                return Err("CircleCiUuid: longer than 36 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap()
             });
             if PATTERN.find(value).is_none() {
                 return Err(
-                    "doesn't match pattern \"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$\"".into(),
+                    "CircleCiUuid: doesn't match pattern \"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$\""
+                        .into(),
                 );
             }
             Ok(Self(value.to_string()))
@@ -5071,10 +5390,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ClaudeSetupCodeText(::std::string::String);
-    impl ::std::ops::Deref for ClaudeSetupCodeText {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ClaudeSetupCodeText {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ClaudeSetupCodeText {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ClaudeSetupCodeText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ClaudeSetupCodeText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ClaudeSetupCodeText> for ::std::string::String {
@@ -5086,10 +5420,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 2000usize {
-                return Err("longer than 2000 characters".into());
+                return Err("ClaudeSetupCodeText: longer than 2000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ClaudeSetupCodeText: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -5515,10 +5849,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ClaudeSetupUserCode(::std::string::String);
-    impl ::std::ops::Deref for ClaudeSetupUserCode {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ClaudeSetupUserCode {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ClaudeSetupUserCode {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ClaudeSetupUserCode {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ClaudeSetupUserCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ClaudeSetupUserCode> for ::std::string::String {
@@ -5530,10 +5879,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 64usize {
-                return Err("longer than 64 characters".into());
+                return Err("ClaudeSetupUserCode: longer than 64 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ClaudeSetupUserCode: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -5572,10 +5921,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CliCredentialsToken(::std::string::String);
-    impl ::std::ops::Deref for CliCredentialsToken {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl CliCredentialsToken {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for CliCredentialsToken {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CliCredentialsToken {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CliCredentialsToken {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<CliCredentialsToken> for ::std::string::String {
@@ -5587,10 +5951,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("CliCredentialsToken: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("CliCredentialsToken: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -5630,10 +5994,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CliProofCredentialsClientId(::std::string::String);
-    impl ::std::ops::Deref for CliProofCredentialsClientId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl CliProofCredentialsClientId {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for CliProofCredentialsClientId {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CliProofCredentialsClientId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CliProofCredentialsClientId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<CliProofCredentialsClientId> for ::std::string::String {
@@ -5645,10 +6024,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("CliProofCredentialsClientId: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("CliProofCredentialsClientId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -5679,10 +6058,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CliProofCredentialsClientSecret(::std::string::String);
-    impl ::std::ops::Deref for CliProofCredentialsClientSecret {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl CliProofCredentialsClientSecret {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for CliProofCredentialsClientSecret {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CliProofCredentialsClientSecret {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CliProofCredentialsClientSecret {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<CliProofCredentialsClientSecret> for ::std::string::String {
@@ -5694,10 +6088,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("CliProofCredentialsClientSecret: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("CliProofCredentialsClientSecret: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -5850,10 +6244,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CompletedTurnWarning(::std::string::String);
-    impl ::std::ops::Deref for CompletedTurnWarning {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl CompletedTurnWarning {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for CompletedTurnWarning {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CompletedTurnWarning {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CompletedTurnWarning {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<CompletedTurnWarning> for ::std::string::String {
@@ -5865,10 +6274,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("CompletedTurnWarning: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("CompletedTurnWarning: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -6813,10 +7222,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ConnectorUrl(::std::string::String);
-    impl ::std::ops::Deref for ConnectorUrl {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ConnectorUrl {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ConnectorUrl {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ConnectorUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ConnectorUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ConnectorUrl> for ::std::string::String {
@@ -6828,12 +7252,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 2048usize {
-                return Err("longer than 2048 characters".into());
+                return Err("ConnectorUrl: longer than 2048 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^https://[^/@?#\\s]+(/[^?#\\s]*)?$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^https://[^/@?#\\s]+(/[^?#\\s]*)?$\"".into());
+                return Err("ConnectorUrl: doesn't match pattern \"^https://[^/@?#\\s]+(/[^?#\\s]*)?$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7275,10 +7699,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CredentialText(::std::string::String);
-    impl ::std::ops::Deref for CredentialText {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl CredentialText {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for CredentialText {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CredentialText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CredentialText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<CredentialText> for ::std::string::String {
@@ -7290,7 +7729,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 65536usize {
-                return Err("longer than 65536 characters".into());
+                return Err("CredentialText: longer than 65536 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7329,10 +7768,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct DeployDrainDrainToken(::std::string::String);
-    impl ::std::ops::Deref for DeployDrainDrainToken {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl DeployDrainDrainToken {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for DeployDrainDrainToken {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for DeployDrainDrainToken {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for DeployDrainDrainToken {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<DeployDrainDrainToken> for ::std::string::String {
@@ -7344,12 +7798,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("DeployDrainDrainToken: longer than 16384 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{43}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
+                return Err("DeployDrainDrainToken: doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7381,10 +7835,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct Detail(::std::string::String);
-    impl ::std::ops::Deref for Detail {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl Detail {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for Detail {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Detail {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Detail {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<Detail> for ::std::string::String {
@@ -7396,7 +7865,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("Detail: longer than 16384 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7552,10 +8021,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct DisplayName(::std::string::String);
-    impl ::std::ops::Deref for DisplayName {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl DisplayName {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for DisplayName {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for DisplayName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for DisplayName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<DisplayName> for ::std::string::String {
@@ -7567,10 +8051,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 100usize {
-                return Err("longer than 100 characters".into());
+                return Err("DisplayName: longer than 100 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("DisplayName: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7684,10 +8168,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct EditPersonaFilePatchOldText(::std::string::String);
-    impl ::std::ops::Deref for EditPersonaFilePatchOldText {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl EditPersonaFilePatchOldText {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for EditPersonaFilePatchOldText {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for EditPersonaFilePatchOldText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for EditPersonaFilePatchOldText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<EditPersonaFilePatchOldText> for ::std::string::String {
@@ -7699,10 +8198,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 87384usize {
-                return Err("longer than 87384 characters".into());
+                return Err("EditPersonaFilePatchOldText: longer than 87384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("EditPersonaFilePatchOldText: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7741,10 +8240,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct EmailAddress(::std::string::String);
-    impl ::std::ops::Deref for EmailAddress {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl EmailAddress {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for EmailAddress {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for EmailAddress {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for EmailAddress {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<EmailAddress> for ::std::string::String {
@@ -7756,10 +8270,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 320usize {
-                return Err("longer than 320 characters".into());
+                return Err("EmailAddress: longer than 320 characters".into());
             }
             if value.chars().count() < 3usize {
-                return Err("shorter than 3 characters".into());
+                return Err("EmailAddress: shorter than 3 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7922,10 +8436,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct EntityId(::std::string::String);
-    impl ::std::ops::Deref for EntityId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl EntityId {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for EntityId {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for EntityId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for EntityId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<EntityId> for ::std::string::String {
@@ -7937,10 +8466,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 64usize {
-                return Err("longer than 64 characters".into());
+                return Err("EntityId: longer than 64 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("EntityId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7971,10 +8500,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct EnvironmentVariableName(::std::string::String);
-    impl ::std::ops::Deref for EnvironmentVariableName {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl EnvironmentVariableName {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for EnvironmentVariableName {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for EnvironmentVariableName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for EnvironmentVariableName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<EnvironmentVariableName> for ::std::string::String {
@@ -7986,12 +8530,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("EnvironmentVariableName: longer than 200 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Z_][A-Z0-9_]*$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Z_][A-Z0-9_]*$\"".into());
+                return Err("EnvironmentVariableName: doesn't match pattern \"^[A-Z_][A-Z0-9_]*$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -8248,10 +8792,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct FixedVariableValue(::std::string::String);
-    impl ::std::ops::Deref for FixedVariableValue {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl FixedVariableValue {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for FixedVariableValue {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for FixedVariableValue {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for FixedVariableValue {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<FixedVariableValue> for ::std::string::String {
@@ -8263,10 +8822,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 65536usize {
-                return Err("longer than 65536 characters".into());
+                return Err("FixedVariableValue: longer than 65536 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("FixedVariableValue: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -8778,10 +9337,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GitHubLogin(::std::string::String);
-    impl ::std::ops::Deref for GitHubLogin {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GitHubLogin {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GitHubLogin {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GitHubLogin {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GitHubLogin {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GitHubLogin> for ::std::string::String {
@@ -8793,12 +9367,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 39usize {
-                return Err("longer than 39 characters".into());
+                return Err("GitHubLogin: longer than 39 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$\"".into());
+                return Err("GitHubLogin: doesn't match pattern \"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -8840,10 +9414,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GitHubRepositoryName(::std::string::String);
-    impl ::std::ops::Deref for GitHubRepositoryName {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GitHubRepositoryName {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GitHubRepositoryName {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GitHubRepositoryName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GitHubRepositoryName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GitHubRepositoryName> for ::std::string::String {
@@ -8855,12 +9444,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 100usize {
-                return Err("longer than 100 characters".into());
+                return Err("GitHubRepositoryName: longer than 100 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9._-]{1,100}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9._-]{1,100}$\"".into());
+                return Err("GitHubRepositoryName: doesn't match pattern \"^[A-Za-z0-9._-]{1,100}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -8978,10 +9567,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct Goal(::std::string::String);
-    impl ::std::ops::Deref for Goal {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl Goal {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for Goal {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Goal {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Goal {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<Goal> for ::std::string::String {
@@ -8993,10 +9597,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 100000usize {
-                return Err("longer than 100000 characters".into());
+                return Err("Goal: longer than 100000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("Goal: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9182,10 +9786,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestClaudeSetupStartTokenCredential(::std::string::String);
-    impl ::std::ops::Deref for GuestClaudeSetupStartTokenCredential {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestClaudeSetupStartTokenCredential {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestClaudeSetupStartTokenCredential {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestClaudeSetupStartTokenCredential {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestClaudeSetupStartTokenCredential {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestClaudeSetupStartTokenCredential> for ::std::string::String {
@@ -9197,10 +9816,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("GuestClaudeSetupStartTokenCredential: longer than 16384 characters".into());
             }
             if value.chars().count() < 43usize {
-                return Err("shorter than 43 characters".into());
+                return Err("GuestClaudeSetupStartTokenCredential: shorter than 43 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9361,10 +9980,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestEnvironmentHome(::std::string::String);
-    impl ::std::ops::Deref for GuestEnvironmentHome {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestEnvironmentHome {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestEnvironmentHome {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestEnvironmentHome {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestEnvironmentHome {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestEnvironmentHome> for ::std::string::String {
@@ -9376,10 +10010,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("GuestEnvironmentHome: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestEnvironmentHome: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9410,10 +10044,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestEnvironmentLang(::std::string::String);
-    impl ::std::ops::Deref for GuestEnvironmentLang {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestEnvironmentLang {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestEnvironmentLang {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestEnvironmentLang {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestEnvironmentLang {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestEnvironmentLang> for ::std::string::String {
@@ -9425,10 +10074,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("GuestEnvironmentLang: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestEnvironmentLang: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9459,10 +10108,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestEnvironmentPath(::std::string::String);
-    impl ::std::ops::Deref for GuestEnvironmentPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestEnvironmentPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestEnvironmentPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestEnvironmentPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestEnvironmentPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestEnvironmentPath> for ::std::string::String {
@@ -9474,10 +10138,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("GuestEnvironmentPath: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestEnvironmentPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9530,10 +10194,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestHarnessHarness(::std::string::String);
-    impl ::std::ops::Deref for GuestHarnessHarness {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestHarnessHarness {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestHarnessHarness {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestHarnessHarness {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestHarnessHarness {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestHarnessHarness> for ::std::string::String {
@@ -9545,10 +10224,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("GuestHarnessHarness: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestHarnessHarness: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9579,10 +10258,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestHarnessHarnessVersion(::std::string::String);
-    impl ::std::ops::Deref for GuestHarnessHarnessVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestHarnessHarnessVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestHarnessHarnessVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestHarnessHarnessVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestHarnessHarnessVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestHarnessHarnessVersion> for ::std::string::String {
@@ -9594,10 +10288,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("GuestHarnessHarnessVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestHarnessHarnessVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9673,10 +10367,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestHarnessWorkingDirectory(::std::string::String);
-    impl ::std::ops::Deref for GuestHarnessWorkingDirectory {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestHarnessWorkingDirectory {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestHarnessWorkingDirectory {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestHarnessWorkingDirectory {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestHarnessWorkingDirectory {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestHarnessWorkingDirectory> for ::std::string::String {
@@ -9688,10 +10397,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("GuestHarnessWorkingDirectory: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestHarnessWorkingDirectory: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9739,10 +10448,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestHelloHarness(::std::string::String);
-    impl ::std::ops::Deref for GuestHelloHarness {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestHelloHarness {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestHelloHarness {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestHelloHarness {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestHelloHarness {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestHelloHarness> for ::std::string::String {
@@ -9754,10 +10478,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("GuestHelloHarness: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestHelloHarness: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9788,10 +10512,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestHelloHarnessVersion(::std::string::String);
-    impl ::std::ops::Deref for GuestHelloHarnessVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestHelloHarnessVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestHelloHarnessVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestHelloHarnessVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestHelloHarnessVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestHelloHarnessVersion> for ::std::string::String {
@@ -9803,10 +10542,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("GuestHelloHarnessVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestHelloHarnessVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9878,10 +10617,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestImageComponentName(::std::string::String);
-    impl ::std::ops::Deref for GuestImageComponentName {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestImageComponentName {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestImageComponentName {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestImageComponentName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestImageComponentName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestImageComponentName> for ::std::string::String {
@@ -9893,10 +10647,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("GuestImageComponentName: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestImageComponentName: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9927,10 +10681,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestImageComponentVersion(::std::string::String);
-    impl ::std::ops::Deref for GuestImageComponentVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestImageComponentVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestImageComponentVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestImageComponentVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestImageComponentVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestImageComponentVersion> for ::std::string::String {
@@ -9942,10 +10711,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("GuestImageComponentVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestImageComponentVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10086,10 +10855,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestMetricDescription(::std::string::String);
-    impl ::std::ops::Deref for GuestMetricDescription {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestMetricDescription {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestMetricDescription {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestMetricDescription {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestMetricDescription {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestMetricDescription> for ::std::string::String {
@@ -10101,10 +10885,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("GuestMetricDescription: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestMetricDescription: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10135,10 +10919,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestMetricUnit(::std::string::String);
-    impl ::std::ops::Deref for GuestMetricUnit {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestMetricUnit {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestMetricUnit {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestMetricUnit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestMetricUnit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestMetricUnit> for ::std::string::String {
@@ -10150,10 +10949,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("GuestMetricUnit: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestMetricUnit: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10310,10 +11109,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestTurnEndCredentialFile(::std::string::String);
-    impl ::std::ops::Deref for GuestTurnEndCredentialFile {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestTurnEndCredentialFile {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestTurnEndCredentialFile {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestTurnEndCredentialFile {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestTurnEndCredentialFile {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestTurnEndCredentialFile> for ::std::string::String {
@@ -10325,10 +11139,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 65536usize {
-                return Err("longer than 65536 characters".into());
+                return Err("GuestTurnEndCredentialFile: longer than 65536 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestTurnEndCredentialFile: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10440,10 +11254,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestTurnEndWarning(::std::string::String);
-    impl ::std::ops::Deref for GuestTurnEndWarning {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestTurnEndWarning {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestTurnEndWarning {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestTurnEndWarning {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestTurnEndWarning {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestTurnEndWarning> for ::std::string::String {
@@ -10455,10 +11284,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("GuestTurnEndWarning: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestTurnEndWarning: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10657,10 +11486,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestTurnStartPrebuildCommitSha(::std::string::String);
-    impl ::std::ops::Deref for GuestTurnStartPrebuildCommitSha {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl GuestTurnStartPrebuildCommitSha {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for GuestTurnStartPrebuildCommitSha {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestTurnStartPrebuildCommitSha {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestTurnStartPrebuildCommitSha {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<GuestTurnStartPrebuildCommitSha> for ::std::string::String {
@@ -10672,12 +11516,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("GuestTurnStartPrebuildCommitSha: longer than 256 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err("GuestTurnStartPrebuildCommitSha: doesn't match pattern \"^[0-9a-f]{40}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10860,10 +11704,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HarnessVersion(::std::string::String);
-    impl ::std::ops::Deref for HarnessVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl HarnessVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for HarnessVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HarnessVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HarnessVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<HarnessVersion> for ::std::string::String {
@@ -10875,10 +11734,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 100usize {
-                return Err("longer than 100 characters".into());
+                return Err("HarnessVersion: longer than 100 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HarnessVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11094,10 +11953,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostEnrolEnrolmentToken(::std::string::String);
-    impl ::std::ops::Deref for HostEnrolEnrolmentToken {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl HostEnrolEnrolmentToken {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for HostEnrolEnrolmentToken {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostEnrolEnrolmentToken {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostEnrolEnrolmentToken {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<HostEnrolEnrolmentToken> for ::std::string::String {
@@ -11109,10 +11983,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("HostEnrolEnrolmentToken: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HostEnrolEnrolmentToken: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11143,10 +12017,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostEnrolPublicKey(::std::string::String);
-    impl ::std::ops::Deref for HostEnrolPublicKey {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl HostEnrolPublicKey {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for HostEnrolPublicKey {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostEnrolPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostEnrolPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<HostEnrolPublicKey> for ::std::string::String {
@@ -11158,10 +12047,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("HostEnrolPublicKey: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HostEnrolPublicKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11192,10 +12081,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostEnrolSupervisorVersion(::std::string::String);
-    impl ::std::ops::Deref for HostEnrolSupervisorVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl HostEnrolSupervisorVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for HostEnrolSupervisorVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostEnrolSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostEnrolSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<HostEnrolSupervisorVersion> for ::std::string::String {
@@ -11207,10 +12111,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("HostEnrolSupervisorVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HostEnrolSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11300,10 +12204,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostLabel(::std::string::String);
-    impl ::std::ops::Deref for HostLabel {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl HostLabel {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for HostLabel {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostLabel {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostLabel {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<HostLabel> for ::std::string::String {
@@ -11315,12 +12234,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 63usize {
-                return Err("longer than 63 characters".into());
+                return Err("HostLabel: longer than 63 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z0-9][a-z0-9._=-]{0,62}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[a-z0-9][a-z0-9._=-]{0,62}$\"".into());
+                return Err("HostLabel: doesn't match pattern \"^[a-z0-9][a-z0-9._=-]{0,62}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11496,10 +12415,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostPublicKey(::std::string::String);
-    impl ::std::ops::Deref for HostPublicKey {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl HostPublicKey {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for HostPublicKey {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<HostPublicKey> for ::std::string::String {
@@ -11511,10 +12445,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("HostPublicKey: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HostPublicKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11587,10 +12521,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostSupervisorVersion(::std::string::String);
-    impl ::std::ops::Deref for HostSupervisorVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl HostSupervisorVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for HostSupervisorVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<HostSupervisorVersion> for ::std::string::String {
@@ -11602,10 +12551,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("HostSupervisorVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HostSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11663,10 +12612,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HttpUrl(::std::string::String);
-    impl ::std::ops::Deref for HttpUrl {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl HttpUrl {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for HttpUrl {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HttpUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HttpUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<HttpUrl> for ::std::string::String {
@@ -11678,7 +12642,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("HttpUrl: longer than 4096 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11777,10 +12741,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ImageReleaseCommit(::std::string::String);
-    impl ::std::ops::Deref for ImageReleaseCommit {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ImageReleaseCommit {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ImageReleaseCommit {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ImageReleaseCommit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ImageReleaseCommit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ImageReleaseCommit> for ::std::string::String {
@@ -11792,12 +12771,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ImageReleaseCommit: longer than 256 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err("ImageReleaseCommit: doesn't match pattern \"^[0-9a-f]{40}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11828,10 +12807,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ImageReleaseImageReleaseVersion(::std::string::String);
-    impl ::std::ops::Deref for ImageReleaseImageReleaseVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ImageReleaseImageReleaseVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ImageReleaseImageReleaseVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ImageReleaseImageReleaseVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ImageReleaseImageReleaseVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ImageReleaseImageReleaseVersion> for ::std::string::String {
@@ -11843,12 +12837,15 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ImageReleaseImageReleaseVersion: longer than 256 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^images-v[0-9]+\\.[0-9]+\\.[0-9]+$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^images-v[0-9]+\\.[0-9]+\\.[0-9]+$\"".into());
+                return Err(
+                    "ImageReleaseImageReleaseVersion: doesn't match pattern \"^images-v[0-9]+\\.[0-9]+\\.[0-9]+$\""
+                        .into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
@@ -12020,10 +13017,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct InstallArchiveBinaryPath(::std::string::String);
-    impl ::std::ops::Deref for InstallArchiveBinaryPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl InstallArchiveBinaryPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for InstallArchiveBinaryPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for InstallArchiveBinaryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for InstallArchiveBinaryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<InstallArchiveBinaryPath> for ::std::string::String {
@@ -12035,10 +13047,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("InstallArchiveBinaryPath: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("InstallArchiveBinaryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12069,10 +13081,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct InstallArchiveUrl(::std::string::String);
-    impl ::std::ops::Deref for InstallArchiveUrl {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl InstallArchiveUrl {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for InstallArchiveUrl {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for InstallArchiveUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for InstallArchiveUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<InstallArchiveUrl> for ::std::string::String {
@@ -12084,10 +13111,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("InstallArchiveUrl: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("InstallArchiveUrl: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12158,10 +13185,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct InvitationAcceptToken(::std::string::String);
-    impl ::std::ops::Deref for InvitationAcceptToken {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl InvitationAcceptToken {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for InvitationAcceptToken {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for InvitationAcceptToken {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for InvitationAcceptToken {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<InvitationAcceptToken> for ::std::string::String {
@@ -12173,10 +13215,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("InvitationAcceptToken: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("InvitationAcceptToken: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12268,10 +13310,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct IssuerJwkE(::std::string::String);
-    impl ::std::ops::Deref for IssuerJwkE {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl IssuerJwkE {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for IssuerJwkE {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for IssuerJwkE {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for IssuerJwkE {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<IssuerJwkE> for ::std::string::String {
@@ -12283,10 +13340,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("IssuerJwkE: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("IssuerJwkE: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12351,10 +13408,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct IssuerJwkN(::std::string::String);
-    impl ::std::ops::Deref for IssuerJwkN {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl IssuerJwkN {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for IssuerJwkN {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for IssuerJwkN {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for IssuerJwkN {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<IssuerJwkN> for ::std::string::String {
@@ -12366,10 +13438,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("IssuerJwkN: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("IssuerJwkN: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12440,10 +13512,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct IssuerKeyId(::std::string::String);
-    impl ::std::ops::Deref for IssuerKeyId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl IssuerKeyId {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for IssuerKeyId {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for IssuerKeyId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for IssuerKeyId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<IssuerKeyId> for ::std::string::String {
@@ -12455,12 +13542,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 43usize {
-                return Err("longer than 43 characters".into());
+                return Err("IssuerKeyId: longer than 43 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{43}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
+                return Err("IssuerKeyId: doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12491,10 +13578,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct LocalFilePath(::std::string::String);
-    impl ::std::ops::Deref for LocalFilePath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl LocalFilePath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for LocalFilePath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for LocalFilePath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for LocalFilePath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<LocalFilePath> for ::std::string::String {
@@ -12506,10 +13608,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 1000usize {
-                return Err("longer than 1000 characters".into());
+                return Err("LocalFilePath: longer than 1000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("LocalFilePath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12541,10 +13643,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct LongText(::std::string::String);
-    impl ::std::ops::Deref for LongText {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl LongText {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for LongText {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for LongText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for LongText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<LongText> for ::std::string::String {
@@ -12556,7 +13673,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 1048576usize {
-                return Err("longer than 1048576 characters".into());
+                return Err("LongText: longer than 1048576 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12656,10 +13773,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct MetricEntryDescription(::std::string::String);
-    impl ::std::ops::Deref for MetricEntryDescription {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl MetricEntryDescription {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for MetricEntryDescription {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for MetricEntryDescription {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for MetricEntryDescription {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<MetricEntryDescription> for ::std::string::String {
@@ -12671,10 +13803,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("MetricEntryDescription: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("MetricEntryDescription: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12705,10 +13837,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct MetricEntryUnit(::std::string::String);
-    impl ::std::ops::Deref for MetricEntryUnit {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl MetricEntryUnit {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for MetricEntryUnit {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for MetricEntryUnit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for MetricEntryUnit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<MetricEntryUnit> for ::std::string::String {
@@ -12720,10 +13867,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("MetricEntryUnit: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("MetricEntryUnit: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12775,10 +13922,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct MetricInstrumentDescription(::std::string::String);
-    impl ::std::ops::Deref for MetricInstrumentDescription {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl MetricInstrumentDescription {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for MetricInstrumentDescription {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for MetricInstrumentDescription {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for MetricInstrumentDescription {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<MetricInstrumentDescription> for ::std::string::String {
@@ -12790,10 +13952,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("MetricInstrumentDescription: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("MetricInstrumentDescription: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12824,10 +13986,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct MetricInstrumentUnit(::std::string::String);
-    impl ::std::ops::Deref for MetricInstrumentUnit {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl MetricInstrumentUnit {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for MetricInstrumentUnit {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for MetricInstrumentUnit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for MetricInstrumentUnit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<MetricInstrumentUnit> for ::std::string::String {
@@ -12839,10 +14016,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("MetricInstrumentUnit: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("MetricInstrumentUnit: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12909,10 +14086,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct MetricName(::std::string::String);
-    impl ::std::ops::Deref for MetricName {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl MetricName {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for MetricName {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for MetricName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for MetricName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<MetricName> for ::std::string::String {
@@ -12924,12 +14116,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 64usize {
-                return Err("longer than 64 characters".into());
+                return Err("MetricName: longer than 64 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$\"".into());
+                return Err("MetricName: doesn't match pattern \"^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -13017,10 +14209,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ModelName(::std::string::String);
-    impl ::std::ops::Deref for ModelName {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ModelName {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ModelName {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ModelName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ModelName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ModelName> for ::std::string::String {
@@ -13032,10 +14239,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("ModelName: longer than 200 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ModelName: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -13391,10 +14598,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct NamespaceWorkspaceId(::std::string::String);
-    impl ::std::ops::Deref for NamespaceWorkspaceId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl NamespaceWorkspaceId {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for NamespaceWorkspaceId {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for NamespaceWorkspaceId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for NamespaceWorkspaceId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<NamespaceWorkspaceId> for ::std::string::String {
@@ -13406,12 +14628,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 100usize {
-                return Err("longer than 100 characters".into());
+                return Err("NamespaceWorkspaceId: longer than 100 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^tenant_[A-Za-z0-9]+$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^tenant_[A-Za-z0-9]+$\"".into());
+                return Err("NamespaceWorkspaceId: doesn't match pattern \"^tenant_[A-Za-z0-9]+$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -13561,10 +14783,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct NpmInstallRecipePackage(::std::string::String);
-    impl ::std::ops::Deref for NpmInstallRecipePackage {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl NpmInstallRecipePackage {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for NpmInstallRecipePackage {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for NpmInstallRecipePackage {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for NpmInstallRecipePackage {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<NpmInstallRecipePackage> for ::std::string::String {
@@ -13576,10 +14813,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("NpmInstallRecipePackage: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("NpmInstallRecipePackage: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -13610,10 +14847,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct NpmInstallRecipePackageVersion(::std::string::String);
-    impl ::std::ops::Deref for NpmInstallRecipePackageVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl NpmInstallRecipePackageVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for NpmInstallRecipePackageVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for NpmInstallRecipePackageVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for NpmInstallRecipePackageVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<NpmInstallRecipePackageVersion> for ::std::string::String {
@@ -13625,10 +14877,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("NpmInstallRecipePackageVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("NpmInstallRecipePackageVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -14090,10 +15342,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct OidcAudience(::std::string::String);
-    impl ::std::ops::Deref for OidcAudience {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl OidcAudience {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for OidcAudience {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for OidcAudience {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for OidcAudience {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<OidcAudience> for ::std::string::String {
@@ -14105,10 +15372,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 500usize {
-                return Err("longer than 500 characters".into());
+                return Err("OidcAudience: longer than 500 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("OidcAudience: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -14660,10 +15927,35 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PathText(::std::string::String);
-    impl ::std::ops::Deref for PathText {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PathText {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PathText {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PathText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PathText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PathText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::convert::AsRef<::std::path::Path> for PathText {
+        fn as_ref(&self) -> &::std::path::Path {
+            self.0.as_ref()
         }
     }
     impl ::std::convert::From<PathText> for ::std::string::String {
@@ -14675,7 +15967,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("PathText: longer than 4096 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -14910,10 +16202,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PersonaFileContent(::std::string::String);
-    impl ::std::ops::Deref for PersonaFileContent {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PersonaFileContent {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PersonaFileContent {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PersonaFileContent {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PersonaFileContent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<PersonaFileContent> for ::std::string::String {
@@ -14925,7 +16232,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 87384usize {
-                return Err("longer than 87384 characters".into());
+                return Err("PersonaFileContent: longer than 87384 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -15054,10 +16361,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PersonaFilePath(::std::string::String);
-    impl ::std::ops::Deref for PersonaFilePath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PersonaFilePath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PersonaFilePath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PersonaFilePath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PersonaFilePath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<PersonaFilePath> for ::std::string::String {
@@ -15069,12 +16391,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("PersonaFilePath: longer than 200 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$\"".into());
+                return Err("PersonaFilePath: doesn't match pattern \"^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -15955,10 +17277,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PrebuildPreviewOfSuppliedDevcontainer(::std::string::String);
-    impl ::std::ops::Deref for PrebuildPreviewOfSuppliedDevcontainer {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PrebuildPreviewOfSuppliedDevcontainer {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PrebuildPreviewOfSuppliedDevcontainer {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PrebuildPreviewOfSuppliedDevcontainer {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PrebuildPreviewOfSuppliedDevcontainer {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<PrebuildPreviewOfSuppliedDevcontainer> for ::std::string::String {
@@ -15970,7 +17307,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 65536usize {
-                return Err("longer than 65536 characters".into());
+                return Err("PrebuildPreviewOfSuppliedDevcontainer: longer than 65536 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16189,10 +17526,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PrebuildTemplateId(::std::string::String);
-    impl ::std::ops::Deref for PrebuildTemplateId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PrebuildTemplateId {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PrebuildTemplateId {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PrebuildTemplateId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PrebuildTemplateId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<PrebuildTemplateId> for ::std::string::String {
@@ -16204,12 +17556,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 40usize {
-                return Err("longer than 40 characters".into());
+                return Err("PrebuildTemplateId: longer than 40 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z][a-z0-9-]{0,39}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[a-z][a-z0-9-]{0,39}$\"".into());
+                return Err("PrebuildTemplateId: doesn't match pattern \"^[a-z][a-z0-9-]{0,39}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16274,10 +17626,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PrebuildTemplateSummary(::std::string::String);
-    impl ::std::ops::Deref for PrebuildTemplateSummary {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PrebuildTemplateSummary {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PrebuildTemplateSummary {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PrebuildTemplateSummary {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PrebuildTemplateSummary {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<PrebuildTemplateSummary> for ::std::string::String {
@@ -16289,10 +17656,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 500usize {
-                return Err("longer than 500 characters".into());
+                return Err("PrebuildTemplateSummary: longer than 500 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("PrebuildTemplateSummary: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16330,10 +17697,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PrebuildTemplateToolchainToolchainVersion(::std::string::String);
-    impl ::std::ops::Deref for PrebuildTemplateToolchainToolchainVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PrebuildTemplateToolchainToolchainVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PrebuildTemplateToolchainToolchainVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PrebuildTemplateToolchainToolchainVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PrebuildTemplateToolchainToolchainVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<PrebuildTemplateToolchainToolchainVersion> for ::std::string::String {
@@ -16345,10 +17727,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("PrebuildTemplateToolchainToolchainVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("PrebuildTemplateToolchainToolchainVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16826,10 +18208,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct Prompt(::std::string::String);
-    impl ::std::ops::Deref for Prompt {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl Prompt {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for Prompt {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Prompt {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Prompt {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<Prompt> for ::std::string::String {
@@ -16841,10 +18238,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 100000usize {
-                return Err("longer than 100000 characters".into());
+                return Err("Prompt: longer than 100000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("Prompt: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16923,10 +18320,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PushEndpointUrl(::std::string::String);
-    impl ::std::ops::Deref for PushEndpointUrl {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PushEndpointUrl {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PushEndpointUrl {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PushEndpointUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PushEndpointUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<PushEndpointUrl> for ::std::string::String {
@@ -16938,12 +18350,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 2048usize {
-                return Err("longer than 2048 characters".into());
+                return Err("PushEndpointUrl: longer than 2048 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^https://[^/@?#\\s]+(/[^#\\s]*)?$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^https://[^/@?#\\s]+(/[^#\\s]*)?$\"".into());
+                return Err("PushEndpointUrl: doesn't match pattern \"^https://[^/@?#\\s]+(/[^#\\s]*)?$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16980,10 +18392,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PushKeyApplicationServerKey(::std::string::String);
-    impl ::std::ops::Deref for PushKeyApplicationServerKey {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PushKeyApplicationServerKey {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PushKeyApplicationServerKey {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PushKeyApplicationServerKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PushKeyApplicationServerKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<PushKeyApplicationServerKey> for ::std::string::String {
@@ -16995,12 +18422,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("PushKeyApplicationServerKey: longer than 16384 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{87}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{87}$\"".into());
+                return Err("PushKeyApplicationServerKey: doesn't match pattern \"^[A-Za-z0-9_-]{87}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17038,10 +18465,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PushNotificationPath(::std::string::String);
-    impl ::std::ops::Deref for PushNotificationPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PushNotificationPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PushNotificationPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PushNotificationPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PushNotificationPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<PushNotificationPath> for ::std::string::String {
@@ -17053,12 +18495,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("PushNotificationPath: longer than 4096 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^/").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^/\"".into());
+                return Err("PushNotificationPath: doesn't match pattern \"^/\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17118,10 +18560,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PushSubscriptionKeysAuth(::std::string::String);
-    impl ::std::ops::Deref for PushSubscriptionKeysAuth {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PushSubscriptionKeysAuth {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PushSubscriptionKeysAuth {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PushSubscriptionKeysAuth {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PushSubscriptionKeysAuth {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<PushSubscriptionKeysAuth> for ::std::string::String {
@@ -17133,12 +18590,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("PushSubscriptionKeysAuth: longer than 16384 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{22}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{22}$\"".into());
+                return Err("PushSubscriptionKeysAuth: doesn't match pattern \"^[A-Za-z0-9_-]{22}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17169,10 +18626,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PushSubscriptionKeysP256dh(::std::string::String);
-    impl ::std::ops::Deref for PushSubscriptionKeysP256dh {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl PushSubscriptionKeysP256dh {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for PushSubscriptionKeysP256dh {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PushSubscriptionKeysP256dh {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PushSubscriptionKeysP256dh {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<PushSubscriptionKeysP256dh> for ::std::string::String {
@@ -17184,12 +18656,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("PushSubscriptionKeysP256dh: longer than 16384 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{87}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{87}$\"".into());
+                return Err("PushSubscriptionKeysP256dh: doesn't match pattern \"^[A-Za-z0-9_-]{87}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17338,10 +18810,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ReleaseCliCliVersion(::std::string::String);
-    impl ::std::ops::Deref for ReleaseCliCliVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ReleaseCliCliVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ReleaseCliCliVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ReleaseCliCliVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ReleaseCliCliVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ReleaseCliCliVersion> for ::std::string::String {
@@ -17353,10 +18840,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ReleaseCliCliVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ReleaseCliCliVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17458,10 +18945,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ReleaseManifestCommit(::std::string::String);
-    impl ::std::ops::Deref for ReleaseManifestCommit {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ReleaseManifestCommit {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ReleaseManifestCommit {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ReleaseManifestCommit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ReleaseManifestCommit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ReleaseManifestCommit> for ::std::string::String {
@@ -17473,12 +18975,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ReleaseManifestCommit: longer than 256 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err("ReleaseManifestCommit: doesn't match pattern \"^[0-9a-f]{40}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17509,10 +19011,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ReleaseManifestReleaseVersion(::std::string::String);
-    impl ::std::ops::Deref for ReleaseManifestReleaseVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ReleaseManifestReleaseVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ReleaseManifestReleaseVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ReleaseManifestReleaseVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ReleaseManifestReleaseVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ReleaseManifestReleaseVersion> for ::std::string::String {
@@ -17524,10 +19041,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ReleaseManifestReleaseVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ReleaseManifestReleaseVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17570,10 +19087,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ReleaseRolloutDeployedCommit(::std::string::String);
-    impl ::std::ops::Deref for ReleaseRolloutDeployedCommit {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ReleaseRolloutDeployedCommit {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ReleaseRolloutDeployedCommit {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ReleaseRolloutDeployedCommit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ReleaseRolloutDeployedCommit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ReleaseRolloutDeployedCommit> for ::std::string::String {
@@ -17585,12 +19117,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ReleaseRolloutDeployedCommit: longer than 256 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err("ReleaseRolloutDeployedCommit: doesn't match pattern \"^[0-9a-f]{40}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17639,10 +19171,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ReleaseSupervisorSupervisorVersion(::std::string::String);
-    impl ::std::ops::Deref for ReleaseSupervisorSupervisorVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ReleaseSupervisorSupervisorVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ReleaseSupervisorSupervisorVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ReleaseSupervisorSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ReleaseSupervisorSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ReleaseSupervisorSupervisorVersion> for ::std::string::String {
@@ -17654,10 +19201,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ReleaseSupervisorSupervisorVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ReleaseSupervisorSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17846,10 +19393,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct RepositoryUrl(::std::string::String);
-    impl ::std::ops::Deref for RepositoryUrl {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl RepositoryUrl {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for RepositoryUrl {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for RepositoryUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for RepositoryUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<RepositoryUrl> for ::std::string::String {
@@ -17861,10 +19423,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 500usize {
-                return Err("longer than 500 characters".into());
+                return Err("RepositoryUrl: longer than 500 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("RepositoryUrl: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -18086,10 +19648,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SecretName(::std::string::String);
-    impl ::std::ops::Deref for SecretName {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SecretName {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SecretName {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SecretName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SecretName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SecretName> for ::std::string::String {
@@ -18101,12 +19678,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 100usize {
-                return Err("longer than 100 characters".into());
+                return Err("SecretName: longer than 100 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Z_][A-Z0-9_]*$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Z_][A-Z0-9_]*$\"".into());
+                return Err("SecretName: doesn't match pattern \"^[A-Z_][A-Z0-9_]*$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -18175,10 +19752,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SecretText(::std::string::String);
-    impl ::std::ops::Deref for SecretText {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SecretText {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SecretText {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SecretText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SecretText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SecretText> for ::std::string::String {
@@ -18190,10 +19782,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 10000usize {
-                return Err("longer than 10000 characters".into());
+                return Err("SecretText: longer than 10000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SecretText: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19028,10 +20620,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SessionTag(::std::string::String);
-    impl ::std::ops::Deref for SessionTag {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SessionTag {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SessionTag {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SessionTag {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SessionTag {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SessionTag> for ::std::string::String {
@@ -19043,12 +20650,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 63usize {
-                return Err("longer than 63 characters".into());
+                return Err("SessionTag: longer than 63 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z0-9][a-z0-9:._-]{0,62}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[a-z0-9][a-z0-9:._-]{0,62}$\"".into());
+                return Err("SessionTag: doesn't match pattern \"^[a-z0-9][a-z0-9:._-]{0,62}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19094,10 +20701,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct Sha256Digest(::std::string::String);
-    impl ::std::ops::Deref for Sha256Digest {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl Sha256Digest {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for Sha256Digest {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Sha256Digest {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Sha256Digest {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<Sha256Digest> for ::std::string::String {
@@ -19109,12 +20731,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 64usize {
-                return Err("longer than 64 characters".into());
+                return Err("Sha256Digest: longer than 64 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{64}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{64}$\"".into());
+                return Err("Sha256Digest: doesn't match pattern \"^[0-9a-f]{64}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19145,10 +20767,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ShortText(::std::string::String);
-    impl ::std::ops::Deref for ShortText {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl ShortText {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for ShortText {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ShortText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ShortText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<ShortText> for ::std::string::String {
@@ -19160,7 +20797,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("ShortText: longer than 256 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19270,10 +20907,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotDirectoryEntryPath(::std::string::String);
-    impl ::std::ops::Deref for SnapshotDirectoryEntryPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SnapshotDirectoryEntryPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SnapshotDirectoryEntryPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotDirectoryEntryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotDirectoryEntryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SnapshotDirectoryEntryPath> for ::std::string::String {
@@ -19285,10 +20937,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("SnapshotDirectoryEntryPath: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotDirectoryEntryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19368,10 +21020,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotEntryCommonPath(::std::string::String);
-    impl ::std::ops::Deref for SnapshotEntryCommonPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SnapshotEntryCommonPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SnapshotEntryCommonPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotEntryCommonPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotEntryCommonPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SnapshotEntryCommonPath> for ::std::string::String {
@@ -19383,10 +21050,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("SnapshotEntryCommonPath: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotEntryCommonPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19508,10 +21175,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotFileEntryPath(::std::string::String);
-    impl ::std::ops::Deref for SnapshotFileEntryPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SnapshotFileEntryPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SnapshotFileEntryPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotFileEntryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotFileEntryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SnapshotFileEntryPath> for ::std::string::String {
@@ -19523,10 +21205,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("SnapshotFileEntryPath: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotFileEntryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19612,10 +21294,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotOpaqueDirectoryEntryPath(::std::string::String);
-    impl ::std::ops::Deref for SnapshotOpaqueDirectoryEntryPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SnapshotOpaqueDirectoryEntryPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SnapshotOpaqueDirectoryEntryPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotOpaqueDirectoryEntryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotOpaqueDirectoryEntryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SnapshotOpaqueDirectoryEntryPath> for ::std::string::String {
@@ -19627,10 +21324,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("SnapshotOpaqueDirectoryEntryPath: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotOpaqueDirectoryEntryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19773,10 +21470,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotSymlinkEntryPath(::std::string::String);
-    impl ::std::ops::Deref for SnapshotSymlinkEntryPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SnapshotSymlinkEntryPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SnapshotSymlinkEntryPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotSymlinkEntryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotSymlinkEntryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SnapshotSymlinkEntryPath> for ::std::string::String {
@@ -19788,10 +21500,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("SnapshotSymlinkEntryPath: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotSymlinkEntryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19822,10 +21534,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotSymlinkEntryTarget(::std::string::String);
-    impl ::std::ops::Deref for SnapshotSymlinkEntryTarget {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SnapshotSymlinkEntryTarget {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SnapshotSymlinkEntryTarget {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotSymlinkEntryTarget {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotSymlinkEntryTarget {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SnapshotSymlinkEntryTarget> for ::std::string::String {
@@ -19837,10 +21564,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("SnapshotSymlinkEntryTarget: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotSymlinkEntryTarget: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19917,10 +21644,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotWhiteoutEntryPath(::std::string::String);
-    impl ::std::ops::Deref for SnapshotWhiteoutEntryPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SnapshotWhiteoutEntryPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SnapshotWhiteoutEntryPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotWhiteoutEntryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotWhiteoutEntryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SnapshotWhiteoutEntryPath> for ::std::string::String {
@@ -19932,10 +21674,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("SnapshotWhiteoutEntryPath: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotWhiteoutEntryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -20152,10 +21894,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct StorageKey(::std::string::String);
-    impl ::std::ops::Deref for StorageKey {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl StorageKey {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for StorageKey {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for StorageKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for StorageKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<StorageKey> for ::std::string::String {
@@ -20167,10 +21924,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 1000usize {
-                return Err("longer than 1000 characters".into());
+                return Err("StorageKey: longer than 1000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("StorageKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -20621,10 +22378,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SubscriptionPauseMessage(::std::string::String);
-    impl ::std::ops::Deref for SubscriptionPauseMessage {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SubscriptionPauseMessage {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SubscriptionPauseMessage {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SubscriptionPauseMessage {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SubscriptionPauseMessage {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SubscriptionPauseMessage> for ::std::string::String {
@@ -20636,10 +22408,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 500usize {
-                return Err("longer than 500 characters".into());
+                return Err("SubscriptionPauseMessage: longer than 500 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SubscriptionPauseMessage: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -21126,10 +22898,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct Summary(::std::string::String);
-    impl ::std::ops::Deref for Summary {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl Summary {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for Summary {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Summary {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Summary {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<Summary> for ::std::string::String {
@@ -21141,7 +22928,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 1024usize {
-                return Err("longer than 1024 characters".into());
+                return Err("Summary: longer than 1024 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -21204,10 +22991,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorCheckReportSupervisorVersion(::std::string::String);
-    impl ::std::ops::Deref for SupervisorCheckReportSupervisorVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SupervisorCheckReportSupervisorVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SupervisorCheckReportSupervisorVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorCheckReportSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorCheckReportSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SupervisorCheckReportSupervisorVersion> for ::std::string::String {
@@ -21219,10 +23021,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("SupervisorCheckReportSupervisorVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorCheckReportSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -21751,10 +23553,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorHostKeyPrivateKey(::std::string::String);
-    impl ::std::ops::Deref for SupervisorHostKeyPrivateKey {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SupervisorHostKeyPrivateKey {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SupervisorHostKeyPrivateKey {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorHostKeyPrivateKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorHostKeyPrivateKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SupervisorHostKeyPrivateKey> for ::std::string::String {
@@ -21766,10 +23583,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("SupervisorHostKeyPrivateKey: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorHostKeyPrivateKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -21800,10 +23617,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorHostKeyPublicKey(::std::string::String);
-    impl ::std::ops::Deref for SupervisorHostKeyPublicKey {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SupervisorHostKeyPublicKey {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SupervisorHostKeyPublicKey {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorHostKeyPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorHostKeyPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SupervisorHostKeyPublicKey> for ::std::string::String {
@@ -21815,10 +23647,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("SupervisorHostKeyPublicKey: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorHostKeyPublicKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -21878,10 +23710,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorReleaseSupervisorVersion(::std::string::String);
-    impl ::std::ops::Deref for SupervisorReleaseSupervisorVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SupervisorReleaseSupervisorVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SupervisorReleaseSupervisorVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorReleaseSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorReleaseSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SupervisorReleaseSupervisorVersion> for ::std::string::String {
@@ -21893,13 +23740,16 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("SupervisorReleaseSupervisorVersion: longer than 256 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$").unwrap()
             });
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$\"".into());
+                return Err(
+                    "SupervisorReleaseSupervisorVersion: doesn't match pattern \"^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$\""
+                        .into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
@@ -21930,10 +23780,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorReleaseTumpelApiVersion(::std::string::String);
-    impl ::std::ops::Deref for SupervisorReleaseTumpelApiVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SupervisorReleaseTumpelApiVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SupervisorReleaseTumpelApiVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorReleaseTumpelApiVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorReleaseTumpelApiVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SupervisorReleaseTumpelApiVersion> for ::std::string::String {
@@ -21945,13 +23810,16 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("SupervisorReleaseTumpelApiVersion: longer than 256 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$").unwrap()
             });
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$\"".into());
+                return Err(
+                    "SupervisorReleaseTumpelApiVersion: doesn't match pattern \"^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$\""
+                        .into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
@@ -22027,10 +23895,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorRuntimeDataDir(::std::string::String);
-    impl ::std::ops::Deref for SupervisorRuntimeDataDir {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SupervisorRuntimeDataDir {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SupervisorRuntimeDataDir {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorRuntimeDataDir {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorRuntimeDataDir {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SupervisorRuntimeDataDir> for ::std::string::String {
@@ -22042,10 +23925,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("SupervisorRuntimeDataDir: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorRuntimeDataDir: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -22076,10 +23959,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorRuntimeFirecrackerPath(::std::string::String);
-    impl ::std::ops::Deref for SupervisorRuntimeFirecrackerPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SupervisorRuntimeFirecrackerPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SupervisorRuntimeFirecrackerPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorRuntimeFirecrackerPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorRuntimeFirecrackerPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SupervisorRuntimeFirecrackerPath> for ::std::string::String {
@@ -22091,10 +23989,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("SupervisorRuntimeFirecrackerPath: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorRuntimeFirecrackerPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -22125,10 +24023,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorRuntimeImageCacheDir(::std::string::String);
-    impl ::std::ops::Deref for SupervisorRuntimeImageCacheDir {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SupervisorRuntimeImageCacheDir {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SupervisorRuntimeImageCacheDir {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorRuntimeImageCacheDir {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorRuntimeImageCacheDir {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SupervisorRuntimeImageCacheDir> for ::std::string::String {
@@ -22140,10 +24053,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("SupervisorRuntimeImageCacheDir: longer than 4096 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorRuntimeImageCacheDir: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -22446,10 +24359,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorUpdateStepReportReleaseVersion(::std::string::String);
-    impl ::std::ops::Deref for SupervisorUpdateStepReportReleaseVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl SupervisorUpdateStepReportReleaseVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for SupervisorUpdateStepReportReleaseVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorUpdateStepReportReleaseVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorUpdateStepReportReleaseVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<SupervisorUpdateStepReportReleaseVersion> for ::std::string::String {
@@ -22461,10 +24389,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("SupervisorUpdateStepReportReleaseVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorUpdateStepReportReleaseVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -26405,10 +28333,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiConnectorStateClaimsConnectorAuthorizationId(::std::string::String);
-    impl ::std::ops::Deref for TenantApiConnectorStateClaimsConnectorAuthorizationId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl TenantApiConnectorStateClaimsConnectorAuthorizationId {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for TenantApiConnectorStateClaimsConnectorAuthorizationId {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiConnectorStateClaimsConnectorAuthorizationId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiConnectorStateClaimsConnectorAuthorizationId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<TenantApiConnectorStateClaimsConnectorAuthorizationId> for ::std::string::String {
@@ -26420,10 +28363,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("TenantApiConnectorStateClaimsConnectorAuthorizationId: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiConnectorStateClaimsConnectorAuthorizationId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -26454,10 +28397,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiConnectorStateClaimsConnectorId(::std::string::String);
-    impl ::std::ops::Deref for TenantApiConnectorStateClaimsConnectorId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl TenantApiConnectorStateClaimsConnectorId {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for TenantApiConnectorStateClaimsConnectorId {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiConnectorStateClaimsConnectorId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiConnectorStateClaimsConnectorId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<TenantApiConnectorStateClaimsConnectorId> for ::std::string::String {
@@ -26469,10 +28427,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("TenantApiConnectorStateClaimsConnectorId: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiConnectorStateClaimsConnectorId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -26503,10 +28461,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiConnectorStateClaimsPrincipalId(::std::string::String);
-    impl ::std::ops::Deref for TenantApiConnectorStateClaimsPrincipalId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl TenantApiConnectorStateClaimsPrincipalId {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for TenantApiConnectorStateClaimsPrincipalId {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiConnectorStateClaimsPrincipalId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiConnectorStateClaimsPrincipalId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<TenantApiConnectorStateClaimsPrincipalId> for ::std::string::String {
@@ -26518,10 +28491,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("TenantApiConnectorStateClaimsPrincipalId: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiConnectorStateClaimsPrincipalId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -26585,10 +28558,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiConnectorStateClaimsTenantId(::std::string::String);
-    impl ::std::ops::Deref for TenantApiConnectorStateClaimsTenantId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl TenantApiConnectorStateClaimsTenantId {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for TenantApiConnectorStateClaimsTenantId {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiConnectorStateClaimsTenantId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiConnectorStateClaimsTenantId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<TenantApiConnectorStateClaimsTenantId> for ::std::string::String {
@@ -26600,10 +28588,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("TenantApiConnectorStateClaimsTenantId: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiConnectorStateClaimsTenantId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -30197,10 +32185,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiHostRecordPublicKey(::std::string::String);
-    impl ::std::ops::Deref for TenantApiHostRecordPublicKey {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl TenantApiHostRecordPublicKey {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for TenantApiHostRecordPublicKey {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiHostRecordPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiHostRecordPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<TenantApiHostRecordPublicKey> for ::std::string::String {
@@ -30212,10 +32215,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("TenantApiHostRecordPublicKey: longer than 16384 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiHostRecordPublicKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -30246,10 +32249,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiHostRecordSupervisorVersion(::std::string::String);
-    impl ::std::ops::Deref for TenantApiHostRecordSupervisorVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl TenantApiHostRecordSupervisorVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for TenantApiHostRecordSupervisorVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiHostRecordSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiHostRecordSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<TenantApiHostRecordSupervisorVersion> for ::std::string::String {
@@ -30261,10 +32279,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("TenantApiHostRecordSupervisorVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiHostRecordSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -37949,10 +39967,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiStoredTurnOfferHarnessVersion(::std::string::String);
-    impl ::std::ops::Deref for TenantApiStoredTurnOfferHarnessVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl TenantApiStoredTurnOfferHarnessVersion {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for TenantApiStoredTurnOfferHarnessVersion {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiStoredTurnOfferHarnessVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiStoredTurnOfferHarnessVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<TenantApiStoredTurnOfferHarnessVersion> for ::std::string::String {
@@ -37964,10 +39997,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("TenantApiStoredTurnOfferHarnessVersion: longer than 256 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiStoredTurnOfferHarnessVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -38002,10 +40035,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiStoredTurnOfferPrebuildCommitSha(::std::string::String);
-    impl ::std::ops::Deref for TenantApiStoredTurnOfferPrebuildCommitSha {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl TenantApiStoredTurnOfferPrebuildCommitSha {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for TenantApiStoredTurnOfferPrebuildCommitSha {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiStoredTurnOfferPrebuildCommitSha {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiStoredTurnOfferPrebuildCommitSha {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<TenantApiStoredTurnOfferPrebuildCommitSha> for ::std::string::String {
@@ -38017,12 +40065,14 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 256usize {
-                return Err("longer than 256 characters".into());
+                return Err("TenantApiStoredTurnOfferPrebuildCommitSha: longer than 256 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err(
+                    "TenantApiStoredTurnOfferPrebuildCommitSha: doesn't match pattern \"^[0-9a-f]{40}$\"".into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
@@ -42859,10 +44909,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct Token(::std::string::String);
-    impl ::std::ops::Deref for Token {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl Token {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for Token {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Token {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Token {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<Token> for ::std::string::String {
@@ -42874,7 +44939,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("Token: longer than 16384 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -43060,10 +45125,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TriggerConditionValue(::std::string::String);
-    impl ::std::ops::Deref for TriggerConditionValue {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl TriggerConditionValue {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for TriggerConditionValue {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TriggerConditionValue {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TriggerConditionValue {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<TriggerConditionValue> for ::std::string::String {
@@ -43075,7 +45155,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 500usize {
-                return Err("longer than 500 characters".into());
+                return Err("TriggerConditionValue: longer than 500 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -43135,10 +45215,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TriggerDeliveryId(::std::string::String);
-    impl ::std::ops::Deref for TriggerDeliveryId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl TriggerDeliveryId {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for TriggerDeliveryId {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TriggerDeliveryId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TriggerDeliveryId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<TriggerDeliveryId> for ::std::string::String {
@@ -43150,10 +45245,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("TriggerDeliveryId: longer than 200 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TriggerDeliveryId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -43185,10 +45280,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TriggerFieldPath(::std::string::String);
-    impl ::std::ops::Deref for TriggerFieldPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl TriggerFieldPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for TriggerFieldPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TriggerFieldPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TriggerFieldPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<TriggerFieldPath> for ::std::string::String {
@@ -43200,13 +45310,15 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("TriggerFieldPath: longer than 200 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^[A-Za-z0-9_\\-]+(\\.[A-Za-z0-9_\\-]+)*$").unwrap()
             });
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_\\-]+(\\.[A-Za-z0-9_\\-]+)*$\"".into());
+                return Err(
+                    "TriggerFieldPath: doesn't match pattern \"^[A-Za-z0-9_\\-]+(\\.[A-Za-z0-9_\\-]+)*$\"".into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
@@ -43965,10 +46077,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct UrlText(::std::string::String);
-    impl ::std::ops::Deref for UrlText {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl UrlText {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for UrlText {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for UrlText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for UrlText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<UrlText> for ::std::string::String {
@@ -43980,7 +46107,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 4096usize {
-                return Err("longer than 4096 characters".into());
+                return Err("UrlText: longer than 4096 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -44313,10 +46440,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct WebhookSigningKeyPublicKey(::std::string::String);
-    impl ::std::ops::Deref for WebhookSigningKeyPublicKey {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl WebhookSigningKeyPublicKey {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for WebhookSigningKeyPublicKey {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for WebhookSigningKeyPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for WebhookSigningKeyPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<WebhookSigningKeyPublicKey> for ::std::string::String {
@@ -44328,12 +46470,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 16384usize {
-                return Err("longer than 16384 characters".into());
+                return Err("WebhookSigningKeyPublicKey: longer than 16384 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{43}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
+                return Err("WebhookSigningKeyPublicKey: doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -44365,10 +46507,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct WebhookUrl(::std::string::String);
-    impl ::std::ops::Deref for WebhookUrl {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl WebhookUrl {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for WebhookUrl {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for WebhookUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for WebhookUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<WebhookUrl> for ::std::string::String {
@@ -44380,12 +46537,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 2048usize {
-                return Err("longer than 2048 characters".into());
+                return Err("WebhookUrl: longer than 2048 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^https://[^/@?#\\s]+(/[^#\\s]*)?$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^https://[^/@?#\\s]+(/[^#\\s]*)?$\"".into());
+                return Err("WebhookUrl: doesn't match pattern \"^https://[^/@?#\\s]+(/[^#\\s]*)?$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -44429,10 +46586,25 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct WorkflowPath(::std::string::String);
-    impl ::std::ops::Deref for WorkflowPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    impl WorkflowPath {
+        pub fn as_str(&self) -> &str {
             &self.0
+        }
+    }
+    impl ::std::ops::Deref for WorkflowPath {
+        type Target = str;
+        fn deref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for WorkflowPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for WorkflowPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
         }
     }
     impl ::std::convert::From<WorkflowPath> for ::std::string::String {
@@ -44444,13 +46616,15 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("WorkflowPath: longer than 200 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^\\.github/workflows/[A-Za-z0-9._-]+\\.ya?ml$").unwrap()
             });
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^\\.github/workflows/[A-Za-z0-9._-]+\\.ya?ml$\"".into());
+                return Err(
+                    "WorkflowPath: doesn't match pattern \"^\\.github/workflows/[A-Za-z0-9._-]+\\.ya?ml$\"".into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
