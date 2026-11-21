@@ -55561,5 +55561,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 10;
+    pub const VERSION: u16 = 11;
 }
