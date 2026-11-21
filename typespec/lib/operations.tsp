@@ -515,6 +515,8 @@ model HostLabelsPatch {
 }
 
 model SessionStart is Create<Session> {
+  @doc("The running time limit for every turn of this session. When omitted, each turn takes the persona's current budget. Time spent Offered does not consume it.")
+  turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
   prompt: Prompt;
   @doc("What happens to the box after each turn; left out, the session takes its persona's boxRetention.")
   boxRetention?: BoxRetention;
@@ -526,7 +528,7 @@ model SessionStart is Create<Session> {
 
 @doc("A start from an open GitHub issue: the control plane reads the issue and writes the first prompt, which asks for the branch ticket/<issueNumber>-<slug of the title> and a draft pull request that closes the issue.")
 model SessionStartFromIssue {
-  @doc("The total budget for every turn; left out, the session takes its persona's budget or the control-plane default.")
+  @doc("The running time limit for every turn of this session. When omitted, each turn takes the persona's current budget. Time spent Offered does not consume it.")
   turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
   personaId: EntityId;
   owner: GitHubLogin;
@@ -723,6 +725,8 @@ model CompactTranscriptLine {
 
 @doc("A new persona with its whole file set: at most PersonaFileLimit.PersonaBytes together, each at a path its harness accepts.")
 model PersonaCreate is Create<Persona> {
+  @doc("The running time limit of new turns; omitted, the control-plane setting applies.")
+  turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
   @doc("The persona's files; none when left out.")
   files?: PersonaFileWrite[];
 
@@ -735,6 +739,8 @@ model PersonaCreate is Create<Persona> {
 
 @doc("Replaces the persona's name, secret set, connectors, box memory, box retention, Tumpel MCP and whole file set: a file the update leaves out is deleted, a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib, a box retention it leaves out goes back to Auto, and a tumpelMcp it leaves out goes back to false. The harness is fixed at create.")
 model PersonaUpdate is Update<Persona> {
+  @doc("The running time limit of new turns; omitted, the control-plane setting applies.")
+  turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
   files: PersonaFileWrite[];
   @doc("What happens to the box after each turn; left out, the persona's sessions get Auto.")
   boxRetention?: BoxRetention;
@@ -745,6 +751,8 @@ model PersonaUpdate is Update<Persona> {
 
 @doc("Changes the persona fields it names and leaves every other field, and every file, as it is. The harness is fixed at create, and files change through a file patch.")
 model PersonaPatch is OptionalProperties<Update<Persona>> {
+  @doc("The running time limit of new turns; omitted, it stays as it is.")
+  turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
   @doc("What happens to the box after each turn; left out, it stays as it is.")
   boxRetention?: BoxRetention;
 

@@ -55,10 +55,6 @@
                 "name": {
                     "$ref": "#/$defs/DisplayName"
                 },
-                "turnTotalBudgetSeconds": {
-                    "$ref": "#/$defs/TurnTotalBudgetSeconds",
-                    "description": "The total budget for each new session's turns, unless its start overrides it. Omitted on create or replacement, the control-plane default applies. Existing sessions keep their budget."
-                },
                 "harness": {
                     "$ref": "#/$defs/Harness",
                     "description": "The harness every session of the persona runs, at the version the tenant pins. It is fixed when the persona is created."
@@ -74,6 +70,10 @@
                     "minimum": 32768,
                     "maximum": 262144,
                     "description": "The disk in MiB of each box the persona's sessions boot, from BoxDiskLimit.DefaultMib up to BoxDiskLimit.MaxMib; left\nout, the boxes get BoxDiskLimit.DefaultMib. A host refuses a box whose disk does not fit its disk\nbudget, and a box already running keeps the disk it booted with."
+                },
+                "turnTotalBudgetSeconds": {
+                    "$ref": "#/$defs/TurnTotalBudgetSeconds",
+                    "description": "The running time limit of new turns; omitted, the control-plane setting applies."
                 },
                 "boxRetention": {
                     "$ref": "#/$defs/BoxRetention",
@@ -203,12 +203,6 @@
             "minLength": 1,
             "maxLength": 100
         },
-        "TurnTotalBudgetSeconds": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 86400,
-            "description": "A total turn budget in seconds, from one second through 24 hours."
-        },
         "Harness": {
             "type": "string",
             "enum": [
@@ -218,6 +212,12 @@
                 "PiDev",
                 "MistralAgent"
             ]
+        },
+        "TurnTotalBudgetSeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 86400,
+            "description": "The running time limit of a turn in seconds, from one second through 24 hours. Time spent Offered does not consume this budget."
         },
         "BoxRetention": {
             "type": "string",

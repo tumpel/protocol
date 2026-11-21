@@ -42,7 +42,7 @@ model StoredFileRead {
 
 @doc("A persona as the tenant Durable Object stores it, its files named by digest.")
 model StoredPersona {
-  turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
+  turnTotalBudgetSeconds: TurnTotalBudgetSeconds;
   personaId: EntityId;
   tenantId: EntityId;
   name: DisplayName;
@@ -3690,7 +3690,7 @@ model ListHostUsageResult {
 
 @doc("A turn offer as the control plane stores it, before it adds the parts minted at each send.")
 model StoredTurnOffer {
-  ...OmitProperties<Channel.TurnOffer, "credential" | "lastLineSeq" | "snapshots" | "personaFiles" | "image" | "gitAuthorName" | "gitAuthorEmail">;
+  ...OmitProperties<Channel.TurnOffer, "credential" | "lastLineSeq" | "snapshots" | "personaFiles" | "image" | "gitAuthorName" | "gitAuthorEmail" | "turnTotalBudgetSeconds">;
 }
 
 model TurnHandoff {
@@ -3709,7 +3709,7 @@ model TurnMetricDimensionsResult {
 
 model OfferReady {
   kind: "Ready";
-  ...PickProperties<Channel.TurnOffer, "credential" | "lastLineSeq" | "snapshots" | "personaFiles" | "image" | "gitAuthorName" | "gitAuthorEmail">;
+  ...PickProperties<Channel.TurnOffer, "credential" | "lastLineSeq" | "snapshots" | "personaFiles" | "image" | "gitAuthorName" | "gitAuthorEmail" | "turnTotalBudgetSeconds">;
 }
 
 model OfferWithdrawn {

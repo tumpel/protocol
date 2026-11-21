@@ -3797,6 +3797,9 @@ pub mod types {
         pub snapshots: ::std::vec::Vec<ChannelSnapshotDownload>,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
+        ///The running time limit resolved for this turn. The supervisor enforces it from claim; time spent Offered does not consume it.
+        #[serde(rename = "turnTotalBudgetSeconds")]
+        pub turn_total_budget_seconds: TurnTotalBudgetSeconds,
         #[serde(rename = "type")]
         pub type_: ChannelTurnOfferType,
     }
@@ -6011,6 +6014,12 @@ pub mod types {
         ///Whether the persona's sessions reach the Tumpel MCP server; left out, false.
         #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
         pub tumpel_mcp: ::std::option::Option<bool>,
+        ///The running time limit of new turns; omitted, the control-plane setting applies.
+        #[serde(
+            rename = "turnTotalBudgetSeconds",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub turn_total_budget_seconds: ::std::option::Option<TurnTotalBudgetSeconds>,
     }
     ///One persona file: `path` is where the harness reads it, relative to its home in the box, and
     ///`from` the local file whose bytes it holds. The config file never holds the bytes; apply reads
@@ -6859,9 +6868,9 @@ pub mod types {
         ///How long the credential, restore URLs and image URLs of each send of a TurnOffer stay valid, plus turnImageFetchBudgetSeconds for the image. It bounds no turn: a turn no host claims stays Offered.
         #[serde(rename = "turnOfferTtlSeconds")]
         pub turn_offer_ttl_seconds: ::std::num::NonZeroU32,
-        ///How long a claimed turn may run before it fails TurnTimedOut, and how long an unclaimed turn stays Offered before it fails Undelivered.
+        ///The default running time limit assigned to a persona on create or replacement when omitted. Time spent Offered does not consume it.
         #[serde(rename = "turnTotalBudgetSeconds")]
-        pub turn_total_budget_seconds: ::std::num::NonZeroU32,
+        pub turn_total_budget_seconds: TurnTotalBudgetSeconds,
     }
     ///Whether a turn on a credential reports what it cost and whether that cost is billed. A turn records
     ///its tokens as turn.tokens and, unless NotReported, its cost as turn.cost in micro-US-dollars, both
@@ -14417,6 +14426,9 @@ pub mod types {
         ///Whether every session of the persona reaches the Tumpel MCP server as the built-in connector `tumpel`, calling it with a token of its turn.
         #[serde(rename = "tumpelMcp")]
         pub tumpel_mcp: bool,
+        ///The running time limit for each new turn, unless its session start supplied a budget. Filled from the control-plane setting on create or replacement when omitted; editing it reaches existing sessions on their next turn. Time spent Offered does not consume it.
+        #[serde(rename = "turnTotalBudgetSeconds")]
+        pub turn_total_budget_seconds: TurnTotalBudgetSeconds,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
     }
@@ -14451,6 +14463,12 @@ pub mod types {
         ///Whether the persona's sessions reach the Tumpel MCP server; left out, false.
         #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
         pub tumpel_mcp: ::std::option::Option<bool>,
+        ///The running time limit of new turns; omitted, the control-plane setting applies.
+        #[serde(
+            rename = "turnTotalBudgetSeconds",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub turn_total_budget_seconds: ::std::option::Option<TurnTotalBudgetSeconds>,
     }
     ///One config file of a persona, at a path relative to the harness home in the box. Its bytes live
     ///in the store under their sha256 digest; the box receives the path and digest of each file. Each
@@ -14811,6 +14829,12 @@ pub mod types {
         ///Whether the persona's sessions reach the Tumpel MCP server; left out, it stays as it is.
         #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
         pub tumpel_mcp: ::std::option::Option<bool>,
+        ///The running time limit of new turns; omitted, it stays as it is.
+        #[serde(
+            rename = "turnTotalBudgetSeconds",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub turn_total_budget_seconds: ::std::option::Option<TurnTotalBudgetSeconds>,
     }
     ///Replaces the persona's name, secret set, connectors, box memory, box retention, Tumpel MCP and whole file set: a file the update leaves out is deleted, a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib, a box retention it leaves out goes back to Auto, and a tumpelMcp it leaves out goes back to false. The harness is fixed at create.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -14839,6 +14863,12 @@ pub mod types {
         ///Whether the persona's sessions reach the Tumpel MCP server; left out, false.
         #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
         pub tumpel_mcp: ::std::option::Option<bool>,
+        ///The running time limit of new turns; omitted, the control-plane setting applies.
+        #[serde(
+            rename = "turnTotalBudgetSeconds",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub turn_total_budget_seconds: ::std::option::Option<TurnTotalBudgetSeconds>,
     }
     ///A repository's dependencies installed once by a build provider on the tenant's account, stored as
     ///one layer. The repository, the input digest and the guest image digest are its key: every commit
@@ -18043,6 +18073,9 @@ pub mod types {
         pub tags: ::std::vec::Vec<SessionTag>,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
+        ///The running time limit resolved for the latest turn. An explicit session-start budget overrides the persona; otherwise each new turn takes the persona's current budget. Time spent Offered does not consume it.
+        #[serde(rename = "turnTotalBudgetSeconds")]
+        pub turn_total_budget_seconds: TurnTotalBudgetSeconds,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
     }
@@ -18413,6 +18446,12 @@ pub mod types {
         ///The session's tags, each once; none when left out.
         #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
         pub tags: ::std::vec::Vec<SessionTag>,
+        ///The running time limit for every turn of this session. When omitted, each turn takes the persona's current budget. Time spent Offered does not consume it.
+        #[serde(
+            rename = "turnTotalBudgetSeconds",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub turn_total_budget_seconds: ::std::option::Option<TurnTotalBudgetSeconds>,
     }
     ///A start from an open GitHub issue: the control plane reads the issue and writes the first prompt, which asks for the branch ticket/<issueNumber>-<slug of the title> and a draft pull request that closes the issue.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -18430,6 +18469,12 @@ pub mod types {
         ///The session's tags, each once; none when left out.
         #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
         pub tags: ::std::vec::Vec<SessionTag>,
+        ///The running time limit for every turn of this session. When omitted, each turn takes the persona's current budget. Time spent Offered does not consume it.
+        #[serde(
+            rename = "turnTotalBudgetSeconds",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub turn_total_budget_seconds: ::std::option::Option<TurnTotalBudgetSeconds>,
     }
     ///Who started a session: a person, a turn of another session or a trigger. What the first prompt came from is SessionOrigin.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -31297,6 +31342,9 @@ pub mod types {
         #[serde(rename = "personaFiles")]
         pub persona_files: ::std::vec::Vec<ChannelPersonaFileDownload>,
         pub snapshots: ::std::vec::Vec<ChannelSnapshotDownload>,
+        ///The running time limit resolved for this turn. The supervisor enforces it from claim; time spent Offered does not consume it.
+        #[serde(rename = "turnTotalBudgetSeconds")]
+        pub turn_total_budget_seconds: TurnTotalBudgetSeconds,
     }
     ///`TenantApiOfferReadyKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -32290,6 +32338,11 @@ pub mod types {
         pub secret_set_id: EntityId,
         #[serde(rename = "tumpelMcp")]
         pub tumpel_mcp: bool,
+        #[serde(
+            rename = "turnTotalBudgetSeconds",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub turn_total_budget_seconds: ::std::option::Option<TurnTotalBudgetSeconds>,
     }
     ///`TenantApiPersonaDeleted`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -32423,6 +32476,11 @@ pub mod types {
         pub secret_set_id: ::std::option::Option<EntityId>,
         #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
         pub tumpel_mcp: ::std::option::Option<bool>,
+        #[serde(
+            rename = "turnTotalBudgetSeconds",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub turn_total_budget_seconds: ::std::option::Option<TurnTotalBudgetSeconds>,
     }
     ///`TenantApiPersonaUpdated`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -32450,6 +32508,11 @@ pub mod types {
         pub secret_set_id: EntityId,
         #[serde(rename = "tumpelMcp")]
         pub tumpel_mcp: bool,
+        #[serde(
+            rename = "turnTotalBudgetSeconds",
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub turn_total_budget_seconds: ::std::option::Option<TurnTotalBudgetSeconds>,
     }
     ///`TenantApiPersonaWritten`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -37202,6 +37265,8 @@ pub mod types {
         pub tenant_id: EntityId,
         #[serde(rename = "tumpelMcp")]
         pub tumpel_mcp: bool,
+        #[serde(rename = "turnTotalBudgetSeconds")]
+        pub turn_total_budget_seconds: TurnTotalBudgetSeconds,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
     }
@@ -42957,6 +43022,49 @@ pub mod types {
     impl ::std::convert::TryFrom<::std::string::String> for TurnState {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The running time limit of a turn in seconds, from one second through 24 hours. Time spent Offered does not consume this budget.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct TurnTotalBudgetSeconds(pub ::std::num::NonZeroU32);
+    impl ::std::ops::Deref for TurnTotalBudgetSeconds {
+        type Target = ::std::num::NonZeroU32;
+        fn deref(&self) -> &::std::num::NonZeroU32 {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TurnTotalBudgetSeconds> for ::std::num::NonZeroU32 {
+        fn from(value: TurnTotalBudgetSeconds) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::From<::std::num::NonZeroU32> for TurnTotalBudgetSeconds {
+        fn from(value: ::std::num::NonZeroU32) -> Self {
+            Self(value)
+        }
+    }
+    impl ::std::fmt::Display for TurnTotalBudgetSeconds {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            self.0.fmt(f)
+        }
+    }
+    impl ::std::str::FromStr for TurnTotalBudgetSeconds {
+        type Err = <::std::num::NonZeroU32 as ::std::str::FromStr>::Err;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
+            Ok(Self(value.parse()?))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TurnTotalBudgetSeconds {
+        type Error = <::std::num::NonZeroU32 as ::std::str::FromStr>::Err;
+        fn try_from(value: &str) -> ::std::result::Result<Self, Self::Error> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<String> for TurnTotalBudgetSeconds {
+        type Error = <::std::num::NonZeroU32 as ::std::str::FromStr>::Err;
+        fn try_from(value: String) -> ::std::result::Result<Self, Self::Error> {
             value.parse()
         }
     }
@@ -51356,7 +51464,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 18;
-    pub const VERSION: u16 = 30;
+    pub const VERSION: u16 = 31;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
