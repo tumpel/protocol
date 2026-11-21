@@ -834,6 +834,46 @@ union Turn {
   Failed: FailedTurn,
 }
 
+model CompactOfferedTurn {
+  ...OmitProperties<OfferedTurn, "prompt" | "goal">;
+}
+
+model CompactRunningTurn {
+  ...OmitProperties<RunningTurn, "prompt" | "goal">;
+}
+
+model CompactCompletedTurn {
+  ...OmitProperties<CompletedTurn, "prompt" | "goal">;
+}
+
+model CompactFailedTurn {
+  ...OmitProperties<FailedTurn, "prompt" | "goal">;
+}
+
+@doc("A turn as a compact session list carries it: every field of the turn but its prompt and goal.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
+union CompactTurn {
+  Offered: CompactOfferedTurn,
+  Running: CompactRunningTurn,
+  Completed: CompactCompletedTurn,
+  Failed: CompactFailedTurn,
+}
+
+@doc("A session as a compact session list carries it: its latest turn leaves out its prompt and goal.")
+model CompactSession {
+  ...OmitProperties<Session, "lastTurn">;
+
+  @doc("The session's latest turn without its prompt and goal, with why it failed once it is Failed.")
+  lastTurn: CompactTurn;
+}
+
+@doc("A list of sessions: whole sessions, or CompactSession rows when the list asked for compact.")
+@TypeSpec.OpenAPI.oneOf
+union SessionList {
+  Session[],
+  CompactSession[],
+}
+
 enum SteerState {
   @doc("The turn runs and its harness has not taken the steer yet.")
   Pending: "Pending",

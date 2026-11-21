@@ -22,7 +22,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 8;
+const TenantApiVersion = 9;
 
 namespace TenantApi {
 
@@ -823,11 +823,25 @@ model SessionFilter {
 
   @doc("Keep only the sessions this trigger started.")
   triggerId?: EntityId;
+
+  @doc("Keep only the sessions created after this time.")
+  createdAfter?: int64;
 }
 
 model ListSessionsInput {
   tenantId: EntityId;
   filter: SessionFilter;
+
+  @doc("The most sessions the page holds, newest first. Left out, the answer holds every session that matches.")
+  @minValue(1)
+  @maxValue(1000)
+  limit?: int32;
+
+  @doc("The sessionId of the last session of the previous page; the page starts after it.")
+  cursor?: EntityId;
+
+  @doc("Answer each session as a CompactSession, whose lastTurn leaves out its prompt and goal.")
+  compact?: boolean;
 }
 
 model ListTurnsInput {
@@ -3253,7 +3267,7 @@ model GetSessionResult {
 }
 
 model ListSessionsResult {
-  sessions: Session[];
+  sessions: SessionList;
 }
 
 model ListTurnsResult {
