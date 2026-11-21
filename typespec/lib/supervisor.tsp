@@ -403,6 +403,8 @@ model BoxBudgets {
   `updateGraceSeconds` is how long a supervisor told of a new release waits while a box runs a turn,
   600 by default. It updates at once when no box runs a turn, and when the wait ends it hands its
   boxes to the new supervisor anyway.
+  `telemetryIntervalSeconds` is how often the supervisor sends the metric points it collected, 30
+  by default. It sends them at most once per interval, at turn end and shutdown included.
   """)
 model SupervisorRuntime {
   @minLength(1) firecrackerPath: PathText;
@@ -416,6 +418,7 @@ model SupervisorRuntime {
   budgets: BoxBudgets;
   @minValue(1) @maxValue(300) heartbeatIntervalSeconds: int32;
   @minValue(0) updateGraceSeconds: int32;
+  @minValue(1) @maxValue(3600) telemetryIntervalSeconds: int32;
 }
 
 @doc("""

@@ -24874,6 +24874,8 @@ pub mod types {
     ///`updateGraceSeconds` is how long a supervisor told of a new release waits while a box runs a turn,
     ///600 by default. It updates at once when no box runs a turn, and when the wait ends it hands its
     ///boxes to the new supervisor anyway.
+    ///`telemetryIntervalSeconds` is how often the supervisor sends the metric points it collected, 30
+    ///by default. It sends them at most once per interval, at turn end and shutdown included.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorRuntime {
         #[serde(rename = "boxCapacity")]
@@ -24893,6 +24895,8 @@ pub mod types {
         pub memory_mib: i32,
         #[serde(rename = "overlayMib")]
         pub overlay_mib: i32,
+        #[serde(rename = "telemetryIntervalSeconds")]
+        pub telemetry_interval_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "updateGraceSeconds")]
         pub update_grace_seconds: i32,
         #[serde(rename = "vcpuCount")]
