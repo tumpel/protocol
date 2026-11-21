@@ -9827,6 +9827,72 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///Guest bytes read and not decoded yet, base64: up to one whole guest frame of 4 MiB and its 4-byte length.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct GuestBufferText(::std::string::String);
+    impl GuestBufferText {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestBufferText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestBufferText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestBufferText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for GuestBufferText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<GuestBufferText> for ::std::string::String {
+        fn from(value: GuestBufferText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for GuestBufferText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 5592412usize {
+                return Err("GuestBufferText: longer than 5592412 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for GuestBufferText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for GuestBufferText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for GuestBufferText {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
     ///The code for the standard input of the setup's `claude setup-token`, followed by Enter. The guest
     ///sends GuestClaudeSetupFailed MintTimedOut when Claude Code prints no token within
     ///`mintBudgetSeconds` of the code.
@@ -11247,9 +11313,75 @@ pub mod types {
     ///One persona file for the guest to write under the harness home: its path, digest and base64 bytes.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GuestPersonaFile {
-        pub content: PersonaFileContent,
+        pub content: GuestPersonaFileContent,
         pub digest: Sha256Digest,
         pub path: PersonaFilePath,
+    }
+    ///A persona file the host hands its guest, base64: at most PersonaFileLimit.PersonaBytes before encoding, since a file uploaded by digest may exceed InlineFileBytes.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct GuestPersonaFileContent(::std::string::String);
+    impl GuestPersonaFileContent {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestPersonaFileContent {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestPersonaFileContent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestPersonaFileContent {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for GuestPersonaFileContent {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<GuestPersonaFileContent> for ::std::string::String {
+        fn from(value: GuestPersonaFileContent) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for GuestPersonaFileContent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 349528usize {
+                return Err("GuestPersonaFileContent: longer than 349528 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for GuestPersonaFileContent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for GuestPersonaFileContent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for GuestPersonaFileContent {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
     }
     ///A guest protocol version, from Oldest, the oldest version the supervisor still speaks, to Version,
     ///the one this build's guest names in GuestHello; the supervisor fails a box whose guest speaks a
@@ -23931,7 +24063,7 @@ pub mod types {
         #[serde(rename = "consoleTail")]
         pub console_tail: Detail,
         #[serde(rename = "guestBuffer")]
-        pub guest_buffer: PathText,
+        pub guest_buffer: GuestBufferText,
         #[serde(rename = "guestFd")]
         pub guest_fd: i32,
         #[serde(rename = "processId")]

@@ -157,6 +157,10 @@ scalar PersonaFileSize extends int64;
 @maxLength(87384)
 scalar PersonaFileContent extends string;
 
+@doc("A persona file the host hands its guest, base64: at most PersonaFileLimit.PersonaBytes before encoding, since a file uploaded by digest may exceed InlineFileBytes.")
+@maxLength(349528)
+scalar GuestPersonaFileContent extends string;
+
 @doc("A label a host carries for placement, such as gpu or region-eu.")
 @pattern("^[a-z0-9][a-z0-9._=-]{0,62}$")
 @maxLength(63)
