@@ -27,7 +27,7 @@ tumpel-api = "=0.1.0"
 
 Only a change to the TypeSpec, the `tumpel-api` crate, its generator or the shared TypeScript in `packages/api` makes a new version. Docs, tests and CI never do. The conventional commits that changed those files since the latest stable tag pick the next version: a breaking change bumps major, `feat` bumps minor, and `fix` or `perf` bumps patch. Other types ride along with the next release.
 
-- Release candidate: a push to `main` with such a change publishes the GitHub pre-release `vX.Y.Z-rc.N` with the three npm tarballs, where `N` counts the commits since the latest stable tag. An npm consumer pins a release candidate's tarball to try it. A release candidate never touches crates.io.
+- Release candidate: a push to `main` with such a change publishes the GitHub pre-release `vX.Y.Z-rc.N` with the three npm tarballs and publishes `tumpel-api` at that version to crates.io, where `N` counts the commits since the latest stable tag. A consumer pins a release candidate's tarball or crate version to try it.
 - Stable release: a person runs the `promote` workflow and names one release candidate. It tags that commit `vX.Y.Z`, publishes `tumpel-api` to crates.io and publishes the GitHub release as Latest. To ship several changes together, merge them and promote the last release candidate.
 
 A failed run is rerun as it is and releases the same version: the stable tag is pushed first, a rerun skips a crate already on crates.io and finishes a draft release, and a published release is never overwritten.
