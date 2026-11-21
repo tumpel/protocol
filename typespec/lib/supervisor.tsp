@@ -141,11 +141,15 @@ model SupervisorHandoverMachine {
   apiSocket: PathText;
   vsock: PathText;
   @minValue(0) guestFd: int32;
-  guestBuffer: PathText;
+  guestBuffer: GuestBufferText;
   @minValue(0) stdoutFd: int32;
   @minValue(0) stderrFd: int32;
   consoleTail: Detail;
 }
+
+@doc("Guest bytes read and not decoded yet, base64: up to one whole guest frame of 4 MiB and its 4-byte length.")
+@maxLength(5592412)
+scalar GuestBufferText extends string;
 
 @doc("The image a handed box booted from, so the new binary holds it in its cache and reads its harness.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
@@ -426,7 +430,7 @@ model GuestHello {
 model GuestPersonaFile {
   path: PersonaFilePath;
   digest: Sha256Digest;
-  content: PersonaFileContent;
+  content: GuestPersonaFileContent;
 }
 
 @doc("""
