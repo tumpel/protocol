@@ -2756,6 +2756,13 @@ model UnplaceableNotOnline {
   reason: "NotOnline";
 }
 
+@doc("The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again.")
+model UnplaceableNotHealthy {
+  kind: "Unplaceable";
+  host: HostRecord;
+  reason: "NotHealthy";
+}
+
 model UnplaceableNoImage {
   kind: "Unplaceable";
   host: HostRecord;
@@ -2805,6 +2812,7 @@ model UnplaceableNoConnectors {
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "reason" })
 union Unplaceable {
   NotOnline: UnplaceableNotOnline,
+  NotHealthy: UnplaceableNotHealthy,
   NoImage: UnplaceableNoImage,
   Full: UnplaceableFull,
   MemoryFull: UnplaceableMemoryFull,

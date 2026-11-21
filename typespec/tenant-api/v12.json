@@ -20094,6 +20094,9 @@
           "$ref": "#/components/schemas/TenantApi.UnplaceableNotOnline"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.UnplaceableNotHealthy"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.UnplaceableNoImage"
         },
         {
@@ -20116,6 +20119,7 @@
         "propertyName": "reason",
         "mapping": {
           "NotOnline": "#/components/schemas/TenantApi.UnplaceableNotOnline",
+          "NotHealthy": "#/components/schemas/TenantApi.UnplaceableNotHealthy",
           "NoImage": "#/components/schemas/TenantApi.UnplaceableNoImage",
           "Full": "#/components/schemas/TenantApi.UnplaceableFull",
           "MemoryFull": "#/components/schemas/TenantApi.UnplaceableMemoryFull",
@@ -20314,6 +20318,32 @@
           "format": "int32"
         }
       }
+    },
+    "TenantApi.UnplaceableNotHealthy": {
+      "type": "object",
+      "required": [
+        "kind",
+        "host",
+        "reason"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Unplaceable"
+          ]
+        },
+        "host": {
+          "$ref": "#/components/schemas/TenantApi.HostRecord"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "NotHealthy"
+          ]
+        }
+      },
+      "description": "The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again."
     },
     "TenantApi.UnplaceableNotOnline": {
       "type": "object",
