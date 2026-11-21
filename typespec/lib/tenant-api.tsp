@@ -42,6 +42,7 @@ model StoredFileRead {
 
 @doc("A persona as the tenant Durable Object stores it, its files named by digest.")
 model StoredPersona {
+  turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
   personaId: EntityId;
   tenantId: EntityId;
   name: DisplayName;
@@ -59,6 +60,7 @@ model StoredPersona {
 
 @doc("What a persona edit writes. The harness is fixed at create.")
 model PersonaChange {
+  turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
   name: DisplayName;
   secretSetId: EntityId;
   connectorIds: EntityId[];

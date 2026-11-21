@@ -526,6 +526,8 @@ model SessionStart is Create<Session> {
 
 @doc("A start from an open GitHub issue: the control plane reads the issue and writes the first prompt, which asks for the branch ticket/<issueNumber>-<slug of the title> and a draft pull request that closes the issue.")
 model SessionStartFromIssue {
+  @doc("The total budget for every turn; left out, the session takes its persona's budget or the control-plane default.")
+  turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
   personaId: EntityId;
   owner: GitHubLogin;
   name: GitHubRepositoryName;

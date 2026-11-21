@@ -128,6 +128,17 @@ enum BoxDiskLimit {
   MaxMib: 262144,
 }
 
+@doc("The default and maximum total turn budgets in seconds.")
+enum TurnBudgetLimit {
+  DefaultSeconds: 14400,
+  MaxSeconds: 86400,
+}
+
+@doc("A total turn budget in seconds, from one second through 24 hours.")
+@minValue(1)
+@maxValue(86400)
+scalar TurnTotalBudgetSeconds extends int32;
+
 @doc("What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode.")
 enum BoxRetention {
   @doc("The control plane snapshots the box and tears it down as soon as the turn ends; the session reads Stopped, and its next turn boots a fresh box from the snapshot.")
@@ -633,6 +644,9 @@ model Session {
   @visibility(Lifecycle.Read) hostId: EntityId;
   @visibility(Lifecycle.Read) boxId: EntityId;
   personaId: EntityId;
+
+  @doc("The budget for every turn, including placement waits. A start overrides the persona, then the control-plane default. The session keeps the resolved value when its persona changes. Present on sessions started with budget support.")
+  turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
 
   @doc("A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.")
   repository: RepositoryUrl;
@@ -1184,6 +1198,9 @@ model Persona {
   @key @visibility(Lifecycle.Read) personaId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
   name: DisplayName;
+
+  @doc("The total budget for each new session's turns, unless its start overrides it. Omitted on create or replacement, the control-plane default applies. Existing sessions keep their budget.")
+  turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
 
   @doc("The harness every session of the persona runs, at the version the tenant pins. It is fixed when the persona is created.")
   @visibility(Lifecycle.Read, Lifecycle.Create)

@@ -55,6 +55,10 @@
                 "name": {
                     "$ref": "#/$defs/DisplayName"
                 },
+                "turnTotalBudgetSeconds": {
+                    "$ref": "#/$defs/TurnTotalBudgetSeconds",
+                    "description": "The total budget for each new session's turns, unless its start overrides it. Omitted on create or replacement, the control-plane default applies. Existing sessions keep their budget."
+                },
                 "harness": {
                     "$ref": "#/$defs/Harness",
                     "description": "The harness every session of the persona runs, at the version the tenant pins. It is fixed when the persona is created."
@@ -198,6 +202,12 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 100
+        },
+        "TurnTotalBudgetSeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 86400,
+            "description": "A total turn budget in seconds, from one second through 24 hours."
         },
         "Harness": {
             "type": "string",
