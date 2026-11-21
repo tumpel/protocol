@@ -4,39 +4,43 @@
     "type": "object",
     "properties": {
         "$schema": {
-            "type": "string",
-            "format": "uri",
+            "$ref": "#/$defs/HttpUrl",
             "description": "The address of a copy of this schema, so an editor validates the file."
         },
         "personas": {
             "type": "array",
             "items": {
                 "$ref": "#/$defs/ConfigPersona"
-            }
+            },
+            "maxItems": 1000
         },
         "secretSets": {
             "type": "array",
             "items": {
                 "$ref": "#/$defs/ConfigSecretSet"
-            }
+            },
+            "maxItems": 1000
         },
         "harnessPins": {
             "type": "array",
             "items": {
                 "$ref": "#/$defs/HarnessPinCreate"
-            }
+            },
+            "maxItems": 1000
         },
         "hosts": {
             "type": "array",
             "items": {
                 "$ref": "#/$defs/ConfigHost"
-            }
+            },
+            "maxItems": 1000
         },
         "triggers": {
             "type": "array",
             "items": {
                 "$ref": "#/$defs/ConfigTrigger"
             },
+            "maxItems": 1000,
             "description": "The tenant's triggers, matched by name; a trigger the list leaves out is deleted. Left out,\napply keeps the tenant's triggers as they are. Only an Owner applies a config that creates,\nchanges or deletes a trigger."
         }
     },
@@ -49,6 +53,12 @@
     "description": "A tenant's whole configuration, kept in one JSON file under version control. `tumpel config\nplan` and `apply` make the tenant match it: a persona, secret set or pin the file leaves out is\ndeleted, and an enrolled host the file leaves out loses its labels. Personas and secret sets are\nmatched by name, pins by harness and hosts by hostId; a persona names its secret set by name.",
     "additionalProperties": false,
     "$defs": {
+        "HttpUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 4096,
+            "description": "A URL the API checks as one."
+        },
         "ConfigPersona": {
             "type": "object",
             "properties": {
@@ -87,13 +97,15 @@
                     "items": {
                         "$ref": "#/$defs/DisplayName"
                     },
+                    "maxItems": 100,
                     "description": "The connectors of the persona, by name. The tenant creates and connects them; config apply never writes a connector or its credential, and fails the plan on a name the tenant has no connector for."
                 },
                 "files": {
                     "type": "array",
                     "items": {
                         "$ref": "#/$defs/ConfigPersonaFile"
-                    }
+                    },
+                    "maxItems": 100
                 }
             },
             "required": [
@@ -116,7 +128,8 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/$defs/ConfigSecret"
-                    }
+                    },
+                    "maxItems": 200
                 }
             },
             "required": [
@@ -152,7 +165,8 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/$defs/HostLabel"
-                    }
+                    },
+                    "maxItems": 64
                 }
             },
             "required": [
@@ -251,7 +265,8 @@
         },
         "HarnessVersion": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "maxLength": 100
         },
         "EntityId": {
             "type": "string",
@@ -260,6 +275,7 @@
         },
         "HostLabel": {
             "type": "string",
+            "maxLength": 63,
             "pattern": "^[a-z0-9][a-z0-9._=-]{0,62}$",
             "description": "A label a host carries for placement, such as gpu or region-eu."
         },

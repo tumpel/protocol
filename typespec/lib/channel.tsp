@@ -42,7 +42,7 @@ model Sequenced {
   """)
 model Challenge {
   type: "Challenge";
-  @minLength(43) nonce: string;
+  @minLength(43) nonce: Token;
 }
 
 @doc("""
@@ -64,8 +64,8 @@ model Hello {
   hostId: EntityId;
   @minValue(1) protocolVersion: int32;
   @minValue(1) channelProtocolOldest?: int32;
-  @minLength(1) supervisorVersion: string;
-  @minLength(1) signature: string;
+  @minLength(1) supervisorVersion: ShortText;
+  @minLength(1) signature: Token;
   @minValue(1) @maxValue(256) boxCapacity: int32;
   usage: HostUsage;
   guestProtocol?: GuestProtocolRange;
@@ -105,7 +105,7 @@ model Heartbeat {
   """)
 model ReleasePublished {
   type: "ReleasePublished";
-  @minLength(1) releaseVersion: string;
+  @minLength(1) releaseVersion: ShortText;
 }
 
 @doc("""
@@ -120,7 +120,7 @@ model ReleasePublished {
 model FrameRefused {
   type: "FrameRefused";
   seq: Sequence;
-  @minLength(1) reason: string;
+  @minLength(1) reason: Detail;
 }
 
 @doc("""
@@ -148,13 +148,13 @@ model HostHeartbeat {
   type: "Heartbeat";
   sentAt: offsetDateTime;
   usage: HostUsage;
-  heldSessionIds: EntityId[];
+  @maxItems(1000) heldSessionIds: EntityId[];
 }
 
 @doc("One environment variable for one turn: a secret set member's value. It lives in box memory only and is never written to the host's disk.")
 model DispatchVariable {
-  @minLength(1) name: string;
-  @minLength(1) value: string;
+  @minLength(1) name: ShortText;
+  @minLength(1) value: CredentialText;
 }
 
 @doc("""
@@ -170,19 +170,19 @@ model DispatchVariable {
 model DispatchGrant {
   credentialHandoverId: EntityId;
   expiresAt: offsetDateTime;
-  variables: DispatchVariable[];
+  @maxItems(1000) variables: DispatchVariable[];
 
   @doc("The harness arguments the catalog maps the credential to; they hold no secret. A grant without them gives the guest none.")
-  arguments?: string[];
+  @maxItems(64) arguments?: Summary[];
 
   @doc("A CredentialFile credential: the guest writes `value` to `path` under the harness home, mode 0600, before the harness starts, and deletes it at the end of the turn.")
   credentialFile?: {
-    @minLength(1) path: string;
-    @minLength(1) value: string;
+    @minLength(1) path: PathText;
+    @minLength(1) value: CredentialText;
   };
 
   @doc("The session's connectors, none when its persona lists none. The guest forwarder serves each at its loopback route and fetches its access token from tokenUrl with tokenCredential. Neither reaches the harness.")
-  connectors: DispatchConnector[];
+  @maxItems(1000) connectors: DispatchConnector[];
 }
 
 @doc("""
@@ -196,9 +196,9 @@ model DispatchGrant {
 model DispatchConnector {
   connectorId: EntityId;
   name?: DisplayName;
-  url: url;
-  tokenUrl: url;
-  @minLength(43) tokenCredential: string;
+  url: HttpUrl;
+  tokenUrl: HttpUrl;
+  @minLength(43) tokenCredential: Token;
 }
 
 @doc("""
@@ -210,7 +210,7 @@ model SnapshotDownload {
   snapshotId: EntityId;
   snapshotSeq: Sequence;
   storageKey: StorageKey;
-  downloadUrl: url;
+  downloadUrl: HttpUrl;
   downloadExpiresAt: offsetDateTime;
 }
 
@@ -224,7 +224,7 @@ model PersonaFileDownload {
   path: PersonaFilePath;
   digest: Sha256Digest;
   sizeBytes: PersonaFileSize;
-  downloadUrl: url;
+  downloadUrl: HttpUrl;
   downloadExpiresAt: offsetDateTime;
 }
 
@@ -247,9 +247,9 @@ model GuestImageDownload {
   imageDigest: Sha256Digest;
   kernelDigest: Sha256Digest;
   manifestDigest: Sha256Digest;
-  imageUrl: url;
-  kernelUrl: url;
-  manifestUrl: url;
+  imageUrl: HttpUrl;
+  kernelUrl: HttpUrl;
+  manifestUrl: HttpUrl;
   downloadExpiresAt: offsetDateTime;
   @minValue(1) fetchSeconds: int32;
 }
@@ -264,9 +264,9 @@ model BaseImageDownload {
   imageDigest: Sha256Digest;
   kernelDigest: Sha256Digest;
   manifestDigest: Sha256Digest;
-  imageUrl: url;
-  kernelUrl: url;
-  manifestUrl: url;
+  imageUrl: HttpUrl;
+  kernelUrl: HttpUrl;
+  manifestUrl: HttpUrl;
 }
 
 @doc("""
@@ -277,8 +277,8 @@ model BaseImageDownload {
   """)
 model HarnessLayerDownload {
   layer: ReleaseHarnessLayer;
-  layerUrl: url;
-  manifestUrl: url;
+  layerUrl: HttpUrl;
+  manifestUrl: HttpUrl;
 }
 
 @doc("""
@@ -325,13 +325,13 @@ model TurnOffer {
   boxId: EntityId;
   repository: RepositoryUrl;
   harness: Harness;
-  @minLength(1) harnessVersion: string;
+  @minLength(1) harnessVersion: ShortText;
   `model`: ModelName;
   prompt: Prompt;
   credential: DispatchGrant;
   lastLineSeq: Sequence;
   @maxItems(1) snapshots: SnapshotDownload[];
-  personaFiles: PersonaFileDownload[];
+  @maxItems(100) personaFiles: PersonaFileDownload[];
   image: BootImage;
   gitAuthorName: DisplayName;
   gitAuthorEmail: EmailAddress;
@@ -363,7 +363,7 @@ model TurnOffer {
     prebuild's layer.
     """)
   @pattern("^[0-9a-f]{40}$")
-  prebuildCommitSha?: string;
+  prebuildCommitSha?: ShortText;
 }
 
 @doc("""
@@ -421,7 +421,7 @@ model TurnLine {
   type: "TurnLine";
   turnId: EntityId;
   lineSeq: Sequence;
-  text: string;
+  text: LongText;
 }
 
 @doc("The harness finished the turn. `lastLineSeq` is the turn's final line; the control plane holds every line up to it and stores the snapshot after it before the turn reads Completed, and fails the turn SnapshotNotStored when that snapshot is not stored.")
@@ -433,11 +433,11 @@ model TurnComplete {
 
   @doc("The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member.")
   @minLength(1)
-  credentialFile?: string;
+  credentialFile?: CredentialText;
 
   @doc("The guest's warning for a turn the harness completed, such as a box disk with less than a hundredth of it free; the control plane shows it on the turn read.")
   @minLength(1)
-  warning?: string;
+  warning?: Detail;
 }
 
 @doc("The box could not clone the session's repository; the turn fails RepositoryCloneFailed. `detail` carries what git reported.")
@@ -445,7 +445,7 @@ model TurnRepositoryCloneFailed {
   type: "TurnRepositoryCloneFailed";
   turnId: EntityId;
   cause: RepositoryCloneFailureCause;
-  detail: string;
+  detail: Detail;
   failedAt: offsetDateTime;
 }
 
@@ -453,12 +453,12 @@ model TurnFailed {
   type: "TurnFailed";
   turnId: EntityId;
   reason: TurnFailureReason;
-  detail: string;
+  detail: Detail;
   failedAt: offsetDateTime;
 
   @doc("The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member.")
   @minLength(1)
-  credentialFile?: string;
+  credentialFile?: CredentialText;
 }
 
 @doc("""
@@ -490,7 +490,7 @@ model SnapshotRequest {
   turnId: EntityId;
   snapshotSeq: Sequence;
   storageKey: StorageKey;
-  uploadUrl: url;
+  uploadUrl: HttpUrl;
   uploadExpiresAt: offsetDateTime;
 }
 
@@ -520,7 +520,7 @@ model Pack {
 model PackUrl {
   packDigest: Sha256Digest;
   @minValue(1) sizeBytes: int64;
-  url: url;
+  url: HttpUrl;
 }
 
 @doc("""
@@ -629,7 +629,7 @@ model SnapshotFailed {
   type: "SnapshotFailed";
   snapshotId: EntityId;
   reason: SnapshotFailureReason;
-  detail: string;
+  detail: Detail;
   failedAt: offsetDateTime;
 }
 
@@ -674,7 +674,7 @@ model BoxTeardownFailed {
   sessionId: EntityId;
   boxId: EntityId;
   reason: BoxTeardownFailureReason;
-  detail: string;
+  detail: Detail;
   failedAt: offsetDateTime;
 }
 
@@ -697,8 +697,8 @@ model ClaudeSetupBoxOffer {
   harness?: ClaudeSetupHarness;
   harnessVersion: HarnessVersion;
   image: BootImage;
-  tokenUrl: url;
-  @minLength(43) tokenCredential: string;
+  tokenUrl: HttpUrl;
+  @minLength(43) tokenCredential: Token;
   expiresAt: offsetDateTime;
 }
 
@@ -732,7 +732,7 @@ model ClaudeSetupBoxDiscard {
 model ClaudeSetupBoxUrl {
   type: "ClaudeSetupBoxUrl";
   claudeSetupId: EntityId;
-  signInUrl: url;
+  signInUrl: HttpUrl;
   @minLength(1) @maxLength(64) userCode?: string;
 }
 
@@ -744,7 +744,7 @@ model ClaudeSetupBoxFailed {
   type: "ClaudeSetupBoxFailed";
   claudeSetupId: EntityId;
   reason: ClaudeSetupFailureReason;
-  detail: string;
+  detail: Detail;
   failedAt: offsetDateTime;
 }
 

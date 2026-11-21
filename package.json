@@ -16,7 +16,7 @@
     "comments:check": "node npm-scripts/comments-check.mjs",
     "secrets:check": "node npm-scripts/secrets-check.mjs",
     "preconventions:check": "make generate-ts",
-    "conventions:check": "node typespec/npm-scripts/conventions.mjs",
+    "conventions:check": "node typespec/npm-scripts/conventions.mjs && node typespec/npm-scripts/bounds.mjs",
     "preclippy": "make generate",
     "clippy": "cargo clippy --workspace --all-targets -- -D warnings",
     "prefmt:check": "make generate",

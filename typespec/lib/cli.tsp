@@ -8,8 +8,8 @@ namespace Tumpel;
   its line. The token answers only the endpoint it was issued by.
   """)
 model CliCredentials {
-  endpoint: url;
-  @minLength(1) token: string;
+  endpoint: HttpUrl;
+  @minLength(1) token: Token;
 }
 
 @doc("""
@@ -17,6 +17,6 @@ model CliCredentials {
   Neither value is printed or stored.
   """)
 model CliProofCredentials {
-  @minLength(1) clientId: string;
-  @minLength(1) clientSecret: string;
+  @minLength(1) clientId: ShortText;
+  @minLength(1) clientSecret: Token;
 }

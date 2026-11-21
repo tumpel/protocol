@@ -134,7 +134,7 @@ model Prebuild {
   startedAt: offsetDateTime;
 
   @doc("The transcript of the prebuild's turn: the output of the repository's setup step.")
-  logUrl: url;
+  logUrl: HttpUrl;
 
   createdAt: int64;
   updatedAt: int64;
@@ -147,10 +147,10 @@ model PrebuildFailure {
   phase: PrebuildFailurePhase;
 
   @doc("What failed, with what the provider reported.")
-  detail: string;
+  detail: Detail;
 
   @doc("What fixes it.")
-  fix: string;
+  fix: Detail;
 
   createdAt: int64;
 }
@@ -189,7 +189,7 @@ model PrebuildJobInputs {
   tenantId: EntityId;
 
   @doc("A presigned GET of the guest image's root filesystem tar, valid for the dispatch and build budgets from this answer.")
-  rootfsUrl: url;
+  rootfsUrl: HttpUrl;
 
   @doc("The digest of the guest image the layer is built on.")
   imageDigest: Sha256Digest;
@@ -228,7 +228,7 @@ model PrebuildUploadGrant {
   @doc("The layer digest the PUT is signed for.")
   sha256: Sha256Digest;
 
-  url: url;
+  url: HttpUrl;
   uploadExpiresAt: offsetDateTime;
 }
 
@@ -299,10 +299,10 @@ model PrebuildPreviewCommand {
   lifecycle: PrebuildLifecycleCommand;
 
   @doc("The command's name in the file: the lifecycle field, or <field>.<key> for an entry of an object-form command.")
-  label: string;
+  label: ShortText;
 
   @doc("The program and its arguments; a string command runs as /bin/sh -c <command>.")
-  argv: string[];
+  @maxItems(256) argv: Detail[];
 }
 
 @doc("What a preview finds wrong with a config.")
@@ -325,10 +325,10 @@ model PrebuildFinding {
   code: PrebuildFindingCode;
 
   @doc("The field or file the finding is about.")
-  field: string;
+  field: ShortText;
 
-  detail: string;
-  fix: string;
+  detail: Detail;
+  fix: Detail;
 }
 
 @doc("What a prebuild of the repository would run, read without starting one.")
@@ -339,14 +339,14 @@ model PrebuildPreview {
   configSource: PrebuildPreviewSource;
 
   @doc("Every command in run order: onCreateCommand, updateContentCommand, postCreateCommand, then postStartCommand; the entries of one object-form command run at once.")
-  commands: PrebuildPreviewCommand[];
+  @maxItems(100) commands: PrebuildPreviewCommand[];
 
   @doc("The containerEnv the commands run with, as the file writes it.")
-  containerEnv: Record<string>;
+  @TypeSpec.JsonSchema.maxProperties(256) containerEnv: Record<Detail>;
 
   @doc("The input digest a start would record now, over the default branch's files; a supplied config counts as .devcontainer/devcontainer.json.")
   inputDigest: Sha256Digest;
 
   @doc("What a build would refuse or fail on; empty when the config is ready to build.")
-  findings: PrebuildFinding[];
+  @maxItems(100) findings: PrebuildFinding[];
 }

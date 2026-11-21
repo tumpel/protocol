@@ -201,9 +201,9 @@ enum ProblemCode {
 @doc("Every refusal: what failed and what fixes it.")
 model Problem {
   code: ProblemCode;
-  title: string;
-  detail: string;
-  fix: string;
+  title: Summary;
+  detail: Detail;
+  fix: Detail;
 }
 
 @error
@@ -277,7 +277,7 @@ model HarnessPath {
 model GitHubInstallStartQuery {
   @doc("A page on the dashboard's origin the browser returns to once GitHub sends the installer back.")
   @query
-  returnUrl?: url;
+  returnUrl?: HttpUrl;
 
   @doc("The GitHub account to install on; GitHub then opens on that account instead of asking which one.")
   @query
@@ -294,7 +294,7 @@ model Whoami {
 @doc("The tenant and principal the caller acts as, and the origin of the API that answered, which every path of the API is relative to.")
 model WhoamiWithEndpoint {
   ...Whoami;
-  endpoint: url;
+  endpoint: HttpUrl;
 }
 
 @doc("The OAuth error codes of RFC 6749, RFC 7591, RFC 8628 and RFC 8707 the control plane answers with.")
@@ -316,7 +316,7 @@ enum OAuthErrorCode {
 @doc("An OAuth refusal, in the wire shape RFC 6749 gives it, so stock OAuth and device-flow clients read it.")
 model OAuthError {
   error: OAuthErrorCode;
-  error_description: string;
+  error_description: Detail;
 }
 
 @error
@@ -331,22 +331,22 @@ model DeviceCodeRequest {
 
 @doc("RFC 8628 device authorization, in its snake_case wire shape.")
 model DeviceAuthorization {
-  device_code: string;
-  user_code: string;
-  verification_uri: url;
-  verification_uri_complete: url;
+  device_code: Token;
+  user_code: Token;
+  verification_uri: HttpUrl;
+  verification_uri_complete: HttpUrl;
   @minValue(1) expires_in: int32;
   @minValue(1) interval: int32;
 }
 
 @doc("A user code the signed-in principal approves or denies, as the terminal printed it.")
 model DeviceDecision {
-  userCode: string;
+  userCode: Token;
 }
 
 @doc("A user code the signed-in principal approves, and the tenant of theirs the device acts in.")
 model DeviceApproval {
-  userCode: string;
+  userCode: Token;
   tenantId: EntityId;
 }
 
@@ -358,65 +358,65 @@ model InvitationCreate is Create<Invitation>;
   """)
 model InvitationCreated {
   invitation: Invitation;
-  acceptUrl: url;
+  acceptUrl: HttpUrl;
 }
 
 @doc("The token of an invitation's accept link.")
 model InvitationAccept {
-  @minLength(1) token: string;
+  @minLength(1) token: Token;
 }
 
 model DeviceTokenRequest {
   grant_type: "urn:ietf:params:oauth:grant-type:device_code";
-  device_code: string;
+  device_code: Token;
 }
 
 model DeviceToken {
-  access_token: string;
+  access_token: Token;
   token_type: "Bearer";
 }
 
 @doc("RFC 9728 metadata for the hosted MCP endpoint.")
 model ProtectedResourceMetadata {
-  resource: url;
-  authorization_servers: url[];
-  scopes_supported: string[];
-  bearer_methods_supported: string[];
-  resource_name: string;
+  resource: HttpUrl;
+  @maxItems(20) authorization_servers: HttpUrl[];
+  @maxItems(20) scopes_supported: ShortText[];
+  @maxItems(20) bearer_methods_supported: ShortText[];
+  resource_name: Summary;
 }
 
 @doc("RFC 8414 metadata for the control plane's OAuth authorization server.")
 model AuthorizationServerMetadata {
-  issuer: url;
-  authorization_endpoint: url;
-  token_endpoint: url;
-  revocation_endpoint: url;
-  registration_endpoint: url;
-  scopes_supported: string[];
-  response_types_supported: string[];
-  response_modes_supported: string[];
-  grant_types_supported: string[];
-  token_endpoint_auth_methods_supported: string[];
-  code_challenge_methods_supported: string[];
+  issuer: HttpUrl;
+  authorization_endpoint: HttpUrl;
+  token_endpoint: HttpUrl;
+  revocation_endpoint: HttpUrl;
+  registration_endpoint: HttpUrl;
+  @maxItems(20) scopes_supported: ShortText[];
+  @maxItems(20) response_types_supported: ShortText[];
+  @maxItems(20) response_modes_supported: ShortText[];
+  @maxItems(20) grant_types_supported: ShortText[];
+  @maxItems(20) token_endpoint_auth_methods_supported: ShortText[];
+  @maxItems(20) code_challenge_methods_supported: ShortText[];
   authorization_response_iss_parameter_supported: boolean;
   resource_indicators_supported: boolean;
 }
 
 @doc("RFC 7591 dynamic client registration. Only the redirect addresses and the name are read.")
 model OAuthClientRegistration {
-  @minItems(1) @maxItems(10) redirect_uris: url[];
-  client_name?: string;
+  @minItems(1) @maxItems(10) redirect_uris: HttpUrl[];
+  client_name?: Summary;
 }
 
 model OAuthClient {
-  client_id: string;
+  client_id: ShortText;
   client_id_issued_at: int64;
-  client_name: string;
-  redirect_uris: url[];
-  grant_types: string[];
-  response_types: string[];
+  client_name: Summary;
+  @maxItems(20) redirect_uris: HttpUrl[];
+  @maxItems(1000) grant_types: ShortText[];
+  @maxItems(1000) response_types: ShortText[];
   token_endpoint_auth_method: "none";
-  scope: string;
+  scope: Summary;
 }
 
 model OAuthClientRegistered {
@@ -425,37 +425,37 @@ model OAuthClientRegistered {
 }
 
 model OAuthAuthorizeQuery {
-  @query response_type: string;
-  @query client_id: string;
-  @query redirect_uri?: string;
-  @query state?: string;
-  @query code_challenge: string;
-  @query code_challenge_method: string;
-  @query resource?: string;
+  @query response_type: ShortText;
+  @query client_id: ShortText;
+  @query redirect_uri?: UrlText;
+  @query state?: ShortText;
+  @query code_challenge: Token;
+  @query code_challenge_method: ShortText;
+  @query resource?: UrlText;
 }
 
 @doc("Where the browser goes next: the consent page, or the client's callback carrying an error.")
 model SeeOther {
   @statusCode statusCode: 303;
-  @header location: string;
+  @header location: UrlText;
 }
 
 @doc("An RFC 6749 authorization code redemption, with the PKCE verifier and the RFC 8707 resource.")
 model OAuthAuthorizationCodeRequest {
   grant_type: "authorization_code";
-  client_id: string;
-  code: string;
-  code_verifier: string;
-  redirect_uri: string;
-  resource?: string;
+  client_id: ShortText;
+  code: Token;
+  code_verifier: Token;
+  redirect_uri: UrlText;
+  resource?: UrlText;
 }
 
 @doc("An RFC 6749 refresh, which spends the refresh token and issues a new pair.")
 model OAuthRefreshTokenRequest {
   grant_type: "refresh_token";
-  client_id: string;
-  refresh_token: string;
-  resource?: string;
+  client_id: ShortText;
+  refresh_token: Token;
+  resource?: UrlText;
 }
 
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "grant_type" })
@@ -465,18 +465,18 @@ union OAuthTokenRequest {
 }
 
 model OAuthToken {
-  access_token: string;
+  access_token: Token;
   token_type: "Bearer";
   expires_in: int32;
-  refresh_token: string;
-  scope: string;
+  refresh_token: Token;
+  scope: Summary;
 }
 
 @doc("An RFC 7009 revocation by a public client: the token and every token of its grant stop working. An unknown token is answered as revoked.")
 model OAuthRevocationRequest {
-  token: string;
-  client_id: string;
-  token_type_hint?: string;
+  token: Token;
+  client_id: ShortText;
+  token_type_hint?: ShortText;
 }
 
 model OAuthRevoked {
@@ -490,28 +490,28 @@ model EnrolmentTokenMint {
 @doc("A freshly minted enrolment token. `token` is shown here once and never again.")
 model MintedEnrolmentToken {
   enrolmentToken: EnrolmentToken;
-  token: string;
+  token: Token;
 
   @doc("Downloads, installs and enrols the supervisor on a new host. It holds no token: it reads `token` from stdin.")
-  installCommand: string;
+  installCommand: Detail;
 }
 
 model HostEnrol is Create<Host> {
-  @minLength(1) enrolmentToken: string;
+  @minLength(1) enrolmentToken: Token;
 }
 
 @doc("Replaces every label of a host.")
 model HostLabels {
-  labels: HostLabel[];
+  @maxItems(64) labels: HostLabel[];
 }
 
 @doc("Adds and removes labels of a host; every label it names in neither list stays.")
 model HostLabelsPatch {
   @doc("Labels to add; a label the host already has stays once.")
-  add?: HostLabel[];
+  @maxItems(64) add?: HostLabel[];
 
   @doc("Labels to remove; a label the host does not have is ignored.")
-  remove?: HostLabel[];
+  @maxItems(64) remove?: HostLabel[];
 }
 
 model SessionStart is Create<Session> {
@@ -548,10 +548,10 @@ model SessionTags {
 @doc("Adds and removes tags of a session; every tag it names in neither list stays.")
 model SessionTagsPatch {
   @doc("Tags to add; a tag the session already has stays once.")
-  add?: SessionTag[];
+  @maxItems(16) add?: SessionTag[];
 
   @doc("Tags to remove; a tag the session does not have is ignored.")
-  remove?: SessionTag[];
+  @maxItems(64) remove?: SessionTag[];
 }
 
 @doc("The answer to a start, sent before the harness writes anything.")
@@ -607,7 +607,7 @@ model MetricWindow {
 
   @doc("dimension:value; one key repeated is OR, different keys AND")
   @query(#{ explode: true })
-  filter?: string[];
+  @maxItems(32) filter?: Summary[];
 }
 
 model MetricPath {
@@ -621,7 +621,7 @@ model MetricSeriesQuery {
   @doc("Up to two dimensions to group the series by; left out, every series merges into one.")
   @query(#{ explode: true })
   @maxItems(2)
-  groupBy?: string[];
+  groupBy?: ShortText[];
 }
 
 model MetricTurnQuery {
@@ -633,7 +633,7 @@ model MetricTurnQuery {
 
   @doc("The cursor of the previous page; leave it out to read from `from`.")
   @query
-  cursor?: string;
+  cursor?: Summary;
 }
 
 model TurnWaitQuery {
@@ -692,7 +692,7 @@ union TranscriptPage {
 model RawTranscriptPage {
   form: "Raw";
   sessionState: SessionState;
-  lines: TranscriptLine[];
+  @maxItems(10000) lines: TranscriptLine[];
   cursor: Sequence;
   finished: boolean;
 }
@@ -702,7 +702,7 @@ model CompactTranscriptPage {
   form: "Compact";
   sessionId: EntityId;
   sessionState: SessionState;
-  turns: CompactTranscriptTurn[];
+  @maxItems(10000) turns: CompactTranscriptTurn[];
   cursor: Sequence;
   finished: boolean;
 }
@@ -710,19 +710,19 @@ model CompactTranscriptPage {
 @doc("The kept lines of one turn on a compact page, in order.")
 model CompactTranscriptTurn {
   turnId: EntityId;
-  lines: CompactTranscriptLine[];
+  @maxItems(1000) lines: CompactTranscriptLine[];
 }
 
 @doc("One kept line of a compact page: assistant text, or a tool call shortened to one line.")
 model CompactTranscriptLine {
   lineSeq: Sequence;
-  text: string;
+  text: LongText;
 }
 
 @doc("A new persona with its whole file set: at most PersonaFileLimit.PersonaBytes together, each at a path its harness accepts.")
 model PersonaCreate is Create<Persona> {
   @doc("The persona's files; none when left out.")
-  files?: PersonaFileWrite[];
+  @maxItems(100) files?: PersonaFileWrite[];
 
   @doc("What happens to the box after each turn; left out, the persona's sessions get Auto.")
   boxRetention?: BoxRetention;
@@ -733,7 +733,7 @@ model PersonaCreate is Create<Persona> {
 
 @doc("Replaces the persona's name, secret set, connectors, box memory, box retention, Tumpel MCP and whole file set: a file the update leaves out is deleted, a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib, a box retention it leaves out goes back to Auto, and a tumpelMcp it leaves out goes back to false. The harness is fixed at create.")
 model PersonaUpdate is Update<Persona> {
-  files: PersonaFileWrite[];
+  @maxItems(100) files: PersonaFileWrite[];
   @doc("What happens to the box after each turn; left out, the persona's sessions get Auto.")
   boxRetention?: BoxRetention;
 
@@ -774,8 +774,8 @@ model RemovePersonaFilePatch {
 model EditPersonaFilePatch {
   kind: PersonaFilePatchKind.Edit;
   path: PersonaFilePath;
-  @minLength(1) oldText: string;
-  newText: string;
+  @minLength(1) oldText: PersonaFileContent;
+  newText: PersonaFileContent;
 }
 
 @doc("One change to one file of a persona; every other file is left as it is.")
@@ -801,14 +801,14 @@ model PersonaFileUploadRequest {
 model PersonaFileUpload {
   digest: Sha256Digest;
   sizeBytes: PersonaFileSize;
-  uploadUrl: url;
+  uploadUrl: HttpUrl;
   uploadExpiresAt: offsetDateTime;
 }
 
 model HarnessPinCreate is Create<HarnessPin>;
 
 model SecretSetCreate is Create<SecretSet> {
-  secrets: SecretValue[];
+  @maxItems(200) secrets: SecretValue[];
 }
 
 @doc("""
@@ -817,7 +817,7 @@ model SecretSetCreate is Create<SecretSet> {
   name when it is not renamed.
   """)
 model SecretSetUpdate is Update<SecretSet> {
-  secrets: SecretMemberUpdate[];
+  @maxItems(200) secrets: SecretMemberUpdate[];
 }
 
 @doc("""
@@ -826,7 +826,7 @@ model SecretSetUpdate is Update<SecretSet> {
   it is not renamed. Every member it leaves out keeps its value.
   """)
 model SecretSetPatch is OptionalProperties<Update<SecretSet>> {
-  secrets?: SecretMemberUpdate[];
+  @maxItems(200) secrets?: SecretMemberUpdate[];
 }
 
 @route("/healthz")
@@ -1276,6 +1276,11 @@ namespace V1 {
     @route("/{metric}/turns")
     @get
     turns(...MetricPath, ...MetricTurnQuery): MetricTurnPage | ProblemResponse;
+
+    @doc("Reads the tenant's tier and its usage against each of its limits in the current windows.")
+    @route("/usage")
+    @get
+    usage(): TenantUsage | ProblemResponse;
   }
 
   @route("/harnesses")
@@ -1734,8 +1739,8 @@ namespace V1 {
     @post
     receive(
       @path tenantId: EntityId,
-      @header("circleci-signature") signature: string,
-      @body body: Record<unknown>,
+      @header("circleci-signature") signature: Token,
+      @body @TypeSpec.JsonSchema.maxProperties(1000) body: Record<unknown>,
     ): NoContentResponse | ProblemResponse;
   }
 

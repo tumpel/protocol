@@ -102,7 +102,7 @@ model SubscriptionBase {
   @doc("The event types that start a delivery turn.")
   @minItems(1)
   @visibility(Lifecycle.Read, Lifecycle.Create)
-  events: SubscriptionEventType[];
+  @maxItems(100) events: SubscriptionEventType[];
 
   @doc("The tags a session must all carry to be part of the crew.")
   @maxItems(16)

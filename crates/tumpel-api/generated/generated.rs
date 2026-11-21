@@ -289,19 +289,19 @@ pub mod types {
     ///RFC 8414 metadata for the control plane's OAuth authorization server.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct AuthorizationServerMetadata {
-        pub authorization_endpoint: ::std::string::String,
+        pub authorization_endpoint: HttpUrl,
         pub authorization_response_iss_parameter_supported: bool,
-        pub code_challenge_methods_supported: ::std::vec::Vec<::std::string::String>,
-        pub grant_types_supported: ::std::vec::Vec<::std::string::String>,
-        pub issuer: ::std::string::String,
-        pub registration_endpoint: ::std::string::String,
+        pub code_challenge_methods_supported: ::std::vec::Vec<ShortText>,
+        pub grant_types_supported: ::std::vec::Vec<ShortText>,
+        pub issuer: HttpUrl,
+        pub registration_endpoint: HttpUrl,
         pub resource_indicators_supported: bool,
-        pub response_modes_supported: ::std::vec::Vec<::std::string::String>,
-        pub response_types_supported: ::std::vec::Vec<::std::string::String>,
-        pub revocation_endpoint: ::std::string::String,
-        pub scopes_supported: ::std::vec::Vec<::std::string::String>,
-        pub token_endpoint: ::std::string::String,
-        pub token_endpoint_auth_methods_supported: ::std::vec::Vec<::std::string::String>,
+        pub response_modes_supported: ::std::vec::Vec<ShortText>,
+        pub response_types_supported: ::std::vec::Vec<ShortText>,
+        pub revocation_endpoint: HttpUrl,
+        pub scopes_supported: ::std::vec::Vec<ShortText>,
+        pub token_endpoint: HttpUrl,
+        pub token_endpoint_auth_methods_supported: ::std::vec::Vec<ShortText>,
     }
     ///What `npm run guest:image -- base` built, <imageDigest>.json in the base directory of the image
     ///output next to <imageDigest>.ext4. `baseLayoutVersion` is the BaseLayout.Version the image
@@ -313,14 +313,14 @@ pub mod types {
         #[serde(rename = "baseRootfsDigest")]
         pub base_rootfs_digest: Sha256Digest,
         #[serde(rename = "baseRootfsUrl")]
-        pub base_rootfs_url: ::std::string::String,
+        pub base_rootfs_url: HttpUrl,
         pub components: ::std::vec::Vec<GuestImageComponent>,
         #[serde(rename = "imageDigest")]
         pub image_digest: Sha256Digest,
         #[serde(rename = "kernelDigest")]
         pub kernel_digest: Sha256Digest,
         #[serde(rename = "kernelUrl")]
-        pub kernel_url: ::std::string::String,
+        pub kernel_url: HttpUrl,
     }
     ///The contract between the base image's stub init and the guest drive's init: the base writes it to
     #[doc = "/etc/tumpel/base-layout and the guest drive holds it as base-layout. The guest drive's init fails"]
@@ -534,15 +534,15 @@ pub mod types {
         #[serde(rename = "imageDigest")]
         pub image_digest: Sha256Digest,
         #[serde(rename = "imageUrl")]
-        pub image_url: ::std::string::String,
+        pub image_url: HttpUrl,
         #[serde(rename = "kernelDigest")]
         pub kernel_digest: Sha256Digest,
         #[serde(rename = "kernelUrl")]
-        pub kernel_url: ::std::string::String,
+        pub kernel_url: HttpUrl,
         #[serde(rename = "manifestDigest")]
         pub manifest_digest: Sha256Digest,
         #[serde(rename = "manifestUrl")]
-        pub manifest_url: ::std::string::String,
+        pub manifest_url: HttpUrl,
     }
     ///What a box boots from: a full guest image, or a base image with a harness layer.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -666,7 +666,7 @@ pub mod types {
     pub struct ChannelBoxTeardownFailed {
         #[serde(rename = "boxId")]
         pub box_id: EntityId,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ChannelBoxTeardownFailureReason,
@@ -801,6 +801,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelChallengeNonce {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 43usize {
                 return Err("shorter than 43 characters".into());
             }
@@ -972,7 +975,7 @@ pub mod types {
     pub struct ChannelClaudeSetupBoxFailed {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ClaudeSetupFailureReason,
@@ -1039,7 +1042,7 @@ pub mod types {
         #[serde(rename = "tokenCredential")]
         pub token_credential: ChannelClaudeSetupBoxOfferTokenCredential,
         #[serde(rename = "tokenUrl")]
-        pub token_url: ::std::string::String,
+        pub token_url: HttpUrl,
         #[serde(rename = "type")]
         pub type_: ChannelClaudeSetupBoxOfferType,
     }
@@ -1061,6 +1064,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelClaudeSetupBoxOfferTokenCredential {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 43usize {
                 return Err("shorter than 43 characters".into());
             }
@@ -1128,7 +1134,7 @@ pub mod types {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
         #[serde(rename = "signInUrl")]
-        pub sign_in_url: ::std::string::String,
+        pub sign_in_url: HttpUrl,
         #[serde(rename = "type")]
         pub type_: ChannelClaudeSetupBoxUrlType,
         #[serde(rename = "userCode", skip_serializing_if = "::std::option::Option::is_none")]
@@ -1433,8 +1439,8 @@ pub mod types {
         #[serde(rename = "tokenCredential")]
         pub token_credential: ChannelDispatchConnectorTokenCredential,
         #[serde(rename = "tokenUrl")]
-        pub token_url: ::std::string::String,
-        pub url: ::std::string::String,
+        pub token_url: HttpUrl,
+        pub url: HttpUrl,
     }
     ///`ChannelDispatchConnectorTokenCredential`
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -1454,6 +1460,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelDispatchConnectorTokenCredential {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 43usize {
                 return Err("shorter than 43 characters".into());
             }
@@ -1494,7 +1503,7 @@ pub mod types {
     pub struct ChannelDispatchGrant {
         ///The harness arguments the catalog maps the credential to; they hold no secret. A grant without them gives the guest none.
         #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub arguments: ::std::vec::Vec<::std::string::String>,
+        pub arguments: ::std::vec::Vec<Summary>,
         ///The session's connectors, none when its persona lists none. The guest forwarder serves each at its loopback route and fetches its access token from tokenUrl with tokenCredential. Neither reaches the harness.
         pub connectors: ::std::vec::Vec<ChannelDispatchConnector>,
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
@@ -1529,6 +1538,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelDispatchGrantCredentialFilePath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -1575,6 +1587,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelDispatchGrantCredentialFileValue {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -1627,6 +1642,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelDispatchVariableName {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -1673,6 +1691,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelDispatchVariableValue {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -1733,6 +1754,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelFrameRefusedReason {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -1815,16 +1839,16 @@ pub mod types {
         #[serde(rename = "imageDigest")]
         pub image_digest: Sha256Digest,
         #[serde(rename = "imageUrl")]
-        pub image_url: ::std::string::String,
+        pub image_url: HttpUrl,
         #[serde(rename = "kernelDigest")]
         pub kernel_digest: Sha256Digest,
         #[serde(rename = "kernelUrl")]
-        pub kernel_url: ::std::string::String,
+        pub kernel_url: HttpUrl,
         pub kind: ChannelGuestImageDownloadKind,
         #[serde(rename = "manifestDigest")]
         pub manifest_digest: Sha256Digest,
         #[serde(rename = "manifestUrl")]
-        pub manifest_url: ::std::string::String,
+        pub manifest_url: HttpUrl,
     }
     ///`ChannelGuestImageDownloadKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -1867,9 +1891,9 @@ pub mod types {
     pub struct ChannelHarnessLayerDownload {
         pub layer: ReleaseHarnessLayer,
         #[serde(rename = "layerUrl")]
-        pub layer_url: ::std::string::String,
+        pub layer_url: HttpUrl,
         #[serde(rename = "manifestUrl")]
-        pub manifest_url: ::std::string::String,
+        pub manifest_url: HttpUrl,
     }
     ///The control plane sends one when it has sent nothing else for its heartbeat interval of 10
     ///seconds. A side that has received nothing for 30 seconds treats the connection as dead and closes
@@ -1966,6 +1990,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelHelloSignature {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -2012,6 +2039,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelHelloSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -2380,7 +2410,7 @@ pub mod types {
         pub pack_digest: Sha256Digest,
         #[serde(rename = "sizeBytes")]
         pub size_bytes: ::std::num::NonZeroU64,
-        pub url: ::std::string::String,
+        pub url: HttpUrl,
     }
     ///One file of the session's persona. `downloadUrl` is a presigned GET of the blob stored under
     ///`digest`, valid until `downloadExpiresAt`, the DispatchGrant's expiresAt. The supervisor
@@ -2392,7 +2422,7 @@ pub mod types {
         #[serde(rename = "downloadExpiresAt")]
         pub download_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "downloadUrl")]
-        pub download_url: ::std::string::String,
+        pub download_url: HttpUrl,
         pub path: PersonaFilePath,
         #[serde(rename = "sizeBytes")]
         pub size_bytes: PersonaFileSize,
@@ -2473,6 +2503,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelReleasePublishedReleaseVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -2639,7 +2672,7 @@ pub mod types {
     ///counters and unacked frames to disk before it sends a frame; when it starts without that state
     ///it does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.
     ///Challenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,
-    ///with no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know.
+    ///with no `seq` or `ack`. Each side ignores fields it does not know.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSequenced {
         pub ack: Sequence,
@@ -2786,7 +2819,7 @@ pub mod types {
         #[serde(rename = "downloadExpiresAt")]
         pub download_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "downloadUrl")]
-        pub download_url: ::std::string::String,
+        pub download_url: HttpUrl,
         #[serde(rename = "snapshotId")]
         pub snapshot_id: EntityId,
         #[serde(rename = "snapshotSeq")]
@@ -2797,7 +2830,7 @@ pub mod types {
     ///The host could not store the snapshot. `detail` states what failed and what fixes it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSnapshotFailed {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ChannelSnapshotFailureReason,
@@ -3010,7 +3043,7 @@ pub mod types {
         #[serde(rename = "uploadExpiresAt")]
         pub upload_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "uploadUrl")]
-        pub upload_url: ::std::string::String,
+        pub upload_url: HttpUrl,
     }
     ///`ChannelSnapshotRequestType`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -3094,13 +3127,13 @@ pub mod types {
     ///hidden, and is empty for every other reason.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSupervisorUpdateFailed {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "fromSha256")]
         pub from_sha256: Sha256Digest,
         #[serde(rename = "outputTail")]
-        pub output_tail: ::std::vec::Vec<::std::string::String>,
+        pub output_tail: ::std::vec::Vec<Detail>,
         pub reason: SupervisorUpdateFailureReason,
         #[serde(rename = "toSha256")]
         pub to_sha256: Sha256Digest,
@@ -3175,6 +3208,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelSupervisorUpdateStepReleaseVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -3424,7 +3460,6 @@ pub mod types {
     pub struct ChannelTurnComplete {
         #[serde(rename = "completedAt")]
         pub completed_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member.
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<ChannelTurnCompleteCredentialFile>,
         #[serde(rename = "lastLineSeq")]
@@ -3433,7 +3468,6 @@ pub mod types {
         pub turn_id: EntityId,
         #[serde(rename = "type")]
         pub type_: ChannelTurnCompleteType,
-        ///The guest's warning for a turn the harness completed, such as a box disk with less than a hundredth of it free; the control plane shows it on the turn read.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub warning: ::std::option::Option<ChannelTurnCompleteWarning>,
     }
@@ -3455,6 +3489,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelTurnCompleteCredentialFile {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -3534,6 +3571,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelTurnCompleteWarning {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -3565,10 +3605,9 @@ pub mod types {
     ///`ChannelTurnFailed`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelTurnFailed {
-        ///The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member.
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<ChannelTurnFailedCredentialFile>,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: TurnFailureReason,
@@ -3595,6 +3634,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelTurnFailedCredentialFile {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -3707,7 +3749,7 @@ pub mod types {
     pub struct ChannelTurnLine {
         #[serde(rename = "lineSeq")]
         pub line_seq: Sequence,
-        pub text: ::std::string::String,
+        pub text: LongText,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
         #[serde(rename = "type")]
@@ -3783,11 +3825,6 @@ pub mod types {
         pub model: ModelName,
         #[serde(rename = "personaFiles")]
         pub persona_files: ::std::vec::Vec<ChannelPersonaFileDownload>,
-        ///Set when the turn builds a prebuild: the box clones the repository at this commit and runs the
-        ///repository's setup step, /opt/tumpel/prebuild.mjs run, in place of the harness, its output lines
-        ///being the turn's lines. The credential then holds only a GITHUB_TOKEN that reads the
-        ///repository's contents, and the snapshot the control plane asks for after the turn is the
-        ///prebuild's layer.
         #[serde(rename = "prebuildCommitSha", skip_serializing_if = "::std::option::Option::is_none")]
         pub prebuild_commit_sha: ::std::option::Option<ChannelTurnOfferPrebuildCommitSha>,
         pub prompt: Prompt,
@@ -3818,6 +3855,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelTurnOfferHarnessVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -3868,6 +3908,9 @@ pub mod types {
     impl ::std::str::FromStr for ChannelTurnOfferPrebuildCommitSha {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -3935,7 +3978,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelTurnRepositoryCloneFailed {
         pub cause: RepositoryCloneFailureCause,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "turnId")]
@@ -4061,15 +4104,9 @@ pub mod types {
             value.parse()
         }
     }
-    ///The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the
-    ///highest host `seq` the control plane has received with no gap before it. The host drops its
-    ///unacked frames at or below it before it resends, so a frame the control plane took on an earlier
-    ///connection is never counted as undelivered. A control plane that leaves it out acks only with its
-    ///next frame.
+    ///The control plane accepts the host. Both sides then resend their unacked frames.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelWelcome {
-        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub ack: ::std::option::Option<Sequence>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "protocolVersion")]
@@ -4168,13 +4205,13 @@ pub mod types {
     pub struct CircleCiAuthorizationAwaitingRedirect {
         ///CircleCI's consent page, with this authorization's client_id, PKCE S256 challenge and state.
         #[serde(rename = "authorizeUrl")]
-        pub authorize_url: ::std::string::String,
+        pub authorize_url: HttpUrl,
         ///When the redirect address must arrive by, or the authorization fails AuthorizationTimedOut.
         #[serde(rename = "redirectDueAt")]
         pub redirect_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///The loopback address CircleCI sends the browser to, http://127.0.0.1:47151/circleci/callback; nothing listens there unless the tumpel CLI does.
         #[serde(rename = "redirectUri")]
-        pub redirect_uri: ::std::string::String,
+        pub redirect_uri: HttpUrl,
         pub state: CircleCiAuthorizationAwaitingRedirectState,
     }
     ///`CircleCiAuthorizationAwaitingRedirectState`
@@ -4319,7 +4356,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct CircleCiAuthorizationFailed {
         ///What failed and what fixes it.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: CircleCiAuthorizationFailureReason,
@@ -4568,7 +4605,7 @@ pub mod types {
         pub created_at: i64,
         pub credential: CircleCiCredential,
         ///The organization's OIDC issuer, https://oidc.circleci.com/org/<organizationId>, whose job tokens upload the layers.
-        pub issuer: ::std::string::String,
+        pub issuer: HttpUrl,
         ///The CircleCI organization id, from Organization Settings > Overview.
         #[serde(rename = "organizationId")]
         pub organization_id: CircleCiUuid,
@@ -4582,10 +4619,10 @@ pub mod types {
     pub struct CircleCiConnectionLink {
         ///The prebuild config to commit, such as .circleci/tumpel-prebuild.yml, as YAML text to copy; its pipeline definition gets no trigger.
         #[serde(rename = "configExample")]
-        pub config_example: ::std::string::String,
+        pub config_example: Detail,
         pub link: CircleCiLink,
         ///The orb a repository's prebuild config imports: tumpel/prebuild@1.
-        pub orb: ::std::string::String,
+        pub orb: ShortText,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -4715,7 +4752,7 @@ pub mod types {
         #[serde(rename = "organizationId")]
         pub organization_id: CircleCiUuid,
         ///The organization's slug, such as gh/acme or circleci/<id>.
-        pub slug: ::std::string::String,
+        pub slug: ShortText,
     }
     ///`CircleCiPastedCredential`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -4908,6 +4945,9 @@ pub mod types {
     impl ::std::str::FromStr for CircleCiUuid {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 36usize {
+                return Err("longer than 36 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap()
             });
@@ -4977,7 +5017,7 @@ pub mod types {
         pub code_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///Where the person signs in; for Claude Code the page shows the code to submit.
         #[serde(rename = "signInUrl")]
-        pub sign_in_url: ::std::string::String,
+        pub sign_in_url: HttpUrl,
         pub state: ClaudeSetupAwaitingCodeState,
         ///The one-time code a Codex setup shows, for the person to enter at signInUrl. A Codex setup takes no submitted code: its box stores the token once the person signs in.
         #[serde(rename = "userCode", skip_serializing_if = "::std::option::Option::is_none")]
@@ -5120,7 +5160,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ClaudeSetupFailed {
         ///What failed and what fixes it.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ClaudeSetupFailureReason,
@@ -5519,7 +5559,7 @@ pub mod types {
     ///its line. The token answers only the endpoint it was issued by.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct CliCredentials {
-        pub endpoint: ::std::string::String,
+        pub endpoint: HttpUrl,
         pub token: CliCredentialsToken,
     }
     ///`CliCredentialsToken`
@@ -5540,6 +5580,9 @@ pub mod types {
     impl ::std::str::FromStr for CliCredentialsToken {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -5595,6 +5638,9 @@ pub mod types {
     impl ::std::str::FromStr for CliProofCredentialsClientId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -5641,6 +5687,9 @@ pub mod types {
     impl ::std::str::FromStr for CliProofCredentialsClientSecret {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -5674,7 +5723,7 @@ pub mod types {
     pub struct CompactTranscriptLine {
         #[serde(rename = "lineSeq")]
         pub line_seq: Sequence,
-        pub text: ::std::string::String,
+        pub text: LongText,
     }
     ///A page of a session's compact transcript: the session named once, and each turn once above its kept lines.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -5755,7 +5804,6 @@ pub mod types {
         pub turn_id: EntityId,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
-        ///A condition the turn completed under that the persona should act on, such as a box disk with less than a hundredth of it free, with its size and the boxDiskMib that raises it. Absent when there was none.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub warning: ::std::option::Option<CompletedTurnWarning>,
     }
@@ -5810,6 +5858,9 @@ pub mod types {
     impl ::std::str::FromStr for CompletedTurnWarning {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -5884,9 +5935,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ConfigChange {
         pub action: ConfigChangeAction,
-        pub description: ::std::string::String,
+        pub description: Detail,
         ///The persona, secret set or trigger name, the harness of a pin, or the hostId of a host.
-        pub name: ::std::string::String,
+        pub name: ShortText,
         pub resource: ConfigResource,
     }
     ///`ConfigChangeAction`
@@ -6215,7 +6266,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ConnectedConnection {
         ///What the connection is connected as: the GitHub logins of the tenant's installations, comma-separated, the account label the tenant gave a build provider, or for OpenRouter the names of the secret sets that hold an OpenRouter key, comma-separated, since OpenRouter's key exchange names no account.
-        pub account: ::std::string::String,
+        pub account: Summary,
         pub kind: ConnectionKind,
         pub state: ConnectedConnectionState,
     }
@@ -6448,7 +6499,7 @@ pub mod types {
     pub struct ConnectorAuthorization {
         ///The provider's authorization page, with the control plane's callback, this authorization's PKCE S256 challenge, its signed state and the resource.
         #[serde(rename = "authorizeUrl")]
-        pub authorize_url: ::std::string::String,
+        pub authorize_url: HttpUrl,
         ///When the callback must arrive by, or the connector reads AuthorizationFailed AuthorizationExpired.
         #[serde(rename = "callbackDueAt")]
         pub callback_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
@@ -6461,7 +6512,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ConnectorAuthorizationFailed {
         ///What failed and what fixes it, with the provider's answer sanitized; it never quotes a token response.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ConnectorAuthorizationFailureReason,
@@ -6831,7 +6882,7 @@ pub mod types {
         pub dispatch_grant_ttl_seconds: ::std::num::NonZeroU32,
         ///The OIDC issuer of GitHub Actions job tokens, https://token.actions.githubusercontent.com on github.com; its keys are at <issuer>/.well-known/jwks.
         #[serde(rename = "gitHubActionsIssuer")]
-        pub git_hub_actions_issuer: ::std::string::String,
+        pub git_hub_actions_issuer: HttpUrl,
         ///How long a host connection may stay silent before the control plane closes it HeartbeatDeadline and reads the host Offline, 30 in production; a claimed turn whose host stays Offline this long fails HostOffline.
         #[serde(rename = "heartbeatDeadlineSeconds")]
         pub heartbeat_deadline_seconds: ::std::num::NonZeroU32,
@@ -7149,7 +7200,7 @@ pub mod types {
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
         #[serde(rename = "variableNames")]
-        pub variable_names: ::std::vec::Vec<::std::string::String>,
+        pub variable_names: ::std::vec::Vec<ShortText>,
     }
     ///The kinds of provider credential a secret set can hold.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -7190,6 +7241,52 @@ pub mod types {
             value.parse()
         }
     }
+    ///A credential file or a variable value a harness reads, such as an OAuth credentials JSON.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct CredentialText(::std::string::String);
+    impl ::std::ops::Deref for CredentialText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<CredentialText> for ::std::string::String {
+        fn from(value: CredentialText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for CredentialText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("longer than 65536 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for CredentialText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for CredentialText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for CredentialText {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
     ///The deploy drain. While it is in place the control plane starts no session and no turn, and
     ///refuses both with DeployInProgress. The deploy reads `GET /v1/releases/rollout` with `drainToken`
     ///as the bearer until the control plane reports the new commit.
@@ -7216,6 +7313,9 @@ pub mod types {
     impl ::std::str::FromStr for DeployDrainDrainToken {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{43}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -7246,6 +7346,53 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///What failed and what fixes it, a warning, or a description. It may carry the tail of a
+    ///harness's output, which the harness caps well below this.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct Detail(::std::string::String);
+    impl ::std::ops::Deref for Detail {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<Detail> for ::std::string::String {
+        fn from(value: Detail) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for Detail {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for Detail {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for Detail {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for Detail {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
     ///A CLI or MCP client a principal signed in through the device flow.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct Device {
@@ -7267,17 +7414,17 @@ pub mod types {
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
         #[serde(rename = "userCode")]
-        pub user_code: ::std::string::String,
+        pub user_code: Token,
     }
     ///RFC 8628 device authorization, in its snake_case wire shape.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct DeviceAuthorization {
-        pub device_code: ::std::string::String,
+        pub device_code: Token,
         pub expires_in: ::std::num::NonZeroU32,
         pub interval: ::std::num::NonZeroU32,
-        pub user_code: ::std::string::String,
-        pub verification_uri: ::std::string::String,
-        pub verification_uri_complete: ::std::string::String,
+        pub user_code: Token,
+        pub verification_uri: HttpUrl,
+        pub verification_uri_complete: HttpUrl,
     }
     ///`DeviceCodeRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -7288,18 +7435,18 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct DeviceDecision {
         #[serde(rename = "userCode")]
-        pub user_code: ::std::string::String,
+        pub user_code: Token,
     }
     ///`DeviceToken`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct DeviceToken {
-        pub access_token: ::std::string::String,
+        pub access_token: Token,
         pub token_type: DeviceTokenTokenType,
     }
     ///`DeviceTokenRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct DeviceTokenRequest {
-        pub device_code: ::std::string::String,
+        pub device_code: Token,
         pub grant_type: DeviceTokenRequestGrantType,
     }
     ///`DeviceTokenRequestGrantType`
@@ -7465,7 +7612,7 @@ pub mod types {
     pub struct EditPersonaFilePatch {
         pub kind: EditPersonaFilePatchKind,
         #[serde(rename = "newText")]
-        pub new_text: ::std::string::String,
+        pub new_text: PersonaFileContent,
         #[serde(rename = "oldText")]
         pub old_text: EditPersonaFilePatchOldText,
         pub path: PersonaFilePath,
@@ -7521,6 +7668,9 @@ pub mod types {
     impl ::std::str::FromStr for EditPersonaFilePatchOldText {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 87384usize {
+                return Err("longer than 87384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -7842,11 +7992,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct EventCursorExpiredProblem {
         pub code: EventCursorExpiredProblemCode,
-        pub detail: ::std::string::String,
-        pub fix: ::std::string::String,
+        pub detail: Detail,
+        pub fix: Detail,
         #[serde(rename = "oldestEventId")]
         pub oldest_event_id: Sequence,
-        pub title: ::std::string::String,
+        pub title: Summary,
     }
     ///`EventCursorExpiredProblemCode`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -7909,7 +8059,7 @@ pub mod types {
     ///A connection whose credential stopped working; prebuilds on it fail until the tenant connects again.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ExpiredConnection {
-        pub account: ::std::string::String,
+        pub account: Summary,
         ///When the credential stopped working.
         #[serde(rename = "expiredAt")]
         pub expired_at: ::chrono::DateTime<::chrono::FixedOffset>,
@@ -7952,7 +8102,7 @@ pub mod types {
     ///A Connected connection whose credential stops working within the renewal window.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ExpiringConnection {
-        pub account: ::std::string::String,
+        pub account: Summary,
         ///When the credential stops working.
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
@@ -8001,7 +8151,7 @@ pub mod types {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///What failed and what fixes it, with the tail of the harness's standard error when there is one.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///A condition the harness keeps working toward until it holds; only a session whose harness has goals in the harness catalog accepts it.
@@ -8082,6 +8232,9 @@ pub mod types {
     impl ::std::str::FromStr for FixedVariableValue {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -8210,11 +8363,11 @@ pub mod types {
     pub struct GitHubActionsConnectionLink {
         ///The caller workflow a prebuild start commits in each repository at the connection's callerWorkflow path, or at .github/workflows/tumpel-prebuild.yml while not connected, as YAML text.
         #[serde(rename = "callerWorkflowExample")]
-        pub caller_workflow_example: ::std::string::String,
+        pub caller_workflow_example: Detail,
         pub link: GitHubActionsLink,
         ///The reusable workflow a caller workflow calls: tumpel/workflows/.github/workflows/prebuild.yml@v2.
         #[serde(rename = "reusableWorkflow")]
-        pub reusable_workflow: ::std::string::String,
+        pub reusable_workflow: ShortText,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -8285,7 +8438,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GitHubAppMissing {
         #[serde(rename = "setupUrl")]
-        pub setup_url: ::std::string::String,
+        pub setup_url: HttpUrl,
         pub state: GitHubAppMissingState,
     }
     ///`GitHubAppMissingState`
@@ -8325,7 +8478,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GitHubAppReady {
         #[serde(rename = "appSlug")]
-        pub app_slug: ::std::string::String,
+        pub app_slug: ShortText,
         pub state: GitHubAppReadyState,
     }
     ///`GitHubAppReadyState`
@@ -8476,7 +8629,7 @@ pub mod types {
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "installUrl")]
-        pub install_url: ::std::string::String,
+        pub install_url: HttpUrl,
     }
     ///An installation of the stage's GitHub App on one GitHub account, linked to the tenant when GitHub sent the installer back. A tenant holds one per connected account or organization.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -8538,12 +8691,12 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GitHubIssue {
         #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
+        pub html_url: HttpUrl,
         #[serde(rename = "issueNumber")]
         pub issue_number: GitHubIssueNumber,
         ///The names of the issue's labels.
-        pub labels: ::std::vec::Vec<::std::string::String>,
-        pub title: ::std::string::String,
+        pub labels: ::std::vec::Vec<ShortText>,
+        pub title: Summary,
         ///When the issue last changed on GitHub.
         #[serde(rename = "updatedAt")]
         pub updated_at: ::chrono::DateTime<::chrono::FixedOffset>,
@@ -8609,6 +8762,9 @@ pub mod types {
     impl ::std::str::FromStr for GitHubLogin {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 39usize {
+                return Err("longer than 39 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -8643,9 +8799,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GitHubRepository {
         #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
+        pub default_branch: ShortText,
         #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
+        pub html_url: HttpUrl,
         pub name: GitHubRepositoryName,
         pub owner: GitHubLogin,
         pub private: bool,
@@ -8668,6 +8824,9 @@ pub mod types {
     impl ::std::str::FromStr for GitHubRepositoryName {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 100usize {
+                return Err("longer than 100 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9._-]{1,100}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -8885,7 +9044,7 @@ pub mod types {
     pub struct GuestClaudeSetupFailed {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub reason: GuestClaudeSetupFailureReason,
         #[serde(rename = "type")]
         pub type_: GuestClaudeSetupFailedType,
@@ -8985,7 +9144,7 @@ pub mod types {
         #[serde(rename = "tokenCredential")]
         pub token_credential: GuestClaudeSetupStartTokenCredential,
         #[serde(rename = "tokenUrl")]
-        pub token_url: ::std::string::String,
+        pub token_url: HttpUrl,
         #[serde(rename = "type")]
         pub type_: GuestClaudeSetupStartType,
     }
@@ -9007,6 +9166,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestClaudeSetupStartTokenCredential {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 43usize {
                 return Err("shorter than 43 characters".into());
             }
@@ -9115,7 +9277,7 @@ pub mod types {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
         #[serde(rename = "signInUrl")]
-        pub sign_in_url: ::std::string::String,
+        pub sign_in_url: HttpUrl,
         #[serde(rename = "type")]
         pub type_: GuestClaudeSetupUrlType,
         #[serde(rename = "userCode", skip_serializing_if = "::std::option::Option::is_none")]
@@ -9183,6 +9345,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestEnvironmentHome {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9229,6 +9394,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestEnvironmentLang {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9275,6 +9443,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestEnvironmentPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9314,7 +9485,7 @@ pub mod types {
     pub struct GuestHarness {
         #[serde(rename = "cloneSeconds")]
         pub clone_seconds: ::std::num::NonZeroU32,
-        pub command: ::std::vec::Vec<::std::string::String>,
+        pub command: ::std::vec::Vec<Detail>,
         pub environment: GuestEnvironment,
         #[serde(rename = "fixedVariables")]
         pub fixed_variables: ::std::vec::Vec<FixedVariable>,
@@ -9343,6 +9514,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestHarnessHarness {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9389,6 +9563,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestHarnessHarnessVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9480,6 +9657,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestHarnessWorkingDirectory {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9543,6 +9723,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestHelloHarness {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9589,6 +9772,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestHelloHarnessVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9655,7 +9841,7 @@ pub mod types {
     pub struct GuestImageComponent {
         pub digest: Sha256Digest,
         pub name: GuestImageComponentName,
-        pub url: ::std::string::String,
+        pub url: HttpUrl,
         pub version: GuestImageComponentVersion,
     }
     ///`GuestImageComponentName`
@@ -9676,6 +9862,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestImageComponentName {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9722,6 +9911,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestImageComponentVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9757,7 +9949,7 @@ pub mod types {
         #[serde(rename = "baseRootfsDigest")]
         pub base_rootfs_digest: Sha256Digest,
         #[serde(rename = "baseRootfsUrl")]
-        pub base_rootfs_url: ::std::string::String,
+        pub base_rootfs_url: HttpUrl,
         pub components: ::std::vec::Vec<GuestImageComponent>,
         pub harness: GuestHarness,
         #[serde(rename = "imageDigest")]
@@ -9765,7 +9957,7 @@ pub mod types {
         #[serde(rename = "kernelDigest")]
         pub kernel_digest: Sha256Digest,
         #[serde(rename = "kernelUrl")]
-        pub kernel_url: ::std::string::String,
+        pub kernel_url: HttpUrl,
     }
     ///One frame from the host to the guest.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -9854,7 +10046,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GuestMetric {
         pub description: GuestMetricDescription,
-        pub dimensions: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub dimensions: ::std::collections::HashMap<::std::string::String, ShortText>,
         pub kind: MetricKind,
         pub metric: MetricName,
         pub unit: GuestMetricUnit,
@@ -9878,6 +10070,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestMetricDescription {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9924,6 +10119,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestMetricUnit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -9955,7 +10153,7 @@ pub mod types {
     ///One persona file for the guest to write under the harness home: its path, digest and base64 bytes.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GuestPersonaFile {
-        pub content: ::std::string::String,
+        pub content: PersonaFileContent,
         pub digest: Sha256Digest,
         pub path: PersonaFilePath,
     }
@@ -10060,10 +10258,9 @@ pub mod types {
     ///The turn ended. `detail` carries the tail of the harness's standard error when it did not complete.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GuestTurnEnd {
-        ///The turn's credential file as the harness left it, when it differs from the one the turn wrote; the guest deletes the file at the end of the turn.
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<GuestTurnEndCredentialFile>,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "lastLineSeq")]
         pub last_line_seq: Sequence,
         ///What the harness reported the turn used, read from its lines: turn.tokens per TokenKind and,
@@ -10076,7 +10273,6 @@ pub mod types {
         pub turn_id: EntityId,
         #[serde(rename = "type")]
         pub type_: GuestTurnEndType,
-        ///Set on a Completed end when the box's disk has less than a hundredth of it free: its size and the boxDiskMib that raises it. A guest older than guest protocol 13 never sends it.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub warning: ::std::option::Option<GuestTurnEndWarning>,
     }
@@ -10098,6 +10294,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestTurnEndCredentialFile {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -10225,6 +10424,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestTurnEndWarning {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -10258,7 +10460,7 @@ pub mod types {
     pub struct GuestTurnLine {
         #[serde(rename = "lineSeq")]
         pub line_seq: Sequence,
-        pub text: ::std::string::String,
+        pub text: LongText,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
         #[serde(rename = "type")]
@@ -10301,7 +10503,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GuestTurnRepositoryCloneFailed {
         pub cause: RepositoryCloneFailureCause,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
         #[serde(rename = "type")]
@@ -10405,11 +10607,6 @@ pub mod types {
         #[serde(rename = "lastLineSeq")]
         pub last_line_seq: Sequence,
         pub model: ModelName,
-        ///The TurnOffer's: once the working directory holds the repository, the guest resets its branch
-        ///to this commit, writes the marker .git/tumpel-prebuilt and runs /opt/tumpel/prebuild.mjs run as
-        ///the turn's process with the image environment and no credential, in place of the harness. A
-        ///later turn that finds the marker, in a box restored from the prebuild's snapshot, pulls the
-        ///branch fast-forward before the harness starts and deletes the marker.
         #[serde(rename = "prebuildCommitSha", skip_serializing_if = "::std::option::Option::is_none")]
         pub prebuild_commit_sha: ::std::option::Option<GuestTurnStartPrebuildCommitSha>,
         pub prompt: Prompt,
@@ -10444,6 +10641,9 @@ pub mod types {
     impl ::std::str::FromStr for GuestTurnStartPrebuildCommitSha {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -10581,7 +10781,7 @@ pub mod types {
     ///as the Codex model provider that reads `variable`. The arguments hold no secret.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct HarnessCredential {
-        pub arguments: ::std::vec::Vec<::std::string::String>,
+        pub arguments: ::std::vec::Vec<Summary>,
         #[serde(rename = "costBasis")]
         pub cost_basis: CostBasis,
         pub fixed: ::std::vec::Vec<FixedVariable>,
@@ -10644,6 +10844,9 @@ pub mod types {
     impl ::std::str::FromStr for HarnessVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 100usize {
+                return Err("longer than 100 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -10730,7 +10933,6 @@ pub mod types {
         #[serde(rename = "memoryBytes")]
         pub memory_bytes: ::std::num::NonZeroU64,
         pub name: DisplayName,
-        ///The host's Ed25519 public key, base64. The private key never leaves the host.
         #[serde(rename = "publicKey")]
         pub public_key: HostPublicKey,
         pub state: HostState,
@@ -10853,7 +11055,6 @@ pub mod types {
         #[serde(rename = "memoryBytes")]
         pub memory_bytes: ::std::num::NonZeroU64,
         pub name: DisplayName,
-        ///The host's Ed25519 public key, base64. The private key never leaves the host.
         #[serde(rename = "publicKey")]
         pub public_key: HostEnrolPublicKey,
         #[serde(rename = "supervisorVersion")]
@@ -10877,6 +11078,9 @@ pub mod types {
     impl ::std::str::FromStr for HostEnrolEnrolmentToken {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -10923,6 +11127,9 @@ pub mod types {
     impl ::std::str::FromStr for HostEnrolPublicKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -10969,6 +11176,9 @@ pub mod types {
     impl ::std::str::FromStr for HostEnrolSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -11074,6 +11284,9 @@ pub mod types {
     impl ::std::str::FromStr for HostLabel {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 63usize {
+                return Err("longer than 63 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z0-9][a-z0-9._=-]{0,62}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -11267,6 +11480,9 @@ pub mod types {
     impl ::std::str::FromStr for HostPublicKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -11355,6 +11571,9 @@ pub mod types {
     impl ::std::str::FromStr for HostSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -11409,6 +11628,52 @@ pub mod types {
         pub memory_budget_mib: ::std::option::Option<i64>,
         #[serde(rename = "memoryHeldMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub memory_held_mib: ::std::option::Option<i64>,
+    }
+    ///A URL the API checks as one.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct HttpUrl(::std::string::String);
+    impl ::std::ops::Deref for HttpUrl {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<HttpUrl> for ::std::string::String {
+        fn from(value: HttpUrl) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for HttpUrl {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HttpUrl {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HttpUrl {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for HttpUrl {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
     }
     ///The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -11496,6 +11761,9 @@ pub mod types {
     impl ::std::str::FromStr for ImageReleaseCommit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -11544,6 +11812,9 @@ pub mod types {
     impl ::std::str::FromStr for ImageReleaseImageReleaseVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^images-v[0-9]+\\.[0-9]+\\.[0-9]+$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -11705,15 +11976,13 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct InstallArchive {
         pub architecture: HostArchitecture,
-        ///The path of the harness binary in the unpacked archive, after stripComponents, such as
-        ///codex-x86_64-unknown-linux-musl; the build moves it to the binary name the guest runs.
         #[serde(rename = "binaryPath")]
         pub binary_path: InstallArchiveBinaryPath,
         pub sha256: Sha256Digest,
         ///The paths of the other executables in the unpacked archive that the harness spawns from beside
         ///its binary, such as codex-code-mode-host; the build moves each next to the binary under its file name.
         #[serde(rename = "siblingBinaryPaths")]
-        pub sibling_binary_paths: ::std::vec::Vec<::std::string::String>,
+        pub sibling_binary_paths: ::std::vec::Vec<ShortText>,
         pub url: InstallArchiveUrl,
     }
     ///The path of the harness binary in the unpacked archive, after stripComponents, such as
@@ -11735,6 +12004,9 @@ pub mod types {
     impl ::std::str::FromStr for InstallArchiveBinaryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -11781,6 +12053,9 @@ pub mod types {
     impl ::std::str::FromStr for InstallArchiveUrl {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -11867,6 +12142,9 @@ pub mod types {
     impl ::std::str::FromStr for InvitationAcceptToken {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -11908,7 +12186,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct InvitationCreated {
         #[serde(rename = "acceptUrl")]
-        pub accept_url: ::std::string::String,
+        pub accept_url: HttpUrl,
         pub invitation: Invitation,
     }
     ///An RS256 public key of the stage's issuer, in the JWK form of RFC 7517.
@@ -11974,6 +12252,9 @@ pub mod types {
     impl ::std::str::FromStr for IssuerJwkE {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -12054,6 +12335,9 @@ pub mod types {
     impl ::std::str::FromStr for IssuerJwkN {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -12140,6 +12424,9 @@ pub mod types {
     impl ::std::str::FromStr for IssuerKeyId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 43usize {
+                return Err("longer than 43 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{43}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -12210,6 +12497,53 @@ pub mod types {
         }
     }
     impl<'de> ::serde::Deserialize<'de> for LocalFilePath {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///A line of harness output or a document such as a script or a devcontainer.json. The guest
+    ///protocol carries frames up to 4 MiB, but a single line past 1 MiB is refused instead of stored.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct LongText(::std::string::String);
+    impl ::std::ops::Deref for LongText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<LongText> for ::std::string::String {
+        fn from(value: LongText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for LongText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 1048576usize {
+                return Err("longer than 1048576 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for LongText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for LongText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for LongText {
         fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
         where
             D: ::serde::Deserializer<'de>,
@@ -12306,6 +12640,9 @@ pub mod types {
     impl ::std::str::FromStr for MetricEntryDescription {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -12352,6 +12689,9 @@ pub mod types {
     impl ::std::str::FromStr for MetricEntryUnit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -12383,7 +12723,7 @@ pub mod types {
     ///One dimension of a metric's series in the window and the values it takes.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct MetricFacet {
-        pub dimension: ::std::string::String,
+        pub dimension: ShortText,
         pub values: ::std::vec::Vec<MetricFacetValue>,
     }
     ///`MetricFacetValue`
@@ -12391,7 +12731,7 @@ pub mod types {
     pub struct MetricFacetValue {
         #[serde(rename = "seriesCount")]
         pub series_count: i32,
-        pub value: ::std::string::String,
+        pub value: ShortText,
     }
     ///A metric's declaration: its unit as OpenTelemetry writes it (s, MiB, {token}), its kind and what it measures.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -12419,6 +12759,9 @@ pub mod types {
     impl ::std::str::FromStr for MetricInstrumentDescription {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -12465,6 +12808,9 @@ pub mod types {
     impl ::std::str::FromStr for MetricInstrumentUnit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -12596,7 +12942,7 @@ pub mod types {
     ///The buckets of one group, keyed by the values of its groupBy dimensions; a bucket with no points is left out.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct MetricSeries {
-        pub group: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub group: ::std::collections::HashMap<::std::string::String, ShortText>,
         pub points: ::std::vec::Vec<MetricPoint>,
     }
     ///A metric's buckets in the window, one series per group. Past 20 groups the rest fold into one
@@ -12606,13 +12952,13 @@ pub mod types {
         pub bucket: MetricBucket,
         pub metric: MetricName,
         pub series: ::std::vec::Vec<MetricSeries>,
-        pub unit: ::std::string::String,
+        pub unit: ShortText,
     }
     ///A page of the turn points behind a metric, oldest first. Pass `cursor` to read on; `finished`
     ///is true when no point in the window follows it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct MetricTurnPage {
-        pub cursor: ::std::string::String,
+        pub cursor: Summary,
         pub finished: bool,
         pub points: ::std::vec::Vec<MetricTurnPoint>,
     }
@@ -12620,7 +12966,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct MetricTurnPoint {
         pub at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub dimensions: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub dimensions: ::std::collections::HashMap<::std::string::String, ShortText>,
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
         #[serde(rename = "turnId")]
@@ -12634,8 +12980,8 @@ pub mod types {
         pub enrolment_token: EnrolmentToken,
         ///Downloads, installs and enrols the supervisor on a new host. It holds no token: it reads `token` from stdin.
         #[serde(rename = "installCommand")]
-        pub install_command: ::std::string::String,
-        pub token: ::std::string::String,
+        pub install_command: Detail,
+        pub token: Token,
     }
     ///`ModelName`
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -12876,12 +13222,12 @@ pub mod types {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///The stage's OIDC issuer Namespace registers.
-        pub issuer: ::std::string::String,
+        pub issuer: HttpUrl,
         #[serde(rename = "namespaceConnectionId")]
         pub namespace_connection_id: EntityId,
         ///The sub of a prebuild token: tenant:<tenantId>:persona:<personaName>:job:prebuild, with the prebuild's persona name.
         #[serde(rename = "subjectPattern")]
-        pub subject_pattern: ::std::string::String,
+        pub subject_pattern: ShortText,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
         #[serde(rename = "updatedAt")]
@@ -12931,8 +13277,8 @@ pub mod types {
     ///The stage has no issuer hostname yet, so Namespace cannot trust its tokens; `fix` says how to deploy it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct NamespaceNotConfigured {
-        pub detail: ::std::string::String,
-        pub fix: ::std::string::String,
+        pub detail: Detail,
+        pub fix: Detail,
         pub state: NamespaceNotConfiguredState,
     }
     ///`NamespaceNotConfiguredState`
@@ -12973,10 +13319,10 @@ pub mod types {
     pub struct NamespaceNotConnected {
         ///The aud Tumpel defines for Namespace: federation.namespaceapis.com.
         pub audience: OidcAudience,
-        pub issuer: ::std::string::String,
+        pub issuer: HttpUrl,
         pub state: NamespaceNotConnectedState,
         #[serde(rename = "subjectPattern")]
-        pub subject_pattern: ::std::string::String,
+        pub subject_pattern: ShortText,
     }
     ///`NamespaceNotConnectedState`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -13199,6 +13545,9 @@ pub mod types {
     impl ::std::str::FromStr for NpmInstallRecipePackage {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -13245,6 +13594,9 @@ pub mod types {
     impl ::std::str::FromStr for NpmInstallRecipePackageVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -13276,13 +13628,13 @@ pub mod types {
     ///An RFC 6749 authorization code redemption, with the PKCE verifier and the RFC 8707 resource.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthAuthorizationCodeRequest {
-        pub client_id: ::std::string::String,
-        pub code: ::std::string::String,
-        pub code_verifier: ::std::string::String,
+        pub client_id: ShortText,
+        pub code: Token,
+        pub code_verifier: Token,
         pub grant_type: OAuthAuthorizationCodeRequestGrantType,
-        pub redirect_uri: ::std::string::String,
+        pub redirect_uri: UrlText,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub resource: ::std::option::Option<::std::string::String>,
+        pub resource: ::std::option::Option<UrlText>,
     }
     ///`OAuthAuthorizationCodeRequestGrantType`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -13321,21 +13673,21 @@ pub mod types {
     ///`OAuthClient`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthClient {
-        pub client_id: ::std::string::String,
+        pub client_id: ShortText,
         pub client_id_issued_at: i64,
-        pub client_name: ::std::string::String,
-        pub grant_types: ::std::vec::Vec<::std::string::String>,
-        pub redirect_uris: ::std::vec::Vec<::std::string::String>,
-        pub response_types: ::std::vec::Vec<::std::string::String>,
-        pub scope: ::std::string::String,
+        pub client_name: Summary,
+        pub grant_types: ::std::vec::Vec<ShortText>,
+        pub redirect_uris: ::std::vec::Vec<HttpUrl>,
+        pub response_types: ::std::vec::Vec<ShortText>,
+        pub scope: Summary,
         pub token_endpoint_auth_method: OAuthClientTokenEndpointAuthMethod,
     }
     ///RFC 7591 dynamic client registration. Only the redirect addresses and the name are read.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthClientRegistration {
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub client_name: ::std::option::Option<::std::string::String>,
-        pub redirect_uris: ::std::vec::Vec<::std::string::String>,
+        pub client_name: ::std::option::Option<Summary>,
+        pub redirect_uris: ::std::vec::Vec<HttpUrl>,
     }
     ///`OAuthClientTokenEndpointAuthMethod`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -13434,7 +13786,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthError {
         pub error: OAuthErrorCode,
-        pub error_description: ::std::string::String,
+        pub error_description: Detail,
     }
     ///The OAuth error codes of RFC 6749, RFC 7591, RFC 8628 and RFC 8707 the control plane answers with.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -13519,10 +13871,10 @@ pub mod types {
     pub struct OAuthGrant {
         ///The client_id the client registered with, or tumpel-dashboard for the dashboard.
         #[serde(rename = "clientId")]
-        pub client_id: ::std::string::String,
+        pub client_id: ShortText,
         ///The name the client registered with, such as Claude.
         #[serde(rename = "clientName")]
-        pub client_name: ::std::string::String,
+        pub client_name: Summary,
         ///The grant the client's tokens belong to; revoking it signs the client out.
         #[serde(rename = "grantId")]
         pub grant_id: EntityId,
@@ -13531,16 +13883,16 @@ pub mod types {
         pub last_issued_at: i64,
         ///The origin of the client's registered callback, such as https://claude.ai.
         #[serde(rename = "redirectOrigin")]
-        pub redirect_origin: ::std::string::String,
+        pub redirect_origin: HttpUrl,
     }
     ///An RFC 6749 refresh, which spends the refresh token and issues a new pair.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthRefreshTokenRequest {
-        pub client_id: ::std::string::String,
+        pub client_id: ShortText,
         pub grant_type: OAuthRefreshTokenRequestGrantType,
-        pub refresh_token: ::std::string::String,
+        pub refresh_token: Token,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub resource: ::std::option::Option<::std::string::String>,
+        pub resource: ::std::option::Option<UrlText>,
     }
     ///`OAuthRefreshTokenRequestGrantType`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -13579,18 +13931,18 @@ pub mod types {
     ///An RFC 7009 revocation by a public client: the token and every token of its grant stop working. An unknown token is answered as revoked.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthRevocationRequest {
-        pub client_id: ::std::string::String,
-        pub token: ::std::string::String,
+        pub client_id: ShortText,
+        pub token: Token,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub token_type_hint: ::std::option::Option<::std::string::String>,
+        pub token_type_hint: ::std::option::Option<ShortText>,
     }
     ///`OAuthToken`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthToken {
-        pub access_token: ::std::string::String,
+        pub access_token: Token,
         pub expires_in: i32,
-        pub refresh_token: ::std::string::String,
-        pub scope: ::std::string::String,
+        pub refresh_token: Token,
+        pub scope: Summary,
         pub token_type: OAuthTokenTokenType,
     }
     ///`OAuthTokenRequest`
@@ -13760,8 +14112,8 @@ pub mod types {
         pub claims_supported: ::std::vec::Vec<OpenIdConfigurationClaimsSupportedItem>,
         pub id_token_signing_alg_values_supported:
             ::std::vec::Vec<OpenIdConfigurationIdTokenSigningAlgValuesSupportedItem>,
-        pub issuer: ::std::string::String,
-        pub jwks_uri: ::std::string::String,
+        pub issuer: HttpUrl,
+        pub jwks_uri: HttpUrl,
         pub response_types_supported: ::std::vec::Vec<OpenIdConfigurationResponseTypesSupportedItem>,
         pub scopes_supported: ::std::vec::Vec<OpenIdConfigurationScopesSupportedItem>,
         pub subject_types_supported: ::std::vec::Vec<OpenIdConfigurationSubjectTypesSupportedItem>,
@@ -13986,7 +14338,7 @@ pub mod types {
     pub struct OpenRouterAuthorizationAwaitingCallback {
         ///OpenRouter's authorization page, with the control plane's callback_url, this authorization's PKCE S256 challenge and its signed state.
         #[serde(rename = "authorizeUrl")]
-        pub authorize_url: ::std::string::String,
+        pub authorize_url: HttpUrl,
         ///When the callback must arrive by, or the authorization fails AuthorizationTimedOut.
         #[serde(rename = "callbackDueAt")]
         pub callback_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
@@ -14113,7 +14465,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OpenRouterAuthorizationFailed {
         ///What failed and what fixes it.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: OpenRouterAuthorizationFailureReason,
@@ -14272,6 +14624,52 @@ pub mod types {
     impl ::std::convert::From<OpenRouterAuthorizationFailed> for OpenRouterAuthorizationStatus {
         fn from(value: OpenRouterAuthorizationFailed) -> Self {
             Self::Failed(value)
+        }
+    }
+    ///A file system path, a socket or an object storage key; 4096 is the Linux PATH_MAX.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct PathText(::std::string::String);
+    impl ::std::ops::Deref for PathText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<PathText> for ::std::string::String {
+        fn from(value: PathText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for PathText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for PathText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for PathText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for PathText {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
     ///`PausedSubscription`
@@ -14764,7 +15162,7 @@ pub mod types {
         #[serde(rename = "uploadExpiresAt")]
         pub upload_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "uploadUrl")]
-        pub upload_url: ::std::string::String,
+        pub upload_url: HttpUrl,
     }
     ///Asks for a presigned upload of one persona file larger than PersonaFileLimit.InlineFileBytes, named by the sha256 of its bytes.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -14872,7 +15270,7 @@ pub mod types {
         pub input_digest: Sha256Digest,
         ///The transcript of the prebuild's turn: the output of the repository's setup step.
         #[serde(rename = "logUrl")]
-        pub log_url: ::std::string::String,
+        pub log_url: HttpUrl,
         ///The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, whose harness version picks the guest image, and whose name the job's subject carries.
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
@@ -15234,9 +15632,9 @@ pub mod types {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///What failed, with what the provider reported.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         ///What fixes it.
-        pub fix: ::std::string::String,
+        pub fix: Detail,
         pub phase: PrebuildFailurePhase,
         #[serde(rename = "prebuildId")]
         pub prebuild_id: EntityId,
@@ -15289,10 +15687,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildFinding {
         pub code: PrebuildFindingCode,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         ///The field or file the finding is about.
-        pub field: ::std::string::String,
-        pub fix: ::std::string::String,
+        pub field: ShortText,
+        pub fix: Detail,
     }
     ///What a preview finds wrong with a config.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -15347,7 +15745,7 @@ pub mod types {
         pub prebuild_id: EntityId,
         ///A presigned GET of the guest image's root filesystem tar, valid for the dispatch and build budgets from this answer.
         #[serde(rename = "rootfsUrl")]
-        pub rootfs_url: ::std::string::String,
+        pub rootfs_url: HttpUrl,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -15450,7 +15848,7 @@ pub mod types {
         pub config_source: PrebuildPreviewSource,
         ///The containerEnv the commands run with, as the file writes it.
         #[serde(rename = "containerEnv")]
-        pub container_env: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub container_env: ::std::collections::HashMap<::std::string::String, Detail>,
         ///What a build would refuse or fail on; empty when the config is ready to build.
         pub findings: ::std::vec::Vec<PrebuildFinding>,
         ///The input digest a start would record now, over the default branch's files; a supplied config counts as .devcontainer/devcontainer.json.
@@ -15463,9 +15861,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildPreviewCommand {
         ///The program and its arguments; a string command runs as /bin/sh -c <command>.
-        pub argv: ::std::vec::Vec<::std::string::String>,
+        pub argv: ::std::vec::Vec<Detail>,
         ///The command's name in the file: the lifecycle field, or <field>.<key> for an entry of an object-form command.
-        pub label: ::std::string::String,
+        pub label: ShortText,
         pub lifecycle: PrebuildLifecycleCommand,
     }
     ///Previews the repository's own devcontainer.json.
@@ -15775,6 +16173,9 @@ pub mod types {
     impl ::std::str::FromStr for PrebuildTemplateId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 40usize {
+                return Err("longer than 40 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z][a-z0-9-]{0,39}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -15809,7 +16210,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildTemplateManifest {
         ///What the template's commands install, one item each, such as the npm dependencies from package-lock.json.
-        pub installs: ::std::vec::Vec<::std::string::String>,
+        pub installs: ::std::vec::Vec<Summary>,
         pub summary: PrebuildTemplateSummary,
         ///The toolchains the version pins: the guest image it targets.
         pub toolchains: ::std::vec::Vec<PrebuildTemplateToolchain>,
@@ -15818,14 +16219,14 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildTemplatePullRequest {
         ///The branch the pull request merges from: tumpel/prebuild-template.
-        pub branch: ::std::string::String,
+        pub branch: ShortText,
         #[serde(rename = "pullRequestNumber")]
         pub pull_request_number: ::std::num::NonZeroU64,
         ///The repository as https://github.com/<owner>/<name> in lower case.
         pub repository: RepositoryUrl,
         pub state: PullRequestState,
         ///The pull request's page on GitHub.
-        pub url: ::std::string::String,
+        pub url: HttpUrl,
     }
     ///Opens a pull request that adds a template version's devcontainer.json to a repository.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -15857,6 +16258,9 @@ pub mod types {
     impl ::std::str::FromStr for PrebuildTemplateSummary {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 500usize {
+                return Err("longer than 500 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -15889,7 +16293,6 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildTemplateToolchain {
         pub toolchain: Toolchain,
-        ///The toolchain's version, such as 26.13.1.
         #[serde(rename = "toolchainVersion")]
         pub toolchain_version: PrebuildTemplateToolchainToolchainVersion,
     }
@@ -15911,6 +16314,9 @@ pub mod types {
     impl ::std::str::FromStr for PrebuildTemplateToolchainToolchainVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -15943,11 +16349,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildTemplateVersion {
         ///The devcontainer.json text the version commits, byte for byte the file whose sha256 is digest.
-        pub devcontainer: ::std::string::String,
+        pub devcontainer: LongText,
         ///The sha256 of the version's devcontainer.json bytes.
         pub digest: Sha256Digest,
         ///What the template's commands install, one item each, such as the npm dependencies from package-lock.json.
-        pub installs: ::std::vec::Vec<::std::string::String>,
+        pub installs: ::std::vec::Vec<Summary>,
         #[serde(rename = "prebuildTemplateId")]
         pub prebuild_template_id: PrebuildTemplateId,
         #[serde(rename = "prebuildTemplateVersion")]
@@ -16005,7 +16411,7 @@ pub mod types {
         ///The sha256 of the version's devcontainer.json bytes.
         pub digest: Sha256Digest,
         ///What the template's commands install, one item each, such as the npm dependencies from package-lock.json.
-        pub installs: ::std::vec::Vec<::std::string::String>,
+        pub installs: ::std::vec::Vec<Summary>,
         #[serde(rename = "prebuildTemplateVersion")]
         pub prebuild_template_version: PrebuildTemplateVersionNumber,
         pub summary: PrebuildTemplateSummary,
@@ -16032,7 +16438,7 @@ pub mod types {
         pub tenant_id: EntityId,
         #[serde(rename = "uploadExpiresAt")]
         pub upload_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub url: ::std::string::String,
+        pub url: HttpUrl,
     }
     ///Asks for the presigned upload of a prebuild's layer: one OCI layer tar, named by its sha256 and size.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -16101,9 +16507,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct Problem {
         pub code: ProblemCode,
-        pub detail: ::std::string::String,
-        pub fix: ::std::string::String,
-        pub title: ::std::string::String,
+        pub detail: Detail,
+        pub fix: Detail,
+        pub title: Summary,
     }
     ///`ProblemCode`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -16429,11 +16835,11 @@ pub mod types {
     ///RFC 9728 metadata for the hosted MCP endpoint.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ProtectedResourceMetadata {
-        pub authorization_servers: ::std::vec::Vec<::std::string::String>,
-        pub bearer_methods_supported: ::std::vec::Vec<::std::string::String>,
-        pub resource: ::std::string::String,
-        pub resource_name: ::std::string::String,
-        pub scopes_supported: ::std::vec::Vec<::std::string::String>,
+        pub authorization_servers: ::std::vec::Vec<HttpUrl>,
+        pub bearer_methods_supported: ::std::vec::Vec<ShortText>,
+        pub resource: HttpUrl,
+        pub resource_name: Summary,
+        pub scopes_supported: ::std::vec::Vec<ShortText>,
     }
     ///Where a pull request is on GitHub.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -16549,6 +16955,9 @@ pub mod types {
     impl ::std::str::FromStr for PushKeyApplicationServerKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{87}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -16582,10 +16991,9 @@ pub mod types {
     ///The notification payload a service worker shows for a pushed tenant event.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PushNotification {
-        pub body: ::std::string::String,
-        ///The dashboard path a notification tap opens.
+        pub body: Detail,
         pub path: PushNotificationPath,
-        pub title: ::std::string::String,
+        pub title: Summary,
     }
     ///The dashboard path a notification tap opens.
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -16605,6 +17013,9 @@ pub mod types {
     impl ::std::str::FromStr for PushNotificationPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^/").unwrap());
             if PATTERN.find(value).is_none() {
@@ -16661,9 +17072,7 @@ pub mod types {
     ///The keys a browser's push subscription carries, in base64url, as the Push API reports them.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PushSubscriptionKeys {
-        ///The 16-byte authentication secret.
         pub auth: PushSubscriptionKeysAuth,
-        ///The browser's P-256 public key, uncompressed.
         pub p256dh: PushSubscriptionKeysP256dh,
     }
     ///The 16-byte authentication secret.
@@ -16684,6 +17093,9 @@ pub mod types {
     impl ::std::str::FromStr for PushSubscriptionKeysAuth {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{22}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -16732,6 +17144,9 @@ pub mod types {
     impl ::std::str::FromStr for PushSubscriptionKeysP256dh {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{87}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -16871,12 +17286,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ReleaseCli {
         pub architecture: HostArchitecture,
-        ///The version of the CLI release this binary comes from, the one `tumpel --version` prints.
         #[serde(rename = "cliVersion")]
         pub cli_version: ReleaseCliCliVersion,
         ///The URL of the release asset that holds this binary, written by the publisher; the binary there has `sha256` and `sizeBytes`.
         #[serde(rename = "downloadUrl")]
-        pub download_url: ::std::string::String,
+        pub download_url: HttpUrl,
         pub sha256: Sha256Digest,
         #[serde(rename = "sizeBytes")]
         pub size_bytes: ::std::num::NonZeroU64,
@@ -16899,6 +17313,9 @@ pub mod types {
     impl ::std::str::FromStr for ReleaseCliCliVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -17016,6 +17433,9 @@ pub mod types {
     impl ::std::str::FromStr for ReleaseManifestCommit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -17064,6 +17484,9 @@ pub mod types {
     impl ::std::str::FromStr for ReleaseManifestReleaseVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -17122,6 +17545,9 @@ pub mod types {
     impl ::std::str::FromStr for ReleaseRolloutDeployedCommit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -17160,14 +17586,13 @@ pub mod types {
         pub architecture: HostArchitecture,
         ///The URL of the release asset that holds this binary, written by the publisher; the binary there has `sha256` and `sizeBytes`.
         #[serde(rename = "downloadUrl")]
-        pub download_url: ::std::string::String,
+        pub download_url: HttpUrl,
         ///The GuestProtocol.Version the supervisor and the guest drive inside it speak; a release that keeps this supervisor refuses to publish from a commit whose GuestProtocol.Oldest to GuestProtocol.Version leaves it out.
         #[serde(rename = "guestProtocolVersion")]
         pub guest_protocol_version: ::std::num::NonZeroU32,
         pub sha256: Sha256Digest,
         #[serde(rename = "sizeBytes")]
         pub size_bytes: ::std::num::NonZeroU64,
-        ///The version of the supervisor release this binary comes from, the one it reports in Hello.
         #[serde(rename = "supervisorVersion")]
         pub supervisor_version: ReleaseSupervisorSupervisorVersion,
     }
@@ -17189,6 +17614,9 @@ pub mod types {
     impl ::std::str::FromStr for ReleaseSupervisorSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -17508,7 +17936,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SamplePoint {
         pub at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub dimensions: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub dimensions: ::std::collections::HashMap<::std::string::String, ShortText>,
         pub metric: MetricName,
         pub value: f64,
     }
@@ -18007,7 +18435,7 @@ pub mod types {
         pub created_at: i64,
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
-        pub harness_version: ::std::string::String,
+        pub harness_version: ShortText,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         ///The session's latest turn, with why it failed once it is Failed.
@@ -18196,25 +18624,25 @@ pub mod types {
     ///The GitHub issue of the session's repository that the session was started from, and the branch its first prompt asks for.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SessionIssue {
-        pub branch: ::std::string::String,
+        pub branch: ShortText,
         #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
+        pub html_url: HttpUrl,
         #[serde(rename = "issueNumber")]
         pub issue_number: GitHubIssueNumber,
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
-        pub title: ::std::string::String,
+        pub title: Summary,
     }
     ///The session started from a GitHub issue with Sessions_startFromIssue, with the branch its first prompt asks for.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SessionIssueOrigin {
-        pub branch: ::std::string::String,
+        pub branch: ShortText,
         #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
+        pub html_url: HttpUrl,
         #[serde(rename = "issueNumber")]
         pub issue_number: GitHubIssueNumber,
         pub kind: SessionIssueOriginKind,
-        pub title: ::std::string::String,
+        pub title: Summary,
     }
     ///`SessionIssueOriginKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -18286,7 +18714,7 @@ pub mod types {
     ///The session's files start without a prebuild's layer. `detail` states why and what fixes it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SessionPrebuildLayerAbsent {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub layer: SessionPrebuildLayerAbsentLayer,
         pub reason: PrebuildLayerAbsence,
     }
@@ -18575,6 +19003,9 @@ pub mod types {
     impl ::std::str::FromStr for SessionTag {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 63usize {
+                return Err("longer than 63 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z0-9][a-z0-9:._-]{0,62}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -18638,6 +19069,9 @@ pub mod types {
     impl ::std::str::FromStr for Sha256Digest {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 64usize {
+                return Err("longer than 64 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{64}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -18659,6 +19093,52 @@ pub mod types {
         }
     }
     impl<'de> ::serde::Deserialize<'de> for Sha256Digest {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///A short value: a name, a kind, a status, a version, a branch, a commit or an id another system issued.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct ShortText(::std::string::String);
+    impl ::std::ops::Deref for ShortText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<ShortText> for ::std::string::String {
+        fn from(value: ShortText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for ShortText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ShortText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ShortText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for ShortText {
         fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
         where
             D: ::serde::Deserializer<'de>,
@@ -18765,6 +19245,9 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotDirectoryEntryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -18860,6 +19343,9 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotEntryCommonPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -18891,7 +19377,7 @@ pub mod types {
     ///The snapshot was not stored. `detail` states what failed and what fixes it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SnapshotFailure {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ChannelSnapshotFailureReason,
@@ -18997,6 +19483,9 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotFileEntryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -19098,6 +19587,9 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotOpaqueDirectoryEntryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -19256,6 +19748,9 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotSymlinkEntryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -19302,6 +19797,9 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotSymlinkEntryTarget {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -19394,6 +19892,9 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotWhiteoutEntryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -19561,7 +20062,7 @@ pub mod types {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///What failed and what fixes it.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: StopFailureReason,
@@ -19717,7 +20218,7 @@ pub mod types {
         #[serde(rename = "downloadExpiresAt")]
         pub download_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "downloadUrl")]
-        pub download_url: ::std::string::String,
+        pub download_url: HttpUrl,
         pub path: PersonaFilePath,
         #[serde(rename = "sizeBytes")]
         pub size_bytes: PersonaFileSize,
@@ -20582,24 +21083,60 @@ pub mod types {
             value.parse()
         }
     }
-    ///How many Welcomes the unacked host frame `seq` has been resent after without the control plane
-    ///acking it. The supervisor gives a frame up after 10.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct SupervisorChannelReplay {
-        pub replays: ::std::num::NonZeroU32,
-        pub seq: Sequence,
+    ///One line a person reads: a title, a client name, a cursor or an OAuth scope list.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct Summary(::std::string::String);
+    impl ::std::ops::Deref for Summary {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<Summary> for ::std::string::String {
+        fn from(value: Summary) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for Summary {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 1024usize {
+                return Err("longer than 1024 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for Summary {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for Summary {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for Summary {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
     }
     ///The host side of the channel's sequencing, channel.json in the supervisor directory, written
     ///before every frame the host sends. `received` is the highest control-plane `seq` accepted with no
     ///gap, `sent` the highest `seq` the host assigned, and `unacked` every host frame the control plane
-    ///has not acked yet, in `seq` order. `replays` counts, for each unacked frame resent after a
-    ///Welcome, how many Welcomes it has been resent after; a file written before the count existed
-    ///leaves it out. A supervisor that finds this file missing exits with failure ChannelStateLost.
+    ///has not acked yet, in `seq` order. A supervisor that finds this file missing exits with failure
+    ///ChannelStateLost.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorChannelState {
         pub received: Sequence,
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub replays: ::std::vec::Vec<SupervisorChannelReplay>,
         pub sent: Sequence,
         pub unacked: ::std::vec::Vec<ChannelStoredHostFrame>,
     }
@@ -20632,6 +21169,9 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorCheckReportSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -20666,7 +21206,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorConfig {
         ///The base URL of the control plane the host enrolled with, such as https://tumpel.example.com.
-        pub endpoint: ::std::string::String,
+        pub endpoint: HttpUrl,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "tenantId")]
@@ -20682,8 +21222,6 @@ pub mod types {
         UsageUnreadable,
         GuestDriveUnwritable,
         UpdateNotOnline,
-        ChannelUnreachable,
-        FrameUndelivered,
     }
     impl ::std::fmt::Display for SupervisorFailure {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20695,8 +21233,6 @@ pub mod types {
                 Self::UsageUnreadable => f.write_str("UsageUnreadable"),
                 Self::GuestDriveUnwritable => f.write_str("GuestDriveUnwritable"),
                 Self::UpdateNotOnline => f.write_str("UpdateNotOnline"),
-                Self::ChannelUnreachable => f.write_str("ChannelUnreachable"),
-                Self::FrameUndelivered => f.write_str("FrameUndelivered"),
             }
         }
     }
@@ -20711,8 +21247,6 @@ pub mod types {
                 "UsageUnreadable" => Ok(Self::UsageUnreadable),
                 "GuestDriveUnwritable" => Ok(Self::GuestDriveUnwritable),
                 "UpdateNotOnline" => Ok(Self::UpdateNotOnline),
-                "ChannelUnreachable" => Ok(Self::ChannelUnreachable),
-                "FrameUndelivered" => Ok(Self::FrameUndelivered),
                 _ => Err("invalid value".into()),
             }
         }
@@ -20752,7 +21286,7 @@ pub mod types {
         #[serde(rename = "boxId")]
         pub box_id: EntityId,
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
-        pub credential_file: ::std::option::Option<::std::string::String>,
+        pub credential_file: ::std::option::Option<CredentialText>,
         pub dirty: bool,
         pub image: SupervisorHandoverImage,
         pub machine: SupervisorHandoverMachine,
@@ -20904,7 +21438,7 @@ pub mod types {
         pub kind: SupervisorHandoverLayeredImageKind,
         pub layer: HarnessLayerManifest,
         #[serde(rename = "layerPath")]
-        pub layer_path: ::std::string::String,
+        pub layer_path: PathText,
     }
     ///`SupervisorHandoverLayeredImageKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -20946,11 +21480,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorHandoverMachine {
         #[serde(rename = "apiSocket")]
-        pub api_socket: ::std::string::String,
+        pub api_socket: PathText,
         #[serde(rename = "consoleTail")]
-        pub console_tail: ::std::string::String,
+        pub console_tail: Detail,
         #[serde(rename = "guestBuffer")]
-        pub guest_buffer: ::std::string::String,
+        pub guest_buffer: PathText,
         #[serde(rename = "guestFd")]
         pub guest_fd: i32,
         #[serde(rename = "processId")]
@@ -20959,7 +21493,7 @@ pub mod types {
         pub stderr_fd: i32,
         #[serde(rename = "stdoutFd")]
         pub stdout_fd: i32,
-        pub vsock: ::std::string::String,
+        pub vsock: PathText,
     }
     ///`SupervisorHandoverSnapshot`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -20972,7 +21506,7 @@ pub mod types {
         #[serde(rename = "uploadExpiresAt")]
         pub upload_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "uploadUrl")]
-        pub upload_url: ::std::string::String,
+        pub upload_url: UrlText,
     }
     ///`SupervisorHandoverSnapshotKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -21070,7 +21604,7 @@ pub mod types {
     ///`SupervisorHandoverTurnError`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorHandoverTurnError {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub reason: TurnFailureReason,
     }
     ///`SupervisorHandoverTurnKind`
@@ -21176,6 +21710,9 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorHostKeyPrivateKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -21222,6 +21759,9 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorHostKeyPublicKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -21297,6 +21837,9 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorReleaseSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$").unwrap()
             });
@@ -21346,6 +21889,9 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorReleaseTumpelApiVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$").unwrap()
             });
@@ -21440,6 +21986,9 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorRuntimeDataDir {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -21486,6 +22035,9 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorRuntimeFirecrackerPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -21532,6 +22084,9 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorRuntimeImageCacheDir {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -21616,13 +22171,13 @@ pub mod types {
     ///hidden, and is empty for every other reason.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorUpdateFailureReport {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "fromSha256")]
         pub from_sha256: Sha256Digest,
         #[serde(rename = "outputTail")]
-        pub output_tail: ::std::vec::Vec<::std::string::String>,
+        pub output_tail: ::std::vec::Vec<Detail>,
         pub reason: SupervisorUpdateFailureReason,
         #[serde(rename = "toSha256")]
         pub to_sha256: Sha256Digest,
@@ -21850,6 +22405,9 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorUpdateStepReportReleaseVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -21925,6 +22483,8 @@ pub mod types {
         pub name: DisplayName,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
+        ///The limits the tenant runs under; a new tenant gets its deployment's default tier.
+        pub tier: TenantTier,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
     }
@@ -22143,7 +22703,7 @@ pub mod types {
     ///`TenantApiAuthorizationInvalid`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiAuthorizationInvalid {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiAuthorizationInvalidKind,
     }
     ///`TenantApiAuthorizationInvalidKind`
@@ -22258,7 +22818,7 @@ pub mod types {
     ///`TenantApiAuthorizationNotWaiting`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiAuthorizationNotWaiting {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiAuthorizationNotWaitingKind,
     }
     ///`TenantApiAuthorizationNotWaitingKind`
@@ -22298,7 +22858,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiAuthorizationOtherCredential {
         pub kind: TenantApiAuthorizationOtherCredentialKind,
-        pub name: ::std::string::String,
+        pub name: ShortText,
     }
     ///`TenantApiAuthorizationOtherCredentialKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -22504,7 +23064,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCallerWorkflowConnected {
         #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: ::std::string::String,
+        pub caller_workflow: ShortText,
         pub kind: TenantApiCallerWorkflowConnectedKind,
     }
     ///`TenantApiCallerWorkflowConnectedKind`
@@ -22582,7 +23142,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCancelTurnInput {
         #[serde(rename = "cancelledBy")]
-        pub cancelled_by: ::std::string::String,
+        pub cancelled_by: ShortText,
         pub now: i64,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
@@ -22662,7 +23222,7 @@ pub mod types {
     ///`TenantApiCancelUnspoken`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCancelUnspoken {
-        pub host: ::std::string::String,
+        pub host: ShortText,
         pub kind: TenantApiCancelUnspokenKind,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
@@ -22707,7 +23267,7 @@ pub mod types {
         pub circle_ci_authorization_id: EntityId,
         pub now: i64,
         #[serde(rename = "organizationId")]
-        pub organization_id: ::std::string::String,
+        pub organization_id: ShortText,
         #[serde(rename = "principalId")]
         pub principal_id: EntityId,
         #[serde(rename = "tenantId")]
@@ -22989,16 +23549,16 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiBinding {
         #[serde(rename = "pipelineDefinitionId")]
-        pub pipeline_definition_id: ::std::string::String,
+        pub pipeline_definition_id: ShortText,
         #[serde(rename = "projectId")]
-        pub project_id: ::std::string::String,
+        pub project_id: ShortText,
         #[serde(rename = "projectSlug")]
-        pub project_slug: ::std::string::String,
-        pub repository: ::std::string::String,
+        pub project_slug: ShortText,
+        pub repository: ShortText,
         #[serde(rename = "signingSecret")]
-        pub signing_secret: ::std::string::String,
+        pub signing_secret: Token,
         #[serde(rename = "webhookId")]
-        pub webhook_id: ::std::string::String,
+        pub webhook_id: ShortText,
     }
     ///`TenantApiCircleCiConnectionInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -23028,14 +23588,14 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiConnectionRecord {
         #[serde(rename = "accountLabel")]
-        pub account_label: ::std::string::String,
+        pub account_label: ShortText,
         #[serde(rename = "circleCIConnectionId")]
         pub circle_ci_connection_id: EntityId,
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         pub credential: TenantApiCircleCiConnectionRecordCredential,
         #[serde(rename = "organizationId")]
-        pub organization_id: ::std::string::String,
+        pub organization_id: ShortText,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
     }
@@ -23302,7 +23862,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiJobOther {
         #[serde(rename = "jobId")]
-        pub job_id: ::std::string::String,
+        pub job_id: ShortText,
         pub kind: TenantApiCircleCiJobOtherKind,
     }
     ///`TenantApiCircleCiJobOtherKind`
@@ -23341,7 +23901,7 @@ pub mod types {
     ///`TenantApiCircleCiJobRefused`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiJobRefused {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiCircleCiJobRefusedKind,
         pub status: i32,
     }
@@ -23382,7 +23942,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiProjectBoundToInput {
         #[serde(rename = "projectId")]
-        pub project_id: ::std::string::String,
+        pub project_id: ShortText,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -23437,7 +23997,7 @@ pub mod types {
     ///`TenantApiCircleCiProjectOfInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiProjectOfInput {
-        pub repository: ::std::string::String,
+        pub repository: ShortText,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -23492,7 +24052,7 @@ pub mod types {
     ///`TenantApiCircleCiRegistrationRefused`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiRegistrationRefused {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiCircleCiRegistrationRefusedKind,
     }
     ///`TenantApiCircleCiRegistrationRefusedKind`
@@ -23637,25 +24197,25 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiTokenResult {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub token: ::std::option::Option<::std::string::String>,
+        pub token: ::std::option::Option<Token>,
     }
     ///`TenantApiCircleCiUploadJob`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiUploadJob {
         #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
+        pub head_sha: ShortText,
         #[serde(rename = "jobId")]
-        pub job_id: ::std::string::String,
+        pub job_id: ShortText,
         #[serde(rename = "pipelineId")]
-        pub pipeline_id: ::std::string::String,
+        pub pipeline_id: ShortText,
     }
     ///`TenantApiCircleCiUploadTarget`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiUploadTarget {
         #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
+        pub default_branch: ShortText,
         #[serde(rename = "organizationId")]
-        pub organization_id: ::std::string::String,
+        pub organization_id: ShortText,
         pub pipeline: TenantApiRecordedPipeline,
         pub prebuild: Prebuild,
         pub provider: TenantApiCircleCiUploadTargetProvider,
@@ -23702,13 +24262,13 @@ pub mod types {
         #[serde(rename = "circleCIProjectId")]
         pub circle_ci_project_id: EntityId,
         #[serde(rename = "webhookId")]
-        pub webhook_id: ::std::string::String,
+        pub webhook_id: ShortText,
     }
     ///`TenantApiCircleCiWebhookSecretInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiWebhookSecretInput {
         #[serde(rename = "projectId")]
-        pub project_id: ::std::string::String,
+        pub project_id: ShortText,
     }
     ///`TenantApiCircleCiWebhookSecretRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -23756,7 +24316,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiWebhookSecretResult {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub secret: ::std::option::Option<::std::string::String>,
+        pub secret: ::std::option::Option<Token>,
     }
     ///`TenantApiCircleCiWebhooksInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -23833,19 +24393,19 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiWorkflowCompletedEvent {
         #[serde(rename = "pipelineId")]
-        pub pipeline_id: ::std::string::String,
+        pub pipeline_id: ShortText,
         #[serde(rename = "projectId")]
-        pub project_id: ::std::string::String,
+        pub project_id: ShortText,
         #[serde(rename = "type")]
-        pub type_: ::std::string::String,
+        pub type_: ShortText,
         pub workflow: TenantApiCircleCiWorkflowCompletedEventWorkflow,
     }
     ///`TenantApiCircleCiWorkflowCompletedEventWorkflow`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCircleCiWorkflowCompletedEventWorkflow {
-        pub name: ::std::string::String,
-        pub status: ::std::string::String,
-        pub url: ::std::string::String,
+        pub name: ShortText,
+        pub status: ShortText,
+        pub url: HttpUrl,
     }
     ///`TenantApiCircleCiWorkflowCompletedInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -24047,7 +24607,7 @@ pub mod types {
     ///`TenantApiClaudeSetupNotStored`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiClaudeSetupNotStored {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiClaudeSetupNotStoredKind,
     }
     ///`TenantApiClaudeSetupNotStoredKind`
@@ -24180,7 +24740,7 @@ pub mod types {
     ///`TenantApiClaudeSetupReleaseUnreadable`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiClaudeSetupReleaseUnreadable {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiClaudeSetupReleaseUnreadableKind,
     }
     ///`TenantApiClaudeSetupReleaseUnreadableKind`
@@ -24467,7 +25027,7 @@ pub mod types {
         #[serde(rename = "principalId")]
         pub principal_id: EntityId,
         #[serde(rename = "redirectedUrl")]
-        pub redirected_url: ::std::string::String,
+        pub redirected_url: UrlText,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -24749,7 +25309,7 @@ pub mod types {
     ///`TenantApiConfigConflict`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConfigConflict {
-        pub constraint: ::std::string::String,
+        pub constraint: ShortText,
         pub kind: TenantApiConfigConflictKind,
     }
     ///`TenantApiConfigConflictKind`
@@ -24789,7 +25349,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConfigResourceDeleted {
         pub kind: TenantApiConfigResourceDeletedKind,
-        pub resource: ::std::string::String,
+        pub resource: UrlText,
     }
     ///`TenantApiConfigResourceDeletedKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -25060,11 +25620,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectedAccounts {
         #[serde(rename = "CircleCI", deserialize_with = "::std::option::Option::deserialize")]
-        pub circle_ci: ::std::option::Option<::std::string::String>,
+        pub circle_ci: ::std::option::Option<ShortText>,
         #[serde(rename = "GitHubActions", deserialize_with = "::std::option::Option::deserialize")]
-        pub git_hub_actions: ::std::option::Option<::std::string::String>,
+        pub git_hub_actions: ::std::option::Option<ShortText>,
         #[serde(rename = "Namespace", deserialize_with = "::std::option::Option::deserialize")]
-        pub namespace: ::std::option::Option<::std::string::String>,
+        pub namespace: ::std::option::Option<ShortText>,
     }
     ///`TenantApiConnectedAccountsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -25179,9 +25739,9 @@ pub mod types {
     ///`TenantApiConnectorCallbackCode`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorCallbackCode {
-        pub code: ::std::string::String,
+        pub code: Token,
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub issuer: ::std::option::Option<::std::string::String>,
+        pub issuer: ::std::option::Option<UrlText>,
         pub kind: TenantApiConnectorCallbackCodeKind,
     }
     ///`TenantApiConnectorCallbackCodeKind`
@@ -25221,7 +25781,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorCallbackConnected {
         pub kind: TenantApiConnectorCallbackConnectedKind,
-        pub name: ::std::string::String,
+        pub name: ShortText,
     }
     ///`TenantApiConnectorCallbackConnectedKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -25259,7 +25819,7 @@ pub mod types {
     ///`TenantApiConnectorCallbackError`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorCallbackError {
-        pub error: ::std::string::String,
+        pub error: ShortText,
         pub kind: TenantApiConnectorCallbackErrorKind,
     }
     ///`TenantApiConnectorCallbackErrorKind`
@@ -25304,7 +25864,7 @@ pub mod types {
         pub initiator_is_owner: bool,
         pub now: i64,
         #[serde(rename = "stateHash")]
-        pub state_hash: ::std::string::String,
+        pub state_hash: Token,
     }
     ///`TenantApiConnectorCallbackInputCallback`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -25326,7 +25886,7 @@ pub mod types {
     ///`TenantApiConnectorCallbackNotConnected`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorCallbackNotConnected {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiConnectorCallbackNotConnectedKind,
     }
     ///`TenantApiConnectorCallbackNotConnectedKind`
@@ -25505,7 +26065,7 @@ pub mod types {
     ///`TenantApiConnectorDiscoveryFailed`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorDiscoveryFailed {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiConnectorDiscoveryFailedKind,
     }
     ///`TenantApiConnectorDiscoveryFailedKind`
@@ -25544,7 +26104,7 @@ pub mod types {
     ///`TenantApiConnectorInUse`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorInUse {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiConnectorInUseKind,
     }
     ///`TenantApiConnectorInUseKind`
@@ -25622,7 +26182,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorNoCredential {
         pub kind: TenantApiConnectorNoCredentialKind,
-        pub name: ::std::string::String,
+        pub name: ShortText,
     }
     ///`TenantApiConnectorNoCredentialKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -25698,7 +26258,7 @@ pub mod types {
     ///`TenantApiConnectorRefreshFailed`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorRefreshFailed {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiConnectorRefreshFailedKind,
     }
     ///`TenantApiConnectorRefreshFailedKind`
@@ -25737,7 +26297,7 @@ pub mod types {
     ///`TenantApiConnectorRegistrationUnsupported`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorRegistrationUnsupported {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiConnectorRegistrationUnsupportedKind,
     }
     ///`TenantApiConnectorRegistrationUnsupportedKind`
@@ -25804,6 +26364,9 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiConnectorStateClaimsConnectorAuthorizationId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -25850,6 +26413,9 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiConnectorStateClaimsConnectorId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -25896,6 +26462,9 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiConnectorStateClaimsPrincipalId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -25975,6 +26544,9 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiConnectorStateClaimsTenantId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -26195,11 +26767,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCreateConnectorInput {
         pub auth: ConnectorAuth,
-        pub name: ::std::string::String,
+        pub name: ShortText,
         pub now: i64,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
-        pub url: ::std::string::String,
+        pub url: UrlText,
     }
     ///`TenantApiCreateConnectorRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -27727,7 +28299,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiDispatchCircleCiPrebuildInput {
         pub now: i64,
-        pub parameters: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub parameters: ::std::collections::HashMap<::std::string::String, Summary>,
         pub project: CircleCiProject,
         pub start: TenantApiPrebuildStartRecord,
         #[serde(rename = "tenantId")]
@@ -27886,9 +28458,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiExpiredCredentialRefusal {
         #[serde(rename = "expiresAt")]
-        pub expires_at: ::std::string::String,
+        pub expires_at: ShortText,
         pub kind: TenantApiExpiredCredentialRefusalKind,
-        pub name: ::std::string::String,
+        pub name: ShortText,
     }
     ///`TenantApiExpiredCredentialRefusalKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -28956,19 +29528,19 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiGitHubActionsStart {
         #[serde(rename = "apiOrigin")]
-        pub api_origin: ::std::string::String,
+        pub api_origin: UrlText,
         #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: ::std::string::String,
+        pub caller_workflow: ShortText,
         #[serde(rename = "guestImageDigest")]
-        pub guest_image_digest: ::std::string::String,
+        pub guest_image_digest: ShortText,
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
         #[serde(rename = "prebuildId")]
         pub prebuild_id: EntityId,
         pub rebuild: bool,
-        pub repository: ::std::string::String,
+        pub repository: ShortText,
         #[serde(rename = "rootfsKey")]
-        pub rootfs_key: ::std::string::String,
+        pub rootfs_key: PathText,
         pub target: TenantApiRepositoryRef,
     }
     ///`TenantApiGitHubActionsUploadTarget`
@@ -28977,7 +29549,7 @@ pub mod types {
         #[serde(rename = "callerWorkflow")]
         pub caller_workflow: TenantApiGitHubActionsUploadTargetCallerWorkflow,
         #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
+        pub default_branch: ShortText,
         pub prebuild: Prebuild,
         pub provider: TenantApiGitHubActionsUploadTargetProvider,
         pub run: TenantApiPrebuildRun,
@@ -29039,7 +29611,7 @@ pub mod types {
     pub struct TenantApiGitHubUser {
         #[serde(rename = "githubUserId")]
         pub github_user_id: i64,
-        pub login: ::std::string::String,
+        pub login: ShortText,
     }
     ///`TenantApiHeldPrebuildInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -29099,7 +29671,7 @@ pub mod types {
     ///`TenantApiHostFrameRefused`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiHostFrameRefused {
-        pub reason: ::std::string::String,
+        pub reason: Detail,
         #[serde(rename = "type")]
         pub type_: TenantApiHostFrameRefusedType,
     }
@@ -29556,7 +30128,6 @@ pub mod types {
         #[serde(rename = "memoryBytes")]
         pub memory_bytes: ::std::num::NonZeroU64,
         pub name: DisplayName,
-        ///The host's Ed25519 public key, base64. The private key never leaves the host.
         #[serde(rename = "publicKey")]
         pub public_key: TenantApiHostRecordPublicKey,
         pub state: HostState,
@@ -29585,6 +30156,9 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiHostRecordPublicKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -29631,6 +30205,9 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiHostRecordSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -29733,19 +30310,19 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiImageAvailability {
         pub architectures: ::std::vec::Vec<HostArchitecture>,
-        pub harness: ::std::string::String,
+        pub harness: ShortText,
         #[serde(rename = "harnessVersion")]
-        pub harness_version: ::std::string::String,
+        pub harness_version: ShortText,
     }
     ///`TenantApiIssueOfSession`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiIssueOfSession {
-        pub branch: ::std::string::String,
+        pub branch: ShortText,
         #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
+        pub html_url: HttpUrl,
         #[serde(rename = "issueNumber")]
         pub issue_number: GitHubIssueNumber,
-        pub title: ::std::string::String,
+        pub title: Summary,
     }
     ///`TenantApiJobInputsTarget`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -29753,12 +30330,12 @@ pub mod types {
         #[serde(rename = "callerWorkflow")]
         pub caller_workflow: TenantApiJobInputsTargetCallerWorkflow,
         #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
+        pub default_branch: ShortText,
         #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
+        pub head_sha: ShortText,
         pub prebuild: Prebuild,
         #[serde(rename = "rootfsKey")]
-        pub rootfs_key: ::std::string::String,
+        pub rootfs_key: PathText,
     }
     ///`TenantApiJobInputsTargetCallerWorkflow`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -29781,8 +30358,8 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiJobInputsTargetInput {
         #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
-        pub repository: ::std::string::String,
+        pub head_sha: ShortText,
+        pub repository: ShortText,
         #[serde(rename = "runId")]
         pub run_id: i64,
         #[serde(rename = "tenantId")]
@@ -30447,7 +31024,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiListPrebuildsInput {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub repository: ::std::option::Option<::std::string::String>,
+        pub repository: ::std::option::Option<ShortText>,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -31066,10 +31643,10 @@ pub mod types {
     pub struct TenantApiModelUnsupportedCredentialRefusal {
         pub allowed: ::std::vec::Vec<ModelName>,
         #[serde(rename = "credentialKind")]
-        pub credential_kind: ::std::string::String,
+        pub credential_kind: ShortText,
         pub kind: TenantApiModelUnsupportedCredentialRefusalKind,
         pub model: ModelName,
-        pub name: ::std::string::String,
+        pub name: ShortText,
     }
     ///`TenantApiModelUnsupportedCredentialRefusalKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -31132,7 +31709,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiNamespaceConnectionRecord {
         #[serde(rename = "accountLabel")]
-        pub account_label: ::std::string::String,
+        pub account_label: ShortText,
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         #[serde(rename = "namespaceConnectionId")]
@@ -31140,7 +31717,7 @@ pub mod types {
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
         #[serde(rename = "workspaceId")]
-        pub workspace_id: ::std::string::String,
+        pub workspace_id: ShortText,
     }
     ///`TenantApiNamespaceConnectionRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -31193,10 +31770,10 @@ pub mod types {
     ///`TenantApiNewClaudeSetup`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiNewClaudeSetup {
-        pub endpoint: ::std::string::String,
+        pub endpoint: UrlText,
         pub harness: ClaudeSetupHarness,
         #[serde(rename = "harnessVersion")]
-        pub harness_version: ::std::string::String,
+        pub harness_version: ShortText,
         pub hosts: ::std::vec::Vec<TenantApiHostRecord>,
         #[serde(rename = "principalId")]
         pub principal_id: EntityId,
@@ -31207,17 +31784,17 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiNewOpenRouterAuthorization {
         #[serde(rename = "controlPlaneOrigin")]
-        pub control_plane_origin: ::std::string::String,
+        pub control_plane_origin: UrlText,
         #[serde(rename = "secretSetId")]
         pub secret_set_id: EntityId,
     }
     ///`TenantApiNewSession`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiNewSession {
-        pub endpoint: ::std::string::String,
+        pub endpoint: UrlText,
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
-        pub harness_version: ::std::string::String,
+        pub harness_version: ShortText,
         pub hosts: ::std::vec::Vec<TenantApiHostRecord>,
         #[serde(rename = "principalId")]
         pub principal_id: EntityId,
@@ -31269,7 +31846,7 @@ pub mod types {
     pub struct TenantApiNoModelCredentialRefusal {
         pub accepted: ::std::vec::Vec<HarnessCredential>,
         pub kind: TenantApiNoModelCredentialRefusalKind,
-        pub model: ::std::string::String,
+        pub model: ShortText,
         pub provider: ModelProvider,
     }
     ///`TenantApiNoModelCredentialRefusalKind`
@@ -31692,7 +32269,7 @@ pub mod types {
     ///`TenantApiOpenRouterCallbackCode`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiOpenRouterCallbackCode {
-        pub code: ::std::string::String,
+        pub code: Token,
         pub kind: TenantApiOpenRouterCallbackCodeKind,
     }
     ///`TenantApiOpenRouterCallbackCodeKind`
@@ -31966,7 +32543,7 @@ pub mod types {
     ///`TenantApiOpenRouterSecretSetsResult`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiOpenRouterSecretSetsResult {
-        pub names: ::std::vec::Vec<::std::string::String>,
+        pub names: ::std::vec::Vec<ShortText>,
     }
     ///A persona patch, which the tenant Durable Object reads, merges and writes in one transaction, so a concurrent write never loses a field neither names.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -32575,7 +33152,7 @@ pub mod types {
     ///`TenantApiPrebuildActionsDisabled`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildActionsDisabled {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiPrebuildActionsDisabledKind,
     }
     ///`TenantApiPrebuildActionsDisabledKind`
@@ -32615,11 +33192,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildAppPermissionMissing {
         #[serde(rename = "appOwner")]
-        pub app_owner: ::std::string::String,
+        pub app_owner: ShortText,
         #[serde(rename = "appSlug")]
-        pub app_slug: ::std::string::String,
+        pub app_slug: ShortText,
         pub kind: TenantApiPrebuildAppPermissionMissingKind,
-        pub permissions: ::std::vec::Vec<::std::string::String>,
+        pub permissions: ::std::vec::Vec<ShortText>,
     }
     ///`TenantApiPrebuildAppPermissionMissingKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -32696,7 +33273,7 @@ pub mod types {
     ///`TenantApiPrebuildCallerRefused`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildCallerRefused {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiPrebuildCallerRefusedKind,
     }
     ///`TenantApiPrebuildCallerRefusedKind`
@@ -32738,16 +33315,16 @@ pub mod types {
         #[serde(rename = "configSource")]
         pub config_source: PrebuildConfigSource,
         #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
+        pub default_branch: ShortText,
         #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
+        pub head_sha: ShortText,
         pub key: TenantApiPrebuildKey,
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
         #[serde(rename = "prebuildId")]
         pub prebuild_id: EntityId,
         #[serde(rename = "rootfsKey")]
-        pub rootfs_key: ::std::string::String,
+        pub rootfs_key: PathText,
     }
     ///`TenantApiPrebuildDeadline`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -32892,16 +33469,16 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildKey {
         #[serde(rename = "guestImageDigest")]
-        pub guest_image_digest: ::std::string::String,
+        pub guest_image_digest: ShortText,
         #[serde(rename = "inputDigest")]
-        pub input_digest: ::std::string::String,
-        pub repository: ::std::string::String,
+        pub input_digest: ShortText,
+        pub repository: ShortText,
     }
     ///`TenantApiPrebuildLayerUpload`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildLayerUpload {
         #[serde(rename = "layerDigest")]
-        pub layer_digest: ::std::string::String,
+        pub layer_digest: ShortText,
         #[serde(rename = "layerSizeBytes")]
         pub layer_size_bytes: i64,
     }
@@ -32947,9 +33524,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildPermissionMissing {
         #[serde(rename = "appSlug")]
-        pub app_slug: ::std::string::String,
+        pub app_slug: ShortText,
         pub kind: TenantApiPrebuildPermissionMissingKind,
-        pub permissions: ::std::vec::Vec<::std::string::String>,
+        pub permissions: ::std::vec::Vec<ShortText>,
     }
     ///`TenantApiPrebuildPermissionMissingKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -32987,7 +33564,7 @@ pub mod types {
     ///`TenantApiPrebuildRefused`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildRefused {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiPrebuildRefusedKind,
     }
     ///`TenantApiPrebuildRefusedKind`
@@ -33027,7 +33604,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildRun {
         #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
+        pub head_sha: ShortText,
         #[serde(rename = "runId")]
         pub run_id: i64,
     }
@@ -33037,16 +33614,16 @@ pub mod types {
         #[serde(rename = "configSource")]
         pub config_source: PrebuildConfigSource,
         #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
+        pub default_branch: ShortText,
         #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
+        pub head_sha: ShortText,
         pub key: TenantApiPrebuildKey,
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
         #[serde(rename = "prebuildId")]
         pub prebuild_id: EntityId,
         #[serde(rename = "rootfsKey")]
-        pub rootfs_key: ::std::string::String,
+        pub rootfs_key: PathText,
         pub target: TenantApiRepositoryRef,
     }
     ///`TenantApiPrebuildStarted`
@@ -33091,7 +33668,7 @@ pub mod types {
     ///`TenantApiPrebuildTokenRefused`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildTokenRefused {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiPrebuildTokenRefusedKind,
     }
     ///`TenantApiPrebuildTokenRefusedKind`
@@ -33130,7 +33707,7 @@ pub mod types {
     ///`TenantApiPrebuildUnreadable`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildUnreadable {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiPrebuildUnreadableKind,
     }
     ///`TenantApiPrebuildUnreadableKind`
@@ -33445,7 +34022,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiReadTokenOk {
         pub kind: TenantApiReadTokenOkKind,
-        pub token: ::std::string::String,
+        pub token: Token,
     }
     ///`TenantApiReadTokenOkKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -33479,6 +34056,59 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
+    }
+    ///`TenantApiReadUsageInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadUsageInput {
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiReadUsageRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadUsageRequest {
+        pub input: TenantApiReadUsageInput,
+        pub operation: TenantApiReadUsageRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiReadUsageRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiReadUsageRequestOperation {
+        #[serde(rename = "readUsage")]
+        ReadUsage,
+    }
+    impl ::std::fmt::Display for TenantApiReadUsageRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ReadUsage => f.write_str("readUsage"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiReadUsageRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "readUsage" => Ok(Self::ReadUsage),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiReadUsageRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiReadUsageRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiReadUsageResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadUsageResult {
+        pub usage: TenantUsage,
     }
     ///`TenantApiReconcileHeldBoxesInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -33636,12 +34266,12 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiRecordedPipeline {
         #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
+        pub head_sha: ShortText,
         pub job: TenantApiRecordedPipelineJob,
         #[serde(rename = "pipelineId")]
-        pub pipeline_id: ::std::string::String,
+        pub pipeline_id: ShortText,
         #[serde(rename = "projectId")]
-        pub project_id: ::std::string::String,
+        pub project_id: ShortText,
     }
     ///`TenantApiRecordedPipelineJob`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -33663,7 +34293,7 @@ pub mod types {
     ///`TenantApiRemoveSecretMemberInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiRemoveSecretMemberInput {
-        pub name: ::std::string::String,
+        pub name: ShortText,
         pub now: i64,
         #[serde(rename = "secretSetId")]
         pub secret_set_id: EntityId,
@@ -33751,7 +34381,7 @@ pub mod types {
     pub struct TenantApiRenameConnectorInput {
         #[serde(rename = "connectorId")]
         pub connector_id: EntityId,
-        pub name: ::std::string::String,
+        pub name: ShortText,
         pub now: i64,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
@@ -33951,8 +34581,8 @@ pub mod types {
     ///`TenantApiRepositoryRef`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiRepositoryRef {
-        pub name: ::std::string::String,
-        pub owner: ::std::string::String,
+        pub name: ShortText,
+        pub owner: ShortText,
     }
     ///`TenantApiResumeSubscriptionInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -34086,15 +34716,15 @@ pub mod types {
     ///A GitHub Actions workflow run event, as the webhook reports it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiRunEvent {
-        pub action: ::std::string::String,
+        pub action: ShortText,
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub conclusion: ::std::option::Option<::std::string::String>,
+        pub conclusion: ::std::option::Option<ShortText>,
         #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
+        pub head_sha: ShortText,
         #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
-        pub path: ::std::string::String,
-        pub repository: ::std::string::String,
+        pub html_url: UrlText,
+        pub path: PathText,
+        pub repository: ShortText,
         #[serde(rename = "runId")]
         pub run_id: i64,
     }
@@ -34298,7 +34928,7 @@ pub mod types {
     ///`TenantApiSecretSetConflict`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSecretSetConflict {
-        pub constraint: ::std::string::String,
+        pub constraint: ShortText,
         pub kind: TenantApiSecretSetConflictKind,
     }
     ///`TenantApiSecretSetConflictKind`
@@ -34416,7 +35046,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSecretSetInUse {
         pub kind: TenantApiSecretSetInUseKind,
-        pub personas: ::std::vec::Vec<::std::string::String>,
+        pub personas: ::std::vec::Vec<ShortText>,
     }
     ///`TenantApiSecretSetInUseKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -34493,8 +35123,8 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSecretSetNoStoredValue {
         pub kind: TenantApiSecretSetNoStoredValueKind,
-        pub name: ::std::string::String,
-        pub source: ::std::string::String,
+        pub name: ShortText,
+        pub source: ShortText,
     }
     ///`TenantApiSecretSetNoStoredValueKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -34571,7 +35201,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSecretSetUncheckedToken {
         pub kind: TenantApiSecretSetUncheckedTokenKind,
-        pub source: ::std::string::String,
+        pub source: ShortText,
     }
     ///`TenantApiSecretSetUncheckedTokenKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -34609,10 +35239,10 @@ pub mod types {
     ///A stored member no longer matches its kind, so the set cannot be read.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSecretSetUnreadable {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiSecretSetUnreadableKind,
-        pub member: ::std::string::String,
-        pub name: ::std::string::String,
+        pub member: ShortText,
+        pub name: ShortText,
         #[serde(rename = "secretSetId")]
         pub secret_set_id: EntityId,
     }
@@ -35663,7 +36293,7 @@ pub mod types {
         pub tenant_id: EntityId,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
-        pub value: ::std::string::String,
+        pub value: Token,
     }
     ///`TenantApiSetStaticTokenRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -35989,7 +36619,7 @@ pub mod types {
         #[serde(rename = "connectorId")]
         pub connector_id: EntityId,
         #[serde(rename = "controlPlaneOrigin")]
-        pub control_plane_origin: ::std::string::String,
+        pub control_plane_origin: UrlText,
         pub now: i64,
         #[serde(rename = "principalId")]
         pub principal_id: EntityId,
@@ -36086,7 +36716,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiStartConnectorDisconnected {
         pub kind: TenantApiStartConnectorDisconnectedKind,
-        pub names: ::std::vec::Vec<::std::string::String>,
+        pub names: ::std::vec::Vec<ShortText>,
     }
     ///`TenantApiStartConnectorDisconnectedKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -36277,7 +36907,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiStartHostPrebuildInput {
         #[serde(rename = "apiOrigin")]
-        pub api_origin: ::std::string::String,
+        pub api_origin: UrlText,
         pub commit: TenantApiPrebuildCommitStart,
         pub input: TenantApiNewSession,
         pub now: i64,
@@ -37007,7 +37637,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiStopSessionInput {
         #[serde(rename = "cancelledBy", deserialize_with = "::std::option::Option::deserialize")]
-        pub cancelled_by: ::std::option::Option<::std::string::String>,
+        pub cancelled_by: ::std::option::Option<ShortText>,
         pub now: i64,
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
@@ -37249,11 +37879,6 @@ pub mod types {
         #[serde(rename = "harnessVersion")]
         pub harness_version: TenantApiStoredTurnOfferHarnessVersion,
         pub model: ModelName,
-        ///Set when the turn builds a prebuild: the box clones the repository at this commit and runs the
-        ///repository's setup step, /opt/tumpel/prebuild.mjs run, in place of the harness, its output lines
-        ///being the turn's lines. The credential then holds only a GITHUB_TOKEN that reads the
-        ///repository's contents, and the snapshot the control plane asks for after the turn is the
-        ///prebuild's layer.
         #[serde(rename = "prebuildCommitSha", skip_serializing_if = "::std::option::Option::is_none")]
         pub prebuild_commit_sha: ::std::option::Option<TenantApiStoredTurnOfferPrebuildCommitSha>,
         pub prompt: Prompt,
@@ -37283,6 +37908,9 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiStoredTurnOfferHarnessVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
                 return Err("shorter than 1 characters".into());
             }
@@ -37333,6 +37961,9 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiStoredTurnOfferPrebuildCommitSha {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -37401,7 +38032,7 @@ pub mod types {
     pub struct TenantApiSubmitClaudeSetupCodeInput {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
-        pub code: ::std::string::String,
+        pub code: Token,
         pub now: i64,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
@@ -37946,10 +38577,55 @@ pub mod types {
             value.parse()
         }
     }
+    ///The tenant reached one of its limits and the instance served nothing. The caller answers 429 naming the limit, retryable after the window resets.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTenantLimitReached {
+        pub limit: i64,
+        pub measure: TenantUsageMeasure,
+        pub refusal: TenantApiTenantLimitReachedRefusal,
+        #[serde(rename = "resetsAt")]
+        pub resets_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        pub tier: TenantTier,
+        pub used: i64,
+        pub window: TenantUsageWindow,
+    }
+    ///`TenantApiTenantLimitReachedRefusal`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTenantLimitReachedRefusal {
+        TenantLimitReached,
+    }
+    impl ::std::fmt::Display for TenantApiTenantLimitReachedRefusal {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::TenantLimitReached => f.write_str("TenantLimitReached"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTenantLimitReachedRefusal {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "TenantLimitReached" => Ok(Self::TenantLimitReached),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTenantLimitReachedRefusal {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTenantLimitReachedRefusal {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///The instance does not know the operation: it runs older code. The caller answers a retryable failure.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTenantOperationUnknown {
-        pub operation: ::std::string::String,
+        pub operation: ShortText,
         pub refusal: TenantApiTenantOperationUnknownRefusal,
     }
     ///`TenantApiTenantOperationUnknownRefusal`
@@ -37992,6 +38668,7 @@ pub mod types {
         ApiVersionUnsupported(TenantApiTenantApiVersionUnsupported),
         OperationUnknown(TenantApiTenantOperationUnknown),
         RequestInvalid(TenantApiTenantRequestInvalid),
+        LimitReached(TenantApiTenantLimitReached),
     }
     impl ::std::convert::From<TenantApiTenantApiVersionUnsupported> for TenantApiTenantRefusal {
         fn from(value: TenantApiTenantApiVersionUnsupported) -> Self {
@@ -38006,6 +38683,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiTenantRequestInvalid> for TenantApiTenantRefusal {
         fn from(value: TenantApiTenantRequestInvalid) -> Self {
             Self::RequestInvalid(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTenantLimitReached> for TenantApiTenantRefusal {
+        fn from(value: TenantApiTenantLimitReached) -> Self {
+            Self::LimitReached(value)
         }
     }
     ///One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation.
@@ -38149,6 +38831,7 @@ pub mod types {
         ForgetHostUsageRequest(TenantApiForgetHostUsageRequest),
         RunningTurnsByHostRequest(TenantApiRunningTurnsByHostRequest),
         ListHostUsageRequest(TenantApiListHostUsageRequest),
+        ReadUsageRequest(TenantApiReadUsageRequest),
         DeferredOffersRequest(TenantApiDeferredOffersRequest),
         TurnMetricDimensionsRequest(TenantApiTurnMetricDimensionsRequest),
         PrepareOfferRequest(TenantApiPrepareOfferRequest),
@@ -38841,6 +39524,11 @@ pub mod types {
             Self::ListHostUsageRequest(value)
         }
     }
+    impl ::std::convert::From<TenantApiReadUsageRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiReadUsageRequest) -> Self {
+            Self::ReadUsageRequest(value)
+        }
+    }
     impl ::std::convert::From<TenantApiDeferredOffersRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiDeferredOffersRequest) -> Self {
             Self::DeferredOffersRequest(value)
@@ -38874,8 +39562,8 @@ pub mod types {
     ///The input fails the operation's schema: a caller bug, which the caller fails as a 500.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTenantRequestInvalid {
-        pub issues: ::std::vec::Vec<::std::string::String>,
-        pub operation: ::std::string::String,
+        pub issues: ::std::vec::Vec<Detail>,
+        pub operation: ShortText,
         pub refusal: TenantApiTenantRequestInvalidRefusal,
     }
     ///`TenantApiTenantRequestInvalidRefusal`
@@ -38924,7 +39612,7 @@ pub mod types {
         #[serde(rename = "sessionState")]
         pub session_state: SessionState,
         #[serde(rename = "storageKey")]
-        pub storage_key: ::std::string::String,
+        pub storage_key: StorageKey,
     }
     ///`TenantApiTranscriptChunkKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -39738,6 +40426,30 @@ pub mod types {
             value.parse()
         }
     }
+    ///The dimensions one turn reported, by name.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct TenantApiTurnMetricDimensions(pub ::std::collections::HashMap<::std::string::String, ShortText>);
+    impl ::std::ops::Deref for TenantApiTurnMetricDimensions {
+        type Target = ::std::collections::HashMap<::std::string::String, ShortText>;
+        fn deref(&self) -> &::std::collections::HashMap<::std::string::String, ShortText> {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TenantApiTurnMetricDimensions>
+        for ::std::collections::HashMap<::std::string::String, ShortText>
+    {
+        fn from(value: TenantApiTurnMetricDimensions) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::From<::std::collections::HashMap<::std::string::String, ShortText>>
+        for TenantApiTurnMetricDimensions
+    {
+        fn from(value: ::std::collections::HashMap<::std::string::String, ShortText>) -> Self {
+            Self(value)
+        }
+    }
     ///`TenantApiTurnMetricDimensionsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTurnMetricDimensionsInput {
@@ -39789,10 +40501,7 @@ pub mod types {
     ///`TenantApiTurnMetricDimensionsResult`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTurnMetricDimensionsResult {
-        pub dimensions: ::std::collections::HashMap<
-            ::std::string::String,
-            ::std::collections::HashMap<::std::string::String, ::std::string::String>,
-        >,
+        pub dimensions: ::std::collections::HashMap<::std::string::String, TenantApiTurnMetricDimensions>,
     }
     ///`TenantApiTurnNotFound`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -40085,7 +40794,7 @@ pub mod types {
     ///`TenantApiUnpinInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnpinInput {
-        pub harness: ::std::string::String,
+        pub harness: ShortText,
     }
     ///`TenantApiUnpinRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -40137,7 +40846,7 @@ pub mod types {
     ///`TenantApiUnpinWrite`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnpinWrite {
-        pub harness: ::std::string::String,
+        pub harness: ShortText,
         pub kind: TenantApiUnpinWriteKind,
     }
     ///`TenantApiUnpinWriteKind`
@@ -40747,10 +41456,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnsupportedCredentialRefusal {
         #[serde(rename = "credentialKind")]
-        pub credential_kind: ::std::string::String,
+        pub credential_kind: ShortText,
         pub kind: TenantApiUnsupportedCredentialRefusalKind,
-        pub name: ::std::string::String,
-        pub supported: ::std::vec::Vec<::std::string::String>,
+        pub name: ShortText,
+        pub supported: ::std::vec::Vec<ShortText>,
     }
     ///`TenantApiUnsupportedCredentialRefusalKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -41168,7 +41877,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUploadJobRecorded {
         #[serde(rename = "jobId")]
-        pub job_id: ::std::string::String,
+        pub job_id: ShortText,
         pub kind: TenantApiUploadJobRecordedKind,
     }
     ///`TenantApiUploadJobRecordedKind`
@@ -41606,13 +42315,13 @@ pub mod types {
     pub struct TenantApiWriteClaudeSetupTokenInput {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
-        pub credential: ::std::string::String,
+        pub credential: Token,
         pub now: i64,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
-        pub token: ::std::string::String,
+        pub token: Token,
         #[serde(rename = "tokenExpiresAt", skip_serializing_if = "::std::option::Option::is_none")]
-        pub token_expires_at: ::std::option::Option<::std::string::String>,
+        pub token_expires_at: ::std::option::Option<ShortText>,
     }
     ///`TenantApiWriteClaudeSetupTokenRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -41699,7 +42408,7 @@ pub mod types {
     ///A unique constraint refused the write.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiWriteConflict {
-        pub constraint: ::std::string::String,
+        pub constraint: ShortText,
         pub ok: bool,
     }
     ///A tenant's whole configuration, kept in one JSON file under version control. `tumpel config
@@ -41714,7 +42423,7 @@ pub mod types {
         pub personas: ::std::vec::Vec<ConfigPersona>,
         ///The address of a copy of this schema, so an editor validates the file.
         #[serde(rename = "$schema", skip_serializing_if = "::std::option::Option::is_none")]
-        pub schema: ::std::option::Option<::std::string::String>,
+        pub schema: ::std::option::Option<HttpUrl>,
         #[serde(rename = "secretSets")]
         pub secret_sets: ::std::vec::Vec<ConfigSecretSet>,
         ///The tenant's triggers, matched by name; a trigger the list leaves out is deleted. Left out,
@@ -41770,6 +42479,8 @@ pub mod types {
         SubscriptionPausedEvent(SubscriptionPausedEvent),
         SubscriptionEndedEvent(SubscriptionEndedEvent),
         TriggerStartRefusedEvent(TriggerStartRefusedEvent),
+        UsageNearLimitEvent(UsageNearLimitEvent),
+        UsageLimitReachedEvent(UsageLimitReachedEvent),
     }
     impl ::std::convert::From<TurnStartedEvent> for TenantEvent {
         fn from(value: TurnStartedEvent) -> Self {
@@ -41841,6 +42552,16 @@ pub mod types {
             Self::TriggerStartRefusedEvent(value)
         }
     }
+    impl ::std::convert::From<UsageNearLimitEvent> for TenantEvent {
+        fn from(value: UsageNearLimitEvent) -> Self {
+            Self::UsageNearLimitEvent(value)
+        }
+    }
+    impl ::std::convert::From<UsageLimitReachedEvent> for TenantEvent {
+        fn from(value: UsageLimitReachedEvent) -> Self {
+            Self::UsageLimitReachedEvent(value)
+        }
+    }
     ///What every tenant event carries. `eventId` orders the tenant's events: each is greater than every
     ///event before it, so a reader resumes after the last id it saw.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -41869,6 +42590,8 @@ pub mod types {
         SubscriptionPaused,
         SubscriptionEnded,
         TriggerStartRefused,
+        UsageNearLimit,
+        UsageLimitReached,
     }
     impl ::std::fmt::Display for TenantEventType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41887,6 +42610,8 @@ pub mod types {
                 Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
                 Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
                 Self::TriggerStartRefused => f.write_str("TriggerStartRefused"),
+                Self::UsageNearLimit => f.write_str("UsageNearLimit"),
+                Self::UsageLimitReached => f.write_str("UsageLimitReached"),
             }
         }
     }
@@ -41908,6 +42633,8 @@ pub mod types {
                 "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
                 "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
                 "TriggerStartRefused" => Ok(Self::TriggerStartRefused),
+                "UsageNearLimit" => Ok(Self::UsageNearLimit),
+                "UsageLimitReached" => Ok(Self::UsageLimitReached),
                 _ => Err("invalid value".into()),
             }
         }
@@ -41922,6 +42649,188 @@ pub mod types {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
+        }
+    }
+    ///The limits a tenant runs under. Free keeps the tenant inside the allowances the hosting plan
+    ///includes at no charge and refuses traffic past them; Configured runs under the limits its
+    ///deployment configures.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantTier {
+        Free,
+        Configured,
+    }
+    impl ::std::fmt::Display for TenantTier {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Free => f.write_str("Free"),
+                Self::Configured => f.write_str("Configured"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantTier {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Free" => Ok(Self::Free),
+                "Configured" => Ok(Self::Configured),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantTier {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantTier {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The tenant's tier and its usage against each of its limits, as of the current windows.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantUsage {
+        pub counters: ::std::vec::Vec<TenantUsageCounter>,
+        pub tier: TenantTier,
+    }
+    ///One limit of a tenant and how much of it the current window has used. A request past `limit`
+    ///is refused 429 until the window ends at `resetsAt`.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantUsageCounter {
+        pub limit: i64,
+        pub measure: TenantUsageMeasure,
+        #[serde(rename = "resetsAt")]
+        pub resets_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        pub used: i64,
+        pub window: TenantUsageWindow,
+    }
+    ///What a tenant limit counts.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantUsageMeasure {
+        Requests,
+        Writes,
+        RowsWritten,
+        RowsRead,
+    }
+    impl ::std::fmt::Display for TenantUsageMeasure {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Requests => f.write_str("Requests"),
+                Self::Writes => f.write_str("Writes"),
+                Self::RowsWritten => f.write_str("RowsWritten"),
+                Self::RowsRead => f.write_str("RowsRead"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantUsageMeasure {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Requests" => Ok(Self::Requests),
+                "Writes" => Ok(Self::Writes),
+                "RowsWritten" => Ok(Self::RowsWritten),
+                "RowsRead" => Ok(Self::RowsRead),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantUsageMeasure {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantUsageMeasure {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The fixed window a tenant limit counts over.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantUsageWindow {
+        Minute,
+        Hour,
+        Day,
+    }
+    impl ::std::fmt::Display for TenantUsageWindow {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Minute => f.write_str("Minute"),
+                Self::Hour => f.write_str("Hour"),
+                Self::Day => f.write_str("Day"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantUsageWindow {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Minute" => Ok(Self::Minute),
+                "Hour" => Ok(Self::Hour),
+                "Day" => Ok(Self::Day),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantUsageWindow {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantUsageWindow {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A token, a key, a code, a nonce or a signature, as its issuer encodes it.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct Token(::std::string::String);
+    impl ::std::ops::Deref for Token {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<Token> for ::std::string::String {
+        fn from(value: Token) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for Token {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for Token {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for Token {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for Token {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
     ///The kind of tokens a turn.tokens point counts, as its tokenKind dimension.
@@ -42017,7 +42926,7 @@ pub mod types {
         pub session_id: EntityId,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
-        pub text: ::std::string::String,
+        pub text: LongText,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
     }
@@ -42129,7 +43038,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TriggerConditionVerdict {
         ///The JSON text of each value the payload holds at the field: one for a scalar, one per element when the path crosses an array, none when the path leads nowhere.
-        pub actual: ::std::vec::Vec<::std::string::String>,
+        pub actual: ::std::vec::Vec<Detail>,
         pub field: TriggerFieldPath,
         pub holds: bool,
         pub values: ::std::vec::Vec<TriggerConditionValue>,
@@ -42364,7 +43273,7 @@ pub mod types {
         ///The code Sessions_start answers for the same refusal, or TriggerFieldMissing when the prompt names a field the event lacks.
         pub code: ProblemCode,
         ///What failed and the fix, in plain words.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
     }
     ///`TriggerStartRefusedEvent`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -42442,7 +43351,7 @@ pub mod types {
         #[serde(rename = "missingFields")]
         pub missing_fields: ::std::vec::Vec<TriggerFieldPath>,
         ///The prompt the session would get. A placeholder the payload lacks stays as written.
-        pub prompt: ::std::string::String,
+        pub prompt: Prompt,
     }
     ///One prompt and the harness's completion of it, run on a session's box.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -42554,7 +43463,7 @@ pub mod types {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///What failed and what fixes it, as the turn's failure reads.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub event: TurnFailedEventEvent,
         #[serde(rename = "eventId")]
         pub event_id: Sequence,
@@ -42605,7 +43514,7 @@ pub mod types {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///What failed and what fixes it, with the tail of the harness's standard error when there is one.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: TurnFailureReason,
@@ -42878,7 +43787,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TurnPoint {
         pub at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub dimensions: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub dimensions: ::std::collections::HashMap<::std::string::String, ShortText>,
         pub metric: MetricName,
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
@@ -42979,6 +43888,154 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A URL held as text: an origin, an endpoint, a redirect or a presigned upload URL.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct UrlText(::std::string::String);
+    impl ::std::ops::Deref for UrlText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<UrlText> for ::std::string::String {
+        fn from(value: UrlText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for UrlText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("longer than 4096 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for UrlText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for UrlText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for UrlText {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///`UsageLimitReachedEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct UsageLimitReachedEvent {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub event: UsageLimitReachedEventEvent,
+        #[serde(rename = "eventId")]
+        pub event_id: Sequence,
+        pub limit: i64,
+        pub measure: TenantUsageMeasure,
+        #[serde(rename = "resetsAt")]
+        pub resets_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        pub tier: TenantTier,
+        pub used: i64,
+        pub window: TenantUsageWindow,
+    }
+    ///`UsageLimitReachedEventEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum UsageLimitReachedEventEvent {
+        UsageLimitReached,
+    }
+    impl ::std::fmt::Display for UsageLimitReachedEventEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::UsageLimitReached => f.write_str("UsageLimitReached"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for UsageLimitReachedEventEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "UsageLimitReached" => Ok(Self::UsageLimitReached),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for UsageLimitReachedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for UsageLimitReachedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`UsageNearLimitEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct UsageNearLimitEvent {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub event: UsageNearLimitEventEvent,
+        #[serde(rename = "eventId")]
+        pub event_id: Sequence,
+        pub limit: i64,
+        pub measure: TenantUsageMeasure,
+        #[serde(rename = "resetsAt")]
+        pub resets_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        pub tier: TenantTier,
+        pub used: i64,
+        pub window: TenantUsageWindow,
+    }
+    ///`UsageNearLimitEventEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum UsageNearLimitEventEvent {
+        UsageNearLimit,
+    }
+    impl ::std::fmt::Display for UsageNearLimitEventEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::UsageNearLimit => f.write_str("UsageNearLimit"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for UsageNearLimitEventEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "UsageNearLimit" => Ok(Self::UsageNearLimit),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for UsageNearLimitEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for UsageNearLimitEventEvent {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -43107,7 +44164,7 @@ pub mod types {
     pub struct WebhookFailing {
         pub delivery: WebhookFailingDelivery,
         ///How the last request failed: the status the endpoint answered, or that it did not answer within 10 seconds.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failingSince")]
         pub failing_since: ::chrono::DateTime<::chrono::FixedOffset>,
     }
@@ -43202,6 +44259,9 @@ pub mod types {
     impl ::std::str::FromStr for WebhookSigningKeyPublicKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("longer than 16384 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{43}$").unwrap());
             if PATTERN.find(value).is_none() {
@@ -43293,7 +44353,7 @@ pub mod types {
     ///The tenant and principal the caller acts as, and the origin of the API that answered, which every path of the API is relative to.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct WhoamiWithEndpoint {
-        pub endpoint: ::std::string::String,
+        pub endpoint: HttpUrl,
         pub principal: Principal,
         pub tenant: Tenant,
     }
@@ -43668,13 +44728,13 @@ impl Client {
     ///
     pub async fn o_auth_authorize<'a>(
         &'a self,
-        client_id: &'a str,
-        code_challenge: &'a str,
-        code_challenge_method: &'a str,
-        redirect_uri: Option<&'a str>,
-        resource: Option<&'a str>,
-        response_type: &'a str,
-        state: Option<&'a str>,
+        client_id: &'a types::ShortText,
+        code_challenge: &'a types::Token,
+        code_challenge_method: &'a types::ShortText,
+        redirect_uri: Option<&'a types::UrlText>,
+        resource: Option<&'a types::UrlText>,
+        response_type: &'a types::ShortText,
+        state: Option<&'a types::ShortText>,
     ) -> Result<ResponseValue<ByteStream>, Error<types::Problem>> {
         let url = format!("{}/oauth/authorize", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
@@ -44123,7 +45183,7 @@ impl Client {
     pub async fn circle_ci_events_receive<'a>(
         &'a self,
         tenant_id: &'a types::EntityId,
-        circleci_signature: &'a str,
+        circleci_signature: &'a types::Token,
         body: &'a ::serde_json::Map<::std::string::String, ::serde_json::Value>,
     ) -> Result<ResponseValue<()>, Error<types::Problem>> {
         let url = format!(
@@ -45716,7 +46776,7 @@ impl Client {
     pub async fn git_hub_connections_start<'a>(
         &'a self,
         git_hub_account_id: Option<&'a types::GitHubId>,
-        return_url: Option<&'a str>,
+        return_url: Option<&'a types::HttpUrl>,
     ) -> Result<ResponseValue<types::GitHubInstallStart>, Error<types::Problem>> {
         let url = format!("{}/v1/github-connection/start", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
@@ -46548,7 +47608,7 @@ impl Client {
     ///- `to`: The end of the window, after `from`.
     pub async fn metrics_catalog<'a>(
         &'a self,
-        filter: Option<&'a ::std::vec::Vec<::std::string::String>>,
+        filter: Option<&'a ::std::vec::Vec<types::Summary>>,
         from: &'a ::chrono::DateTime<::chrono::FixedOffset>,
         to: &'a ::chrono::DateTime<::chrono::FixedOffset>,
     ) -> Result<ResponseValue<types::MetricCatalog>, Error<types::Problem>> {
@@ -46592,6 +47652,48 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
+    ///Reads the tenant's tier and its usage against each of its limits in the current windows.
+    ///
+    ///Sends a `GET` request to `/v1/metrics/usage`
+    ///
+    pub async fn metrics_usage<'a>(&'a self) -> Result<ResponseValue<types::TenantUsage>, Error<types::Problem>> {
+        let url = format!("{}/v1/metrics/usage", self.baseurl,);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .get(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "metrics_usage",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
     ///Reads a metric's buckets in the window, grouped by up to two dimensions. Refused
     ///MetricRangeTooLarge past 500 buckets or for Minute buckets older than 8 days, and
     ///MetricNotFound for a metric the store lacks.
@@ -46609,9 +47711,9 @@ impl Client {
         &'a self,
         metric: &'a types::MetricName,
         bucket: types::MetricBucket,
-        filter: Option<&'a ::std::vec::Vec<::std::string::String>>,
+        filter: Option<&'a ::std::vec::Vec<types::Summary>>,
         from: &'a ::chrono::DateTime<::chrono::FixedOffset>,
-        group_by: Option<&'a ::std::vec::Vec<::std::string::String>>,
+        group_by: Option<&'a ::std::vec::Vec<types::ShortText>>,
         to: &'a ::chrono::DateTime<::chrono::FixedOffset>,
     ) -> Result<ResponseValue<types::MetricSeriesSet>, Error<types::Problem>> {
         let url = format!(
@@ -46674,8 +47776,8 @@ impl Client {
     pub async fn metrics_turns<'a>(
         &'a self,
         metric: &'a types::MetricName,
-        cursor: Option<&'a str>,
-        filter: Option<&'a ::std::vec::Vec<::std::string::String>>,
+        cursor: Option<&'a types::Summary>,
+        filter: Option<&'a ::std::vec::Vec<types::Summary>>,
         from: &'a ::chrono::DateTime<::chrono::FixedOffset>,
         session_id: Option<&'a types::EntityId>,
         to: &'a ::chrono::DateTime<::chrono::FixedOffset>,
@@ -51380,7 +52482,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 18;
-    pub const VERSION: u16 = 30;
+    pub const VERSION: u16 = 31;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;

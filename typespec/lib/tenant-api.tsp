@@ -47,12 +47,12 @@ model StoredPersona {
   name: DisplayName;
   harness: Harness;
   secretSetId: EntityId;
-  connectorIds: EntityId[];
+  @maxItems(100) connectorIds: EntityId[];
   @minValue(512) @maxValue(65536) boxMemoryMib?: int32;
   @minValue(32768) @maxValue(262144) boxDiskMib?: int32;
   boxRetention: BoxRetention;
   tumpelMcp: boolean;
-  files: StoredFileRead[];
+  @maxItems(100) files: StoredFileRead[];
   createdAt: int64;
   updatedAt: int64;
 }
@@ -61,12 +61,12 @@ model StoredPersona {
 model PersonaChange {
   name: DisplayName;
   secretSetId: EntityId;
-  connectorIds: EntityId[];
+  @maxItems(100) connectorIds: EntityId[];
   @minValue(512) @maxValue(65536) boxMemoryMib: int32;
   @minValue(32768) @maxValue(262144) boxDiskMib: int32;
   boxRetention: BoxRetention;
   tumpelMcp: boolean;
-  files: StoredFile[];
+  @maxItems(100) files: StoredFile[];
 }
 
 @doc("What a persona create writes.")
@@ -124,7 +124,7 @@ model SupervisorUpdateInput {
 }
 
 model SupervisorUpdatesInput {
-  hostIds: EntityId[];
+  @maxItems(1000) hostIds: EntityId[];
 }
 
 model ListSecretSetsInput {
@@ -139,7 +139,7 @@ model GetSecretSetInput {
 @doc("The GitHub account a repository token secret acts as, when the set holds one.")
 model GitHubUser {
   githubUserId: int64;
-  login: string;
+  login: ShortText;
 }
 
 model CreateSecretSetInput {
@@ -177,7 +177,7 @@ model SetSecretMemberInput {
 model RemoveSecretMemberInput {
   tenantId: EntityId;
   secretSetId: EntityId;
-  name: string;
+  name: ShortText;
   now: int64;
 }
 
@@ -227,7 +227,7 @@ model PinWrite {
 
 model UnpinWrite {
   kind: "Unpin";
-  harness: string;
+  harness: ShortText;
 }
 
 @doc("Creates a trigger that names its persona by name, so it may name a persona the same apply creates.")
@@ -267,7 +267,7 @@ union ConfigWrite {
 
 model ApplyConfigInput {
   tenantId: EntityId;
-  writes: ConfigWrite[];
+  @maxItems(5000) writes: ConfigWrite[];
   now: int64;
 }
 
@@ -279,7 +279,7 @@ model PinInput {
 }
 
 model UnpinInput {
-  harness: string;
+  harness: ShortText;
 }
 
 model ListConnectorsInput {
@@ -296,8 +296,8 @@ model GetConnectorInput {
 model CreateConnectorInput {
   tenantId: EntityId;
   auth: ConnectorAuth;
-  name: string;
-  url: string;
+  name: ShortText;
+  url: UrlText;
   now: int64;
 }
 
@@ -305,7 +305,7 @@ model RenameConnectorInput {
   tenantId: EntityId;
   connectorId: EntityId;
   updatedAt: int64;
-  name: string;
+  name: ShortText;
   now: int64;
 }
 
@@ -318,7 +318,7 @@ model SetStaticTokenInput {
   tenantId: EntityId;
   connectorId: EntityId;
   updatedAt: int64;
-  value: string;
+  value: Token;
   now: int64;
 }
 
@@ -334,33 +334,33 @@ model StartConnectorAuthorizationInput {
   principalId: EntityId;
   connectorId: EntityId;
   updatedAt: int64;
-  controlPlaneOrigin: string;
+  controlPlaneOrigin: UrlText;
   now: int64;
 }
 
 @doc("The signed state of a connector authorization, as the callback reads it back.")
 model ConnectorStateClaims {
   purpose: "ConnectorAuthorization";
-  @minLength(1) tenantId: string;
-  @minLength(1) connectorId: string;
-  @minLength(1) connectorAuthorizationId: string;
-  @minLength(1) principalId: string;
+  @minLength(1) tenantId: ShortText;
+  @minLength(1) connectorId: ShortText;
+  @minLength(1) connectorAuthorizationId: ShortText;
+  @minLength(1) principalId: ShortText;
 }
 
 model ConnectorCallbackCode {
   kind: "Code";
-  code: string;
-  issuer: string | null;
+  code: Token;
+  issuer: UrlText | null;
 }
 
 model ConnectorCallbackError {
   kind: "Error";
-  error: string;
+  error: ShortText;
 }
 
 model ConnectorCallbackInput {
   claims: ConnectorStateClaims;
-  stateHash: string;
+  stateHash: Token;
   callback: ConnectorCallbackCode | ConnectorCallbackError;
   initiatorIsOwner: boolean;
   now: int64;
@@ -373,12 +373,12 @@ model ServeConnectorTokenInput {
 }
 
 model UnknownConnectorsInput {
-  connectorIds: EntityId[];
+  @maxItems(1000) connectorIds: EntityId[];
 }
 
 model NewOpenRouterAuthorization {
   secretSetId: EntityId;
-  controlPlaneOrigin: string;
+  controlPlaneOrigin: UrlText;
 }
 
 model StartOpenRouterAuthorizationInput {
@@ -396,7 +396,7 @@ model GetOpenRouterAuthorizationInput {
 
 model OpenRouterCallbackCode {
   kind: "Code";
-  code: string;
+  code: Token;
 }
 
 model OpenRouterCallbackNoCode {
@@ -431,7 +431,7 @@ model CompleteCircleCIAuthorizationInput {
   tenantId: EntityId;
   principalId: EntityId;
   circleCIAuthorizationId: EntityId;
-  redirectedUrl: string;
+  redirectedUrl: UrlText;
   now: int64;
 }
 
@@ -439,7 +439,7 @@ model ChooseCircleCIOrganizationInput {
   tenantId: EntityId;
   principalId: EntityId;
   circleCIAuthorizationId: EntityId;
-  organizationId: string;
+  organizationId: ShortText;
   now: int64;
 }
 
@@ -462,9 +462,9 @@ model NewClaudeSetup {
   principalId: EntityId;
   secretSetId: EntityId;
   harness: ClaudeSetupHarness;
-  harnessVersion: string;
-  hosts: HostRecord[];
-  endpoint: string;
+  harnessVersion: ShortText;
+  @maxItems(1000) hosts: HostRecord[];
+  endpoint: UrlText;
 }
 
 model StartClaudeSetupInput {
@@ -488,16 +488,16 @@ model ListClaudeSetupsInput {
 model SubmitClaudeSetupCodeInput {
   tenantId: EntityId;
   claudeSetupId: EntityId;
-  code: string;
+  code: Token;
   now: int64;
 }
 
 model WriteClaudeSetupTokenInput {
   tenantId: EntityId;
   claudeSetupId: EntityId;
-  credential: string;
-  token: string;
-  tokenExpiresAt?: string;
+  credential: Token;
+  token: Token;
+  tokenExpiresAt?: ShortText;
   now: int64;
 }
 
@@ -532,7 +532,7 @@ model PrepareClaudeSetupInput {
 
 model ListPrebuildsInput {
   tenantId: EntityId;
-  repository: string | null;
+  repository: ShortText | null;
 }
 
 model ListLatestPrebuildsInput {
@@ -545,9 +545,9 @@ model GetPrebuildInput {
 }
 
 model PrebuildKey {
-  repository: string;
-  inputDigest: string;
-  guestImageDigest: string;
+  repository: ShortText;
+  inputDigest: ShortText;
+  guestImageDigest: ShortText;
 }
 
 model HeldPrebuildInput {
@@ -563,8 +563,8 @@ model RecordPrebuildBuildingInput {
 
 model JobInputsTargetInput {
   tenantId: EntityId;
-  repository: string;
-  headSha: string;
+  repository: ShortText;
+  headSha: ShortText;
   runId: int64;
 }
 
@@ -577,13 +577,13 @@ model BindJobRunInput {
 
 @doc("A GitHub Actions workflow run event, as the webhook reports it.")
 model RunEvent {
-  action: string;
+  action: ShortText;
   runId: int64;
-  repository: string;
-  path: string;
-  headSha: string;
-  htmlUrl: string;
-  conclusion: string | null;
+  repository: ShortText;
+  path: PathText;
+  headSha: ShortText;
+  htmlUrl: UrlText;
+  conclusion: ShortText | null;
 }
 
 model WorkflowRunReportedInput {
@@ -614,19 +614,19 @@ model PrebuildDeadlineReachedInput {
 }
 
 model RepositoryRef {
-  owner: string;
-  name: string;
+  owner: ShortText;
+  name: ShortText;
 }
 
 model GitHubActionsStart {
   prebuildId: EntityId;
   personaId: EntityId;
   target: RepositoryRef;
-  repository: string;
-  guestImageDigest: string;
-  rootfsKey: string;
-  callerWorkflow: string;
-  apiOrigin: string;
+  repository: ShortText;
+  guestImageDigest: ShortText;
+  rootfsKey: PathText;
+  callerWorkflow: ShortText;
+  apiOrigin: UrlText;
   rebuild: boolean;
 }
 
@@ -641,18 +641,18 @@ model PrebuildCommitStart {
   personaId: EntityId;
   key: PrebuildKey;
   configSource: PrebuildConfigSource;
-  defaultBranch: string;
-  headSha: string;
-  rootfsKey: string;
+  defaultBranch: ShortText;
+  headSha: ShortText;
+  rootfsKey: PathText;
 }
 
 model NewSession {
   principalId: EntityId;
   startedBy: SessionStartedBy;
-  hosts: HostRecord[];
+  @maxItems(1000) hosts: HostRecord[];
   harness: Harness;
-  harnessVersion: string;
-  endpoint: string;
+  harnessVersion: ShortText;
+  endpoint: UrlText;
   start: SessionStart;
 }
 
@@ -661,7 +661,7 @@ model StartHostPrebuildInput {
   commit: PrebuildCommitStart;
   provider: BuildProvider;
   input: NewSession;
-  apiOrigin: string;
+  apiOrigin: UrlText;
   now: int64;
 }
 
@@ -671,9 +671,9 @@ model UploadTargetInput {
 }
 
 model CircleCIUploadJob {
-  pipelineId: string;
-  headSha: string;
-  jobId: string;
+  pipelineId: ShortText;
+  headSha: ShortText;
+  jobId: ShortText;
 }
 
 model BindCircleCIUploadJobInput {
@@ -684,7 +684,7 @@ model BindCircleCIUploadJobInput {
 }
 
 model PrebuildLayerUpload {
-  layerDigest: string;
+  layerDigest: ShortText;
   layerSizeBytes: int64;
 }
 
@@ -713,28 +713,28 @@ model PrebuildStartRecord {
   key: PrebuildKey;
   configSource: PrebuildConfigSource;
   target: RepositoryRef;
-  defaultBranch: string;
-  headSha: string;
-  rootfsKey: string;
+  defaultBranch: ShortText;
+  headSha: ShortText;
+  rootfsKey: PathText;
 }
 
 model DispatchCircleCIPrebuildInput {
   tenantId: EntityId;
   start: PrebuildStartRecord;
   project: CircleCIProject;
-  parameters: Record<string>;
+  @TypeSpec.JsonSchema.maxProperties(100) parameters: Record<Summary>;
   now: int64;
 }
 
 model CircleCIWorkflowCompletedEvent {
-  type: string;
+  type: ShortText;
   workflow: {
-    name: string;
-    status: string;
-    url: url;
+    name: ShortText;
+    status: ShortText;
+    url: HttpUrl;
   };
-  pipelineId: string;
-  projectId: string;
+  pipelineId: ShortText;
+  projectId: ShortText;
 }
 
 model CircleCIWorkflowCompletedInput {
@@ -748,7 +748,7 @@ model RepositoryReadTokenInput {
   personaId: EntityId;
   repository: RepositoryRef;
   now: int64;
-  permissions: Record<"read" | "write">;
+  @TypeSpec.JsonSchema.maxProperties(64) permissions: Record<"read" | "write">;
 }
 
 model StartSessionInput {
@@ -772,14 +772,14 @@ model SendTurnInput {
   tenantId: EntityId;
   sessionId: EntityId;
   send: TurnSend;
-  hosts: HostRecord[];
+  @maxItems(1000) hosts: HostRecord[];
   now: int64;
 }
 
 model StopSessionInput {
   tenantId: EntityId;
   sessionId: EntityId;
-  cancelledBy: string | null;
+  cancelledBy: ShortText | null;
   now: int64;
 }
 
@@ -861,13 +861,13 @@ model TakeSteersInput {
 model CancelTurnInput {
   tenantId: EntityId;
   turnId: EntityId;
-  cancelledBy: string;
+  cancelledBy: ShortText;
   now: int64;
 }
 
 model WaitTurnsInput {
   tenantId: EntityId;
-  turnIds: EntityId[];
+  @maxItems(1000) turnIds: EntityId[];
   timeoutSeconds: int32;
 }
 
@@ -878,7 +878,7 @@ model ListEventsInput {
   afterEventId: Sequence | null;
 
   @doc("The event types to keep; an empty list keeps every type.")
-  events: TenantEventType[];
+  @maxItems(100) events: TenantEventType[];
 
   @doc("The session whose events to keep; null keeps every session's.")
   sessionId: EntityId | null;
@@ -1114,21 +1114,21 @@ model ListCircleCIProjectsInput {
 
 model CircleCIProjectBoundToInput {
   tenantId: EntityId;
-  projectId: string;
+  projectId: ShortText;
 }
 
 model CircleCIProjectOfInput {
   tenantId: EntityId;
-  repository: string;
+  repository: ShortText;
 }
 
 model CircleCIBinding {
-  repository: string;
-  projectSlug: string;
-  projectId: string;
-  pipelineDefinitionId: string;
-  webhookId: string;
-  signingSecret: string;
+  repository: ShortText;
+  projectSlug: ShortText;
+  projectId: ShortText;
+  pipelineDefinitionId: ShortText;
+  webhookId: ShortText;
+  signingSecret: Token;
 }
 
 model AddCircleCIProjectInput {
@@ -1140,7 +1140,7 @@ model AddCircleCIProjectInput {
 model CircleCIWebhooksInput {}
 
 model CircleCIWebhookSecretInput {
-  projectId: string;
+  projectId: ShortText;
 }
 
 model DeleteCircleCIProjectInput {
@@ -1185,7 +1185,7 @@ model HostUsageInput {
 model ReconcileHeldBoxesInput {
   tenantId: EntityId;
   hostId: EntityId;
-  heldSessionIds: EntityId[];
+  @maxItems(1000) heldSessionIds: EntityId[];
   now: int64;
 }
 
@@ -1199,13 +1199,17 @@ model ListHostUsageInput {
   tenantId: EntityId;
 }
 
+model ReadUsageInput {
+  tenantId: EntityId;
+}
+
 model DeferredOffersInput {
   tenantId: EntityId;
   hostId: EntityId;
 }
 
 model TurnMetricDimensionsInput {
-  turnIds: EntityId[];
+  @maxItems(1000) turnIds: EntityId[];
 }
 
 model PrepareOfferInput {
@@ -2081,6 +2085,12 @@ model ListHostUsageRequest {
   input: ListHostUsageInput;
 }
 
+model ReadUsageRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "readUsage";
+  input: ReadUsageInput;
+}
+
 model DeferredOffersRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "deferredOffers";
@@ -2257,6 +2267,7 @@ union TenantRequest {
   forgetHostUsage: ForgetHostUsageRequest,
   runningTurnsByHost: RunningTurnsByHostRequest,
   listHostUsage: ListHostUsageRequest,
+  readUsage: ReadUsageRequest,
   deferredOffers: DeferredOffersRequest,
   turnMetricDimensions: TurnMetricDimensionsRequest,
   prepareOffer: PrepareOfferRequest,
@@ -2275,14 +2286,21 @@ model TenantApiVersionUnsupported {
 @doc("The instance does not know the operation: it runs older code. The caller answers a retryable failure.")
 model TenantOperationUnknown {
   refusal: "TenantOperationUnknown";
-  operation: string;
+  operation: ShortText;
 }
 
 @doc("The input fails the operation's schema: a caller bug, which the caller fails as a 500.")
 model TenantRequestInvalid {
   refusal: "TenantRequestInvalid";
-  operation: string;
-  issues: string[];
+  operation: ShortText;
+  @maxItems(100) issues: Detail[];
+}
+
+@doc("The tenant reached one of its limits and the instance served nothing. The caller answers 429 naming the limit, retryable after the window resets.")
+model TenantLimitReached {
+  refusal: "TenantLimitReached";
+  tier: TenantTier;
+  ...TenantUsageCounter;
 }
 
 @doc("Why the tenant Durable Object served no result.")
@@ -2291,12 +2309,13 @@ union TenantRefusal {
   TenantApiVersionUnsupported: TenantApiVersionUnsupported,
   TenantOperationUnknown: TenantOperationUnknown,
   TenantRequestInvalid: TenantRequestInvalid,
+  TenantLimitReached: TenantLimitReached,
 }
 
 @doc("A unique constraint refused the write.")
 model WriteConflict {
   ok: false;
-  constraint: string;
+  constraint: ShortText;
 }
 
 model PersonaWritten {
@@ -2311,7 +2330,7 @@ model PersonaUpdated {
 }
 
 model ListPersonasResult {
-  personas: StoredPersona[];
+  @maxItems(10000) personas: StoredPersona[];
 }
 
 model GetPersonaResult {
@@ -2340,7 +2359,7 @@ model PersonaNotFound {
 
 model PersonaInUse {
   kind: "InUse";
-  sessions: EntityId[];
+  @maxItems(1000) sessions: EntityId[];
 }
 
 model DeletePersonaResult {
@@ -2358,21 +2377,21 @@ model DeletePersonaResult {
   }
 
   model SupervisorUpdatesResult {
-    byHost: Record<SupervisorUpdates>;
+    @TypeSpec.JsonSchema.maxProperties(1000) byHost: Record<SupervisorUpdates>;
   }
 
   @doc("A stored member no longer matches its kind, so the set cannot be read.")
   model SecretSetUnreadable {
     kind: "Unreadable";
     secretSetId: EntityId;
-    name: string;
-    member: string;
-    detail: string;
+    name: ShortText;
+    member: ShortText;
+    detail: Detail;
   }
 
   model SecretSetsRead {
     kind: "Read";
-    secretSets: SecretSet[];
+    @maxItems(10000) secretSets: SecretSet[];
   }
 
   model ListSecretSetsResult {
@@ -2412,18 +2431,18 @@ model DeletePersonaResult {
 
   model SecretSetConflict {
     kind: "Conflict";
-    constraint: string;
+    constraint: ShortText;
   }
 
   model SecretSetNoStoredValue {
     kind: "NoStoredValue";
-    name: string;
-    source: string;
+    name: ShortText;
+    source: ShortText;
   }
 
   model SecretSetUncheckedToken {
     kind: "UncheckedToken";
-    source: string;
+    source: ShortText;
   }
 
   model UpdateSecretSetResult {
@@ -2462,7 +2481,7 @@ model DeletePersonaResult {
 
   model SecretSetInUse {
     kind: "InUse";
-    personas: string[];
+    @maxItems(1000) personas: ShortText[];
   }
 
   model DeleteSecretSetResult {
@@ -2475,12 +2494,12 @@ model DeletePersonaResult {
 
   model ConfigConflict {
     kind: "Conflict";
-    constraint: string;
+    constraint: ShortText;
   }
 
   model ConfigResourceDeleted {
     kind: "Deleted";
-    resource: string;
+    resource: UrlText;
   }
 
   model ApplyConfigResult {
@@ -2488,7 +2507,7 @@ model DeletePersonaResult {
   }
 
   model ListPinsResult {
-    pins: HarnessPin[];
+    @maxItems(10000) pins: HarnessPin[];
   }
 
   model PinResult {
@@ -2500,7 +2519,7 @@ model DeletePersonaResult {
   }
 
 model ListConnectorsResult {
-  connectors: Connector[];
+  @maxItems(10000) connectors: Connector[];
 }
 
 model GetConnectorResult {
@@ -2534,7 +2553,7 @@ model ConnectorDeletedOk {
 
 model ConnectorInUse {
   kind: "InUse";
-  detail: string;
+  detail: Detail;
 }
 
 model DeleteConnectorResult {
@@ -2548,12 +2567,12 @@ model ConnectorAuthorizeStartedOk {
 
 model ConnectorDiscoveryFailed {
   kind: "DiscoveryFailed";
-  detail: string;
+  detail: Detail;
 }
 
 model ConnectorRegistrationUnsupported {
   kind: "RegistrationUnsupported";
-  detail: string;
+  detail: Detail;
 }
 
 model StartConnectorAuthorizationResult {
@@ -2562,12 +2581,12 @@ model StartConnectorAuthorizationResult {
 
 model ConnectorCallbackConnected {
   kind: "Connected";
-  name: string;
+  name: ShortText;
 }
 
 model ConnectorCallbackNotConnected {
   kind: "NotConnected";
-  detail: string;
+  detail: Detail;
 }
 
 model ConnectorCallbackResult {
@@ -2589,12 +2608,12 @@ model ConnectorTurnNotRunning {
 
 model ConnectorNoCredential {
   kind: "NoCredential";
-  name: string;
+  name: ShortText;
 }
 
 model ConnectorRefreshFailed {
   kind: "RefreshFailed";
-  detail: string;
+  detail: Detail;
 }
 
 model ServeConnectorTokenResult {
@@ -2602,7 +2621,7 @@ model ServeConnectorTokenResult {
 }
 
 model UnknownConnectorsResult {
-  unknownConnectorIds: EntityId[];
+  @maxItems(10000) unknownConnectorIds: EntityId[];
 }
 
 model CreateConnectorResult {
@@ -2632,7 +2651,7 @@ model AuthorizationNoSecretSet {
 
 model AuthorizationOtherCredential {
   kind: "OtherCredential";
-  name: string;
+  name: ShortText;
 }
 
 model StartOpenRouterAuthorizationResult {
@@ -2664,7 +2683,7 @@ model OpenRouterCallbackResult {
 model OpenRouterAuthorizationDeadlineReachedResult {}
 
 model OpenRouterSecretSetsResult {
-  names: string[];
+  @maxItems(10000) names: ShortText[];
 }
 
 model CircleCIAuthorizationStartedOk {
@@ -2674,7 +2693,7 @@ model CircleCIAuthorizationStartedOk {
 
 model CircleCIRegistrationRefused {
   kind: "RegistrationRefused";
-  detail: string;
+  detail: Detail;
 }
 
 model StartCircleCIAuthorizationResult {
@@ -2688,12 +2707,12 @@ model CircleCIAuthorizationSteppedOk {
 
 model AuthorizationNotWaiting {
   kind: "NotWaiting";
-  detail: string;
+  detail: Detail;
 }
 
 model AuthorizationInvalid {
   kind: "Invalid";
-  detail: string;
+  detail: Detail;
 }
 
 model CircleCIAuthorizationStepped {
@@ -2711,9 +2730,9 @@ model ChooseCircleCIOrganizationResult {
 model CircleCIAuthorizationDeadlineReachedResult {}
 
 model ImageAvailability {
-  harness: string;
-  harnessVersion: string;
-  architectures: HostArchitecture[];
+  harness: ShortText;
+  harnessVersion: ShortText;
+  @maxItems(100) architectures: HostArchitecture[];
 }
 
 model UnplaceableNotOnline {
@@ -2786,12 +2805,12 @@ model ClaudeSetupStartedOk {
 
 model ClaudeSetupUnplaced {
   kind: "Unplaced";
-  hosts: Unplaceable[];
+  @maxItems(1000) hosts: Unplaceable[];
 }
 
 model ClaudeSetupReleaseUnreadable {
   kind: "ReleaseUnreadable";
-  detail: string;
+  detail: Detail;
 }
 
 model StartClaudeSetupResult {
@@ -2803,7 +2822,7 @@ model GetClaudeSetupResult {
 }
 
 model ListClaudeSetupsResult {
-  setups: ClaudeSetup[];
+  @maxItems(10000) setups: ClaudeSetup[];
 }
 
 model ClaudeSetupCodedOk {
@@ -2825,7 +2844,7 @@ model ClaudeSetupRefused {
 
 model ClaudeSetupNotStored {
   kind: "NotStored";
-  detail: string;
+  detail: Detail;
 }
 
 model WriteClaudeSetupTokenResult {
@@ -2849,11 +2868,11 @@ model PrepareClaudeSetupResult {
 }
 
 model ListPrebuildsResult {
-  prebuilds: Prebuild[];
+  @maxItems(10000) prebuilds: Prebuild[];
 }
 
 model ListLatestPrebuildsResult {
-  prebuilds: Prebuild[];
+  @maxItems(10000) prebuilds: Prebuild[];
 }
 
 model GetPrebuildResult {
@@ -2868,7 +2887,7 @@ model RecordPrebuildBuildingResult {}
 
 model CallerWorkflowConnected {
   kind: "Connected";
-  callerWorkflow: string;
+  callerWorkflow: ShortText;
 }
 
 model CallerWorkflowNotConnected {
@@ -2877,10 +2896,10 @@ model CallerWorkflowNotConnected {
 
 model JobInputsTarget {
   prebuild: Prebuild;
-  defaultBranch: string;
+  defaultBranch: ShortText;
   callerWorkflow: CallerWorkflowConnected | CallerWorkflowNotConnected;
-  headSha: string;
-  rootfsKey: string;
+  headSha: ShortText;
+  rootfsKey: PathText;
 }
 
 model JobInputsTargetResult {
@@ -2916,40 +2935,40 @@ model PrebuildNoInstallation {
 
 model PrebuildTokenRefused {
   kind: "TokenRefused";
-  detail: string;
+  detail: Detail;
 }
 
 model PrebuildUnreadable {
   kind: "Unreadable";
-  detail: string;
+  detail: Detail;
 }
 
 model PrebuildPermissionMissing {
   kind: "PermissionMissing";
-  permissions: string[];
-  appSlug: string;
+  @maxItems(100) permissions: ShortText[];
+  appSlug: ShortText;
 }
 
 model PrebuildAppPermissionMissing {
   kind: "AppPermissionMissing";
-  permissions: string[];
-  appSlug: string;
-  appOwner: string;
+  @maxItems(100) permissions: ShortText[];
+  appSlug: ShortText;
+  appOwner: ShortText;
 }
 
 model PrebuildCallerRefused {
   kind: "CallerRefused";
-  detail: string;
+  detail: Detail;
 }
 
 model PrebuildActionsDisabled {
   kind: "ActionsDisabled";
-  detail: string;
+  detail: Detail;
 }
 
 model PrebuildRefused {
   kind: "Refused";
-  detail: string;
+  detail: Detail;
 }
 
 model StartGitHubActionsPrebuildResult {
@@ -2967,12 +2986,12 @@ model StartDraining {
 
 model StartUnplaced {
   kind: "Unplaced";
-  hosts: Unplaceable[];
+  @maxItems(1000) hosts: Unplaceable[];
 }
 
 model StartConnectorDisconnected {
   kind: "ConnectorDisconnected";
-  names: string[];
+  @maxItems(1000) names: ShortText[];
 }
 
 model StartHostPrebuildResult {
@@ -2981,12 +3000,12 @@ model StartHostPrebuildResult {
 
 model PrebuildRun {
   runId: int64;
-  headSha: string;
+  headSha: ShortText;
 }
 
 model UploadJobRecorded {
   kind: "Job";
-  jobId: string;
+  jobId: ShortText;
 }
 
 model UploadJobAbsent {
@@ -2994,16 +3013,16 @@ model UploadJobAbsent {
 }
 
 model RecordedPipeline {
-  pipelineId: string;
-  projectId: string;
-  headSha: string;
+  pipelineId: ShortText;
+  projectId: ShortText;
+  headSha: ShortText;
   job: UploadJobRecorded | UploadJobAbsent;
 }
 
 model GitHubActionsUploadTarget {
   provider: "GitHubActions";
   prebuild: Prebuild;
-  defaultBranch: string;
+  defaultBranch: ShortText;
   upload: PrebuildLayerUpload | null;
   callerWorkflow: CallerWorkflowConnected | CallerWorkflowNotConnected;
   run: PrebuildRun;
@@ -3012,9 +3031,9 @@ model GitHubActionsUploadTarget {
 model CircleCIUploadTarget {
   provider: "CircleCI";
   prebuild: Prebuild;
-  defaultBranch: string;
+  defaultBranch: ShortText;
   upload: PrebuildLayerUpload | null;
-  organizationId: string;
+  organizationId: ShortText;
   pipeline: RecordedPipeline;
 }
 
@@ -3028,7 +3047,7 @@ model CircleCIJobBoundOk {
 
 model CircleCIJobOther {
   kind: "OtherJob";
-  jobId: string;
+  jobId: ShortText;
 }
 
 model CircleCIRevisionMoved {
@@ -3039,7 +3058,7 @@ model CircleCIRevisionMoved {
 model CircleCIJobRefused {
   kind: "Refused";
   status: int32;
-  detail: string;
+  detail: Detail;
 }
 
 model BindCircleCIUploadJobResult {
@@ -3095,7 +3114,7 @@ model CircleCIWorkflowCompletedResult {}
 
 model ReadTokenOk {
   kind: "Token";
-  token: string;
+  token: Token;
 }
 
 model RepositoryReadTokenResult {
@@ -3127,7 +3146,7 @@ model TurnSentOk {
 
 model TurnStranded {
   kind: "Stranded";
-  missingTurnIds: EntityId[];
+  @maxItems(1000) missingTurnIds: EntityId[];
 }
 
 model SessionNotFound {
@@ -3153,35 +3172,35 @@ model SessionFailedState {
 
 model NoCredentialRefusal {
   kind: "NoCredential";
-  accepted: HarnessCredential[];
+  @maxItems(100) accepted: HarnessCredential[];
 }
 
 model NoModelCredentialRefusal {
   kind: "NoModelCredential";
-  `model`: string;
+  `model`: ShortText;
   provider: ModelProvider;
-  accepted: HarnessCredential[];
+  @maxItems(100) accepted: HarnessCredential[];
 }
 
 model UnsupportedCredentialRefusal {
   kind: "Unsupported";
-  name: string;
-  credentialKind: string;
-  supported: string[];
+  name: ShortText;
+  credentialKind: ShortText;
+  @maxItems(20) supported: ShortText[];
 }
 
 model ModelUnsupportedCredentialRefusal {
   kind: "ModelUnsupported";
   `model`: ModelName;
-  name: string;
-  credentialKind: string;
-  allowed: ModelName[];
+  name: ShortText;
+  credentialKind: ShortText;
+  @maxItems(1000) allowed: ModelName[];
 }
 
 model ExpiredCredentialRefusal {
   kind: "Expired";
-  name: string;
-  expiresAt: string;
+  name: ShortText;
+  expiresAt: ShortText;
 }
 
 model TurnCredentialRefused {
@@ -3202,7 +3221,7 @@ model SessionStoppingWith {
 model CancelUnspoken {
   kind: "CancelUnspoken";
   turnId: EntityId;
-  host: string;
+  host: ShortText;
 }
 
 model StopSessionResult {
@@ -3231,7 +3250,7 @@ model SessionTagged {
 @doc("A patch or a start whose tags, with the crew tags a start inherits, would number more than 16; nothing changes.")
 model SessionTagsOverLimit {
   kind: "TagsOverLimit";
-  tags: SessionTag[];
+  @maxItems(64) tags: SessionTag[];
 }
 
 model SetSessionTagsResult {
@@ -3255,11 +3274,11 @@ model GetSessionResult {
 }
 
 model ListSessionsResult {
-  sessions: Session[];
+  @maxItems(10000) sessions: Session[];
 }
 
 model ListTurnsResult {
-  turns: Turn[] | null;
+  @maxItems(10000) turns: Turn[] | null;
 }
 
 model GetTurnResult {
@@ -3303,12 +3322,12 @@ model SteerTurnResult {
 }
 
 model ListSteersResult {
-  steers: Steer[] | null;
+  @maxItems(10000) steers: Steer[] | null;
 }
 
 model SteersTaken {
   kind: "Taken";
-  prompts: Prompt[];
+  @maxItems(1000) prompts: Prompt[];
 }
 
 model SteerInboxClosed {
@@ -3321,7 +3340,7 @@ model TakeSteersResult {
 
 model TurnsRead {
   kind: "Read";
-  turns: Turn[];
+  @maxItems(10000) turns: Turn[];
 }
 
 model WaitedTurnNotFound {
@@ -3352,11 +3371,11 @@ model ListEventsResult {
 model PushDeliveryTarget {
   endpoint: PushEndpointUrl;
   keys: PushSubscriptionKeys;
-  events: TenantEventType[];
+  @maxItems(100) events: TenantEventType[];
 }
 
 model ListWebhookEndpointsResult {
-  endpoints: WebhookEndpoint[];
+  @maxItems(10000) endpoints: WebhookEndpoint[];
 }
 
 model CreateWebhookEndpointResult {
@@ -3376,7 +3395,7 @@ model DeleteWebhookEndpointResult {
 model SetWebhookEndpointStatusResult {}
 
 model ListPushSubscriptionsResult {
-  subscriptions: PushSubscription[];
+  @maxItems(10000) subscriptions: PushSubscription[];
 }
 
 model CreatePushSubscriptionResult {
@@ -3405,7 +3424,7 @@ model CreateSubscriptionResult {
 }
 
 model ListSubscriptionsResult {
-  subscriptions: Subscription[];
+  @maxItems(10000) subscriptions: Subscription[];
 }
 
 model GetSubscriptionResult {
@@ -3480,7 +3499,7 @@ model CreateTriggerResult {
 }
 
 model ListTriggersResult {
-  triggers: Trigger[];
+  @maxItems(10000) triggers: Trigger[];
 }
 
 model GetTriggerResult {
@@ -3518,15 +3537,15 @@ model GetTurnFailureResult {
 }
 
 model ListStopFailuresResult {
-  failures: StopFailure[] | null;
+  @maxItems(10000) failures: StopFailure[] | null;
 }
 
 model ListSnapshotsResult {
-  snapshots: Snapshot[] | null;
+  @maxItems(10000) snapshots: Snapshot[] | null;
 }
 
 model ListCredentialHandoversResult {
-  handovers: CredentialHandover[] | null;
+  @maxItems(10000) handovers: CredentialHandover[] | null;
 }
 
 model GetSnapshotResult {
@@ -3544,7 +3563,7 @@ model TranscriptChunk {
   harness: Harness;
   lastLineSeq: int64;
   inFlight: boolean;
-  storageKey: string;
+  storageKey: StorageKey;
   range: ByteRange;
 }
 
@@ -3554,7 +3573,7 @@ model TranscriptLines {
   harness: Harness;
   lastLineSeq: int64;
   inFlight: boolean;
-  lines: TranscriptLine[];
+  @maxItems(10000) lines: TranscriptLine[];
 }
 
 model TranscriptCursorResult {
@@ -3562,9 +3581,9 @@ model TranscriptCursorResult {
 }
 
 model ConnectedAccounts {
-  GitHubActions: string | null;
-  CircleCI: string | null;
-  Namespace: string | null;
+  GitHubActions: ShortText | null;
+  CircleCI: ShortText | null;
+  Namespace: ShortText | null;
 }
 
 model ConnectedAccountsResult {
@@ -3588,8 +3607,8 @@ model CircleCICredentialPasted {
 @doc("The tenant's CircleCI connection as the tenant Durable Object stores it, without its secret.")
 model CircleCIConnectionRecord {
   circleCIConnectionId: EntityId;
-  accountLabel: string;
-  organizationId: string;
+  accountLabel: ShortText;
+  organizationId: ShortText;
   credential: CircleCICredentialAuthorized | CircleCICredentialPasted;
   createdAt: int64;
   updatedAt: int64;
@@ -3600,7 +3619,7 @@ model CircleCIConnectionResult {
 }
 
 model CircleCITokenResult {
-  token: string | null;
+  token: Token | null;
 }
 
 model ConnectCircleCIResult {
@@ -3608,7 +3627,7 @@ model ConnectCircleCIResult {
 }
 
 model ListCircleCIProjectsResult {
-  projects: CircleCIProject[];
+  @maxItems(10000) projects: CircleCIProject[];
 }
 
 model CircleCIProjectBoundToResult {
@@ -3625,15 +3644,15 @@ model AddCircleCIProjectResult {
 
 model CircleCIWebhook {
   circleCIProjectId: EntityId;
-  webhookId: string;
+  webhookId: ShortText;
 }
 
 model CircleCIWebhooksResult {
-  webhooks: CircleCIWebhook[];
+  @maxItems(10000) webhooks: CircleCIWebhook[];
 }
 
 model CircleCIWebhookSecretResult {
-  secret: string | null;
+  secret: Token | null;
 }
 
 model DeleteCircleCIProjectResult {
@@ -3651,8 +3670,8 @@ model ConnectGitHubActionsResult {
 @doc("The tenant's Namespace connection as the tenant Durable Object stores it.")
 model NamespaceConnectionRecord {
   namespaceConnectionId: EntityId;
-  accountLabel: string;
-  workspaceId: string;
+  accountLabel: ShortText;
+  workspaceId: ShortText;
   createdAt: int64;
   updatedAt: int64;
 }
@@ -3681,11 +3700,15 @@ model RunningTurns {
 }
 
 model RunningTurnsByHostResult {
-  running: RunningTurns[];
+  @maxItems(10000) running: RunningTurns[];
+}
+
+model ReadUsageResult {
+  usage: TenantUsage;
 }
 
 model ListHostUsageResult {
-  usage: ReportedHostUsage[];
+  @maxItems(10000) usage: ReportedHostUsage[];
 }
 
 @doc("A turn offer as the control plane stores it, before it adds the parts minted at each send.")
@@ -3700,11 +3723,15 @@ model TurnHandoff {
 }
 
 model DeferredOffersResult {
-  handoffs: TurnHandoff[];
+  @maxItems(10000) handoffs: TurnHandoff[];
 }
 
+@doc("The dimensions one turn reported, by name.")
+@TypeSpec.JsonSchema.maxProperties(32)
+model TurnMetricDimensions is Record<ShortText>;
+
 model TurnMetricDimensionsResult {
-  dimensions: Record<Record<string>>;
+  @TypeSpec.JsonSchema.maxProperties(10000) dimensions: Record<TurnMetricDimensions>;
 }
 
 model OfferReady {
@@ -3724,7 +3751,7 @@ model HostPresenceResult {}
 
 model HostFrameRefused {
   type: "Refused";
-  reason: string;
+  reason: Detail;
 }
 
 model HostMessageResult {

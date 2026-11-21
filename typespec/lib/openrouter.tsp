@@ -42,7 +42,7 @@ model OpenRouterAuthorizationAwaitingCallback {
   state: OpenRouterAuthorizationState.AwaitingCallback;
 
   @doc("OpenRouter's authorization page, with the control plane's callback_url, this authorization's PKCE S256 challenge and its signed state.")
-  authorizeUrl: url;
+  authorizeUrl: HttpUrl;
 
   @doc("When the callback must arrive by, or the authorization fails AuthorizationTimedOut.")
   callbackDueAt: offsetDateTime;
@@ -69,7 +69,7 @@ model OpenRouterAuthorizationFailed {
   reason: OpenRouterAuthorizationFailureReason;
 
   @doc("What failed and what fixes it.")
-  detail: string;
+  detail: Detail;
 
   failedAt: offsetDateTime;
 }

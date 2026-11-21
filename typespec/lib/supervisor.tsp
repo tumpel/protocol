@@ -10,7 +10,7 @@ namespace Tumpel;
   """)
 model SupervisorConfig {
   @doc("The base URL of the control plane the host enrolled with, such as https://tumpel.example.com.")
-  endpoint: url;
+  endpoint: HttpUrl;
 
   hostId: EntityId;
   tenantId: EntityId;
@@ -22,8 +22,8 @@ model SupervisorConfig {
   plane holds. Revoke deletes this file.
   """)
 model SupervisorHostKey {
-  @minLength(1) publicKey: string;
-  @minLength(1) privateKey: string;
+  @minLength(1) publicKey: Token;
+  @minLength(1) privateKey: Token;
 }
 
 @doc("""
@@ -37,8 +37,8 @@ model SupervisorHostKey {
 model SupervisorChannelState {
   received: Sequence;
   sent: Sequence;
-  unacked: Channel.StoredHostFrame[];
-  replays?: SupervisorChannelReplay[];
+  @maxItems(10000) unacked: Channel.StoredHostFrame[];
+  @maxItems(10000) replays?: SupervisorChannelReplay[];
 }
 
 @doc("""
@@ -111,7 +111,7 @@ model SupervisorUpdatePending {
   """)
 model SupervisorHandover {
   handedAt: offsetDateTime;
-  boxes: SupervisorHandoverBox[];
+  @maxItems(1000) boxes: SupervisorHandoverBox[];
 }
 
 @doc("""
@@ -125,9 +125,9 @@ model SupervisorHandoverBox {
   machine: SupervisorHandoverMachine;
   image: SupervisorHandoverImage;
   dirty: boolean;
-  credentialFile?: string;
+  credentialFile?: CredentialText;
   state: SupervisorHandoverBoxState;
-  queued: SupervisorHandoverCommand[];
+  @maxItems(1000) queued: SupervisorHandoverCommand[];
 }
 
 @doc("""
@@ -138,13 +138,13 @@ model SupervisorHandoverBox {
   """)
 model SupervisorHandoverMachine {
   @minValue(1) processId: int32;
-  apiSocket: string;
-  vsock: string;
+  apiSocket: PathText;
+  vsock: PathText;
   @minValue(0) guestFd: int32;
-  guestBuffer: string;
+  guestBuffer: PathText;
   @minValue(0) stdoutFd: int32;
   @minValue(0) stderrFd: int32;
-  consoleTail: string;
+  consoleTail: Detail;
 }
 
 @doc("The image a handed box booted from, so the new binary holds it in its cache and reads its harness.")
@@ -163,7 +163,7 @@ model SupervisorHandoverLayeredImage {
   kind: "Layered";
   base: BaseImageManifest;
   layer: HarnessLayerManifest;
-  layerPath: string;
+  layerPath: PathText;
 }
 
 @doc("What a handed box was doing: paused, or running a turn.")
@@ -203,7 +203,7 @@ model SupervisorHandoverTurn {
 
 model SupervisorHandoverTurnError {
   reason: TurnFailureReason;
-  detail: string;
+  detail: Detail;
 }
 
 @doc("A command that reached a handed box's session while its turn was parked: a snapshot, a teardown or a discard of the box.")
@@ -218,7 +218,7 @@ model SupervisorHandoverSnapshot {
   kind: "Snapshot";
   snapshotId: EntityId;
   snapshotSeq: Sequence;
-  uploadUrl: string;
+  uploadUrl: UrlText;
   uploadExpiresAt: offsetDateTime;
 }
 
@@ -246,7 +246,7 @@ model SupervisorUpdateRefusal {
   passed: its own version and the channel and guest protocol versions it speaks.
   """)
 model SupervisorCheckReport {
-  @minLength(1) supervisorVersion: string;
+  @minLength(1) supervisorVersion: ShortText;
   @minValue(1) channelProtocolVersion: int32;
   @minValue(1) guestProtocolVersion: int32;
 }
@@ -304,15 +304,15 @@ enum GuestHarnessProtocol {
   before the turn's credential variables, so a credential variable of the same name wins.
   """)
 model GuestHarness {
-  @minLength(1) harness: string;
-  @minLength(1) harnessVersion: string;
+  @minLength(1) harness: ShortText;
+  @minLength(1) harnessVersion: ShortText;
   protocol: GuestHarnessProtocol;
-  @minItems(1) command: string[];
-  @minLength(1) workingDirectory: string;
+  @minItems(1) @maxItems(256) command: Detail[];
+  @minLength(1) workingDirectory: PathText;
   @minValue(1) cloneSeconds: int32;
 
   environment: GuestEnvironment;
-  fixedVariables: FixedVariable[];
+  @maxItems(100) fixedVariables: FixedVariable[];
 }
 
 @doc("""
@@ -320,16 +320,16 @@ model GuestHarness {
   and the prebuild script runs the devcontainer commands with it.
   """)
 model GuestEnvironment {
-  @minLength(1) PATH: string;
-  @minLength(1) HOME: string;
-  @minLength(1) LANG: string;
+  @minLength(1) PATH: Detail;
+  @minLength(1) HOME: ShortText;
+  @minLength(1) LANG: ShortText;
 }
 
 @doc("A pinned piece of a guest image besides the harness, such as the Node runtime.")
 model GuestImageComponent {
-  @minLength(1) name: string;
-  @minLength(1) version: string;
-  url: url;
+  @minLength(1) name: ShortText;
+  @minLength(1) version: ShortText;
+  url: HttpUrl;
   digest: Sha256Digest;
 }
 
@@ -339,12 +339,12 @@ model GuestImageComponent {
   """)
 model GuestImageManifest {
   imageDigest: Sha256Digest;
-  kernelUrl: url;
+  kernelUrl: HttpUrl;
   kernelDigest: Sha256Digest;
-  baseRootfsUrl: url;
+  baseRootfsUrl: HttpUrl;
   baseRootfsDigest: Sha256Digest;
   harness: GuestHarness;
-  components: GuestImageComponent[];
+  @maxItems(100) components: GuestImageComponent[];
 }
 
 @doc("The time limits of a box's phases. Each one that runs out ends its phase with a named failure.")
@@ -394,9 +394,9 @@ model BoxBudgets {
   boxes to the new supervisor anyway.
   """)
 model SupervisorRuntime {
-  @minLength(1) firecrackerPath: string;
-  @minLength(1) imageCacheDir: string;
-  @minLength(1) dataDir: string;
+  @minLength(1) firecrackerPath: PathText;
+  @minLength(1) imageCacheDir: PathText;
+  @minLength(1) dataDir: PathText;
   @minValue(1) @maxValue(256) boxCapacity: int32;
   @minValue(1) vcpuCount: int32;
   @minValue(128) memoryMib: int32;
@@ -417,8 +417,8 @@ model SupervisorRuntime {
 model GuestHello {
   type: "GuestHello";
   @minValue(1) protocolVersion: int32;
-  @minLength(1) harness: string;
-  @minLength(1) harnessVersion: string;
+  @minLength(1) harness: ShortText;
+  @minLength(1) harnessVersion: ShortText;
   lastLineSeq: Sequence;
 }
 
@@ -426,7 +426,7 @@ model GuestHello {
 model GuestPersonaFile {
   path: PersonaFilePath;
   digest: Sha256Digest;
-  content: string;
+  content: PersonaFileContent;
 }
 
 @doc("""
@@ -450,7 +450,7 @@ model GuestTurnStart {
   `model`: ModelName;
   prompt: Prompt;
   credential: Channel.DispatchGrant;
-  files: GuestPersonaFile[];
+  @maxItems(100) files: GuestPersonaFile[];
   repository: RepositoryUrl;
   gitAuthorName: DisplayName;
   gitAuthorEmail: EmailAddress;
@@ -464,7 +464,7 @@ model GuestTurnStart {
     branch fast-forward before the harness starts and deletes the marker.
     """)
   @pattern("^[0-9a-f]{40}$")
-  prebuildCommitSha?: string;
+  prebuildCommitSha?: ShortText;
 
   @doc("The host's turn budget, budgets.turnSeconds of its runtime config, which the guest names to the harness beside the box's memory, disk and CPUs.")
   @minValue(1)
@@ -482,7 +482,7 @@ model GuestTurnLine {
   type: "TurnLine";
   turnId: EntityId;
   lineSeq: Sequence;
-  text: string;
+  text: LongText;
 }
 
 enum GuestTurnEndReason {
@@ -505,7 +505,7 @@ model GuestTurnRepositoryCloneFailed {
   type: "TurnRepositoryCloneFailed";
   turnId: EntityId;
   cause: RepositoryCloneFailureCause;
-  detail: string;
+  detail: Detail;
 }
 
 @doc("The turn ended. `detail` carries the tail of the harness's standard error when it did not complete.")
@@ -514,22 +514,22 @@ model GuestTurnEnd {
   turnId: EntityId;
   reason: GuestTurnEndReason;
   lastLineSeq: Sequence;
-  detail: string;
+  detail: Detail;
 
   @doc("The turn's credential file as the harness left it, when it differs from the one the turn wrote; the guest deletes the file at the end of the turn.")
   @minLength(1)
-  credentialFile?: string;
+  credentialFile?: CredentialText;
 
   @doc("""
     What the harness reported the turn used, read from its lines: turn.tokens per TokenKind and,
     when the harness reported a cost the provider charges, turn.cost. Empty when the harness
     reported no usage; a guest older than guest protocol 11 sends none.
     """)
-  metrics?: GuestMetric[];
+  @maxItems(1000) metrics?: GuestMetric[];
 
   @doc("Set on a Completed end when the box's disk has less than a hundredth of it free: its size and the boxDiskMib that raises it. A guest older than guest protocol 13 never sends it.")
   @minLength(1)
-  warning?: string;
+  warning?: Detail;
 }
 
 @doc("""
@@ -539,7 +539,7 @@ model GuestTurnEnd {
 model GuestMetric {
   ...MetricInstrument;
   value: float64;
-  dimensions: Record<string>;
+  @TypeSpec.JsonSchema.maxProperties(32) dimensions: Record<ShortText>;
 }
 
 @doc("""
@@ -556,8 +556,8 @@ model GuestClaudeSetupStart {
   type: "ClaudeSetupStart";
   claudeSetupId: EntityId;
   tenantId: EntityId;
-  tokenUrl: url;
-  @minLength(43) tokenCredential: string;
+  tokenUrl: HttpUrl;
+  @minLength(43) tokenCredential: Token;
 }
 
 @doc("""
@@ -600,7 +600,7 @@ union GuestInput {
 model GuestClaudeSetupUrl {
   type: "ClaudeSetupUrl";
   claudeSetupId: EntityId;
-  signInUrl: url;
+  signInUrl: HttpUrl;
   userCode?: ClaudeSetupUserCode;
 }
 
@@ -633,7 +633,7 @@ model GuestClaudeSetupFailed {
   type: "ClaudeSetupFailed";
   claudeSetupId: EntityId;
   reason: GuestClaudeSetupFailureReason;
-  detail: string;
+  detail: Detail;
 }
 
 @doc("One frame from the guest to the host.")
@@ -655,7 +655,7 @@ union GuestMessage {
   nanoseconds.
   """)
 model SnapshotEntryCommon {
-  @minLength(1) path: string;
+  @minLength(1) path: PathText;
   @minValue(0) @maxValue(4095) mode: int32;
   @minValue(0) uid: int64;
   @minValue(0) gid: int64;
@@ -668,7 +668,7 @@ model SnapshotFileEntry {
   kind: "File";
   ...SnapshotEntryCommon;
   @minValue(0) sizeBytes: int64;
-  chunks: Channel.ChunkPlacement[];
+  @maxItems(1000000) chunks: Channel.ChunkPlacement[];
 }
 
 @doc("A directory that merges with the directory of the same path in the image.")
@@ -687,7 +687,7 @@ model SnapshotOpaqueDirectoryEntry {
 model SnapshotSymlinkEntry {
   kind: "Symlink";
   ...SnapshotEntryCommon;
-  @minLength(1) target: string;
+  @minLength(1) target: PathText;
 }
 
 @doc("A file or directory of the image that the box deleted, an overlay whiteout: a character device 0/0.")
@@ -713,7 +713,7 @@ union SnapshotEntry {
   and its chunks packed with the file chunks; SnapshotRoot names them.
   """)
 model SnapshotManifest {
-  entries: SnapshotEntry[];
+  @maxItems(1000000) entries: SnapshotEntry[];
 }
 
 @doc("""
@@ -723,5 +723,5 @@ model SnapshotManifest {
   box the whole upper directory.
   """)
 model SnapshotRoot {
-  manifest: Channel.ChunkPlacement[];
+  @maxItems(1000000) manifest: Channel.ChunkPlacement[];
 }

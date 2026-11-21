@@ -48,14 +48,14 @@ model ConnectedConnection {
   state: ConnectionState.Connected;
 
   @doc("What the connection is connected as: the GitHub logins of the tenant's installations, comma-separated, the account label the tenant gave a build provider, or for OpenRouter the names of the secret sets that hold an OpenRouter key, comma-separated, since OpenRouter's key exchange names no account.")
-  account: string;
+  account: Summary;
 }
 
 @doc("A Connected connection whose credential stops working within the renewal window.")
 model ExpiringConnection {
   kind: ConnectionKind;
   state: ConnectionState.Expiring;
-  account: string;
+  account: Summary;
 
   @doc("When the credential stops working.")
   expiresAt: offsetDateTime;
@@ -65,7 +65,7 @@ model ExpiringConnection {
 model ExpiredConnection {
   kind: ConnectionKind;
   state: ConnectionState.Expired;
-  account: string;
+  account: Summary;
 
   @doc("When the credential stopped working.")
   expiredAt: offsetDateTime;
@@ -151,10 +151,10 @@ model GitHubActionsConnectionLink {
   link: GitHubActionsLink;
 
   @doc("The reusable workflow a caller workflow calls: tumpel/workflows/.github/workflows/prebuild.yml@v2.")
-  reusableWorkflow: string;
+  reusableWorkflow: ShortText;
 
   @doc("The caller workflow a prebuild start commits in each repository at the connection's callerWorkflow path, or at .github/workflows/tumpel-prebuild.yml while not connected, as YAML text.")
-  callerWorkflowExample: string;
+  callerWorkflowExample: Detail;
 }
 
 @doc("""
@@ -172,10 +172,10 @@ model NamespaceConnection {
   workspaceId: NamespaceWorkspaceId;
 
   @doc("The stage's OIDC issuer Namespace registers.")
-  issuer: url;
+  issuer: HttpUrl;
 
   @doc("The sub of a prebuild token: tenant:<tenantId>:persona:<personaName>:job:prebuild, with the prebuild's persona name.")
-  subjectPattern: string;
+  subjectPattern: ShortText;
 
   @doc("The aud Tumpel defines for Namespace: federation.namespaceapis.com.")
   audience: OidcAudience;
@@ -197,8 +197,8 @@ model NamespaceConnected {
 @doc("The trust material to register at Namespace before connecting.")
 model NamespaceNotConnected {
   state: ConnectionState.NotConnected;
-  issuer: url;
-  subjectPattern: string;
+  issuer: HttpUrl;
+  subjectPattern: ShortText;
 
   @doc("The aud Tumpel defines for Namespace: federation.namespaceapis.com.")
   audience: OidcAudience;
@@ -207,8 +207,8 @@ model NamespaceNotConnected {
 @doc("The stage has no issuer hostname yet, so Namespace cannot trust its tokens; `fix` says how to deploy it.")
 model NamespaceNotConfigured {
   state: ConnectionState.NotConfigured;
-  detail: string;
-  fix: string;
+  detail: Detail;
+  fix: Detail;
 }
 
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
@@ -226,6 +226,7 @@ model NamespaceConnectionLink {
 
 @doc("A CircleCI id: an organization, a project or a pipeline definition, as a lower-case UUID.")
 @pattern("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+@maxLength(36)
 scalar CircleCIUuid extends string;
 
 @doc("""
@@ -252,7 +253,7 @@ model CircleCIConnection {
   organizationId: CircleCIUuid;
 
   @doc("The organization's OIDC issuer, https://oidc.circleci.com/org/<organizationId>, whose job tokens upload the layers.")
-  issuer: url;
+  issuer: HttpUrl;
 
   credential: CircleCICredential;
   createdAt: int64;
@@ -315,7 +316,7 @@ model CircleCIOrganization {
   name: DisplayName;
 
   @doc("The organization's slug, such as gh/acme or circleci/<id>.")
-  slug: string;
+  slug: ShortText;
 }
 
 @doc("Why a CircleCI authorization ended Failed. Each reason names the phase it stopped in.")
@@ -355,10 +356,10 @@ model CircleCIAuthorizationAwaitingRedirect {
   state: CircleCIAuthorizationState.AwaitingRedirect;
 
   @doc("CircleCI's consent page, with this authorization's client_id, PKCE S256 challenge and state.")
-  authorizeUrl: url;
+  authorizeUrl: HttpUrl;
 
   @doc("The loopback address CircleCI sends the browser to, http://127.0.0.1:47151/circleci/callback; nothing listens there unless the tumpel CLI does.")
-  redirectUri: url;
+  redirectUri: HttpUrl;
 
   @doc("When the redirect address must arrive by, or the authorization fails AuthorizationTimedOut.")
   redirectDueAt: offsetDateTime;
@@ -366,7 +367,7 @@ model CircleCIAuthorizationAwaitingRedirect {
 
 model CircleCIAuthorizationChoosingOrganization {
   state: CircleCIAuthorizationState.ChoosingOrganization;
-  organizations: CircleCIOrganization[];
+  @maxItems(1000) organizations: CircleCIOrganization[];
 
   @doc("When the organization must be chosen by, or the authorization fails AuthorizationTimedOut and the token is discarded.")
   chooseDueAt: offsetDateTime;
@@ -388,7 +389,7 @@ model CircleCIAuthorizationFailed {
   reason: CircleCIAuthorizationFailureReason;
 
   @doc("What failed and what fixes it.")
-  detail: string;
+  detail: Detail;
 
   failedAt: offsetDateTime;
 }
@@ -440,10 +441,10 @@ model CircleCIConnectionLink {
   link: CircleCILink;
 
   @doc("The orb a repository's prebuild config imports: tumpel/prebuild@1.")
-  orb: string;
+  orb: ShortText;
 
   @doc("The prebuild config to commit, such as .circleci/tumpel-prebuild.yml, as YAML text to copy; its pipeline definition gets no trigger.")
-  configExample: string;
+  configExample: Detail;
 }
 
 @doc("""
