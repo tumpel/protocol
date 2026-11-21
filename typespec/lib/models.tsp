@@ -65,7 +65,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 29;
+const ChannelProtocolVersion = 30;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -441,8 +441,11 @@ enum TurnFailureReason {
   @doc("The box could not clone the session's repository within the image's cloneSeconds; the detail carries what git reported and the persona's secret set.")
   RepositoryCloneFailed: "RepositoryCloneFailed",
 
-  @doc("The harness ended the turn with an error result other than a refused credential, such as a model the provider does not serve; the detail carries what the harness reported.")
+  @doc("The harness ended the turn with an error result other than a refused credential or exhausted credit, such as a model the provider does not serve; the detail carries what the harness reported.")
   HarnessReportedError: "HarnessReportedError",
+
+  @doc("The harness reported that the provider's credit balance is too low. Add credits to the provider account before starting another turn.")
+  CreditExhausted: "CreditExhausted",
 
   @doc("The turn has no GitHub credential to clone, commit and push with when it is offered: GitHub did not mint an installation token for the session's repository, the secret set holds no GITHUB_TOKEN to take its place, or the GitHub user to commit as is unknown; the detail quotes GitHub where it answered and names the fix.")
   RepositoryTokenRefused: "RepositoryTokenRefused",
