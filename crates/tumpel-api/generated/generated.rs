@@ -372,9 +372,6 @@ pub mod types {
         ///Reading the paused box's drive until its files are cut into chunks in the chunk cache; SnapshotTimedOut. The chunk exchanges, the packing and the uploads run until the request's uploadExpiresAt; UploadExpired.
         #[serde(rename = "snapshotSeconds")]
         pub snapshot_seconds: ::std::num::NonZeroU32,
-        ///TurnStart until TurnEnd; TurnTimedOut.
-        #[serde(rename = "turnSeconds")]
-        pub turn_seconds: ::std::num::NonZeroU32,
     }
     ///The disk of a box in MiB, a sparse drive that costs the host only what the box writes. A persona
     ///that names no boxDiskMib runs its boxes with DefaultMib; one that names it may ask for up to MaxMib.
@@ -24156,6 +24153,9 @@ pub mod types {
     pub struct SupervisorHandoverBox {
         #[serde(rename = "boxId")]
         pub box_id: EntityId,
+        ///What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm one until the session stops.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<CredentialText>,
         pub dirty: bool,

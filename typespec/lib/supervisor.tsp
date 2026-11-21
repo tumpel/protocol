@@ -133,6 +133,10 @@ model SupervisorHandoverBox {
   image: SupervisorHandoverImage;
   dirty: boolean;
   credentialFile?: CredentialText;
+
+  @doc("What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm one until the session stops.")
+  boxRetention: BoxRetention;
+
   state: SupervisorHandoverBoxState;
   @maxItems(1000) queued: SupervisorHandoverCommand[];
 }
@@ -371,10 +375,6 @@ model BoxBudgets {
   @doc("TurnRepositoryReady until the harness's first line, and TurnStart until the first line within the image's cloneSeconds plus this; NoFirstOutput.")
   @minValue(1)
   firstLineSeconds: int32;
-
-  @doc("TurnStart until TurnEnd; TurnTimedOut.")
-  @minValue(1)
-  turnSeconds: int32;
 
   @doc("Reading the paused box's drive until its files are cut into chunks in the chunk cache; SnapshotTimedOut. The chunk exchanges, the packing and the uploads run until the request's uploadExpiresAt; UploadExpired.")
   @minValue(1)
