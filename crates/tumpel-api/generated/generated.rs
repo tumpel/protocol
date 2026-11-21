@@ -21222,10 +21222,11 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorReleaseTumpelApiVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
-                ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9]+\\.[0-9]+\\.[0-9]+$").unwrap());
+            static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
+                ::regress::Regex::new("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$").unwrap()
+            });
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9]+\\.[0-9]+\\.[0-9]+$\"".into());
+                return Err("doesn't match pattern \"^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$\"".into());
             }
             Ok(Self(value.to_string()))
         }
