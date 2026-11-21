@@ -26,6 +26,7 @@ pub mod types {
     pub enum ChannelBootImage {
         GuestImageDownload(ChannelGuestImageDownload),
         LayeredImageDownload(ChannelLayeredImageDownload),
+        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelGuestImageDownload> for ChannelBootImage {
         fn from(value: ChannelGuestImageDownload) -> Self {
@@ -49,14 +50,17 @@ pub mod types {
         pub type_: ChannelBoxDiscardType,
     }
     ///`ChannelBoxDiscardType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelBoxDiscardType {
         BoxDiscard,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxDiscardType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::BoxDiscard => f.write_str("BoxDiscard"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -92,14 +96,17 @@ pub mod types {
         pub type_: ChannelBoxGoneType,
     }
     ///`ChannelBoxGoneType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelBoxGoneType {
         BoxGone,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxGoneType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::BoxGone => f.write_str("BoxGone"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -150,14 +157,17 @@ pub mod types {
         pub type_: ChannelBoxTeardownFailedType,
     }
     ///`ChannelBoxTeardownFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelBoxTeardownFailedType {
         BoxTeardownFailed,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxTeardownFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::BoxTeardownFailed => f.write_str("BoxTeardownFailed"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -183,14 +193,17 @@ pub mod types {
         }
     }
     ///Why the host kept a box it was asked to tear down.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelBoxTeardownFailureReason {
         BoxDirty,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxTeardownFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::BoxDirty => f.write_str("BoxDirty"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -216,14 +229,17 @@ pub mod types {
         }
     }
     ///`ChannelBoxTeardownType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelBoxTeardownType {
         BoxTeardown,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxTeardownType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::BoxTeardown => f.write_str("BoxTeardown"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -324,14 +340,17 @@ pub mod types {
         }
     }
     ///`ChannelChallengeType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelChallengeType {
         Challenge,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelChallengeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Challenge => f.write_str("Challenge"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -384,14 +403,17 @@ pub mod types {
         pub type_: ChannelClaudeSetupBoxCodeType,
     }
     ///`ChannelClaudeSetupBoxCodeType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelClaudeSetupBoxCodeType {
         ClaudeSetupBoxCode,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxCodeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxCode => f.write_str("ClaudeSetupBoxCode"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -428,14 +450,17 @@ pub mod types {
         pub type_: ChannelClaudeSetupBoxDiscardType,
     }
     ///`ChannelClaudeSetupBoxDiscardType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelClaudeSetupBoxDiscardType {
         ClaudeSetupBoxDiscard,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxDiscardType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxDiscard => f.write_str("ClaudeSetupBoxDiscard"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -474,14 +499,17 @@ pub mod types {
         pub type_: ChannelClaudeSetupBoxFailedType,
     }
     ///`ChannelClaudeSetupBoxFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelClaudeSetupBoxFailedType {
         ClaudeSetupBoxFailed,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxFailed => f.write_str("ClaudeSetupBoxFailed"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -601,14 +629,17 @@ pub mod types {
         }
     }
     ///`ChannelClaudeSetupBoxOfferType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelClaudeSetupBoxOfferType {
         ClaudeSetupBoxOffer,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxOfferType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxOffer => f.write_str("ClaudeSetupBoxOffer"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -646,14 +677,17 @@ pub mod types {
         pub user_code: ::std::option::Option<ChannelClaudeSetupBoxUrlUserCode>,
     }
     ///`ChannelClaudeSetupBoxUrlType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelClaudeSetupBoxUrlType {
         ClaudeSetupBoxUrl,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxUrlType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxUrl => f.write_str("ClaudeSetupBoxUrl"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -793,6 +827,7 @@ pub mod types {
         ReleasePublished(ChannelReleasePublished),
         FrameRefused(ChannelFrameRefused),
         ControlFrame(ChannelControlFrame),
+        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelChallenge> for ChannelControlEnvelope {
         fn from(value: ChannelChallenge) -> Self {
@@ -834,14 +869,17 @@ pub mod types {
         pub type_: ChannelControlFrameType,
     }
     ///`ChannelControlFrameType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelControlFrameType {
         Frame,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelControlFrameType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Frame => f.write_str("Frame"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -882,6 +920,7 @@ pub mod types {
         ClaudeSetupBoxOffer(ChannelClaudeSetupBoxOffer),
         ClaudeSetupBoxCode(ChannelClaudeSetupBoxCode),
         ClaudeSetupBoxDiscard(ChannelClaudeSetupBoxDiscard),
+        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelTurnOffer> for ChannelControlMessage {
         fn from(value: ChannelTurnOffer) -> Self {
@@ -1321,14 +1360,17 @@ pub mod types {
         }
     }
     ///`ChannelFrameRefusedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelFrameRefusedType {
         FrameRefused,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelFrameRefusedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::FrameRefused => f.write_str("FrameRefused"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1386,14 +1428,17 @@ pub mod types {
         pub manifest_url: ::std::string::String,
     }
     ///`ChannelGuestImageDownloadKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelGuestImageDownloadKind {
         Full,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelGuestImageDownloadKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Full => f.write_str("Full"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1441,14 +1486,17 @@ pub mod types {
         pub type_: ChannelHeartbeatType,
     }
     ///`ChannelHeartbeatType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelHeartbeatType {
         Heartbeat,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHeartbeatType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Heartbeat => f.write_str("Heartbeat"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1630,14 +1678,17 @@ pub mod types {
         }
     }
     ///`ChannelHelloType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelHelloType {
         Hello,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHelloType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Hello => f.write_str("Hello"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1672,6 +1723,7 @@ pub mod types {
         Hello(ChannelHello),
         HostHeartbeat(ChannelHostHeartbeat),
         HostFrame(ChannelHostFrame),
+        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelHello> for ChannelHostEnvelope {
         fn from(value: ChannelHello) -> Self {
@@ -1698,14 +1750,17 @@ pub mod types {
         pub type_: ChannelHostFrameType,
     }
     ///`ChannelHostFrameType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelHostFrameType {
         Frame,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHostFrameType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Frame => f.write_str("Frame"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1749,14 +1804,17 @@ pub mod types {
         pub usage: HostUsage,
     }
     ///`ChannelHostHeartbeatType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelHostHeartbeatType {
         Heartbeat,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHostHeartbeatType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Heartbeat => f.write_str("Heartbeat"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1804,6 +1862,7 @@ pub mod types {
         SupervisorUpdateStep(ChannelSupervisorUpdateStep),
         SupervisorUpdateFailed(ChannelSupervisorUpdateFailed),
         TelemetryBatch(ChannelTelemetryBatch),
+        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelTurnImageFetching> for ChannelHostMessage {
         fn from(value: ChannelTurnImageFetching) -> Self {
@@ -1921,14 +1980,17 @@ pub mod types {
         pub layer: ChannelHarnessLayerDownload,
     }
     ///`ChannelLayeredImageDownloadKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelLayeredImageDownloadKind {
         Layered,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelLayeredImageDownloadKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Layered => f.write_str("Layered"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2066,14 +2128,17 @@ pub mod types {
         }
     }
     ///`ChannelReleasePublishedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelReleasePublishedType {
         ReleasePublished,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelReleasePublishedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ReleasePublished => f.write_str("ReleasePublished"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2113,14 +2178,17 @@ pub mod types {
         pub type_: ChannelRestoreChunksType,
     }
     ///`ChannelRestoreChunksType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelRestoreChunksType {
         RestoreChunks,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelRestoreChunksType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RestoreChunks => f.write_str("RestoreChunks"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2161,14 +2229,17 @@ pub mod types {
         pub type_: ChannelRestoreDownloadsType,
     }
     ///`ChannelRestoreDownloadsType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelRestoreDownloadsType {
         RestoreDownloads,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelRestoreDownloadsType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RestoreDownloads => f.write_str("RestoreDownloads"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2234,14 +2305,17 @@ pub mod types {
         pub type_: ChannelSnapshotChunksHeldType,
     }
     ///`ChannelSnapshotChunksHeldType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotChunksHeldType {
         SnapshotChunksHeld,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotChunksHeldType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotChunksHeld => f.write_str("SnapshotChunksHeld"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2267,14 +2341,17 @@ pub mod types {
         }
     }
     ///`ChannelSnapshotChunksType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotChunksType {
         SnapshotChunks,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotChunksType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotChunks => f.write_str("SnapshotChunks"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2310,14 +2387,17 @@ pub mod types {
         pub uploaded_bytes: i64,
     }
     ///`ChannelSnapshotDoneType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotDoneType {
         SnapshotDone,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotDoneType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotDone => f.write_str("SnapshotDone"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2371,14 +2451,17 @@ pub mod types {
         pub type_: ChannelSnapshotFailedType,
     }
     ///`ChannelSnapshotFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotFailedType {
         SnapshotFailed,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotFailed => f.write_str("SnapshotFailed"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2404,7 +2487,7 @@ pub mod types {
         }
     }
     ///Why the host could not store a snapshot.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotFailureReason {
         BoxNotFound,
         UpperDirectoryUnreadable,
@@ -2412,6 +2495,8 @@ pub mod types {
         UploadRejected,
         SnapshotTimedOut,
         NotAnswered,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -2422,6 +2507,7 @@ pub mod types {
                 Self::UploadRejected => f.write_str("UploadRejected"),
                 Self::SnapshotTimedOut => f.write_str("SnapshotTimedOut"),
                 Self::NotAnswered => f.write_str("NotAnswered"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2467,14 +2553,17 @@ pub mod types {
         pub uploads: ::std::vec::Vec<ChannelPackUrl>,
     }
     ///`ChannelSnapshotPackUploadsType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotPackUploadsType {
         SnapshotPackUploads,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotPackUploadsType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotPackUploads => f.write_str("SnapshotPackUploads"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2516,14 +2605,17 @@ pub mod types {
         pub type_: ChannelSnapshotPacksType,
     }
     ///`ChannelSnapshotPacksType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotPacksType {
         SnapshotPacks,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotPacksType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotPacks => f.write_str("SnapshotPacks"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2577,14 +2669,17 @@ pub mod types {
         pub upload_url: ::std::string::String,
     }
     ///`ChannelSnapshotRequestType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotRequestType {
         SnapshotRequest,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotRequestType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotRequest => f.write_str("SnapshotRequest"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2621,14 +2716,17 @@ pub mod types {
         pub type_: ChannelStoredHostFrameType,
     }
     ///`ChannelStoredHostFrameType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelStoredHostFrameType {
         Frame,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelStoredHostFrameType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Frame => f.write_str("Frame"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2672,14 +2770,17 @@ pub mod types {
         pub type_: ChannelSupervisorUpdateFailedType,
     }
     ///`ChannelSupervisorUpdateFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSupervisorUpdateFailedType {
         SupervisorUpdateFailed,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSupervisorUpdateFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SupervisorUpdateFailed => f.write_str("SupervisorUpdateFailed"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2788,14 +2889,17 @@ pub mod types {
         }
     }
     ///`ChannelSupervisorUpdateStepType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSupervisorUpdateStepType {
         SupervisorUpdateStep,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSupervisorUpdateStepType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SupervisorUpdateStep => f.write_str("SupervisorUpdateStep"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2836,14 +2940,17 @@ pub mod types {
         pub type_: ChannelTelemetryBatchType,
     }
     ///`ChannelTelemetryBatchType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTelemetryBatchType {
         TelemetryBatch,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTelemetryBatchType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TelemetryBatch => f.write_str("TelemetryBatch"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2885,14 +2992,17 @@ pub mod types {
         pub type_: ChannelTurnClaimType,
     }
     ///`ChannelTurnClaimType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnClaimType {
         TurnClaim,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnClaimType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnClaim => f.write_str("TurnClaim"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2926,14 +3036,17 @@ pub mod types {
         pub type_: ChannelTurnClaimedType,
     }
     ///`ChannelTurnClaimedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnClaimedType {
         TurnClaimed,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnClaimedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnClaimed => f.write_str("TurnClaimed"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3040,14 +3153,17 @@ pub mod types {
         }
     }
     ///`ChannelTurnCompleteType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnCompleteType {
         TurnComplete,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnCompleteType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnComplete => f.write_str("TurnComplete"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3154,14 +3270,17 @@ pub mod types {
         }
     }
     ///`ChannelTurnFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnFailedType {
         TurnFailed,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnFailed => f.write_str("TurnFailed"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3200,14 +3319,17 @@ pub mod types {
         pub type_: ChannelTurnImageFetchingType,
     }
     ///`ChannelTurnImageFetchingType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnImageFetchingType {
         TurnImageFetching,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnImageFetchingType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnImageFetching => f.write_str("TurnImageFetching"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3244,14 +3366,17 @@ pub mod types {
         pub type_: ChannelTurnLineType,
     }
     ///`ChannelTurnLineType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnLineType {
         TurnLine,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnLineType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnLine => f.write_str("TurnLine"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3463,14 +3588,17 @@ pub mod types {
         }
     }
     ///`ChannelTurnOfferType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnOfferType {
         TurnOffer,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnOfferType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnOffer => f.write_str("TurnOffer"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3508,14 +3636,17 @@ pub mod types {
         pub type_: ChannelTurnRepositoryCloneFailedType,
     }
     ///`ChannelTurnRepositoryCloneFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnRepositoryCloneFailedType {
         TurnRepositoryCloneFailed,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnRepositoryCloneFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnRepositoryCloneFailed => f.write_str("TurnRepositoryCloneFailed"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3549,14 +3680,17 @@ pub mod types {
         pub type_: ChannelTurnRepositoryReadyType,
     }
     ///`ChannelTurnRepositoryReadyType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnRepositoryReadyType {
         TurnRepositoryReady,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnRepositoryReadyType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnRepositoryReady => f.write_str("TurnRepositoryReady"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3593,14 +3727,17 @@ pub mod types {
         pub type_: ChannelTurnWithdrawnType,
     }
     ///`ChannelTurnWithdrawnType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnWithdrawnType {
         TurnWithdrawn,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnWithdrawnType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnWithdrawn => f.write_str("TurnWithdrawn"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3636,14 +3773,17 @@ pub mod types {
         pub type_: ChannelWelcomeType,
     }
     ///`ChannelWelcomeType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelWelcomeType {
         Welcome,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelWelcomeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Welcome => f.write_str("Welcome"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3738,7 +3878,7 @@ pub mod types {
         }
     }
     ///Why a Claude setup ended Failed. Each reason names the phase it stopped in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ClaudeSetupFailureReason {
         SetupUrlMissing,
         CodeRejected,
@@ -3747,6 +3887,8 @@ pub mod types {
         TokenNotStored,
         NoHostOnline,
         Superseded,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3758,6 +3900,7 @@ pub mod types {
                 Self::TokenNotStored => f.write_str("TokenNotStored"),
                 Self::NoHostOnline => f.write_str("NoHostOnline"),
                 Self::Superseded => f.write_str("Superseded"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3996,13 +4139,15 @@ pub mod types {
         }
     }
     ///`Harness`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum Harness {
         ClaudeCode,
         Codex,
         OpenCode,
         PiDev,
         MistralAgent,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for Harness {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4012,6 +4157,7 @@ pub mod types {
                 Self::OpenCode => f.write_str("OpenCode"),
                 Self::PiDev => f.write_str("PiDev"),
                 Self::MistralAgent => f.write_str("MistralAgent"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4107,16 +4253,19 @@ pub mod types {
         }
     }
     ///`HostArchitecture`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostArchitecture {
         Amd64,
         Arm64,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for HostArchitecture {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Amd64 => f.write_str("Amd64"),
                 Self::Arm64 => f.write_str("Arm64"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4155,7 +4304,7 @@ pub mod types {
         pub memory_available_mib: i64,
     }
     ///The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ImageHarness {
         ClaudeCode,
         Codex,
@@ -4163,6 +4312,8 @@ pub mod types {
         PiDev,
         MistralAgent,
         Shell,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ImageHarness {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4173,6 +4324,7 @@ pub mod types {
                 Self::PiDev => f.write_str("PiDev"),
                 Self::MistralAgent => f.write_str("MistralAgent"),
                 Self::Shell => f.write_str("Shell"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4343,16 +4495,19 @@ pub mod types {
         }
     }
     ///`MetricKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum MetricKind {
         Turn,
         Sample,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for MetricKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Turn => f.write_str("Turn"),
                 Self::Sample => f.write_str("Sample"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4721,12 +4876,14 @@ pub mod types {
         pub size_bytes: ::std::num::NonZeroU64,
     }
     ///Why the box could not clone the session's repository.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum RepositoryCloneFailureCause {
         Refused,
         TimedOut,
         DirectoryNotEmpty,
         Other,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for RepositoryCloneFailureCause {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4735,6 +4892,7 @@ pub mod types {
                 Self::TimedOut => f.write_str("TimedOut"),
                 Self::DirectoryNotEmpty => f.write_str("DirectoryNotEmpty"),
                 Self::Other => f.write_str("Other"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -5020,7 +5178,7 @@ pub mod types {
         }
     }
     ///Why a supervisor update stopped. Every one but SupervisorUpdateRolledBack leaves the running binary in place.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorUpdateFailureReason {
         SupervisorUpdateFetchFailed,
         SupervisorUpdateChecksumMismatch,
@@ -5029,6 +5187,8 @@ pub mod types {
         SupervisorUpdateIdleTimedOut,
         SupervisorUpdateSwapFailed,
         SupervisorUpdateRolledBack,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdateFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5040,6 +5200,7 @@ pub mod types {
                 Self::SupervisorUpdateIdleTimedOut => f.write_str("SupervisorUpdateIdleTimedOut"),
                 Self::SupervisorUpdateSwapFailed => f.write_str("SupervisorUpdateSwapFailed"),
                 Self::SupervisorUpdateRolledBack => f.write_str("SupervisorUpdateRolledBack"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -5076,7 +5237,7 @@ pub mod types {
     ///box, Restarting swaps the binaries, parks every running turn and execs the new one, which takes
     ///over the running boxes, and Online is the new binary reaching Welcome. WaitingForIdle is what supervisors before the idle claim send between DryRunning and
     ///Restarting; the control plane accepts it and records nothing.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorUpdatePhase {
         Fetching,
         DryRunning,
@@ -5084,6 +5245,8 @@ pub mod types {
         WaitingForIdle,
         Restarting,
         Online,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdatePhase {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5094,6 +5257,7 @@ pub mod types {
                 Self::WaitingForIdle => f.write_str("WaitingForIdle"),
                 Self::Restarting => f.write_str("Restarting"),
                 Self::Online => f.write_str("Online"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -5124,7 +5288,7 @@ pub mod types {
         }
     }
     ///Why a turn ended Failed. Each reason names the phase the turn stopped in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TurnFailureReason {
         NotClaimed,
         Undelivered,
@@ -5150,6 +5314,8 @@ pub mod types {
         ImageFetchTimedOut,
         HostUpdating,
         BoxLost,
+        #[serde(untagged)]
+        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TurnFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5178,6 +5344,7 @@ pub mod types {
                 Self::ImageFetchTimedOut => f.write_str("ImageFetchTimedOut"),
                 Self::HostUpdating => f.write_str("HostUpdating"),
                 Self::BoxLost => f.write_str("BoxLost"),
+                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
