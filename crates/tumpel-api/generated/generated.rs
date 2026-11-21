@@ -32795,6 +32795,79 @@ pub mod types {
             value.parse()
         }
     }
+    ///`TenantApiHostHealthInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiHostHealthInput {
+        pub detail: Detail,
+        pub health: HostHealth,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        pub now: i64,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiHostHealthRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiHostHealthRequest {
+        pub input: TenantApiHostHealthInput,
+        pub operation: TenantApiHostHealthRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiHostHealthRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiHostHealthRequestOperation {
+        #[serde(rename = "hostHealth")]
+        HostHealth,
+    }
+    impl ::std::fmt::Display for TenantApiHostHealthRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::HostHealth => f.write_str("hostHealth"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiHostHealthRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "hostHealth" => Ok(Self::HostHealth),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiHostHealthRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHostHealthRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiHostHealthResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct TenantApiHostHealthResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
+    impl ::std::ops::Deref for TenantApiHostHealthResult {
+        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
+        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TenantApiHostHealthResult> for ::serde_json::Map<::std::string::String, ::serde_json::Value> {
+        fn from(value: TenantApiHostHealthResult) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>> for TenantApiHostHealthResult {
+        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
+            Self(value)
+        }
+    }
     ///`TenantApiHostHelloInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiHostHelloInput {
@@ -42010,6 +42083,7 @@ pub mod types {
         TurnMetricDimensionsRequest(TenantApiTurnMetricDimensionsRequest),
         PrepareOfferRequest(TenantApiPrepareOfferRequest),
         HostPresenceRequest(TenantApiHostPresenceRequest),
+        HostHealthRequest(TenantApiHostHealthRequest),
         HostMessageRequest(TenantApiHostMessageRequest),
         DeadlineReachedRequest(TenantApiDeadlineReachedRequest),
     }
@@ -42721,6 +42795,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiHostPresenceRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiHostPresenceRequest) -> Self {
             Self::HostPresenceRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiHostHealthRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiHostHealthRequest) -> Self {
+            Self::HostHealthRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiHostMessageRequest> for TenantApiTenantRequest {

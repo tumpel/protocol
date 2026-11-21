@@ -1231,6 +1231,14 @@ model HostPresenceInput {
   now: int64;
 }
 
+model HostHealthInput {
+  tenantId: EntityId;
+  hostId: EntityId;
+  health: HostHealth;
+  detail: Detail;
+  now: int64;
+}
+
 model HostMessageInput {
   tenantId: EntityId;
   hostId: EntityId;
@@ -2115,6 +2123,12 @@ model HostPresenceRequest {
   input: HostPresenceInput;
 }
 
+model HostHealthRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "hostHealth";
+  input: HostHealthInput;
+}
+
 model HostMessageRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "hostMessage";
@@ -2272,6 +2286,7 @@ union TenantRequest {
   turnMetricDimensions: TurnMetricDimensionsRequest,
   prepareOffer: PrepareOfferRequest,
   hostPresence: HostPresenceRequest,
+  hostHealth: HostHealthRequest,
   hostMessage: HostMessageRequest,
   deadlineReached: DeadlineReachedRequest,
 }
@@ -3748,6 +3763,8 @@ model PrepareOfferResult {
 }
 
 model HostPresenceResult {}
+
+model HostHealthResult {}
 
 model HostFrameRefused {
   type: "Refused";

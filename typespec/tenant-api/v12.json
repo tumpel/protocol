@@ -11794,6 +11794,59 @@
         }
       }
     },
+    "TenantApi.HostHealthInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "hostId",
+        "health",
+        "detail",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "health": {
+          "$ref": "#/components/schemas/HostHealth"
+        },
+        "detail": {
+          "$ref": "#/components/schemas/Detail"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.HostHealthRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "hostHealth"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.HostHealthInput"
+        }
+      }
+    },
+    "TenantApi.HostHealthResult": {
+      "type": "object"
+    },
     "TenantApi.HostHelloInput": {
       "type": "object",
       "required": [
@@ -19027,6 +19080,9 @@
           "$ref": "#/components/schemas/TenantApi.HostPresenceRequest"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.HostHealthRequest"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.HostMessageRequest"
         },
         {
@@ -19178,6 +19234,7 @@
           "turnMetricDimensions": "#/components/schemas/TenantApi.TurnMetricDimensionsRequest",
           "prepareOffer": "#/components/schemas/TenantApi.PrepareOfferRequest",
           "hostPresence": "#/components/schemas/TenantApi.HostPresenceRequest",
+          "hostHealth": "#/components/schemas/TenantApi.HostHealthRequest",
           "hostMessage": "#/components/schemas/TenantApi.HostMessageRequest",
           "deadlineReached": "#/components/schemas/TenantApi.DeadlineReachedRequest"
         }
