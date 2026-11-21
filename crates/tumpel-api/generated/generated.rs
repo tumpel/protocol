@@ -42568,6 +42568,7 @@ pub mod types {
         PersonaFileUnreadable,
         RepositoryCloneFailed,
         HarnessReportedError,
+        CreditExhausted,
         RepositoryTokenRefused,
         ImageNotReleased,
         ImageFetchFailed,
@@ -42600,6 +42601,7 @@ pub mod types {
                 Self::PersonaFileUnreadable => f.write_str("PersonaFileUnreadable"),
                 Self::RepositoryCloneFailed => f.write_str("RepositoryCloneFailed"),
                 Self::HarnessReportedError => f.write_str("HarnessReportedError"),
+                Self::CreditExhausted => f.write_str("CreditExhausted"),
                 Self::RepositoryTokenRefused => f.write_str("RepositoryTokenRefused"),
                 Self::ImageNotReleased => f.write_str("ImageNotReleased"),
                 Self::ImageFetchFailed => f.write_str("ImageFetchFailed"),
@@ -42635,6 +42637,7 @@ pub mod types {
                 "PersonaFileUnreadable" => Ok(Self::PersonaFileUnreadable),
                 "RepositoryCloneFailed" => Ok(Self::RepositoryCloneFailed),
                 "HarnessReportedError" => Ok(Self::HarnessReportedError),
+                "CreditExhausted" => Ok(Self::CreditExhausted),
                 "RepositoryTokenRefused" => Ok(Self::RepositoryTokenRefused),
                 "ImageNotReleased" => Ok(Self::ImageNotReleased),
                 "ImageFetchFailed" => Ok(Self::ImageFetchFailed),
@@ -51307,7 +51310,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 18;
-    pub const VERSION: u16 = 29;
+    pub const VERSION: u16 = 30;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
@@ -51322,5 +51325,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 7;
+    pub const VERSION: u16 = 8;
 }
