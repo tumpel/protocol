@@ -1302,12 +1302,12 @@ namespace V1 {
     get(): TenantLimits | ProblemResponse;
 
     @doc("""
-      Sets the limits the tenant runs under: a profile of its own, or the preset of a tier, which
-      drops the profile it had. Owner only. Refused InvalidRequest for a value past the deployment's
-      ceiling. A Free tenant may set values at or below the Free preset only; a request for the
-      Configured preset or a higher value is refused AboveFreeTier. Raising a tenant above Free is a
-      deployment operator action, through the deployment config, never through this operation. A
-      host channel takes the new frame limit when it next connects.
+      Sets the limits the tenant runs under: a profile of its own, or a reset, which drops the
+      profile it had so it runs under the preset of its tier. Owner only. Refused InvalidRequest for
+      a value past the deployment's ceiling. A Free tenant may set values at or below the Free
+      preset only; a higher value is refused AboveFreeTier. This operation never changes the tier:
+      moving a tenant between tiers is a deployment operator action. A host channel takes the new
+      frame limit when it next connects.
       """)
     @put
     set(@body body: TenantLimitsSet): TenantLimits | ProblemResponse;

@@ -7562,23 +7562,16 @@ pub mod types {
     ///object. The free tier derives its limits from the Cloudflare free plan in the control plane's
     ///limits module; a configured tenant gets `configured`. The per-minute request rates are the
     ///limits of the Workers Rate Limiting bindings named beside them and must match them. A tenant
-    ///with a profile of its own runs under it instead; `defaultProfile` and `ceiling` bound what a
-    ///profile holds.
+    ///with a profile of its own runs under it instead; `ceiling` bounds what a profile holds.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ControlPlaneLimits {
-        ///The most a profile set through the API may hold: each rate and body cap at most the ceiling's,
-        ///and each usage budget at most the ceiling's budget of the same measure and window. The request
-        ///rates must not pass the Workers Rate Limiting bindings, which the Worker checks before it knows
-        ///the tenant. Without it the default profile is the ceiling.
-        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub ceiling: ::std::option::Option<TenantLimitsProfile>,
+        ///The most a profile set through the API may hold: each rate at most the ceiling's, and each usage
+        ///budget at most the ceiling's budget of the same measure and window. Its `writesPerMinute` and
+        ///any Requests per Minute budget must not pass `writesPerMinute` and `readsPerMinute`, the limits
+        ///of the Workers Rate Limiting bindings the Worker checks before it knows the tenant.
+        pub ceiling: TenantLimitsProfile,
         ///The limits of a configured tenant, checked inside its Durable Object.
         pub configured: ::std::vec::Vec<TenantLimit>,
-        ///The profile a Configured tenant with no profile of its own runs under. Without it the control
-        ///plane builds that profile from `readsPerMinute`, `writesPerMinute`, `hostFramesPerMinute` and
-        ///`configured`, with its built-in webhook rate and body caps.
-        #[serde(rename = "defaultProfile", skip_serializing_if = "::std::option::Option::is_none")]
-        pub default_profile: ::std::option::Option<TenantLimitsProfile>,
         ///The tier a new tenant gets; an existing tenant keeps the tier it has.
         #[serde(rename = "defaultTier")]
         pub default_tier: TenantTier,
@@ -46148,47 +46141,35 @@ pub mod types {
         pub profile: TenantLimitsProfile,
         pub source: TenantLimitsSource,
     }
-    ///Runs the tenant under the preset profile of a tier and drops any profile set for it. A Free tenant may choose only Free.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantLimitsPreset {
-        pub tier: TenantTier,
-    }
-    ///Every limit one tenant runs under. The tenant Durable Object counts the request rates and the
-    ///usage budgets, the host channel counts the frames of each host, and the Worker checks the body
-    ///caps once it knows the tenant.
+    ///Every limit one tenant runs under. The tenant Durable Object counts the writing requests and the
+    ///usage budgets, and the host channel counts the frames of each host. A request rate is a usage
+    ///budget of Requests per Minute.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantLimitsProfile {
-        ///The largest request body the tenant may send, in bytes.
-        #[serde(rename = "bodyBytes")]
-        pub body_bytes: ::std::num::NonZeroU32,
-        ///The largest tenant config the tenant may plan or apply, in bytes.
-        #[serde(rename = "configBodyBytes")]
-        pub config_body_bytes: ::std::num::NonZeroU32,
         ///Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.
         #[serde(rename = "hostFramesPerMinute")]
         pub host_frames_per_minute: ::std::num::NonZeroU32,
-        ///Requests a minute the tenant may send: API calls and MCP tool calls.
-        #[serde(rename = "readsPerMinute")]
-        pub reads_per_minute: ::std::num::NonZeroU32,
         ///The usage budgets of the tenant.
         pub usage: ::std::vec::Vec<TenantLimit>,
-        ///Signed webhook deliveries a minute the tenant may receive, from GitHub and CircleCI.
-        #[serde(rename = "webhookDeliveriesPerMinute")]
-        pub webhook_deliveries_per_minute: ::std::num::NonZeroU32,
         ///Requests a minute the tenant may send that change its state.
         #[serde(rename = "writesPerMinute")]
         pub writes_per_minute: ::std::num::NonZeroU32,
     }
-    ///What a limits change sets: the preset of a tier, or a profile of the tenant's own.
+    ///Drops the profile set for the tenant, so it runs under the preset of the tier it has. It never changes the tier.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantLimitsReset {
+        pub reset: bool,
+    }
+    ///What a limits change sets: a reset to the preset of the tenant's tier, or a profile of the tenant's own.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantLimitsSet {
-        Preset(TenantLimitsPreset),
+        Reset(TenantLimitsReset),
         Profile(TenantLimitsProfile),
     }
-    impl ::std::convert::From<TenantLimitsPreset> for TenantLimitsSet {
-        fn from(value: TenantLimitsPreset) -> Self {
-            Self::Preset(value)
+    impl ::std::convert::From<TenantLimitsReset> for TenantLimitsSet {
+        fn from(value: TenantLimitsReset) -> Self {
+            Self::Reset(value)
         }
     }
     impl ::std::convert::From<TenantLimitsProfile> for TenantLimitsSet {
@@ -51412,12 +51393,12 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Sets the limits the tenant runs under: a profile of its own, or the preset of a tier, which
-    ///drops the profile it had. Owner only. Refused InvalidRequest for a value past the deployment's
-    ///ceiling. A Free tenant may set values at or below the Free preset only; a request for the
-    ///Configured preset or a higher value is refused AboveFreeTier. Raising a tenant above Free is a
-    ///deployment operator action, through the deployment config, never through this operation. A
-    ///host channel takes the new frame limit when it next connects.
+    ///Sets the limits the tenant runs under: a profile of its own, or a reset, which drops the
+    ///profile it had so it runs under the preset of its tier. Owner only. Refused InvalidRequest for
+    ///a value past the deployment's ceiling. A Free tenant may set values at or below the Free
+    ///preset only; a higher value is refused AboveFreeTier. This operation never changes the tier:
+    ///moving a tenant between tiers is a deployment operator action. A host channel takes the new
+    ///frame limit when it next connects.
     ///
     ///Sends a `PUT` request to `/v1/limits`
     ///
@@ -56511,5 +56492,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 13;
+    pub const VERSION: u16 = 14;
 }

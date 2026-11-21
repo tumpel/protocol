@@ -596,15 +596,11 @@ model TenantLimit {
 }
 
 @doc("""
-  Every limit one tenant runs under. The tenant Durable Object counts the request rates and the
-  usage budgets, the host channel counts the frames of each host, and the Worker checks the body
-  caps once it knows the tenant.
+  Every limit one tenant runs under. The tenant Durable Object counts the writing requests and the
+  usage budgets, and the host channel counts the frames of each host. A request rate is a usage
+  budget of Requests per Minute.
   """)
 model TenantLimitsProfile {
-  @doc("Requests a minute the tenant may send: API calls and MCP tool calls.")
-  @minValue(1)
-  readsPerMinute: int32;
-
   @doc("Requests a minute the tenant may send that change its state.")
   @minValue(1)
   writesPerMinute: int32;
@@ -612,18 +608,6 @@ model TenantLimitsProfile {
   @doc("Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.")
   @minValue(1)
   hostFramesPerMinute: int32;
-
-  @doc("Signed webhook deliveries a minute the tenant may receive, from GitHub and CircleCI.")
-  @minValue(1)
-  webhookDeliveriesPerMinute: int32;
-
-  @doc("The largest request body the tenant may send, in bytes.")
-  @minValue(1)
-  bodyBytes: int32;
-
-  @doc("The largest tenant config the tenant may plan or apply, in bytes.")
-  @minValue(1)
-  configBodyBytes: int32;
 
   @doc("The usage budgets of the tenant.")
   @maxItems(32)
@@ -648,14 +632,14 @@ model TenantLimits {
   profile: TenantLimitsProfile;
 }
 
-@doc("Runs the tenant under the preset profile of a tier and drops any profile set for it. A Free tenant may choose only Free.")
-model TenantLimitsPreset {
-  tier: TenantTier;
+@doc("Drops the profile set for the tenant, so it runs under the preset of the tier it has. It never changes the tier.")
+model TenantLimitsReset {
+  reset: true;
 }
 
-@doc("What a limits change sets: the preset of a tier, or a profile of the tenant's own.")
+@doc("What a limits change sets: a reset to the preset of the tenant's tier, or a profile of the tenant's own.")
 union TenantLimitsSet {
-  TenantLimitsPreset,
+  TenantLimitsReset,
   TenantLimitsProfile,
 }
 
@@ -664,8 +648,7 @@ union TenantLimitsSet {
   object. The free tier derives its limits from the Cloudflare free plan in the control plane's
   limits module; a configured tenant gets `configured`. The per-minute request rates are the
   limits of the Workers Rate Limiting bindings named beside them and must match them. A tenant
-  with a profile of its own runs under it instead; `defaultProfile` and `ceiling` bound what a
-  profile holds.
+  with a profile of its own runs under it instead; `ceiling` bounds what a profile holds.
   """)
 model ControlPlaneLimits {
   @doc("The tier a new tenant gets; an existing tenant keeps the tier it has.")
@@ -692,19 +675,12 @@ model ControlPlaneLimits {
   hostFramesPerMinute: int32;
 
   @doc("""
-    The profile a Configured tenant with no profile of its own runs under. Without it the control
-    plane builds that profile from `readsPerMinute`, `writesPerMinute`, `hostFramesPerMinute` and
-    `configured`, with its built-in webhook rate and body caps.
+    The most a profile set through the API may hold: each rate at most the ceiling's, and each usage
+    budget at most the ceiling's budget of the same measure and window. Its `writesPerMinute` and
+    any Requests per Minute budget must not pass `writesPerMinute` and `readsPerMinute`, the limits
+    of the Workers Rate Limiting bindings the Worker checks before it knows the tenant.
     """)
-  defaultProfile?: TenantLimitsProfile;
-
-  @doc("""
-    The most a profile set through the API may hold: each rate and body cap at most the ceiling's,
-    and each usage budget at most the ceiling's budget of the same measure and window. The request
-    rates must not pass the Workers Rate Limiting bindings, which the Worker checks before it knows
-    the tenant. Without it the default profile is the ceiling.
-    """)
-  ceiling?: TenantLimitsProfile;
+  ceiling: TenantLimitsProfile;
 }
 
 @doc("An account that owns principals, hosts and sessions.")
