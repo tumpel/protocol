@@ -21,7 +21,7 @@ fn a_grant_reads_the_same_with_or_without_arguments() {
         current
             .arguments
             .iter()
-            .map(|argument| argument.as_str())
+            .map(tumpel_api::types::Summary::as_str)
             .collect::<Vec<_>>(),
         ["-c", "model_provider=openrouter"]
     );
