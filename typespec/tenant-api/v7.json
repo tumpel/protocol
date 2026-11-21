@@ -42,7 +42,7 @@
               "$ref": "#/components/schemas/EntityId"
             }
           ],
-          "description": "The session that receives the delivery turns. Its harness must take a goal."
+          "description": "The session that receives the delivery turns. Every harness can receive them."
         },
         "prompt": {
           "allOf": [
@@ -50,7 +50,7 @@
               "$ref": "#/components/schemas/Prompt"
             }
           ],
-          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
+          "description": "The plan, sent at the top of every delivery turn. The plan, subscription goal context and one event must fit the 4,000-character delivery prompt limit shared by every harness."
         },
         "goal": {
           "allOf": [
@@ -58,7 +58,7 @@
               "$ref": "#/components/schemas/Goal"
             }
           ],
-          "description": "The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds."
+          "description": "The condition that completes the subscription. Delivery prompts include it as context. Each event turn can end while it remains unmet. The session calls Subscriptions_complete once it holds."
         },
         "events": {
           "type": "array",
@@ -2639,7 +2639,7 @@
               "$ref": "#/components/schemas/EntityId"
             }
           ],
-          "description": "The session that receives the delivery turns. Its harness must take a goal."
+          "description": "The session that receives the delivery turns. Every harness can receive them."
         },
         "prompt": {
           "allOf": [
@@ -2647,7 +2647,7 @@
               "$ref": "#/components/schemas/Prompt"
             }
           ],
-          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
+          "description": "The plan, sent at the top of every delivery turn. The plan, subscription goal context and one event must fit the 4,000-character delivery prompt limit shared by every harness."
         },
         "goal": {
           "allOf": [
@@ -2655,7 +2655,7 @@
               "$ref": "#/components/schemas/Goal"
             }
           ],
-          "description": "The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds."
+          "description": "The condition that completes the subscription. Delivery prompts include it as context. Each event turn can end while it remains unmet. The session calls Subscriptions_complete once it holds."
         },
         "events": {
           "type": "array",
@@ -3705,7 +3705,7 @@
               "$ref": "#/components/schemas/EntityId"
             }
           ],
-          "description": "The session that receives the delivery turns. Its harness must take a goal."
+          "description": "The session that receives the delivery turns. Every harness can receive them."
         },
         "prompt": {
           "allOf": [
@@ -3713,7 +3713,7 @@
               "$ref": "#/components/schemas/Prompt"
             }
           ],
-          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
+          "description": "The plan, sent at the top of every delivery turn. The plan, subscription goal context and one event must fit the 4,000-character delivery prompt limit shared by every harness."
         },
         "goal": {
           "allOf": [
@@ -3721,7 +3721,7 @@
               "$ref": "#/components/schemas/Goal"
             }
           ],
-          "description": "The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds."
+          "description": "The condition that completes the subscription. Delivery prompts include it as context. Each event turn can end while it remains unmet. The session calls Subscriptions_complete once it holds."
         },
         "events": {
           "type": "array",
@@ -5904,7 +5904,7 @@
               "$ref": "#/components/schemas/EntityId"
             }
           ],
-          "description": "The session that receives the delivery turns. Its harness must take a goal."
+          "description": "The session that receives the delivery turns. Every harness can receive them."
         },
         "prompt": {
           "allOf": [
@@ -5912,7 +5912,7 @@
               "$ref": "#/components/schemas/Prompt"
             }
           ],
-          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
+          "description": "The plan, sent at the top of every delivery turn. The plan, subscription goal context and one event must fit the 4,000-character delivery prompt limit shared by every harness."
         },
         "goal": {
           "allOf": [
@@ -5920,7 +5920,7 @@
               "$ref": "#/components/schemas/Goal"
             }
           ],
-          "description": "The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds."
+          "description": "The condition that completes the subscription. Delivery prompts include it as context. Each event turn can end while it remains unmet. The session calls Subscriptions_complete once it holds."
         },
         "events": {
           "type": "array",

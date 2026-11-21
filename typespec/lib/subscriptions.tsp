@@ -80,15 +80,15 @@ model SubscriptionBase {
   @key @visibility(Lifecycle.Read) subscriptionId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
 
-  @doc("The session that receives the delivery turns. Its harness must take a goal.")
+  @doc("The session that receives the delivery turns. Every harness can receive them.")
   @visibility(Lifecycle.Read, Lifecycle.Create)
   sessionId: EntityId;
 
-  @doc("The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.")
+  @doc("The plan, sent at the top of every delivery turn. The plan, subscription goal context and one event must fit the 4,000-character delivery prompt limit shared by every harness.")
   @visibility(Lifecycle.Read, Lifecycle.Create)
   prompt: Prompt;
 
-  @doc("The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.")
+  @doc("The condition that completes the subscription. Delivery prompts include it as context. Each event turn can end while it remains unmet. The session calls Subscriptions_complete once it holds.")
   @visibility(Lifecycle.Read, Lifecycle.Create)
   goal: Goal;
 
@@ -177,8 +177,9 @@ namespace V1 {
   interface Subscriptions {
     @doc("""
       Creates an Active subscription whose cursor starts at the end of the event log. Only a person
-      creates one: a call with a turn token is refused Forbidden. Refused InvalidRequest when the
-      session's harness takes no goal, or when the plan and the goal leave no room for one event;
+      creates one: a call with a turn token is refused Forbidden. Every harness is accepted. Refused
+      InvalidRequest when the plan and subscription goal context leave no room for one event within
+      the 4,000-character delivery prompt limit;
       SessionArchived or SessionFailed when the session is.
       """)
     @post
