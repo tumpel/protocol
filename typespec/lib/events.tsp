@@ -37,6 +37,9 @@ enum TenantEventType {
   @doc("A host's last open channel closed.")
   HostOffline: "HostOffline",
 
+  @doc("The control plane changed a host's health.")
+  HostHealthChanged: "HostHealthChanged",
+
   @doc("A prebuild entered Done: its layer is stored.")
   PrebuildDone: "PrebuildDone",
 
@@ -133,6 +136,14 @@ model HostOfflineEvent {
   hostId: EntityId;
 }
 
+model HostHealthChangedEvent {
+  event: "HostHealthChanged";
+  ...TenantEventEnvelope;
+  hostId: EntityId;
+  health: HostHealth;
+  detail: Detail;
+}
+
 model PrebuildDoneEvent {
   event: "PrebuildDone";
   ...TenantEventEnvelope;
@@ -208,6 +219,7 @@ union TenantEvent {
   SessionArchived: SessionArchivedEvent,
   HostOnline: HostOnlineEvent,
   HostOffline: HostOfflineEvent,
+  HostHealthChanged: HostHealthChangedEvent,
   PrebuildDone: PrebuildDoneEvent,
   PrebuildFailed: PrebuildFailedEvent,
   SubscriptionPaused: SubscriptionPausedEvent,

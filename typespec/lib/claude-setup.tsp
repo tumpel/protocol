@@ -49,6 +49,9 @@ enum ClaudeSetupFailureReason {
 
   @doc("A newer setup of the same secret set started; a secret set runs one setup at a time, and its box is discarded.")
   Superseded: "Superseded",
+
+  @doc("The setup's host sent more channel frames in a minute than the tenant's limits allow, so the control plane failed the setup; the detail names the limit.")
+  RateLimited: "RateLimited",
 }
 
 @doc("The phase a Claude setup is in.")

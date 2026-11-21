@@ -37,3 +37,6 @@ pub mod v29;
 #[allow(clippy::pedantic, clippy::unwrap_used, clippy::expect_used)]
 #[path = "frozen/v30.rs"]
 pub mod v30;
+#[allow(clippy::pedantic, clippy::unwrap_used, clippy::expect_used)]
+#[path = "frozen/v31.rs"]
+pub mod v31;
