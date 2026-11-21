@@ -26829,6 +26829,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiDeadlineReachedInput {
         pub due: TenantApiSessionDueDeadline,
+        pub retries: i32,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -32759,6 +32760,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildDeadlineReachedInput {
         pub due: TenantApiPrebuildDeadlineReachedInputDue,
+        pub retries: i32,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -51393,5 +51395,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 9;
+    pub const VERSION: u16 = 10;
 }
