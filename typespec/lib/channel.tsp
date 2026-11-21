@@ -28,7 +28,7 @@ enum CloseCode {
   counters and unacked frames to disk before it sends a frame; when it starts without that state
   it does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.
   Challenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,
-  with no `seq` or `ack`. Each side ignores fields it does not know.
+  with no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know.
   """)
 model Sequenced {
   seq: Sequence;
@@ -71,11 +71,18 @@ model Hello {
   guestProtocol?: GuestProtocolRange;
 }
 
-@doc("The control plane accepts the host. Both sides then resend their unacked frames.")
+@doc("""
+  The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the
+  highest host `seq` the control plane has received with no gap before it. The host drops its
+  unacked frames at or below it before it resends, so a frame the control plane took on an earlier
+  connection is never counted as undelivered. A control plane that leaves it out acks only with its
+  next frame.
+  """)
 model Welcome {
   type: "Welcome";
   hostId: EntityId;
   @minValue(1) protocolVersion: int32;
+  ack?: Sequence;
 }
 
 @doc("""

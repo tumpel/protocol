@@ -30,13 +30,24 @@ model SupervisorHostKey {
   The host side of the channel's sequencing, channel.json in the supervisor directory, written
   before every frame the host sends. `received` is the highest control-plane `seq` accepted with no
   gap, `sent` the highest `seq` the host assigned, and `unacked` every host frame the control plane
-  has not acked yet, in `seq` order. A supervisor that finds this file missing exits with failure
-  ChannelStateLost.
+  has not acked yet, in `seq` order. `replays` counts, for each unacked frame resent after a
+  Welcome, how many Welcomes it has been resent after; a file written before the count existed
+  leaves it out. A supervisor that finds this file missing exits with failure ChannelStateLost.
   """)
 model SupervisorChannelState {
   received: Sequence;
   sent: Sequence;
   unacked: Channel.StoredHostFrame[];
+  replays?: SupervisorChannelReplay[];
+}
+
+@doc("""
+  How many Welcomes the unacked host frame `seq` has been resent after without the control plane
+  acking it. The supervisor gives a frame up after 10.
+  """)
+model SupervisorChannelReplay {
+  seq: Sequence;
+  @minValue(1) replays: int32;
 }
 
 @doc("The named ways `tumpel-supervisor run` stops.")
@@ -57,6 +68,20 @@ enum SupervisorFailure {
     start. systemd starts the unit again, and its ExecStartPre puts the previous binary back.
     """)
   UpdateNotOnline: "UpdateNotOnline",
+
+  @doc("""
+    The supervisor failed to reach Welcome on 10 connections in a row, waiting longer between each,
+    up to 30 s. systemd starts the unit again.
+    """)
+  ChannelUnreachable: "ChannelUnreachable",
+
+  @doc("""
+    The control plane did not ack an unacked host frame after it was resent after 10 Welcomes, and
+    the frame has no failure the host can send in its place. The host cannot skip a `seq`, so it
+    stops; systemd starts the unit again, and a control plane that took the frame meanwhile acks it
+    in its next Welcome.
+    """)
+  FrameUndelivered: "FrameUndelivered",
 }
 
 @doc("""

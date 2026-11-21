@@ -2639,7 +2639,7 @@ pub mod types {
     ///counters and unacked frames to disk before it sends a frame; when it starts without that state
     ///it does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.
     ///Challenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,
-    ///with no `seq` or `ack`. Each side ignores fields it does not know.
+    ///with no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSequenced {
         pub ack: Sequence,
@@ -4061,9 +4061,15 @@ pub mod types {
             value.parse()
         }
     }
-    ///The control plane accepts the host. Both sides then resend their unacked frames.
+    ///The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the
+    ///highest host `seq` the control plane has received with no gap before it. The host drops its
+    ///unacked frames at or below it before it resends, so a frame the control plane took on an earlier
+    ///connection is never counted as undelivered. A control plane that leaves it out acks only with its
+    ///next frame.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelWelcome {
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub ack: ::std::option::Option<Sequence>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "protocolVersion")]
@@ -20576,14 +20582,24 @@ pub mod types {
             value.parse()
         }
     }
+    ///How many Welcomes the unacked host frame `seq` has been resent after without the control plane
+    ///acking it. The supervisor gives a frame up after 10.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SupervisorChannelReplay {
+        pub replays: ::std::num::NonZeroU32,
+        pub seq: Sequence,
+    }
     ///The host side of the channel's sequencing, channel.json in the supervisor directory, written
     ///before every frame the host sends. `received` is the highest control-plane `seq` accepted with no
     ///gap, `sent` the highest `seq` the host assigned, and `unacked` every host frame the control plane
-    ///has not acked yet, in `seq` order. A supervisor that finds this file missing exits with failure
-    ///ChannelStateLost.
+    ///has not acked yet, in `seq` order. `replays` counts, for each unacked frame resent after a
+    ///Welcome, how many Welcomes it has been resent after; a file written before the count existed
+    ///leaves it out. A supervisor that finds this file missing exits with failure ChannelStateLost.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorChannelState {
         pub received: Sequence,
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub replays: ::std::vec::Vec<SupervisorChannelReplay>,
         pub sent: Sequence,
         pub unacked: ::std::vec::Vec<ChannelStoredHostFrame>,
     }
@@ -20666,6 +20682,8 @@ pub mod types {
         UsageUnreadable,
         GuestDriveUnwritable,
         UpdateNotOnline,
+        ChannelUnreachable,
+        FrameUndelivered,
     }
     impl ::std::fmt::Display for SupervisorFailure {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20677,6 +20695,8 @@ pub mod types {
                 Self::UsageUnreadable => f.write_str("UsageUnreadable"),
                 Self::GuestDriveUnwritable => f.write_str("GuestDriveUnwritable"),
                 Self::UpdateNotOnline => f.write_str("UpdateNotOnline"),
+                Self::ChannelUnreachable => f.write_str("ChannelUnreachable"),
+                Self::FrameUndelivered => f.write_str("FrameUndelivered"),
             }
         }
     }
@@ -20691,6 +20711,8 @@ pub mod types {
                 "UsageUnreadable" => Ok(Self::UsageUnreadable),
                 "GuestDriveUnwritable" => Ok(Self::GuestDriveUnwritable),
                 "UpdateNotOnline" => Ok(Self::UpdateNotOnline),
+                "ChannelUnreachable" => Ok(Self::ChannelUnreachable),
+                "FrameUndelivered" => Ok(Self::FrameUndelivered),
                 _ => Err("invalid value".into()),
             }
         }
