@@ -42691,6 +42691,12 @@ pub mod types {
         pub measure: TenantUsageMeasure,
         pub window: TenantUsageWindow,
     }
+    ///The metric catalog of a window, with the tenant's usage against its limits in the current windows.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantMetricCatalog {
+        pub metrics: ::std::vec::Vec<MetricEntry>,
+        pub usage: TenantUsage,
+    }
     ///The limits a tenant runs under. Free keeps the tenant inside the allowances the hosting plan
     ///includes at no charge and refuses traffic past them; Configured runs under the limits its
     ///deployment configures.
@@ -47694,7 +47700,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Lists every metric with series seen in the window, with its dimensions and their values; filter narrows the series counted.
+    ///Lists every metric with series seen in the window, with its dimensions and their values; filter narrows the series counted. It also reads the tenant's tier and its usage against each of its limits in the current windows.
     ///
     ///Sends a `GET` request to `/v1/metrics`
     ///
@@ -47707,7 +47713,7 @@ impl Client {
         filter: Option<&'a ::std::vec::Vec<types::Summary>>,
         from: &'a ::chrono::DateTime<::chrono::FixedOffset>,
         to: &'a ::chrono::DateTime<::chrono::FixedOffset>,
-    ) -> Result<ResponseValue<types::MetricCatalog>, Error<types::Problem>> {
+    ) -> Result<ResponseValue<types::TenantMetricCatalog>, Error<types::Problem>> {
         let url = format!("{}/v1/metrics", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
         header_map.append(
@@ -47729,49 +47735,6 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "metrics_catalog",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Reads the tenant's tier and its usage against each of its limits in the current windows.
-    ///
-    ///Sends a `GET` request to `/v1/metrics/usage`
-    ///
-    pub async fn metrics_usage<'a>(&'a self) -> Result<ResponseValue<types::TenantUsage>, Error<types::Problem>> {
-        let url = format!("{}/v1/metrics/usage", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "metrics_usage",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;

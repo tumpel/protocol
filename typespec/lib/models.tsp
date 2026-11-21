@@ -1699,6 +1699,12 @@ model MetricCatalog {
   @maxItems(10000) metrics: MetricEntry[];
 }
 
+@doc("The metric catalog of a window, with the tenant's usage against its limits in the current windows.")
+model TenantMetricCatalog {
+  ...MetricCatalog;
+  usage: TenantUsage;
+}
+
 model MetricEntry {
   ...MetricInstrument;
   @maxItems(100) facets: MetricFacet[];

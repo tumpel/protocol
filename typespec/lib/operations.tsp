@@ -1268,9 +1268,9 @@ namespace V1 {
 
   @route("/metrics")
   interface Metrics {
-    @doc("Lists every metric with series seen in the window, with its dimensions and their values; filter narrows the series counted.")
+    @doc("Lists every metric with series seen in the window, with its dimensions and their values; filter narrows the series counted. It also reads the tenant's tier and its usage against each of its limits in the current windows.")
     @get
-    catalog(...MetricWindow): MetricCatalog | ProblemResponse;
+    catalog(...MetricWindow): TenantMetricCatalog | ProblemResponse;
 
     @doc("""
       Reads a metric's buckets in the window, grouped by up to two dimensions. Refused
@@ -1285,11 +1285,6 @@ namespace V1 {
     @route("/{metric}/turns")
     @get
     turns(...MetricPath, ...MetricTurnQuery): MetricTurnPage | ProblemResponse;
-
-    @doc("Reads the tenant's tier and its usage against each of its limits in the current windows.")
-    @route("/usage")
-    @get
-    usage(): TenantUsage | ProblemResponse;
   }
 
   @route("/harnesses")
