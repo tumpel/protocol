@@ -2070,7 +2070,7 @@ pub mod types {
     ///counters and unacked frames to disk before it sends a frame; when it starts without that state
     ///it does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.
     ///Challenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,
-    ///with no `seq` or `ack`. Each side ignores fields it does not know.
+    ///with no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSequenced {
         pub ack: Sequence,
@@ -3492,9 +3492,15 @@ pub mod types {
             value.parse()
         }
     }
-    ///The control plane accepts the host. Both sides then resend their unacked frames.
+    ///The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the
+    ///highest host `seq` the control plane has received with no gap before it. The host drops its
+    ///unacked frames at or below it before it resends, so a frame the control plane took on an earlier
+    ///connection is never counted as undelivered. A control plane that leaves it out acks only with its
+    ///next frame.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelWelcome {
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub ack: ::std::option::Option<Sequence>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "protocolVersion")]

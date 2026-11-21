@@ -1219,7 +1219,7 @@
           "$ref": "#/components/schemas/Sequence"
         }
       },
-      "description": "Each direction of a host's channel numbers its frames from 1 in `seq`, and the count survives\nreconnects and restarts. `ack` is the highest `seq` the sender has received from the other side\nwith no gap before it, 0 before the first one; it advances only with the sender's next frame. A\nreceiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as\na protocol error that closes the connection. After Welcome each side resends, in order, every\nframe the other side has not acked, and the receiver drops the duplicates. The control plane\nkeeps both counters and its unacked frames in durable storage. The supervisor writes its\ncounters and unacked frames to disk before it sends a frame; when it starts without that state\nit does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.\nChallenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,\nwith no `seq` or `ack`. Each side ignores fields it does not know."
+      "description": "Each direction of a host's channel numbers its frames from 1 in `seq`, and the count survives\nreconnects and restarts. `ack` is the highest `seq` the sender has received from the other side\nwith no gap before it, 0 before the first one; it advances only with the sender's next frame. A\nreceiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as\na protocol error that closes the connection. After Welcome each side resends, in order, every\nframe the other side has not acked, and the receiver drops the duplicates. The control plane\nkeeps both counters and its unacked frames in durable storage. The supervisor writes its\ncounters and unacked frames to disk before it sends a frame; when it starts without that state\nit does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.\nChallenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,\nwith no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know."
     },
     "Channel.SnapshotChunks": {
       "type": "object",
@@ -2066,9 +2066,12 @@
           "type": "integer",
           "format": "int32",
           "minimum": 1
+        },
+        "ack": {
+          "$ref": "#/components/schemas/Sequence"
         }
       },
-      "description": "The control plane accepts the host. Both sides then resend their unacked frames."
+      "description": "The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the\nhighest host `seq` the control plane has received with no gap before it. The host drops its\nunacked frames at or below it before it resends, so a frame the control plane took on an earlier\nconnection is never counted as undelivered. A control plane that leaves it out acks only with its\nnext frame."
     },
     "ClaudeSetupCodeText": {
       "type": "string",
