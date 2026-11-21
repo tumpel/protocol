@@ -7561,11 +7561,24 @@ pub mod types {
     ///The per-tenant limits of a deployment: the TUMPEL_LIMITS variable of the Worker, one JSON
     ///object. The free tier derives its limits from the Cloudflare free plan in the control plane's
     ///limits module; a configured tenant gets `configured`. The per-minute request rates are the
-    ///limits of the Workers Rate Limiting bindings named beside them and must match them.
+    ///limits of the Workers Rate Limiting bindings named beside them and must match them. A tenant
+    ///with a profile of its own runs under it instead; `defaultProfile` and `ceiling` bound what a
+    ///profile holds.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ControlPlaneLimits {
+        ///The most a profile set through the API may hold: each rate and body cap at most the ceiling's,
+        ///and each usage budget at most the ceiling's budget of the same measure and window. The request
+        ///rates must not pass the Workers Rate Limiting bindings, which the Worker checks before it knows
+        ///the tenant. Without it the default profile is the ceiling.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub ceiling: ::std::option::Option<TenantLimitsProfile>,
         ///The limits of a configured tenant, checked inside its Durable Object.
         pub configured: ::std::vec::Vec<TenantLimit>,
+        ///The profile a Configured tenant with no profile of its own runs under. Without it the control
+        ///plane builds that profile from `readsPerMinute`, `writesPerMinute`, `hostFramesPerMinute` and
+        ///`configured`, with its built-in webhook rate and body caps.
+        #[serde(rename = "defaultProfile", skip_serializing_if = "::std::option::Option::is_none")]
+        pub default_profile: ::std::option::Option<TenantLimitsProfile>,
         ///The tier a new tenant gets; an existing tenant keeps the tier it has.
         #[serde(rename = "defaultTier")]
         pub default_tier: TenantTier,
@@ -18856,6 +18869,7 @@ pub mod types {
         BodyTooLarge,
         RateLimited,
         UsageLimitReached,
+        AboveFreeTier,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
     }
@@ -18943,6 +18957,7 @@ pub mod types {
                 Self::BodyTooLarge => f.write_str("BodyTooLarge"),
                 Self::RateLimited => f.write_str("RateLimited"),
                 Self::UsageLimitReached => f.write_str("UsageLimitReached"),
+                Self::AboveFreeTier => f.write_str("AboveFreeTier"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
         }
@@ -19032,6 +19047,7 @@ pub mod types {
                 "BodyTooLarge" => Ok(Self::BodyTooLarge),
                 "RateLimited" => Ok(Self::RateLimited),
                 "UsageLimitReached" => Ok(Self::UsageLimitReached),
+                "AboveFreeTier" => Ok(Self::AboveFreeTier),
                 _ => Err("invalid value".into()),
             }
         }
@@ -37230,6 +37246,59 @@ pub mod types {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
         pub target: ::std::option::Option<TenantApiPushDeliveryTarget>,
     }
+    ///`TenantApiReadLimitsInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadLimitsInput {
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiReadLimitsRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadLimitsRequest {
+        pub input: TenantApiReadLimitsInput,
+        pub operation: TenantApiReadLimitsRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiReadLimitsRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiReadLimitsRequestOperation {
+        #[serde(rename = "readLimits")]
+        ReadLimits,
+    }
+    impl ::std::fmt::Display for TenantApiReadLimitsRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ReadLimits => f.write_str("readLimits"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiReadLimitsRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "readLimits" => Ok(Self::ReadLimits),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiReadLimitsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiReadLimitsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiReadLimitsResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadLimitsResult {
+        pub limits: TenantLimits,
+    }
     ///`TenantApiReadTokenOk`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiReadTokenOk {
@@ -39332,6 +39401,61 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
+    }
+    ///`TenantApiSetLimitsInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSetLimitsInput {
+        pub limits: TenantLimitsSet,
+        pub now: i64,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiSetLimitsRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSetLimitsRequest {
+        pub input: TenantApiSetLimitsInput,
+        pub operation: TenantApiSetLimitsRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiSetLimitsRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSetLimitsRequestOperation {
+        #[serde(rename = "setLimits")]
+        SetLimits,
+    }
+    impl ::std::fmt::Display for TenantApiSetLimitsRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SetLimits => f.write_str("setLimits"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSetLimitsRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "setLimits" => Ok(Self::SetLimits),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSetLimitsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSetLimitsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiSetLimitsResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSetLimitsResult {
+        pub limits: TenantLimits,
     }
     ///`TenantApiSetSecretMemberInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -42086,6 +42210,8 @@ pub mod types {
         RunningTurnsByHostRequest(TenantApiRunningTurnsByHostRequest),
         ListHostUsageRequest(TenantApiListHostUsageRequest),
         ReadUsageRequest(TenantApiReadUsageRequest),
+        ReadLimitsRequest(TenantApiReadLimitsRequest),
+        SetLimitsRequest(TenantApiSetLimitsRequest),
         DeferredOffersRequest(TenantApiDeferredOffersRequest),
         TurnMetricDimensionsRequest(TenantApiTurnMetricDimensionsRequest),
         PrepareOfferRequest(TenantApiPrepareOfferRequest),
@@ -42782,6 +42908,16 @@ pub mod types {
     impl ::std::convert::From<TenantApiReadUsageRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiReadUsageRequest) -> Self {
             Self::ReadUsageRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiReadLimitsRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiReadLimitsRequest) -> Self {
+            Self::ReadLimitsRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSetLimitsRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiSetLimitsRequest) -> Self {
+            Self::SetLimitsRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiDeferredOffersRequest> for TenantApiTenantRequest {
@@ -45999,12 +46135,105 @@ pub mod types {
             value.parse()
         }
     }
-    ///One limit of a configured tenant: at most `limit` of `measure` in each `window`.
+    ///One usage budget of a tenant: at most `limit` of `measure` in each `window`.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantLimit {
         pub limit: ::std::num::NonZeroU64,
         pub measure: TenantUsageMeasure,
         pub window: TenantUsageWindow,
+    }
+    ///The limits profile a tenant runs under and where it comes from.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantLimits {
+        pub profile: TenantLimitsProfile,
+        pub source: TenantLimitsSource,
+    }
+    ///Runs the tenant under the preset profile of a tier and drops any profile set for it. A Free tenant may choose only Free.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantLimitsPreset {
+        pub tier: TenantTier,
+    }
+    ///Every limit one tenant runs under. The tenant Durable Object counts the request rates and the
+    ///usage budgets, the host channel counts the frames of each host, and the Worker checks the body
+    ///caps once it knows the tenant.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantLimitsProfile {
+        ///The largest request body the tenant may send, in bytes.
+        #[serde(rename = "bodyBytes")]
+        pub body_bytes: ::std::num::NonZeroU32,
+        ///The largest tenant config the tenant may plan or apply, in bytes.
+        #[serde(rename = "configBodyBytes")]
+        pub config_body_bytes: ::std::num::NonZeroU32,
+        ///Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.
+        #[serde(rename = "hostFramesPerMinute")]
+        pub host_frames_per_minute: ::std::num::NonZeroU32,
+        ///Requests a minute the tenant may send: API calls and MCP tool calls.
+        #[serde(rename = "readsPerMinute")]
+        pub reads_per_minute: ::std::num::NonZeroU32,
+        ///The usage budgets of the tenant.
+        pub usage: ::std::vec::Vec<TenantLimit>,
+        ///Signed webhook deliveries a minute the tenant may receive, from GitHub and CircleCI.
+        #[serde(rename = "webhookDeliveriesPerMinute")]
+        pub webhook_deliveries_per_minute: ::std::num::NonZeroU32,
+        ///Requests a minute the tenant may send that change its state.
+        #[serde(rename = "writesPerMinute")]
+        pub writes_per_minute: ::std::num::NonZeroU32,
+    }
+    ///What a limits change sets: the preset of a tier, or a profile of the tenant's own.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantLimitsSet {
+        Preset(TenantLimitsPreset),
+        Profile(TenantLimitsProfile),
+    }
+    impl ::std::convert::From<TenantLimitsPreset> for TenantLimitsSet {
+        fn from(value: TenantLimitsPreset) -> Self {
+            Self::Preset(value)
+        }
+    }
+    impl ::std::convert::From<TenantLimitsProfile> for TenantLimitsSet {
+        fn from(value: TenantLimitsProfile) -> Self {
+            Self::Profile(value)
+        }
+    }
+    ///Where the profile a tenant runs under comes from.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantLimitsSource {
+        Free,
+        Configured,
+        Custom,
+    }
+    impl ::std::fmt::Display for TenantLimitsSource {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Free => f.write_str("Free"),
+                Self::Configured => f.write_str("Configured"),
+                Self::Custom => f.write_str("Custom"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantLimitsSource {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Free" => Ok(Self::Free),
+                "Configured" => Ok(Self::Configured),
+                "Custom" => Ok(Self::Custom),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantLimitsSource {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantLimitsSource {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
     }
     ///The metric catalog of a window, with the tenant's usage against its limits in the current windows.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -51140,6 +51369,101 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
+    ///Reads the limits profile the tenant runs under and where it comes from.
+    ///
+    ///Sends a `GET` request to `/v1/limits`
+    ///
+    pub async fn limits_get<'a>(&'a self) -> Result<ResponseValue<types::TenantLimits>, Error<types::Problem>> {
+        let url = format!("{}/v1/limits", self.baseurl,);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .get(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "limits_get",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Sets the limits the tenant runs under: a profile of its own, or the preset of a tier, which
+    ///drops the profile it had. Owner only. Refused InvalidRequest for a value past the deployment's
+    ///ceiling. A Free tenant may set values at or below the Free preset only; a request for the
+    ///Configured preset or a higher value is refused AboveFreeTier. Raising a tenant above Free is a
+    ///deployment operator action, through the deployment config, never through this operation. A
+    ///host channel takes the new frame limit when it next connects.
+    ///
+    ///Sends a `PUT` request to `/v1/limits`
+    ///
+    pub async fn limits_set<'a>(
+        &'a self,
+        body: &'a types::TenantLimitsSet,
+    ) -> Result<ResponseValue<types::TenantLimits>, Error<types::Problem>> {
+        let url = format!("{}/v1/limits", self.baseurl,);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .put(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "limits_set",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
     ///Lists the principals of the tenant with their roles there.
     ///
     ///Sends a `GET` request to `/v1/members`
@@ -56187,5 +56511,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 12;
+    pub const VERSION: u16 = 13;
 }

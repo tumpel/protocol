@@ -22,7 +22,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 12;
+const TenantApiVersion = 13;
 
 namespace TenantApi {
 
@@ -1203,6 +1203,16 @@ model ReadUsageInput {
   tenantId: EntityId;
 }
 
+model ReadLimitsInput {
+  tenantId: EntityId;
+}
+
+model SetLimitsInput {
+  tenantId: EntityId;
+  limits: TenantLimitsSet;
+  now: int64;
+}
+
 model DeferredOffersInput {
   tenantId: EntityId;
   hostId: EntityId;
@@ -2099,6 +2109,18 @@ model ReadUsageRequest {
   input: ReadUsageInput;
 }
 
+model ReadLimitsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "readLimits";
+  input: ReadLimitsInput;
+}
+
+model SetLimitsRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "setLimits";
+  input: SetLimitsInput;
+}
+
 model DeferredOffersRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "deferredOffers";
@@ -2282,6 +2304,8 @@ union TenantRequest {
   runningTurnsByHost: RunningTurnsByHostRequest,
   listHostUsage: ListHostUsageRequest,
   readUsage: ReadUsageRequest,
+  readLimits: ReadLimitsRequest,
+  setLimits: SetLimitsRequest,
   deferredOffers: DeferredOffersRequest,
   turnMetricDimensions: TurnMetricDimensionsRequest,
   prepareOffer: PrepareOfferRequest,
@@ -3728,6 +3752,14 @@ model RunningTurnsByHostResult {
 
 model ReadUsageResult {
   usage: TenantUsage;
+}
+
+model ReadLimitsResult {
+  limits: TenantLimits;
+}
+
+model SetLimitsResult {
+  limits: TenantLimits;
 }
 
 model ListHostUsageResult {

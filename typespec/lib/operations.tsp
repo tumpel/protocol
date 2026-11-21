@@ -205,6 +205,9 @@ enum ProblemCode {
 
   @doc("The tenant spent a usage limit of its tier, such as the rows it may write in an hour; detail names the limit and when its window resets. Status 429.")
   UsageLimitReached: "UsageLimitReached",
+
+  @doc("A Free tenant asked for the Configured preset or a limit above the Free preset; only a deployment operator raises a tenant above Free, through the deployment config. Status 403.")
+  AboveFreeTier: "AboveFreeTier",
 }
 
 @doc("Every refusal: what failed and what fixes it.")
@@ -1290,6 +1293,24 @@ namespace V1 {
     @route("/{metric}/turns")
     @get
     turns(...MetricPath, ...MetricTurnQuery): MetricTurnPage | ProblemResponse;
+  }
+
+  @route("/limits")
+  interface Limits {
+    @doc("Reads the limits profile the tenant runs under and where it comes from.")
+    @get
+    get(): TenantLimits | ProblemResponse;
+
+    @doc("""
+      Sets the limits the tenant runs under: a profile of its own, or the preset of a tier, which
+      drops the profile it had. Owner only. Refused InvalidRequest for a value past the deployment's
+      ceiling. A Free tenant may set values at or below the Free preset only; a request for the
+      Configured preset or a higher value is refused AboveFreeTier. Raising a tenant above Free is a
+      deployment operator action, through the deployment config, never through this operation. A
+      host channel takes the new frame limit when it next connects.
+      """)
+    @put
+    set(@body body: TenantLimitsSet): TenantLimits | ProblemResponse;
   }
 
   @route("/harnesses")
