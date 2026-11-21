@@ -22,7 +22,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 9;
+const TenantApiVersion = 10;
 
 namespace TenantApi {
 
@@ -60,7 +60,7 @@ model StoredPersona {
 
 @doc("What a persona edit writes. The harness is fixed at create.")
 model PersonaChange {
-  turnTotalBudgetSeconds?: TurnTotalBudgetSeconds;
+  turnTotalBudgetSeconds: TurnTotalBudgetSeconds;
   name: DisplayName;
   secretSetId: EntityId;
   connectorIds: EntityId[];

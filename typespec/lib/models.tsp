@@ -405,7 +405,7 @@ enum TurnFailureReason {
   @doc("The host reports the control plane did not answer its TurnClaim in time and the harness never started; the control plane offers the turn again, so no turn fails NotClaimed.")
   NotClaimed: "NotClaimed",
 
-  @doc("The dead letter: no host claimed the turn before its delivery deadline, so it never ran. The detail names the host and whether it is online.")
+  @doc("The dead letter: no host claimed the turn within the control plane's turnTotalBudgetSeconds setting of its offer, so it never ran. The detail names the host and whether it is online.")
   Undelivered: "Undelivered",
 
   NoFirstOutput: "NoFirstOutput",
@@ -1481,7 +1481,7 @@ model ControlPlaneSettings {
   @minValue(1)
   turnFirstLineBudgetSeconds: int32;
 
-  @doc("The default running time limit assigned to a persona on create or replacement when omitted. Time spent Offered does not consume it.")
+  @doc("The default running time limit assigned to a persona on create or replacement when omitted, and how long an unclaimed turn stays Offered before it fails Undelivered. Time spent Offered does not consume a turn's running budget.")
   turnTotalBudgetSeconds: TurnTotalBudgetSeconds;
 
   @doc("How many lines of a turn go into one transcript chunk object; the last chunk of a turn holds the rest.")

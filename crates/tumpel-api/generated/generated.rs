@@ -372,9 +372,6 @@ pub mod types {
         ///Reading the paused box's drive until its files are cut into chunks in the chunk cache; SnapshotTimedOut. The chunk exchanges, the packing and the uploads run until the request's uploadExpiresAt; UploadExpired.
         #[serde(rename = "snapshotSeconds")]
         pub snapshot_seconds: ::std::num::NonZeroU32,
-        ///TurnStart until TurnEnd; TurnTimedOut.
-        #[serde(rename = "turnSeconds")]
-        pub turn_seconds: ::std::num::NonZeroU32,
     }
     ///The disk of a box in MiB, a sparse drive that costs the host only what the box writes. A persona
     ///that names no boxDiskMib runs its boxes with DefaultMib; one that names it may ask for up to MaxMib.
@@ -6868,7 +6865,7 @@ pub mod types {
         ///How long the credential, restore URLs and image URLs of each send of a TurnOffer stay valid, plus turnImageFetchBudgetSeconds for the image. It bounds no turn: a turn no host claims stays Offered.
         #[serde(rename = "turnOfferTtlSeconds")]
         pub turn_offer_ttl_seconds: ::std::num::NonZeroU32,
-        ///The default running time limit assigned to a persona on create or replacement when omitted. Time spent Offered does not consume it.
+        ///The default running time limit assigned to a persona on create or replacement when omitted, and how long an unclaimed turn stays Offered before it fails Undelivered. Time spent Offered does not consume a turn's running budget.
         #[serde(rename = "turnTotalBudgetSeconds")]
         pub turn_total_budget_seconds: TurnTotalBudgetSeconds,
     }
@@ -10419,7 +10416,7 @@ pub mod types {
         pub repository: RepositoryUrl,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
-        ///The host's turn budget, budgets.turnSeconds of its runtime config, which the guest names to the harness beside the box's memory, disk and CPUs.
+        ///The turn's running budget, turnTotalBudgetSeconds of its TurnOffer, which the guest names to the harness beside the box's memory, disk and CPUs.
         #[serde(rename = "turnSeconds", skip_serializing_if = "::std::option::Option::is_none")]
         pub turn_seconds: ::std::option::Option<::std::num::NonZeroU32>,
         #[serde(rename = "type")]
@@ -32338,11 +32335,8 @@ pub mod types {
         pub secret_set_id: EntityId,
         #[serde(rename = "tumpelMcp")]
         pub tumpel_mcp: bool,
-        #[serde(
-            rename = "turnTotalBudgetSeconds",
-            skip_serializing_if = "::std::option::Option::is_none"
-        )]
-        pub turn_total_budget_seconds: ::std::option::Option<TurnTotalBudgetSeconds>,
+        #[serde(rename = "turnTotalBudgetSeconds")]
+        pub turn_total_budget_seconds: TurnTotalBudgetSeconds,
     }
     ///`TenantApiPersonaDeleted`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -32508,11 +32502,8 @@ pub mod types {
         pub secret_set_id: EntityId,
         #[serde(rename = "tumpelMcp")]
         pub tumpel_mcp: bool,
-        #[serde(
-            rename = "turnTotalBudgetSeconds",
-            skip_serializing_if = "::std::option::Option::is_none"
-        )]
-        pub turn_total_budget_seconds: ::std::option::Option<TurnTotalBudgetSeconds>,
+        #[serde(rename = "turnTotalBudgetSeconds")]
+        pub turn_total_budget_seconds: TurnTotalBudgetSeconds,
     }
     ///`TenantApiPersonaWritten`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -51479,5 +51470,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 9;
+    pub const VERSION: u16 = 10;
 }

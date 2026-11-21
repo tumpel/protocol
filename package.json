@@ -24,9 +24,8 @@
     "precheck": "make generate",
     "check": "npm run lint && npm run comments:check && npm run secrets:check && npm run conventions:check && npm run clippy && npm run fmt:check",
     "pretest": "make generate",
-    "test": "npm run test:wire && cargo test --workspace",
-    "pack:check": "node npm-scripts/pack-check.mjs",
-    "test:wire": "node --test --test-timeout=30000 npm-scripts/*.test.mjs"
+    "test": "node --test --test-timeout=30000 npm-scripts/*.test.mjs && cargo test --workspace",
+    "pack:check": "node npm-scripts/pack-check.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.7",
