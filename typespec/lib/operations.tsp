@@ -582,6 +582,24 @@ model SessionListQuery {
   @doc("Keep only the sessions this trigger started.")
   @query
   triggerId?: EntityId;
+
+  @doc("Keep only the sessions created after this time.")
+  @query
+  createdAfter?: offsetDateTime;
+
+  @doc("The most sessions the page holds. Left out, the answer holds every session that matches.")
+  @query
+  @minValue(1)
+  @maxValue(1000)
+  limit?: int32;
+
+  @doc("The sessionId of the last session of the previous page; the page starts after it. Leave it out to read from the newest session.")
+  @query
+  cursor?: EntityId;
+
+  @doc("Shorten the prompt and the goal of each session's lastTurn to their first 200 characters.")
+  @query
+  compact?: boolean;
 }
 
 model SessionStopQuery {
@@ -1120,7 +1138,12 @@ namespace V1 {
     @post
     startFromIssue(@body body: SessionStartFromIssue): StartedSessionFromIssue | ProblemResponse;
 
-    @doc("Lists the tenant's sessions, optionally only those in one state, on one host, with no turn since a time, carrying every tag named or started by one trigger.")
+    @doc("""
+      Lists the tenant's sessions newest first, optionally only those in one state, on one host, with no
+      turn since a time, created after a time, carrying every tag named or started by one trigger. Pass
+      the sessionId of a page's last session as cursor to read on; a page that holds fewer than `limit`
+      sessions is the last.
+      """)
     @get
     list(...SessionListQuery): Session[] | ProblemResponse;
 

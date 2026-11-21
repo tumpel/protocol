@@ -48906,20 +48906,31 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Lists the tenant's sessions, optionally only those in one state, on one host, with no turn since a time, carrying every tag named or started by one trigger.
+    ///Lists the tenant's sessions newest first, optionally only those in one state, on one host, with no
+    ///turn since a time, created after a time, carrying every tag named or started by one trigger. Pass
+    ///the sessionId of a page's last session as cursor to read on; a page that holds fewer than `limit`
+    ///sessions is the last.
     ///
     ///Sends a `GET` request to `/v1/sessions`
     ///
     ///Arguments:
+    ///- `compact`: Shorten the prompt and the goal of each session's lastTurn to their first 200 characters.
+    ///- `created_after`: Keep only the sessions created after this time.
+    ///- `cursor`: The sessionId of the last session of the previous page; the page starts after it. Leave it out to read from the newest session.
     ///- `host_id`
     ///- `last_turn_before`: Keep only the sessions whose latest turn last changed state at or before this time.
+    ///- `limit`: The most sessions the page holds. Left out, the answer holds every session that matches.
     ///- `state`
     ///- `tag`: Keep only the sessions that carry this tag; repeat it to keep those that carry every tag named.
     ///- `trigger_id`: Keep only the sessions this trigger started.
     pub async fn sessions_list<'a>(
         &'a self,
+        compact: Option<bool>,
+        created_after: Option<&'a ::chrono::DateTime<::chrono::FixedOffset>>,
+        cursor: Option<&'a types::EntityId>,
         host_id: Option<&'a types::EntityId>,
         last_turn_before: Option<&'a ::chrono::DateTime<::chrono::FixedOffset>>,
+        limit: Option<::std::num::NonZeroU32>,
         state: Option<types::SessionState>,
         tag: Option<&'a ::std::vec::Vec<types::SessionTag>>,
         trigger_id: Option<&'a types::EntityId>,
@@ -48938,8 +48949,12 @@ impl Client {
                 ::reqwest::header::ACCEPT,
                 ::reqwest::header::HeaderValue::from_static("application/json"),
             )
+            .query(&progenitor_client::QueryParam::new("compact", &compact))
+            .query(&progenitor_client::QueryParam::new("createdAfter", &created_after))
+            .query(&progenitor_client::QueryParam::new("cursor", &cursor))
             .query(&progenitor_client::QueryParam::new("hostId", &host_id))
             .query(&progenitor_client::QueryParam::new("lastTurnBefore", &last_turn_before))
+            .query(&progenitor_client::QueryParam::new("limit", &limit))
             .query(&progenitor_client::QueryParam::new("state", &state))
             .query(&progenitor_client::QueryParam::new("tag", &tag))
             .query(&progenitor_client::QueryParam::new("triggerId", &trigger_id))
