@@ -7572,7 +7572,7 @@ pub mod types {
         ///How many free tenants share one Cloudflare free plan; each gets this share of every daily allowance.
         #[serde(rename = "freeTenantsPerAccount")]
         pub free_tenants_per_account: ::std::num::NonZeroU32,
-        ///Channel frames a minute one host may send: binding HOST_FRAME_RATE.
+        ///Numbered channel frames a minute one host may send, counted in memory by its host channel, for every tier. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.
         #[serde(rename = "hostFramesPerMinute")]
         pub host_frames_per_minute: ::std::num::NonZeroU32,
         ///Requests a minute one tenant may send that only read: binding TENANT_READ_RATE.

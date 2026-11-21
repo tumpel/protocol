@@ -621,7 +621,7 @@ model ControlPlaneLimits {
   @minValue(1)
   writesPerMinute: int32;
 
-  @doc("Channel frames a minute one host may send: binding HOST_FRAME_RATE.")
+  @doc("Numbered channel frames a minute one host may send, counted in memory by its host channel, for every tier. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.")
   @minValue(1)
   hostFramesPerMinute: int32;
 }
