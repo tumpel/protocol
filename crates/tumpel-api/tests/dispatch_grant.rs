@@ -16,7 +16,7 @@ fn a_grant_reads_the_same_with_or_without_arguments() {
     let mut carrying = grant();
     carrying["arguments"] = json!(["-c", "model_provider=openrouter"]);
     let current: ChannelDispatchGrant = serde_json::from_value(carrying).expect("a grant with arguments reads");
-    assert!(older.arguments.is_empty());
+    assert_eq!(older.arguments.len(), 0);
     assert_eq!(
         current
             .arguments
