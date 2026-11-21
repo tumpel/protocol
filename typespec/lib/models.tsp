@@ -588,7 +588,7 @@ model TenantUsage {
   @maxItems(32) counters: TenantUsageCounter[];
 }
 
-@doc("One limit of a configured tenant: at most `limit` of `measure` in each `window`.")
+@doc("One usage budget of a tenant: at most `limit` of `measure` in each `window`.")
 model TenantLimit {
   measure: TenantUsageMeasure;
   window: TenantUsageWindow;
@@ -596,10 +596,101 @@ model TenantLimit {
 }
 
 @doc("""
-  The per-tenant limits of a deployment: the TUMPEL_LIMITS variable of the Worker, one JSON
-  object. The free tier derives its limits from the Cloudflare free plan in the control plane's
-  limits module; a configured tenant gets `configured`. The per-minute request rates are the
-  limits of the Workers Rate Limiting bindings named beside them and must match them.
+  Every limit one tenant runs under. The tenant Durable Object counts the request rates and the
+  usage budgets, the host channel counts the frames of each host, and the Worker checks the body
+  caps once it knows the tenant.
+  """)
+model TenantLimitsProfile {
+  @doc("Requests a minute the tenant may send: API calls and MCP tool calls.")
+  @minValue(1)
+  readsPerMinute: int32;
+
+  @doc("Requests a minute the tenant may send that change its state.")
+  @minValue(1)
+  writesPerMinute: int32;
+
+  @doc("Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.")
+  @minValue(1)
+  hostFramesPerMinute: int32;
+
+  @doc("Signed webhook deliveries a minute the tenant may receive, from GitHub and CircleCI.")
+  @minValue(1)
+  webhookDeliveriesPerMinute: int32;
+
+  @doc("The largest request body the tenant may send, in bytes.")
+  @minValue(1)
+  bodyBytes: int32;
+
+  @doc("The largest tenant config the tenant may plan or apply, in bytes.")
+  @minValue(1)
+  configBodyBytes: int32;
+
+  @doc("The usage budgets of the tenant.")
+  @maxItems(32)
+  usage: TenantLimit[];
+}
+
+@doc("Where the profile a tenant runs under comes from.")
+enum TenantLimitsSource {
+  @doc("The Free preset, which keeps the tenant inside the allowances the hosting plan includes at no charge.")
+  Free: "Free",
+
+  @doc("The deployment's default profile.")
+  Configured: "Configured",
+
+  @doc("A profile set for this tenant.")
+  Custom: "Custom",
+}
+
+@doc("The limits profile a tenant runs under and where it comes from.")
+model TenantLimits {
+  source: TenantLimitsSource;
+  profile: TenantLimitsProfile;
+}
+
+@doc("Runs the tenant under the preset profile of a tier and drops any profile set for it.")
+model TenantLimitsPreset {
+  tier: TenantTier;
+}
+
+@doc("What a limits change sets: the preset of a tier, or a profile of the tenant's own.")
+union TenantLimitsSet {
+  TenantLimitsPreset,
+  TenantLimitsProfile,
+}
+
+@doc("""
+  The most any tenant profile may set, because the Worker checks these before it knows the tenant.
+  The per-minute rates are the limits of the Workers Rate Limiting bindings named beside them and
+  must match them.
+  """)
+model TenantLimitsCeiling {
+  @doc("Binding TENANT_READ_RATE.")
+  @minValue(1)
+  readsPerMinute: int32;
+
+  @doc("Binding TENANT_WRITE_RATE.")
+  @minValue(1)
+  writesPerMinute: int32;
+
+  @doc("Binding WEBHOOK_RATE.")
+  @minValue(1)
+  webhookDeliveriesPerMinute: int32;
+
+  @doc("The body bound the Worker reads any request under.")
+  @minValue(1)
+  bodyBytes: int32;
+
+  @doc("The body bound the Worker reads a tenant config plan or apply under.")
+  @minValue(1)
+  configBodyBytes: int32;
+}
+
+@doc("""
+  The limits of a deployment: the TUMPEL_LIMITS variable of the Worker, one JSON object. A tenant
+  with a profile of its own runs under it. Otherwise a Configured tenant runs under `configured`,
+  and a Free tenant under the Free preset, which the control plane's limits module derives from the
+  Cloudflare free plan and `configured`.
   """)
 model ControlPlaneLimits {
   @doc("The tier a new tenant gets; an existing tenant keeps the tier it has.")
@@ -609,21 +700,15 @@ model ControlPlaneLimits {
   @minValue(1)
   freeTenantsPerAccount: int32;
 
-  @doc("The limits of a configured tenant, checked inside its Durable Object.")
-  @maxItems(32)
-  configured: TenantLimit[];
+  @doc("The default profile: a Configured tenant with no profile of its own runs under it.")
+  configured: TenantLimitsProfile;
 
-  @doc("Requests a minute one tenant may send that only read: binding TENANT_READ_RATE.")
-  @minValue(1)
-  readsPerMinute: int32;
+  @doc("The most a tenant profile may set.")
+  ceiling: TenantLimitsCeiling;
 
-  @doc("Requests a minute one tenant may send that write: binding TENANT_WRITE_RATE.")
+  @doc("The largest GitHub webhook delivery the Worker reads, in bytes; it names no tenant until it is read.")
   @minValue(1)
-  writesPerMinute: int32;
-
-  @doc("Numbered channel frames a minute one host may send, counted in memory by its host channel, for every tier. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.")
-  @minValue(1)
-  hostFramesPerMinute: int32;
+  gitHubWebhookBodyBytes: int32;
 }
 
 @doc("An account that owns principals, hosts and sessions.")

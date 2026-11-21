@@ -15428,6 +15428,50 @@
         }
       }
     },
+    "TenantApi.ReadLimitsInput": {
+      "type": "object",
+      "required": [
+        "tenantId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ReadLimitsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "readLimits"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ReadLimitsInput"
+        }
+      }
+    },
+    "TenantApi.ReadLimitsResult": {
+      "type": "object",
+      "required": [
+        "limits"
+      ],
+      "properties": {
+        "limits": {
+          "$ref": "#/components/schemas/TenantLimits"
+        }
+      }
+    },
     "TenantApi.ReadTokenOk": {
       "type": "object",
       "required": [
@@ -16756,6 +16800,59 @@
         }
       },
       "description": "A patch or a start whose tags, with the crew tags a start inherits, would number more than 16; nothing changes."
+    },
+    "TenantApi.SetLimitsInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "limits",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "limits": {
+          "$ref": "#/components/schemas/TenantLimitsSet"
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "TenantApi.SetLimitsRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "setLimits"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.SetLimitsInput"
+        }
+      }
+    },
+    "TenantApi.SetLimitsResult": {
+      "type": "object",
+      "required": [
+        "limits"
+      ],
+      "properties": {
+        "limits": {
+          "$ref": "#/components/schemas/TenantLimits"
+        }
+      }
     },
     "TenantApi.SetSecretMemberInput": {
       "type": "object",
@@ -19068,6 +19165,12 @@
           "$ref": "#/components/schemas/TenantApi.ReadUsageRequest"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.ReadLimitsRequest"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.SetLimitsRequest"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.DeferredOffersRequest"
         },
         {
@@ -19230,6 +19333,8 @@
           "runningTurnsByHost": "#/components/schemas/TenantApi.RunningTurnsByHostRequest",
           "listHostUsage": "#/components/schemas/TenantApi.ListHostUsageRequest",
           "readUsage": "#/components/schemas/TenantApi.ReadUsageRequest",
+          "readLimits": "#/components/schemas/TenantApi.ReadLimitsRequest",
+          "setLimits": "#/components/schemas/TenantApi.SetLimitsRequest",
           "deferredOffers": "#/components/schemas/TenantApi.DeferredOffersRequest",
           "turnMetricDimensions": "#/components/schemas/TenantApi.TurnMetricDimensionsRequest",
           "prepareOffer": "#/components/schemas/TenantApi.PrepareOfferRequest",
@@ -21191,6 +21296,135 @@
         "UsageLimitReached"
       ],
       "description": "The kind of a tenant event, named for the state change it records."
+    },
+    "TenantLimit": {
+      "type": "object",
+      "required": [
+        "measure",
+        "window",
+        "limit"
+      ],
+      "properties": {
+        "measure": {
+          "$ref": "#/components/schemas/TenantUsageMeasure"
+        },
+        "window": {
+          "$ref": "#/components/schemas/TenantUsageWindow"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
+      },
+      "description": "One usage budget of a tenant: at most `limit` of `measure` in each `window`."
+    },
+    "TenantLimits": {
+      "type": "object",
+      "required": [
+        "source",
+        "profile"
+      ],
+      "properties": {
+        "source": {
+          "$ref": "#/components/schemas/TenantLimitsSource"
+        },
+        "profile": {
+          "$ref": "#/components/schemas/TenantLimitsProfile"
+        }
+      },
+      "description": "The limits profile a tenant runs under and where it comes from."
+    },
+    "TenantLimitsPreset": {
+      "type": "object",
+      "required": [
+        "tier"
+      ],
+      "properties": {
+        "tier": {
+          "$ref": "#/components/schemas/TenantTier"
+        }
+      },
+      "description": "Runs the tenant under the preset profile of a tier and drops any profile set for it."
+    },
+    "TenantLimitsProfile": {
+      "type": "object",
+      "required": [
+        "readsPerMinute",
+        "writesPerMinute",
+        "hostFramesPerMinute",
+        "webhookDeliveriesPerMinute",
+        "bodyBytes",
+        "configBodyBytes",
+        "usage"
+      ],
+      "properties": {
+        "readsPerMinute": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "Requests a minute the tenant may send: API calls and MCP tool calls."
+        },
+        "writesPerMinute": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "Requests a minute the tenant may send that change its state."
+        },
+        "hostFramesPerMinute": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window."
+        },
+        "webhookDeliveriesPerMinute": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "Signed webhook deliveries a minute the tenant may receive, from GitHub and CircleCI."
+        },
+        "bodyBytes": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "The largest request body the tenant may send, in bytes."
+        },
+        "configBodyBytes": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "The largest tenant config the tenant may plan or apply, in bytes."
+        },
+        "usage": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantLimit"
+          },
+          "maxItems": 32,
+          "description": "The usage budgets of the tenant."
+        }
+      },
+      "description": "Every limit one tenant runs under. The tenant Durable Object counts the request rates and the\nusage budgets, the host channel counts the frames of each host, and the Worker checks the body\ncaps once it knows the tenant."
+    },
+    "TenantLimitsSet": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/TenantLimitsPreset"
+        },
+        {
+          "$ref": "#/components/schemas/TenantLimitsProfile"
+        }
+      ],
+      "description": "What a limits change sets: the preset of a tier, or a profile of the tenant's own."
+    },
+    "TenantLimitsSource": {
+      "type": "string",
+      "enum": [
+        "Free",
+        "Configured",
+        "Custom"
+      ],
+      "description": "Where the profile a tenant runs under comes from."
     },
     "TenantTier": {
       "type": "string",
