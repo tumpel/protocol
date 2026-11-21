@@ -52,12 +52,19 @@ model SubscriptionPausedCrewFailing {
   kind: "CrewFailing";
 }
 
+@doc("A delivery turn failed CreditExhausted; the turn is turnId, whose failure Turns_getFailure reads. Add credits to the provider account before resuming.")
+model SubscriptionPausedCreditExhausted {
+  kind: "CreditExhausted";
+  turnId: EntityId;
+}
+
 @doc("Why a subscription is Paused.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union SubscriptionPauseReason {
   ByRequest: SubscriptionPausedByRequest,
   DeliveryFailed: SubscriptionPausedDeliveryFailed,
   CrewFailing: SubscriptionPausedCrewFailing,
+  CreditExhausted: SubscriptionPausedCreditExhausted,
 }
 
 @doc("Why a subscription is Ended.")
