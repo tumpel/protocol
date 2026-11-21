@@ -22,7 +22,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 14;
+const TenantApiVersion = 15;
 
 namespace TenantApi {
 
@@ -885,10 +885,6 @@ model ListEventsInput {
 
   @doc("The trigger whose events to keep; null keeps every trigger's.")
   triggerId: EntityId | null;
-
-  @minValue(0)
-  @maxValue(50)
-  waitSeconds: int32;
 }
 
 model ListWebhookEndpointsInput {
