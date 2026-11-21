@@ -266,12 +266,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelChallengeNonce {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelChallengeNonce {
         fn as_ref(&self) -> &str {
             &self.0
@@ -280,6 +274,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelChallengeNonce {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelChallengeNonce {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelChallengeNonce {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelChallengeNonce> for ::std::string::String {
@@ -538,12 +543,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelClaudeSetupBoxOfferTokenCredential {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelClaudeSetupBoxOfferTokenCredential {
         fn as_ref(&self) -> &str {
             &self.0
@@ -552,6 +551,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelClaudeSetupBoxOfferTokenCredential {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelClaudeSetupBoxOfferTokenCredential {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelClaudeSetupBoxOfferTokenCredential {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelClaudeSetupBoxOfferTokenCredential> for ::std::string::String {
@@ -677,12 +687,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelClaudeSetupBoxUrlUserCode {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelClaudeSetupBoxUrlUserCode {
         fn as_ref(&self) -> &str {
             &self.0
@@ -691,6 +695,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelClaudeSetupBoxUrlUserCode {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelClaudeSetupBoxUrlUserCode {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelClaudeSetupBoxUrlUserCode {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelClaudeSetupBoxUrlUserCode> for ::std::string::String {
@@ -964,12 +979,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelDispatchGrantCredentialFilePath {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelDispatchGrantCredentialFilePath {
         fn as_ref(&self) -> &str {
             &self.0
@@ -978,6 +987,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelDispatchGrantCredentialFilePath {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelDispatchGrantCredentialFilePath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelDispatchGrantCredentialFilePath {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelDispatchGrantCredentialFilePath> for ::std::string::String {
@@ -1025,12 +1045,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelDispatchGrantCredentialFileValue {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelDispatchGrantCredentialFileValue {
         fn as_ref(&self) -> &str {
             &self.0
@@ -1039,6 +1053,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelDispatchGrantCredentialFileValue {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelDispatchGrantCredentialFileValue {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelDispatchGrantCredentialFileValue {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelDispatchGrantCredentialFileValue> for ::std::string::String {
@@ -1092,12 +1117,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelDispatchVariableName {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelDispatchVariableName {
         fn as_ref(&self) -> &str {
             &self.0
@@ -1106,6 +1125,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelDispatchVariableName {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelDispatchVariableName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelDispatchVariableName {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelDispatchVariableName> for ::std::string::String {
@@ -1153,12 +1183,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelDispatchVariableValue {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelDispatchVariableValue {
         fn as_ref(&self) -> &str {
             &self.0
@@ -1167,6 +1191,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelDispatchVariableValue {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelDispatchVariableValue {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelDispatchVariableValue {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelDispatchVariableValue> for ::std::string::String {
@@ -1228,12 +1263,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelFrameRefusedReason {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelFrameRefusedReason {
         fn as_ref(&self) -> &str {
             &self.0
@@ -1242,6 +1271,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelFrameRefusedReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelFrameRefusedReason {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelFrameRefusedReason {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelFrameRefusedReason> for ::std::string::String {
@@ -1466,12 +1506,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelHelloSignature {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelHelloSignature {
         fn as_ref(&self) -> &str {
             &self.0
@@ -1480,6 +1514,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelHelloSignature {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelHelloSignature {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelHelloSignature {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelHelloSignature> for ::std::string::String {
@@ -1527,12 +1572,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelHelloSupervisorVersion {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelHelloSupervisorVersion {
         fn as_ref(&self) -> &str {
             &self.0
@@ -1541,6 +1580,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelHelloSupervisorVersion {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelHelloSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelHelloSupervisorVersion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelHelloSupervisorVersion> for ::std::string::String {
@@ -1951,12 +2001,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelReleasePublishedReleaseVersion {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelReleasePublishedReleaseVersion {
         fn as_ref(&self) -> &str {
             &self.0
@@ -1965,6 +2009,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelReleasePublishedReleaseVersion {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelReleasePublishedReleaseVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelReleasePublishedReleaseVersion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelReleasePublishedReleaseVersion> for ::std::string::String {
@@ -2668,12 +2723,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelSupervisorUpdateStepReleaseVersion {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelSupervisorUpdateStepReleaseVersion {
         fn as_ref(&self) -> &str {
             &self.0
@@ -2682,6 +2731,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelSupervisorUpdateStepReleaseVersion {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelSupervisorUpdateStepReleaseVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelSupervisorUpdateStepReleaseVersion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelSupervisorUpdateStepReleaseVersion> for ::std::string::String {
@@ -2915,12 +2975,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelTurnCompleteCredentialFile {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelTurnCompleteCredentialFile {
         fn as_ref(&self) -> &str {
             &self.0
@@ -2929,6 +2983,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelTurnCompleteCredentialFile {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelTurnCompleteCredentialFile {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelTurnCompleteCredentialFile {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelTurnCompleteCredentialFile> for ::std::string::String {
@@ -3024,12 +3089,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelTurnFailedCredentialFile {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelTurnFailedCredentialFile {
         fn as_ref(&self) -> &str {
             &self.0
@@ -3038,6 +3097,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelTurnFailedCredentialFile {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelTurnFailedCredentialFile {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelTurnFailedCredentialFile {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelTurnFailedCredentialFile> for ::std::string::String {
@@ -3256,12 +3326,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelTurnOfferHarnessVersion {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelTurnOfferHarnessVersion {
         fn as_ref(&self) -> &str {
             &self.0
@@ -3270,6 +3334,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelTurnOfferHarnessVersion {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelTurnOfferHarnessVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelTurnOfferHarnessVersion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelTurnOfferHarnessVersion> for ::std::string::String {
@@ -3321,12 +3396,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ChannelTurnOfferPrebuildCommitSha {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ChannelTurnOfferPrebuildCommitSha {
         fn as_ref(&self) -> &str {
             &self.0
@@ -3335,6 +3404,17 @@ pub mod types {
     impl ::std::fmt::Display for ChannelTurnOfferPrebuildCommitSha {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelTurnOfferPrebuildCommitSha {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelTurnOfferPrebuildCommitSha {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ChannelTurnOfferPrebuildCommitSha> for ::std::string::String {
@@ -3590,12 +3670,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ClaudeSetupCodeText {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ClaudeSetupCodeText {
         fn as_ref(&self) -> &str {
             &self.0
@@ -3604,6 +3678,17 @@ pub mod types {
     impl ::std::fmt::Display for ClaudeSetupCodeText {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ClaudeSetupCodeText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ClaudeSetupCodeText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ClaudeSetupCodeText> for ::std::string::String {
@@ -3705,12 +3790,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for DisplayName {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for DisplayName {
         fn as_ref(&self) -> &str {
             &self.0
@@ -3719,6 +3798,17 @@ pub mod types {
     impl ::std::fmt::Display for DisplayName {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for DisplayName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for DisplayName {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<DisplayName> for ::std::string::String {
@@ -3769,12 +3859,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for EmailAddress {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for EmailAddress {
         fn as_ref(&self) -> &str {
             &self.0
@@ -3783,6 +3867,17 @@ pub mod types {
     impl ::std::fmt::Display for EmailAddress {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for EmailAddress {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for EmailAddress {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<EmailAddress> for ::std::string::String {
@@ -3833,12 +3928,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for EntityId {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for EntityId {
         fn as_ref(&self) -> &str {
             &self.0
@@ -3847,6 +3936,17 @@ pub mod types {
     impl ::std::fmt::Display for EntityId {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for EntityId {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for EntityId {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<EntityId> for ::std::string::String {
@@ -3942,12 +4042,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for HarnessVersion {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for HarnessVersion {
         fn as_ref(&self) -> &str {
             &self.0
@@ -3956,6 +4050,17 @@ pub mod types {
     impl ::std::fmt::Display for HarnessVersion {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for HarnessVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for HarnessVersion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<HarnessVersion> for ::std::string::String {
@@ -4107,12 +4212,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for MetricInstrumentDescription {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for MetricInstrumentDescription {
         fn as_ref(&self) -> &str {
             &self.0
@@ -4121,6 +4220,17 @@ pub mod types {
     impl ::std::fmt::Display for MetricInstrumentDescription {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for MetricInstrumentDescription {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for MetricInstrumentDescription {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<MetricInstrumentDescription> for ::std::string::String {
@@ -4168,12 +4278,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for MetricInstrumentUnit {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for MetricInstrumentUnit {
         fn as_ref(&self) -> &str {
             &self.0
@@ -4182,6 +4286,17 @@ pub mod types {
     impl ::std::fmt::Display for MetricInstrumentUnit {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for MetricInstrumentUnit {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for MetricInstrumentUnit {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<MetricInstrumentUnit> for ::std::string::String {
@@ -4265,12 +4380,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for MetricName {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for MetricName {
         fn as_ref(&self) -> &str {
             &self.0
@@ -4279,6 +4388,17 @@ pub mod types {
     impl ::std::fmt::Display for MetricName {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for MetricName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for MetricName {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<MetricName> for ::std::string::String {
@@ -4331,12 +4451,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for ModelName {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for ModelName {
         fn as_ref(&self) -> &str {
             &self.0
@@ -4345,6 +4459,17 @@ pub mod types {
     impl ::std::fmt::Display for ModelName {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ModelName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ModelName {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<ModelName> for ::std::string::String {
@@ -4395,12 +4520,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for PersonaFilePath {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for PersonaFilePath {
         fn as_ref(&self) -> &str {
             &self.0
@@ -4409,6 +4528,17 @@ pub mod types {
     impl ::std::fmt::Display for PersonaFilePath {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PersonaFilePath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for PersonaFilePath {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<PersonaFilePath> for ::std::string::String {
@@ -4504,12 +4634,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for Prompt {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for Prompt {
         fn as_ref(&self) -> &str {
             &self.0
@@ -4518,6 +4642,17 @@ pub mod types {
     impl ::std::fmt::Display for Prompt {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for Prompt {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for Prompt {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<Prompt> for ::std::string::String {
@@ -4629,12 +4764,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for RepositoryUrl {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for RepositoryUrl {
         fn as_ref(&self) -> &str {
             &self.0
@@ -4643,6 +4772,17 @@ pub mod types {
     impl ::std::fmt::Display for RepositoryUrl {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for RepositoryUrl {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for RepositoryUrl {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<RepositoryUrl> for ::std::string::String {
@@ -4744,12 +4884,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for Sha256Digest {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for Sha256Digest {
         fn as_ref(&self) -> &str {
             &self.0
@@ -4758,6 +4892,17 @@ pub mod types {
     impl ::std::fmt::Display for Sha256Digest {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for Sha256Digest {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for Sha256Digest {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<Sha256Digest> for ::std::string::String {
@@ -4807,12 +4952,6 @@ pub mod types {
             &self.0
         }
     }
-    impl ::std::ops::Deref for StorageKey {
-        type Target = str;
-        fn deref(&self) -> &str {
-            &self.0
-        }
-    }
     impl ::std::convert::AsRef<str> for StorageKey {
         fn as_ref(&self) -> &str {
             &self.0
@@ -4821,6 +4960,17 @@ pub mod types {
     impl ::std::fmt::Display for StorageKey {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for StorageKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for StorageKey {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
         }
     }
     impl ::std::convert::From<StorageKey> for ::std::string::String {

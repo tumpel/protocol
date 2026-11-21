@@ -298,14 +298,6 @@ fn string_access(name: &syn::Ident) -> Vec<syn::Item> {
             }
         },
         syn::parse_quote! {
-            impl ::std::ops::Deref for #name {
-                type Target = str;
-                fn deref(&self) -> &str {
-                    &self.0
-                }
-            }
-        },
-        syn::parse_quote! {
             impl ::std::convert::AsRef<str> for #name {
                 fn as_ref(&self) -> &str {
                     &self.0
@@ -320,14 +312,14 @@ fn string_access(name: &syn::Ident) -> Vec<syn::Item> {
             }
         },
     ];
-    if PATH_NEWTYPES.iter().any(|path| name == path) {
-        items.push(syn::parse_quote! {
-            impl ::std::convert::AsRef<::std::ffi::OsStr> for #name {
-                fn as_ref(&self) -> &::std::ffi::OsStr {
-                    self.0.as_ref()
-                }
+    items.push(syn::parse_quote! {
+        impl ::std::convert::AsRef<::std::ffi::OsStr> for #name {
+            fn as_ref(&self) -> &::std::ffi::OsStr {
+                self.0.as_ref()
             }
-        });
+        }
+    });
+    if PATH_NEWTYPES.iter().any(|path| name == path) {
         items.push(syn::parse_quote! {
             impl ::std::convert::AsRef<::std::path::Path> for #name {
                 fn as_ref(&self) -> &::std::path::Path {
@@ -358,9 +350,6 @@ fn string_newtypes(types: &mut Vec<syn::Item>) -> Result<(), String> {
             continue;
         };
         let name = name.to_string();
-        if implements(implemented, &name, "Deref") {
-            continue;
-        }
         if implements(implemented, &name, "FromStr") {
             let renamed = named_refusals(quote!(#implemented), &name);
             kept.push(syn::parse2(renamed).map_err(|e| format!("renaming the {name} refusals: {e}."))?);
