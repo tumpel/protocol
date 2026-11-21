@@ -76,6 +76,18 @@ jobs:
           make pack
           npm run pack:check
 
+      - id: crates
+        name: Check whether crates.io has tumpel-api at this version
+        run: |
+          published=$(curl -fsS https://index.crates.io/tu/mp/tumpel-api | jq -r --arg v "$VERSION" 'select(.vers == $v) | .vers')
+          echo "published=$published" >> "$GITHUB_OUTPUT"
+
+      - if: steps.crates.outputs.published == ''
+        name: Publish tumpel-api to crates.io from the committed sources
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish -p tumpel-api --allow-dirty --no-verify
+
       - name: Publish the GitHub pre-release with the tarballs and their sha256
         env:
           GH_TOKEN: ${{ github.token }}
