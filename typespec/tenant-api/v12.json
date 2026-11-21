@@ -21350,46 +21350,38 @@
     "TenantLimitsProfile": {
       "type": "object",
       "required": [
-        "reads",
-        "writes",
-        "hostFrames",
-        "webhookDeliveries",
+        "readsPerMinute",
+        "writesPerMinute",
+        "hostFramesPerMinute",
+        "webhookDeliveriesPerMinute",
         "bodyBytes",
         "configBodyBytes",
         "usage"
       ],
       "properties": {
-        "reads": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/TenantRate"
-            }
-          ],
-          "description": "Requests the tenant may send: API calls and MCP tool calls."
+        "readsPerMinute": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "Requests a minute the tenant may send: API calls and MCP tool calls."
         },
-        "writes": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/TenantRate"
-            }
-          ],
-          "description": "Requests the tenant may send that change its state."
+        "writesPerMinute": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "Requests a minute the tenant may send that change its state."
         },
-        "hostFrames": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/TenantRate"
-            }
-          ],
-          "description": "Numbered channel frames one host of the tenant may send. Once its bucket is empty the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until a token is back."
+        "hostFramesPerMinute": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window."
         },
-        "webhookDeliveries": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/TenantRate"
-            }
-          ],
-          "description": "Signed webhook deliveries the tenant may receive, from GitHub and CircleCI."
+        "webhookDeliveriesPerMinute": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "Signed webhook deliveries a minute the tenant may receive, from GitHub and CircleCI."
         },
         "bodyBytes": {
           "type": "integer",
@@ -21412,7 +21404,7 @@
           "description": "The usage budgets of the tenant."
         }
       },
-      "description": "Every limit one tenant runs under. The tenant Durable Object holds the request buckets and counts\nthe usage budgets, the host channel holds the frame bucket of each host, and the Worker checks the\nbody caps once it knows the tenant. Buckets live in memory and start full."
+      "description": "Every limit one tenant runs under. The tenant Durable Object counts the request rates and the\nusage budgets, the host channel counts the frames of each host, and the Worker checks the body\ncaps once it knows the tenant."
     },
     "TenantLimitsSet": {
       "anyOf": [
@@ -21433,26 +21425,6 @@
         "Custom"
       ],
       "description": "Where the profile a tenant runs under comes from."
-    },
-    "TenantRate": {
-      "type": "object",
-      "required": [
-        "ratePerMinute",
-        "burst"
-      ],
-      "properties": {
-        "ratePerMinute": {
-          "type": "integer",
-          "format": "int32",
-          "minimum": 1
-        },
-        "burst": {
-          "type": "integer",
-          "format": "int32",
-          "minimum": 1
-        }
-      },
-      "description": "A rate as a token bucket: it holds at most `burst` tokens, refills continuously at\n`ratePerMinute` a minute, and each frame or request spends one. A burst such as a reconnect\nreplay passes while tokens are left; a rate past `ratePerMinute` is refused once the bucket is\nempty, until one token is back. `burst` is at least `ratePerMinute`; the defaults set it to twice\nthe rate."
     },
     "TenantTier": {
       "type": "string",
