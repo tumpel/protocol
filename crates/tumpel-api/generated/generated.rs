@@ -20188,7 +20188,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///A delivery turn failed CreditExhausted; the turn is turnId, whose failure Turns_getFailure reads. Add credits to the provider account before resuming.
+    ///A crew or delivery turn failed CreditExhausted; the turn is turnId, whose failure Turns_getFailure reads. Add credits to the provider account before resuming.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SubscriptionPausedCreditExhausted {
         pub kind: SubscriptionPausedCreditExhaustedKind,

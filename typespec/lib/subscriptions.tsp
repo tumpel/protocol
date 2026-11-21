@@ -52,7 +52,7 @@ model SubscriptionPausedCrewFailing {
   kind: "CrewFailing";
 }
 
-@doc("A delivery turn failed CreditExhausted; the turn is turnId, whose failure Turns_getFailure reads. Add credits to the provider account before resuming.")
+@doc("A crew or delivery turn failed CreditExhausted; the turn is turnId, whose failure Turns_getFailure reads. Add credits to the provider account before resuming.")
 model SubscriptionPausedCreditExhausted {
   kind: "CreditExhausted";
   turnId: EntityId;
