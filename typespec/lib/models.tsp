@@ -596,26 +596,34 @@ model TenantLimit {
 }
 
 @doc("""
-  Every limit one tenant runs under. The tenant Durable Object counts the request rates and the
-  usage budgets, the host channel counts the frames of each host, and the Worker checks the body
-  caps once it knows the tenant.
+  A rate as a token bucket: it holds at most `burst` tokens, refills continuously at
+  `ratePerMinute` a minute, and each frame or request spends one. A burst such as a reconnect
+  replay passes while tokens are left; a rate past `ratePerMinute` is refused once the bucket is
+  empty, until one token is back. `burst` is at least `ratePerMinute`; the defaults set it to twice
+  the rate.
+  """)
+model TenantRate {
+  @minValue(1) ratePerMinute: int32;
+  @minValue(1) burst: int32;
+}
+
+@doc("""
+  Every limit one tenant runs under. The tenant Durable Object holds the request buckets and counts
+  the usage budgets, the host channel holds the frame bucket of each host, and the Worker checks the
+  body caps once it knows the tenant. Buckets live in memory and start full.
   """)
 model TenantLimitsProfile {
-  @doc("Requests a minute the tenant may send: API calls and MCP tool calls.")
-  @minValue(1)
-  readsPerMinute: int32;
+  @doc("Requests the tenant may send: API calls and MCP tool calls.")
+  reads: TenantRate;
 
-  @doc("Requests a minute the tenant may send that change its state.")
-  @minValue(1)
-  writesPerMinute: int32;
+  @doc("Requests the tenant may send that change its state.")
+  writes: TenantRate;
 
-  @doc("Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.")
-  @minValue(1)
-  hostFramesPerMinute: int32;
+  @doc("Numbered channel frames one host of the tenant may send. Once its bucket is empty the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until a token is back.")
+  hostFrames: TenantRate;
 
-  @doc("Signed webhook deliveries a minute the tenant may receive, from GitHub and CircleCI.")
-  @minValue(1)
-  webhookDeliveriesPerMinute: int32;
+  @doc("Signed webhook deliveries the tenant may receive, from GitHub and CircleCI.")
+  webhookDeliveries: TenantRate;
 
   @doc("The largest request body the tenant may send, in bytes.")
   @minValue(1)
@@ -661,21 +669,18 @@ union TenantLimitsSet {
 
 @doc("""
   The most any tenant profile may set, because the Worker checks these before it knows the tenant.
-  The per-minute rates are the limits of the Workers Rate Limiting bindings named beside them and
-  must match them.
+  Each rate is a coarse ceiling at the edge: the Workers Rate Limiting binding named beside it counts
+  a fixed 60-second window, so its limit must equal the rate's `burst`.
   """)
 model TenantLimitsCeiling {
   @doc("Binding TENANT_READ_RATE.")
-  @minValue(1)
-  readsPerMinute: int32;
+  reads: TenantRate;
 
   @doc("Binding TENANT_WRITE_RATE.")
-  @minValue(1)
-  writesPerMinute: int32;
+  writes: TenantRate;
 
   @doc("Binding WEBHOOK_RATE.")
-  @minValue(1)
-  webhookDeliveriesPerMinute: int32;
+  webhookDeliveries: TenantRate;
 
   @doc("The body bound the Worker reads any request under.")
   @minValue(1)

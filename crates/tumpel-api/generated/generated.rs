@@ -46129,8 +46129,8 @@ pub mod types {
         pub source: TenantLimitsSource,
     }
     ///The most any tenant profile may set, because the Worker checks these before it knows the tenant.
-    ///The per-minute rates are the limits of the Workers Rate Limiting bindings named beside them and
-    ///must match them.
+    ///Each rate is a coarse ceiling at the edge: the Workers Rate Limiting binding named beside it counts
+    ///a fixed 60-second window, so its limit must equal the rate's `burst`.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantLimitsCeiling {
         ///The body bound the Worker reads any request under.
@@ -46140,23 +46140,21 @@ pub mod types {
         #[serde(rename = "configBodyBytes")]
         pub config_body_bytes: ::std::num::NonZeroU32,
         ///Binding TENANT_READ_RATE.
-        #[serde(rename = "readsPerMinute")]
-        pub reads_per_minute: ::std::num::NonZeroU32,
+        pub reads: TenantRate,
         ///Binding WEBHOOK_RATE.
-        #[serde(rename = "webhookDeliveriesPerMinute")]
-        pub webhook_deliveries_per_minute: ::std::num::NonZeroU32,
+        #[serde(rename = "webhookDeliveries")]
+        pub webhook_deliveries: TenantRate,
         ///Binding TENANT_WRITE_RATE.
-        #[serde(rename = "writesPerMinute")]
-        pub writes_per_minute: ::std::num::NonZeroU32,
+        pub writes: TenantRate,
     }
     ///Runs the tenant under the preset profile of a tier and drops any profile set for it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantLimitsPreset {
         pub tier: TenantTier,
     }
-    ///Every limit one tenant runs under. The tenant Durable Object counts the request rates and the
-    ///usage budgets, the host channel counts the frames of each host, and the Worker checks the body
-    ///caps once it knows the tenant.
+    ///Every limit one tenant runs under. The tenant Durable Object holds the request buckets and counts
+    ///the usage budgets, the host channel holds the frame bucket of each host, and the Worker checks the
+    ///body caps once it knows the tenant. Buckets live in memory and start full.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantLimitsProfile {
         ///The largest request body the tenant may send, in bytes.
@@ -46165,20 +46163,18 @@ pub mod types {
         ///The largest tenant config the tenant may plan or apply, in bytes.
         #[serde(rename = "configBodyBytes")]
         pub config_body_bytes: ::std::num::NonZeroU32,
-        ///Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.
-        #[serde(rename = "hostFramesPerMinute")]
-        pub host_frames_per_minute: ::std::num::NonZeroU32,
-        ///Requests a minute the tenant may send: API calls and MCP tool calls.
-        #[serde(rename = "readsPerMinute")]
-        pub reads_per_minute: ::std::num::NonZeroU32,
+        ///Numbered channel frames one host of the tenant may send. Once its bucket is empty the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until a token is back.
+        #[serde(rename = "hostFrames")]
+        pub host_frames: TenantRate,
+        ///Requests the tenant may send: API calls and MCP tool calls.
+        pub reads: TenantRate,
         ///The usage budgets of the tenant.
         pub usage: ::std::vec::Vec<TenantLimit>,
-        ///Signed webhook deliveries a minute the tenant may receive, from GitHub and CircleCI.
-        #[serde(rename = "webhookDeliveriesPerMinute")]
-        pub webhook_deliveries_per_minute: ::std::num::NonZeroU32,
-        ///Requests a minute the tenant may send that change its state.
-        #[serde(rename = "writesPerMinute")]
-        pub writes_per_minute: ::std::num::NonZeroU32,
+        ///Signed webhook deliveries the tenant may receive, from GitHub and CircleCI.
+        #[serde(rename = "webhookDeliveries")]
+        pub webhook_deliveries: TenantRate,
+        ///Requests the tenant may send that change its state.
+        pub writes: TenantRate,
     }
     ///What a limits change sets: the preset of a tier, or a profile of the tenant's own.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -46241,6 +46237,17 @@ pub mod types {
     pub struct TenantMetricCatalog {
         pub metrics: ::std::vec::Vec<MetricEntry>,
         pub usage: TenantUsage,
+    }
+    ///A rate as a token bucket: it holds at most `burst` tokens, refills continuously at
+    ///`ratePerMinute` a minute, and each frame or request spends one. A burst such as a reconnect
+    ///replay passes while tokens are left; a rate past `ratePerMinute` is refused once the bucket is
+    ///empty, until one token is back. `burst` is at least `ratePerMinute`; the defaults set it to twice
+    ///the rate.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantRate {
+        pub burst: ::std::num::NonZeroU32,
+        #[serde(rename = "ratePerMinute")]
+        pub rate_per_minute: ::std::num::NonZeroU32,
     }
     ///The limits a tenant runs under. Free keeps the tenant inside the allowances the hosting plan
     ///includes at no charge and refuses traffic past them; Configured runs under the limits its
