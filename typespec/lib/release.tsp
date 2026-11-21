@@ -42,7 +42,7 @@ model ReleaseSupervisor {
   """)
 model SupervisorRelease {
   @pattern("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$") supervisorVersion: string;
-  @pattern("^[0-9]+\\.[0-9]+\\.[0-9]+$") tumpelApiVersion: string;
+  @pattern("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$") tumpelApiVersion: string;
   @minValue(1) channelProtocolOldest: int32;
   @minValue(1) channelProtocolVersion: int32;
   @minValue(1) guestProtocolOldest: int32;
