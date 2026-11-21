@@ -47125,13 +47125,13 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Lists the tenant's personas.
+    ///Lists the tenant's personas with file paths, digests, sizes and timestamps. Read one persona to get file content.
     ///
     ///Sends a `GET` request to `/v1/personas`
     ///
     pub async fn personas_list<'a>(
         &'a self,
-    ) -> Result<ResponseValue<::std::vec::Vec<types::Persona>>, Error<types::Problem>> {
+    ) -> Result<ResponseValue<::std::vec::Vec<types::TenantApiStoredPersona>>, Error<types::Problem>> {
         let url = format!("{}/v1/personas", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
         header_map.append(
