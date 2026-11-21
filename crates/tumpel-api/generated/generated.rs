@@ -24059,6 +24059,7 @@ pub mod types {
         UpdateNotOnline,
         ChannelUnreachable,
         FrameUndelivered,
+        RateLimited,
     }
     impl ::std::fmt::Display for SupervisorFailure {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24072,6 +24073,7 @@ pub mod types {
                 Self::UpdateNotOnline => f.write_str("UpdateNotOnline"),
                 Self::ChannelUnreachable => f.write_str("ChannelUnreachable"),
                 Self::FrameUndelivered => f.write_str("FrameUndelivered"),
+                Self::RateLimited => f.write_str("RateLimited"),
             }
         }
     }
@@ -24088,6 +24090,7 @@ pub mod types {
                 "UpdateNotOnline" => Ok(Self::UpdateNotOnline),
                 "ChannelUnreachable" => Ok(Self::ChannelUnreachable),
                 "FrameUndelivered" => Ok(Self::FrameUndelivered),
+                "RateLimited" => Ok(Self::RateLimited),
                 _ => Err("invalid value".into()),
             }
         }
