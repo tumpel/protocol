@@ -82,7 +82,7 @@ model ClaudeSetupAwaitingCode {
   state: ClaudeSetupState.AwaitingCode;
 
   @doc("Where the person signs in; for Claude Code the page shows the code to submit.")
-  signInUrl: url;
+  signInUrl: HttpUrl;
 
   @doc("The one-time code a Codex setup shows, for the person to enter at signInUrl. A Codex setup takes no submitted code: its box stores the token once the person signs in.")
   userCode?: ClaudeSetupUserCode;
@@ -118,7 +118,7 @@ model ClaudeSetupFailed {
   reason: ClaudeSetupFailureReason;
 
   @doc("What failed and what fixes it.")
-  detail: string;
+  detail: Detail;
 
   failedAt: offsetDateTime;
 }

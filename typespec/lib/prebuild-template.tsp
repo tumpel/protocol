@@ -7,6 +7,7 @@ namespace Tumpel;
 
 @doc("A template's id: lower-case letters, digits and dashes, such as npm, rust or python.")
 @pattern("^[a-z][a-z0-9-]{0,39}$")
+@maxLength(40)
 scalar PrebuildTemplateId extends string;
 
 @doc("A template version: an integer per template, starting at 1. A shipped version never changes.")
@@ -15,6 +16,7 @@ scalar PrebuildTemplateVersionNumber extends int32;
 
 @doc("One sentence on what a template version sets up.")
 @minLength(1)
+@maxLength(500)
 scalar PrebuildTemplateSummary extends string;
 
 @doc("A toolchain the guest image carries.")
@@ -30,7 +32,7 @@ model PrebuildTemplateToolchain {
 
   @doc("The toolchain's version, such as 26.13.1.")
   @minLength(1)
-  toolchainVersion: string;
+  toolchainVersion: ShortText;
 }
 
 @doc("The template.json beside a template version's devcontainer.json.")
@@ -38,10 +40,10 @@ model PrebuildTemplateManifest {
   summary: PrebuildTemplateSummary;
 
   @doc("What the template's commands install, one item each, such as the npm dependencies from package-lock.json.")
-  installs: string[];
+  @maxItems(100) installs: Summary[];
 
   @doc("The toolchains the version pins: the guest image it targets.")
-  toolchains: PrebuildTemplateToolchain[];
+  @maxItems(50) toolchains: PrebuildTemplateToolchain[];
 }
 
 @doc("One version of a template, without its devcontainer.json text.")
@@ -58,7 +60,7 @@ model PrebuildTemplate {
   @key prebuildTemplateId: PrebuildTemplateId;
 
   @doc("Every shipped version, newest first.")
-  versions: PrebuildTemplateVersionSummary[];
+  @maxItems(1000) versions: PrebuildTemplateVersionSummary[];
 }
 
 @doc("One version of a template with its devcontainer.json text.")
@@ -67,7 +69,7 @@ model PrebuildTemplateVersion {
   ...PrebuildTemplateVersionSummary;
 
   @doc("The devcontainer.json text the version commits, byte for byte the file whose sha256 is digest.")
-  devcontainer: string;
+  devcontainer: LongText;
 }
 
 model PrebuildTemplateVersionPath {
@@ -108,12 +110,12 @@ model PrebuildTemplatePullRequest {
   repository: RepositoryUrl;
 
   @doc("The branch the pull request merges from: tumpel/prebuild-template.")
-  branch: string;
+  branch: ShortText;
 
   @minValue(1) pullRequestNumber: int64;
 
   @doc("The pull request's page on GitHub.")
-  url: url;
+  url: HttpUrl;
 
   state: PullRequestState;
 }

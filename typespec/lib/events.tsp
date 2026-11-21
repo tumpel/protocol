@@ -51,6 +51,12 @@ enum TenantEventType {
 
   @doc("A trigger matched a delivery and started no session.")
   TriggerStartRefused: "TriggerStartRefused",
+
+  @doc("The tenant used 80% of one of its limits in the current window.")
+  UsageNearLimit: "UsageNearLimit",
+
+  @doc("The tenant reached one of its limits; requests it counts are refused until the window ends.")
+  UsageLimitReached: "UsageLimitReached",
 }
 
 @doc("""
@@ -85,7 +91,7 @@ model TurnFailedEvent {
   reason: TurnFailureReason;
 
   @doc("What failed and what fixes it, as the turn's failure reads.")
-  detail: string;
+  detail: Detail;
 }
 
 model SessionIdleEvent {
@@ -172,6 +178,20 @@ model TriggerStartRefusedEvent {
   refusal: TriggerStartRefusal;
 }
 
+model UsageNearLimitEvent {
+  event: "UsageNearLimit";
+  ...TenantEventEnvelope;
+  tier: TenantTier;
+  ...TenantUsageCounter;
+}
+
+model UsageLimitReachedEvent {
+  event: "UsageLimitReached";
+  ...TenantEventEnvelope;
+  tier: TenantTier;
+  ...TenantUsageCounter;
+}
+
 @doc("""
   A record that something happened in a tenant. The control plane appends it in the same
   transaction as the state change it reports. It holds ids and the fact that changed; read the
@@ -193,6 +213,8 @@ union TenantEvent {
   SubscriptionPaused: SubscriptionPausedEvent,
   SubscriptionEnded: SubscriptionEndedEvent,
   TriggerStartRefused: TriggerStartRefusedEvent,
+  UsageNearLimit: UsageNearLimitEvent,
+  UsageLimitReached: UsageLimitReachedEvent,
 }
 
 @doc("""
@@ -220,7 +242,7 @@ union EventProblem {
 
 @error
 model EventProblemResponse {
-  @statusCode statusCode: 400 | 401 | 403 | 404 | 409 | 410 | 422 | 429 | 503;
+  @statusCode statusCode: 400 | 401 | 403 | 404 | 409 | 410 | 413 | 422 | 429 | 503;
   @body body: EventProblem;
 }
 
@@ -234,7 +256,7 @@ model EventQuery {
 
   @doc("Keep events of this type; repeat it for several types. Leave it out to keep every type.")
   @query(#{ explode: true })
-  event?: TenantEventType[];
+  @maxItems(1000) event?: TenantEventType[];
 
   @doc("Keep events of this session.")
   @query

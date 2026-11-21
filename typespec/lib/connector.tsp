@@ -71,7 +71,7 @@ model ConnectorAuthorizationFailed {
   reason: ConnectorAuthorizationFailureReason;
 
   @doc("What failed and what fixes it, with the provider's answer sanitized; it never quotes a token response.")
-  detail: string;
+  detail: Detail;
 
   failedAt: offsetDateTime;
 }
@@ -145,7 +145,7 @@ model ConnectorAuthorization {
   connectorId: EntityId;
 
   @doc("The provider's authorization page, with the control plane's callback, this authorization's PKCE S256 challenge, its signed state and the resource.")
-  authorizeUrl: url;
+  authorizeUrl: HttpUrl;
 
   @doc("When the callback must arrive by, or the connector reads AuthorizationFailed AuthorizationExpired.")
   callbackDueAt: offsetDateTime;
