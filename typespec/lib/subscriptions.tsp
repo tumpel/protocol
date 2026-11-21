@@ -178,7 +178,8 @@ namespace V1 {
     @doc("""
       Creates an Active subscription whose cursor starts at the end of the event log. Only a person
       creates one: a call with a turn token is refused Forbidden. Refused InvalidRequest when the
-      session's harness takes no goal, or when the plan and the goal leave no room for one event;
+      session's harness takes no goal, when the plan and the goal leave no room for one event, or
+      when crewTags is not empty and the session's persona has no tumpelMcp;
       SessionArchived or SessionFailed when the session is.
       """)
     @post
