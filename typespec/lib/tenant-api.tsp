@@ -22,7 +22,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 9;
+const TenantApiVersion = 10;
 
 namespace TenantApi {
 
@@ -610,6 +610,7 @@ model PrebuildBuildDue {
 model PrebuildDeadlineReachedInput {
   tenantId: EntityId;
   due: PrebuildDispatchDue | PrebuildBuildDue;
+  @minValue(0) retries: int32;
 }
 
 model RepositoryRef {
@@ -1255,6 +1256,7 @@ model SessionDueDeadline {
 model DeadlineReachedInput {
   tenantId: EntityId;
   due: SessionDueDeadline;
+  @minValue(0) retries: int32;
 }
 
 model ListPersonasRequest {
