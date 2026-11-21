@@ -66,6 +66,7 @@
             "$ref": "#/components/schemas/SubscriptionEventType"
           },
           "minItems": 1,
+          "maxItems": 100,
           "description": "The event types that start a delivery turn."
         },
         "crewTags": {
@@ -252,16 +253,13 @@
           "$ref": "#/components/schemas/Sha256Digest"
         },
         "imageUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "kernelUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "manifestUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         }
       },
       "description": "The base image of a layered boot, the current release's ReleaseBaseImage for the host's\narchitecture. `imageUrl`, `kernelUrl` and `manifestUrl` are presigned GETs of the ext4 image, the\nkernel and the BaseImageManifest document stored under `imageDigest`, `kernelDigest` and\n`manifestDigest` in the release bucket."
@@ -358,7 +356,7 @@
           "$ref": "#/components/schemas/Channel.BoxTeardownFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "failedAt": {
           "type": "string",
@@ -482,7 +480,7 @@
           "$ref": "#/components/schemas/ClaudeSetupFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "failedAt": {
           "type": "string",
@@ -530,11 +528,14 @@
           "$ref": "#/components/schemas/Channel.BootImage"
         },
         "tokenUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "tokenCredential": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
           "minLength": 43
         },
         "expiresAt": {
@@ -562,8 +563,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "signInUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "userCode": {
           "type": "string",
@@ -589,15 +589,17 @@
           "$ref": "#/components/schemas/DisplayName"
         },
         "url": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "tokenUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "tokenCredential": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
           "minLength": 43
         }
       },
@@ -623,24 +625,34 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Channel.DispatchVariable"
-          }
+          },
+          "maxItems": 1000
         },
         "arguments": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/components/schemas/Summary"
           },
+          "maxItems": 64,
           "description": "The harness arguments the catalog maps the credential to; they hold no secret. A grant without them gives the guest none."
         },
         "credentialFile": {
           "type": "object",
           "properties": {
             "path": {
-              "type": "string",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/PathText"
+                }
+              ],
               "minLength": 1
             },
             "value": {
-              "type": "string",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/CredentialText"
+                }
+              ],
               "minLength": 1
             }
           },
@@ -655,6 +667,7 @@
           "items": {
             "$ref": "#/components/schemas/Channel.DispatchConnector"
           },
+          "maxItems": 1000,
           "description": "The session's connectors, none when its persona lists none. The guest forwarder serves each at its loopback route and fetches its access token from tokenUrl with tokenCredential. Neither reaches the harness."
         }
       },
@@ -668,11 +681,19 @@
       ],
       "properties": {
         "name": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "value": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CredentialText"
+            }
+          ],
           "minLength": 1
         }
       },
@@ -708,16 +729,13 @@
           "$ref": "#/components/schemas/Sha256Digest"
         },
         "imageUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "kernelUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "manifestUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "downloadExpiresAt": {
           "type": "string",
@@ -743,12 +761,10 @@
           "$ref": "#/components/schemas/ReleaseHarnessLayer"
         },
         "layerUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "manifestUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         }
       },
       "description": "The harness layer of a layered boot, the current release's ReleaseHarnessLayer for the session's\nharness version and the host's architecture. `layerUrl` and `manifestUrl` are presigned GETs of\nthe squashfs file and the HarnessLayerManifest document stored under `layer.layerDigest` and\n`layer.manifestDigest` in the release bucket."
@@ -822,8 +838,7 @@
           "minimum": 1
         },
         "url": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         }
       },
       "description": "One pack object stored under `<tenantId>/packs/<packDigest>`, `sizeBytes` long, and `url` a\npresigned URL of that object alone."
@@ -848,8 +863,7 @@
           "$ref": "#/components/schemas/PersonaFileSize"
         },
         "downloadUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "downloadExpiresAt": {
           "type": "string",
@@ -1040,8 +1054,7 @@
           "$ref": "#/components/schemas/StorageKey"
         },
         "downloadUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "downloadExpiresAt": {
           "type": "string",
@@ -1073,7 +1086,7 @@
           "$ref": "#/components/schemas/Channel.SnapshotFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "failedAt": {
           "type": "string",
@@ -1201,12 +1214,12 @@
           "$ref": "#/components/schemas/SupervisorUpdateFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "outputTail": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/components/schemas/Detail"
           },
           "maxItems": 20
         },
@@ -1242,7 +1255,11 @@
           "$ref": "#/components/schemas/Sha256Digest"
         },
         "releaseVersion": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "boxesRunning": {
@@ -1328,12 +1345,20 @@
           "format": "date-time"
         },
         "credentialFile": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CredentialText"
+            }
+          ],
           "minLength": 1,
           "description": "The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member."
         },
         "warning": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "minLength": 1,
           "description": "The guest's warning for a turn the harness completed, such as a box disk with less than a hundredth of it free; the control plane shows it on the turn read."
         }
@@ -1363,14 +1388,18 @@
           "$ref": "#/components/schemas/TurnFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "failedAt": {
           "type": "string",
           "format": "date-time"
         },
         "credentialFile": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CredentialText"
+            }
+          ],
           "minLength": 1,
           "description": "The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member."
         }
@@ -1421,7 +1450,7 @@
           "$ref": "#/components/schemas/Sequence"
         },
         "text": {
-          "type": "string"
+          "$ref": "#/components/schemas/LongText"
         }
       },
       "description": "One harness-native JSONL line. `lineSeq` continues the session's line count, so lines of a turn arrive in `lineSeq` order with no gap."
@@ -1449,7 +1478,7 @@
           "$ref": "#/components/schemas/RepositoryCloneFailureCause"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "failedAt": {
           "type": "string",
@@ -1546,13 +1575,19 @@
           ]
         },
         "authorizeUrl": {
-          "type": "string",
-          "format": "uri",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/HttpUrl"
+            }
+          ],
           "description": "CircleCI's consent page, with this authorization's client_id, PKCE S256 challenge and state."
         },
         "redirectUri": {
-          "type": "string",
-          "format": "uri",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/HttpUrl"
+            }
+          ],
           "description": "The loopback address CircleCI sends the browser to, http://127.0.0.1:47151/circleci/callback; nothing listens there unless the tumpel CLI does."
         },
         "redirectDueAt": {
@@ -1580,7 +1615,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/CircleCIOrganization"
-          }
+          },
+          "maxItems": 1000
         },
         "chooseDueAt": {
           "type": "string",
@@ -1641,7 +1677,11 @@
           "$ref": "#/components/schemas/CircleCIAuthorizationFailureReason"
         },
         "detail": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "What failed and what fixes it."
         },
         "failedAt": {
@@ -1728,7 +1768,11 @@
           "$ref": "#/components/schemas/DisplayName"
         },
         "slug": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "description": "The organization's slug, such as gh/acme or circleci/<id>."
         }
       },
@@ -1799,6 +1843,7 @@
     },
     "CircleCIUuid": {
       "type": "string",
+      "maxLength": 36,
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
       "description": "A CircleCI id: an organization, a project or a pipeline definition, as a lower-case UUID."
     },
@@ -1871,8 +1916,11 @@
           ]
         },
         "signInUrl": {
-          "type": "string",
-          "format": "uri",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/HttpUrl"
+            }
+          ],
           "description": "Where the person signs in; for Claude Code the page shows the code to submit."
         },
         "userCode": {
@@ -1951,7 +1999,11 @@
           "$ref": "#/components/schemas/ClaudeSetupFailureReason"
         },
         "detail": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "What failed and what fixes it."
         },
         "failedAt": {
@@ -2162,7 +2214,11 @@
           ]
         },
         "warning": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "minLength": 1,
           "description": "A condition the turn completed under that the persona should act on, such as a box disk with less than a hundredth of it free, with its size and the boxDiskMib that raises it. Absent when there was none."
         }
@@ -2270,8 +2326,11 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "authorizeUrl": {
-          "type": "string",
-          "format": "uri",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/HttpUrl"
+            }
+          ],
           "description": "The provider's authorization page, with the control plane's callback, this authorization's PKCE S256 challenge, its signed state and the resource."
         },
         "callbackDueAt": {
@@ -2301,7 +2360,11 @@
           "$ref": "#/components/schemas/ConnectorAuthorizationFailureReason"
         },
         "detail": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "What failed and what fixes it, with the provider's answer sanitized; it never quotes a token response."
         },
         "failedAt": {
@@ -2559,8 +2622,9 @@
         "variableNames": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/ShortText"
+          },
+          "maxItems": 1000
         },
         "repositoryCredentialSource": {
           "allOf": [
@@ -2585,6 +2649,16 @@
         "CredentialFile"
       ],
       "description": "The kinds of provider credential a secret set can hold."
+    },
+    "CredentialText": {
+      "type": "string",
+      "maxLength": 65536,
+      "description": "A credential file or a variable value a harness reads, such as an OAuth credentials JSON."
+    },
+    "Detail": {
+      "type": "string",
+      "maxLength": 16384,
+      "description": "What failed and what fixes it, a warning, or a description. It may carry the tail of a\nharness's output, which the harness caps well below this."
     },
     "DisplayName": {
       "type": "string",
@@ -2663,6 +2737,7 @@
             "$ref": "#/components/schemas/SubscriptionEventType"
           },
           "minItems": 1,
+          "maxItems": 100,
           "description": "The event types that start a delivery turn."
         },
         "crewTags": {
@@ -2850,7 +2925,11 @@
           "$ref": "#/components/schemas/TurnFailureReason"
         },
         "detail": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "What failed and what fixes it, with the tail of the harness's standard error when there is one."
         },
         "failedAt": {
@@ -2871,7 +2950,11 @@
           "$ref": "#/components/schemas/SecretName"
         },
         "value": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CredentialText"
+            }
+          ],
           "minLength": 1
         }
       },
@@ -3021,13 +3104,15 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/FixedVariable"
-          }
+          },
+          "maxItems": 100
         },
         "arguments": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/Summary"
+          },
+          "maxItems": 64
         },
         "costBasis": {
           "$ref": "#/components/schemas/CostBasis"
@@ -3091,7 +3176,8 @@
     },
     "HarnessVersion": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "maxLength": 100
     },
     "HostArchitecture": {
       "type": "string",
@@ -3102,6 +3188,7 @@
     },
     "HostLabel": {
       "type": "string",
+      "maxLength": 63,
       "pattern": "^[a-z0-9][a-z0-9._=-]{0,62}$",
       "description": "A label a host carries for placement, such as gpu or region-eu."
     },
@@ -3222,6 +3309,12 @@
       },
       "description": "What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts\nthe paused boxes it holds, `loadAverage` is the one-minute load average of the host,\nand `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the\nhost gives box disks: the free disk under its dataDir and what its boxes already wrote, less the\nheadroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host\nadmits a box only while its disk fits the budget beside the held ones; a supervisor older than\nthe box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal\nless the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it\nholds. A host admits a box only while its memory fits the budget beside the held ones, whatever\ntheir count; a supervisor older than the memory budget sends neither."
     },
+    "HttpUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 4096,
+      "description": "A URL the API checks as one."
+    },
     "ImageHarness": {
       "type": "string",
       "enum": [
@@ -3233,6 +3326,11 @@
         "Shell"
       ],
       "description": "The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot."
+    },
+    "LongText": {
+      "type": "string",
+      "maxLength": 1048576,
+      "description": "A line of harness output or a document such as a script or a devcontainer.json. The guest\nprotocol carries frames up to 4 MiB, but a single line past 1 MiB is refused instead of stored."
     },
     "ModelName": {
       "type": "string",
@@ -3286,7 +3384,8 @@
           "items": {
             "$ref": "#/components/schemas/ModelName"
           },
-          "minItems": 1
+          "minItems": 1,
+          "maxItems": 1000
         }
       },
       "description": "The harness runs only the listed models with the credential. A session start or turn send naming another model is refused before a box boots."
@@ -3537,8 +3636,11 @@
           ]
         },
         "authorizeUrl": {
-          "type": "string",
-          "format": "uri",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/HttpUrl"
+            }
+          ],
           "description": "OpenRouter's authorization page, with the control plane's callback_url, this authorization's PKCE S256 challenge and its signed state."
         },
         "callbackDueAt": {
@@ -3615,7 +3717,11 @@
           "$ref": "#/components/schemas/OpenRouterAuthorizationFailureReason"
         },
         "detail": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "What failed and what fixes it."
         },
         "failedAt": {
@@ -3661,6 +3767,11 @@
         }
       },
       "description": "Where an OpenRouter authorization is: the authorization URL while it waits for the callback, the exchange time limit while it spends the code, the key label once Completed, the reason once Failed."
+    },
+    "PathText": {
+      "type": "string",
+      "maxLength": 4096,
+      "description": "A file system path, a socket or an object storage key; 4096 is the Linux PATH_MAX."
     },
     "PausedSubscription": {
       "type": "object",
@@ -3729,6 +3840,7 @@
             "$ref": "#/components/schemas/SubscriptionEventType"
           },
           "minItems": 1,
+          "maxItems": 100,
           "description": "The event types that start a delivery turn."
         },
         "crewTags": {
@@ -3899,8 +4011,11 @@
           "format": "date-time"
         },
         "logUrl": {
-          "type": "string",
-          "format": "uri",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/HttpUrl"
+            }
+          ],
           "description": "The transcript of the prebuild's turn: the output of the repository's setup step."
         },
         "createdAt": {
@@ -4136,11 +4251,19 @@
           "$ref": "#/components/schemas/PrebuildFailurePhase"
         },
         "detail": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "What failed, with what the provider reported."
         },
         "fix": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "What fixes it."
         },
         "createdAt": {
@@ -4344,7 +4467,8 @@
           "items": {
             "$ref": "#/components/schemas/TenantEventType"
           },
-          "minItems": 1
+          "minItems": 1,
+          "maxItems": 100
         },
         "createdAt": {
           "type": "integer",
@@ -4370,7 +4494,8 @@
           "items": {
             "$ref": "#/components/schemas/TenantEventType"
           },
-          "minItems": 1
+          "minItems": 1,
+          "maxItems": 100
         },
         "keys": {
           "$ref": "#/components/schemas/PushSubscriptionKeys"
@@ -4386,12 +4511,20 @@
       ],
       "properties": {
         "p256dh": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
           "pattern": "^[A-Za-z0-9_-]{87}$",
           "description": "The browser's P-256 public key, uncompressed."
         },
         "auth": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
           "pattern": "^[A-Za-z0-9_-]{22}$",
           "description": "The 16-byte authentication secret."
         }
@@ -4740,6 +4873,7 @@
           "items": {
             "$ref": "#/components/schemas/SecretKey"
           },
+          "maxItems": 200,
           "readOnly": true
         },
         "createdAt": {
@@ -4769,7 +4903,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/SecretValue"
-          }
+          },
+          "maxItems": 200
         }
       },
       "description": "A named set of secrets: at most one credential per provider, and any number of variables. Values are write-only."
@@ -4784,7 +4919,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/SecretMemberUpdate"
-          }
+          },
+          "maxItems": 200
         }
       },
       "description": "Changes the set's name when it names one, and writes each member it lists as an update does: a\nmember sent without a value keeps the value stored under its previousName, or under its name when\nit is not renamed. Every member it leaves out keeps its value."
@@ -4803,7 +4939,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/SecretMemberUpdate"
-          }
+          },
+          "maxItems": 200
         }
       },
       "description": "Sets the set's name and its list of members. A member the update leaves out is deleted with its\nvalue. A member sent without a value keeps the value stored under its previousName, or under its\nname when it is not renamed."
@@ -5037,7 +5174,11 @@
           "readOnly": true
         },
         "harnessVersion": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "readOnly": true
         },
         "model": {
@@ -5242,14 +5383,13 @@
           "$ref": "#/components/schemas/GitHubIssueNumber"
         },
         "title": {
-          "type": "string"
+          "$ref": "#/components/schemas/Summary"
         },
         "htmlUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "branch": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       },
       "description": "The GitHub issue of the session's repository that the session was started from, and the branch its first prompt asks for."
@@ -5274,14 +5414,13 @@
           "$ref": "#/components/schemas/GitHubIssueNumber"
         },
         "title": {
-          "type": "string"
+          "$ref": "#/components/schemas/Summary"
         },
         "htmlUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "branch": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       },
       "description": "The session started from a GitHub issue with Sessions_startFromIssue, with the branch its first prompt asks for."
@@ -5340,7 +5479,7 @@
           "$ref": "#/components/schemas/PrebuildLayerAbsence"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       },
       "description": "The session's files start without a prebuild's layer. `detail` states why and what fixes it."
@@ -5501,6 +5640,7 @@
     },
     "SessionTag": {
       "type": "string",
+      "maxLength": 63,
       "pattern": "^[a-z0-9][a-z0-9:._-]{0,62}$",
       "description": "A tag that groups sessions, such as crew:docs. A session carries at most 16."
     },
@@ -5512,6 +5652,7 @@
           "items": {
             "$ref": "#/components/schemas/SessionTag"
           },
+          "maxItems": 16,
           "description": "Tags to add; a tag the session already has stays once."
         },
         "remove": {
@@ -5519,6 +5660,7 @@
           "items": {
             "$ref": "#/components/schemas/SessionTag"
           },
+          "maxItems": 64,
           "description": "Tags to remove; a tag the session does not have is ignored."
         }
       },
@@ -5526,8 +5668,14 @@
     },
     "Sha256Digest": {
       "type": "string",
+      "maxLength": 64,
       "pattern": "^[0-9a-f]{64}$",
       "description": "A lower-case hex SHA-256 digest: the name of a file in the image cache, or of a persona file blob."
+    },
+    "ShortText": {
+      "type": "string",
+      "maxLength": 256,
+      "description": "A short value: a name, a kind, a status, a version, a branch, a commit or an id another system issued."
     },
     "Snapshot": {
       "type": "object",
@@ -5603,7 +5751,7 @@
           "$ref": "#/components/schemas/Channel.SnapshotFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "failedAt": {
           "type": "string",
@@ -5840,7 +5988,11 @@
           "$ref": "#/components/schemas/StopFailureReason"
         },
         "detail": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "What failed and what fixes it."
         },
         "failedAt": {
@@ -5931,6 +6083,7 @@
             "$ref": "#/components/schemas/SubscriptionEventType"
           },
           "minItems": 1,
+          "maxItems": 100,
           "description": "The event types that start a delivery turn."
         },
         "crewTags": {
@@ -6284,6 +6437,11 @@
         }
       }
     },
+    "Summary": {
+      "type": "string",
+      "maxLength": 1024,
+      "description": "One line a person reads: a title, a client name, a cursor or an OAuth scope list."
+    },
     "SupervisorUpdateFailureReason": {
       "type": "string",
       "enum": [
@@ -6318,12 +6476,12 @@
           "$ref": "#/components/schemas/SupervisorUpdateFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "outputTail": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/components/schemas/Detail"
           },
           "maxItems": 20
         },
@@ -6434,7 +6592,11 @@
           "$ref": "#/components/schemas/Sha256Digest"
         },
         "releaseVersion": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "boxesRunning": {
@@ -6539,7 +6701,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.ConfigWrite"
-          }
+          },
+          "maxItems": 5000
         },
         "now": {
           "type": "integer",
@@ -6667,7 +6830,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -6713,7 +6876,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -6731,7 +6894,7 @@
           ]
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -6901,7 +7064,7 @@
           ]
         },
         "callerWorkflow": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -6935,7 +7098,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "cancelledBy": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "now": {
           "type": "integer",
@@ -7004,7 +7167,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "host": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -7028,7 +7191,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "organizationId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "now": {
           "type": "integer",
@@ -7210,22 +7373,22 @@
       ],
       "properties": {
         "repository": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "projectSlug": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "projectId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "pipelineDefinitionId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "webhookId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "signingSecret": {
-          "type": "string"
+          "$ref": "#/components/schemas/Token"
         }
       }
     },
@@ -7247,10 +7410,10 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "accountLabel": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "organizationId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "credential": {
           "anyOf": [
@@ -7406,7 +7569,7 @@
           ]
         },
         "jobId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -7429,7 +7592,7 @@
           "format": "int32"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -7444,7 +7607,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "projectId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -7498,7 +7661,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "repository": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -7555,7 +7718,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -7610,6 +7773,11 @@
       "properties": {
         "token": {
           "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
           "nullable": true
         }
       }
@@ -7623,13 +7791,13 @@
       ],
       "properties": {
         "pipelineId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "headSha": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "jobId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -7654,7 +7822,7 @@
           "$ref": "#/components/schemas/Prebuild"
         },
         "defaultBranch": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "upload": {
           "type": "object",
@@ -7666,7 +7834,7 @@
           "nullable": true
         },
         "organizationId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "pipeline": {
           "$ref": "#/components/schemas/TenantApi.RecordedPipeline"
@@ -7684,7 +7852,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "webhookId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -7695,7 +7863,7 @@
       ],
       "properties": {
         "projectId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -7729,6 +7897,11 @@
       "properties": {
         "secret": {
           "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
           "nullable": true
         }
       }
@@ -7768,7 +7941,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.CircleCIWebhook"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -7782,20 +7956,19 @@
       ],
       "properties": {
         "type": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "workflow": {
           "type": "object",
           "properties": {
             "name": {
-              "type": "string"
+              "$ref": "#/components/schemas/ShortText"
             },
             "status": {
-              "type": "string"
+              "$ref": "#/components/schemas/ShortText"
             },
             "url": {
-              "type": "string",
-              "format": "uri"
+              "$ref": "#/components/schemas/HttpUrl"
             }
           },
           "required": [
@@ -7805,10 +7978,10 @@
           ]
         },
         "pipelineId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "projectId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -7945,7 +8118,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -8002,7 +8175,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -8055,7 +8228,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.Unplaceable"
-          }
+          },
+          "maxItems": 1000
         }
       }
     },
@@ -8168,7 +8342,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "redirectedUrl": {
-          "type": "string"
+          "$ref": "#/components/schemas/UrlText"
         },
         "now": {
           "type": "integer",
@@ -8380,7 +8554,7 @@
           ]
         },
         "constraint": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -8398,7 +8572,7 @@
           ]
         },
         "resource": {
-          "type": "string"
+          "$ref": "#/components/schemas/UrlText"
         }
       }
     },
@@ -8516,14 +8690,29 @@
       "properties": {
         "GitHubActions": {
           "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "nullable": true
         },
         "CircleCI": {
           "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "nullable": true
         },
         "Namespace": {
           "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "nullable": true
         }
       }
@@ -8699,10 +8888,15 @@
           ]
         },
         "code": {
-          "type": "string"
+          "$ref": "#/components/schemas/Token"
         },
         "issuer": {
           "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/UrlText"
+            }
+          ],
           "nullable": true
         }
       }
@@ -8721,7 +8915,7 @@
           ]
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -8739,7 +8933,7 @@
           ]
         },
         "error": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -8757,7 +8951,7 @@
           "$ref": "#/components/schemas/TenantApi.ConnectorStateClaims"
         },
         "stateHash": {
-          "type": "string"
+          "$ref": "#/components/schemas/Token"
         },
         "callback": {
           "anyOf": [
@@ -8792,7 +8986,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -8878,7 +9072,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -8896,7 +9090,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -8928,7 +9122,7 @@
           ]
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -8960,7 +9154,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -8978,7 +9172,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -8999,19 +9193,35 @@
           ]
         },
         "tenantId": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "connectorId": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "connectorAuthorizationId": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "principalId": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         }
       },
@@ -9122,10 +9332,10 @@
           "$ref": "#/components/schemas/ConnectorAuth"
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "url": {
-          "type": "string"
+          "$ref": "#/components/schemas/UrlText"
         },
         "now": {
           "type": "integer",
@@ -9723,7 +9933,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.TurnHandoff"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -10333,8 +10544,9 @@
         "parameters": {
           "type": "object",
           "additionalProperties": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/Summary"
+          },
+          "maxProperties": 100
         },
         "now": {
           "type": "integer",
@@ -10437,10 +10649,10 @@
           ]
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "expiresAt": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -11369,19 +11581,19 @@
           "$ref": "#/components/schemas/TenantApi.RepositoryRef"
         },
         "repository": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "guestImageDigest": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "rootfsKey": {
-          "type": "string"
+          "$ref": "#/components/schemas/PathText"
         },
         "callerWorkflow": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "apiOrigin": {
-          "type": "string"
+          "$ref": "#/components/schemas/UrlText"
         },
         "rebuild": {
           "type": "boolean"
@@ -11409,7 +11621,7 @@
           "$ref": "#/components/schemas/Prebuild"
         },
         "defaultBranch": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "upload": {
           "type": "object",
@@ -11447,7 +11659,7 @@
           "format": "int64"
         },
         "login": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       },
       "description": "The GitHub account a repository token secret acts as, when the set holds one."
@@ -11520,7 +11732,7 @@
           ]
         },
         "reason": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -11903,12 +12115,20 @@
           "minimum": 1
         },
         "publicKey": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
           "minLength": 1,
           "description": "The host's Ed25519 public key, base64. The private key never leaves the host."
         },
         "supervisorVersion": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "labels": {
@@ -11916,6 +12136,7 @@
           "items": {
             "$ref": "#/components/schemas/HostLabel"
           },
+          "maxItems": 64,
           "readOnly": true
         },
         "createdAt": {
@@ -11985,16 +12206,17 @@
       ],
       "properties": {
         "harness": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "harnessVersion": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "architectures": {
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/HostArchitecture"
-          }
+          },
+          "maxItems": 100
         }
       }
     },
@@ -12011,14 +12233,13 @@
           "$ref": "#/components/schemas/GitHubIssueNumber"
         },
         "title": {
-          "type": "string"
+          "$ref": "#/components/schemas/Summary"
         },
         "htmlUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "branch": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -12036,7 +12257,7 @@
           "$ref": "#/components/schemas/Prebuild"
         },
         "defaultBranch": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "callerWorkflow": {
           "anyOf": [
@@ -12049,10 +12270,10 @@
           ]
         },
         "headSha": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "rootfsKey": {
-          "type": "string"
+          "$ref": "#/components/schemas/PathText"
         }
       }
     },
@@ -12069,10 +12290,10 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "repository": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "headSha": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "runId": {
           "type": "integer",
@@ -12199,7 +12420,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/CircleCIProject"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -12255,7 +12477,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/ClaudeSetup"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -12307,7 +12530,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Connector"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -12359,7 +12583,8 @@
           "items": {
             "$ref": "#/components/schemas/CredentialHandover"
           },
-          "nullable": true
+          "nullable": true,
+          "maxItems": 10000
         }
       }
     },
@@ -12392,6 +12617,7 @@
           "items": {
             "$ref": "#/components/schemas/TenantEventType"
           },
+          "maxItems": 100,
           "description": "The event types to keep; an empty list keeps every type."
         },
         "sessionId": {
@@ -12505,7 +12731,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/ReportedHostUsage"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -12552,7 +12779,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Prebuild"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -12599,7 +12827,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.StoredPersona"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -12638,7 +12867,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/HarnessPin"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -12654,6 +12884,11 @@
         },
         "repository": {
           "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "nullable": true
         }
       }
@@ -12690,7 +12925,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Prebuild"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -12741,7 +12977,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/PushSubscription"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -12843,7 +13080,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Session"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -12895,7 +13133,8 @@
           "items": {
             "$ref": "#/components/schemas/Snapshot"
           },
-          "nullable": true
+          "nullable": true,
+          "maxItems": 10000
         }
       }
     },
@@ -12947,7 +13186,8 @@
           "items": {
             "$ref": "#/components/schemas/Steer"
           },
-          "nullable": true
+          "nullable": true,
+          "maxItems": 10000
         }
       }
     },
@@ -12999,7 +13239,8 @@
           "items": {
             "$ref": "#/components/schemas/StopFailure"
           },
-          "nullable": true
+          "nullable": true,
+          "maxItems": 10000
         }
       }
     },
@@ -13050,7 +13291,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Subscription"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -13097,7 +13339,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Trigger"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -13149,7 +13392,8 @@
           "items": {
             "$ref": "#/components/schemas/Turn"
           },
-          "nullable": true
+          "nullable": true,
+          "maxItems": 10000
         }
       }
     },
@@ -13196,7 +13440,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/WebhookEndpoint"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -13220,16 +13465,17 @@
           "$ref": "#/components/schemas/ModelName"
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "credentialKind": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "allowed": {
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/ModelName"
-          }
+          },
+          "maxItems": 1000
         }
       }
     },
@@ -13250,10 +13496,10 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "accountLabel": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "workspaceId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "createdAt": {
           "type": "integer",
@@ -13326,16 +13572,17 @@
           "$ref": "#/components/schemas/ClaudeSetupHarness"
         },
         "harnessVersion": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "hosts": {
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.HostRecord"
-          }
+          },
+          "maxItems": 1000
         },
         "endpoint": {
-          "type": "string"
+          "$ref": "#/components/schemas/UrlText"
         }
       }
     },
@@ -13350,7 +13597,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "controlPlaneOrigin": {
-          "type": "string"
+          "$ref": "#/components/schemas/UrlText"
         }
       }
     },
@@ -13376,16 +13623,17 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.HostRecord"
-          }
+          },
+          "maxItems": 1000
         },
         "harness": {
           "$ref": "#/components/schemas/Harness"
         },
         "harnessVersion": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "endpoint": {
-          "type": "string"
+          "$ref": "#/components/schemas/UrlText"
         },
         "start": {
           "$ref": "#/components/schemas/SessionStart"
@@ -13409,7 +13657,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/HarnessCredential"
-          }
+          },
+          "maxItems": 100
         }
       }
     },
@@ -13429,7 +13678,7 @@
           ]
         },
         "model": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "provider": {
           "$ref": "#/components/schemas/ModelProvider"
@@ -13438,7 +13687,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/HarnessCredential"
-          }
+          },
+          "maxItems": 100
         }
       }
     },
@@ -13478,7 +13728,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Channel.PersonaFileDownload"
-          }
+          },
+          "maxItems": 100
         },
         "image": {
           "$ref": "#/components/schemas/Channel.BootImage"
@@ -13684,7 +13935,7 @@
           ]
         },
         "code": {
-          "type": "string"
+          "$ref": "#/components/schemas/Token"
         }
       }
     },
@@ -13825,8 +14076,9 @@
         "names": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/ShortText"
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -14137,7 +14389,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 100
         },
         "boxMemoryMib": {
           "type": "integer",
@@ -14161,7 +14414,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.StoredFile"
-          }
+          },
+          "maxItems": 100
         }
       },
       "description": "What a persona edit writes. The harness is fixed at create."
@@ -14197,7 +14451,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 1000
         }
       }
     },
@@ -14228,7 +14483,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 100
         },
         "boxMemoryMib": {
           "type": "integer",
@@ -14300,7 +14556,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 100
         },
         "boxMemoryMib": {
           "type": "integer",
@@ -14324,7 +14581,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.StoredFile"
-          }
+          },
+          "maxItems": 100
         },
         "harness": {
           "$ref": "#/components/schemas/Harness"
@@ -14431,7 +14689,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -14453,14 +14711,15 @@
         "permissions": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/ShortText"
+          },
+          "maxItems": 100
         },
         "appSlug": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "appOwner": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -14496,7 +14755,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -14525,13 +14784,13 @@
           "$ref": "#/components/schemas/PrebuildConfigSource"
         },
         "defaultBranch": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "headSha": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "rootfsKey": {
-          "type": "string"
+          "$ref": "#/components/schemas/PathText"
         }
       }
     },
@@ -14631,13 +14890,13 @@
       ],
       "properties": {
         "repository": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "inputDigest": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "guestImageDigest": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -14649,7 +14908,7 @@
       ],
       "properties": {
         "layerDigest": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "layerSizeBytes": {
           "type": "integer",
@@ -14688,11 +14947,12 @@
         "permissions": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/ShortText"
+          },
+          "maxItems": 100
         },
         "appSlug": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -14710,7 +14970,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -14726,7 +14986,7 @@
           "format": "int64"
         },
         "headSha": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -14777,13 +15037,13 @@
           "$ref": "#/components/schemas/TenantApi.RepositoryRef"
         },
         "defaultBranch": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "headSha": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "rootfsKey": {
-          "type": "string"
+          "$ref": "#/components/schemas/PathText"
         }
       }
     },
@@ -14801,7 +15061,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -14819,7 +15079,7 @@
           ]
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       }
     },
@@ -14976,7 +15236,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantEventType"
-          }
+          },
+          "maxItems": 100
         }
       },
       "description": "Where and how a push subscription receives its notifications."
@@ -15050,7 +15311,51 @@
           ]
         },
         "token": {
-          "type": "string"
+          "$ref": "#/components/schemas/Token"
+        }
+      }
+    },
+    "TenantApi.ReadUsageInput": {
+      "type": "object",
+      "required": [
+        "tenantId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      }
+    },
+    "TenantApi.ReadUsageRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "readUsage"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.ReadUsageInput"
+        }
+      }
+    },
+    "TenantApi.ReadUsageResult": {
+      "type": "object",
+      "required": [
+        "usage"
+      ],
+      "properties": {
+        "usage": {
+          "$ref": "#/components/schemas/TenantUsage"
         }
       }
     },
@@ -15073,7 +15378,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 1000
         },
         "now": {
           "type": "integer",
@@ -15116,13 +15422,13 @@
       ],
       "properties": {
         "pipelineId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "projectId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "headSha": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "job": {
           "anyOf": [
@@ -15197,7 +15503,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "now": {
           "type": "integer",
@@ -15272,7 +15578,7 @@
           "format": "int64"
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "now": {
           "type": "integer",
@@ -15357,7 +15663,8 @@
               "read",
               "write"
             ]
-          }
+          },
+          "maxProperties": 64
         }
       }
     },
@@ -15409,10 +15716,10 @@
       ],
       "properties": {
         "owner": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -15527,26 +15834,31 @@
       ],
       "properties": {
         "action": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "runId": {
           "type": "integer",
           "format": "int64"
         },
         "repository": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "path": {
-          "type": "string"
+          "$ref": "#/components/schemas/PathText"
         },
         "headSha": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "htmlUrl": {
-          "type": "string"
+          "$ref": "#/components/schemas/UrlText"
         },
         "conclusion": {
           "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "nullable": true
         }
       },
@@ -15603,7 +15915,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.RunningTurns"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -15671,7 +15984,7 @@
           ]
         },
         "constraint": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -15723,8 +16036,9 @@
         "personas": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/ShortText"
+          },
+          "maxItems": 1000
         }
       }
     },
@@ -15757,10 +16071,10 @@
           ]
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "source": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -15795,7 +16109,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/SecretSet"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -15813,7 +16128,7 @@
           ]
         },
         "source": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -15837,13 +16152,13 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "member": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         }
       },
       "description": "A stored member no longer matches its kind, so the set cannot be read."
@@ -15907,7 +16222,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.HostRecord"
-          }
+          },
+          "maxItems": 1000
         },
         "now": {
           "type": "integer",
@@ -16304,7 +16620,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/SessionTag"
-          }
+          },
+          "maxItems": 64
         }
       },
       "description": "A patch or a start whose tags, with the crew tags a start inherits, would number more than 16; nothing changes."
@@ -16478,7 +16795,7 @@
           "format": "int64"
         },
         "value": {
-          "type": "string"
+          "$ref": "#/components/schemas/Token"
         },
         "now": {
           "type": "integer",
@@ -16730,7 +17047,7 @@
           "format": "int64"
         },
         "controlPlaneOrigin": {
-          "type": "string"
+          "$ref": "#/components/schemas/UrlText"
         },
         "now": {
           "type": "integer",
@@ -16803,8 +17120,9 @@
         "names": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/ShortText"
+          },
+          "maxItems": 1000
         }
       }
     },
@@ -16927,7 +17245,7 @@
           "$ref": "#/components/schemas/TenantApi.NewSession"
         },
         "apiOrigin": {
-          "type": "string"
+          "$ref": "#/components/schemas/UrlText"
         },
         "now": {
           "type": "integer",
@@ -17283,7 +17601,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.Unplaceable"
-          }
+          },
+          "maxItems": 1000
         }
       }
     },
@@ -17336,7 +17655,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Prompt"
-          }
+          },
+          "maxItems": 1000
         }
       }
     },
@@ -17441,6 +17761,11 @@
         },
         "cancelledBy": {
           "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "nullable": true
         },
         "now": {
@@ -17627,7 +17952,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 100
         },
         "boxMemoryMib": {
           "type": "integer",
@@ -17651,7 +17977,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TenantApi.StoredFileRead"
-          }
+          },
+          "maxItems": 100
         },
         "createdAt": {
           "type": "integer",
@@ -17700,7 +18027,11 @@
           "$ref": "#/components/schemas/Harness"
         },
         "harnessVersion": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "model": {
@@ -17724,7 +18055,11 @@
           "description": "The disk in MiB the box boots with: the persona's boxDiskMib, or BoxDiskLimit.DefaultMib. A box that\nis already warm keeps the disk it booted with. A supervisor given an offer without it boots the\nbox with overlayMib of its runtime config, and refuses the turn PoolExhausted when the disk does\nnot fit its disk budget."
         },
         "prebuildCommitSha": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "pattern": "^[0-9a-f]{40}$",
           "description": "Set when the turn builds a prebuild: the box clones the repository at this commit and runs the\nrepository's setup step, /opt/tumpel/prebuild.mjs run, in place of the harness, its output lines\nbeing the turn's lines. The credential then holds only a GITHUB_TOKEN that reads the\nrepository's contents, and the snapshot the control plane asks for after the turn is the\nprebuild's layer."
         }
@@ -17747,7 +18082,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "code": {
-          "type": "string"
+          "$ref": "#/components/schemas/Token"
         },
         "now": {
           "type": "integer",
@@ -17973,7 +18308,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 1000
         }
       }
     },
@@ -18009,7 +18345,8 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "#/components/schemas/TenantApi.SupervisorUpdates"
-          }
+          },
+          "maxProperties": 1000
         }
       }
     },
@@ -18094,6 +18431,48 @@
       },
       "description": "The request names a version outside the instance's window, or an older version an adapter cannot translate. The caller answers a retryable failure."
     },
+    "TenantApi.TenantLimitReached": {
+      "type": "object",
+      "required": [
+        "refusal",
+        "tier",
+        "measure",
+        "window",
+        "used",
+        "limit",
+        "resetsAt"
+      ],
+      "properties": {
+        "refusal": {
+          "type": "string",
+          "enum": [
+            "TenantLimitReached"
+          ]
+        },
+        "tier": {
+          "$ref": "#/components/schemas/TenantTier"
+        },
+        "measure": {
+          "$ref": "#/components/schemas/TenantUsageMeasure"
+        },
+        "window": {
+          "$ref": "#/components/schemas/TenantUsageWindow"
+        },
+        "used": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "resetsAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The tenant reached one of its limits and the instance served nothing. The caller answers 429 naming the limit, retryable after the window resets."
+    },
     "TenantApi.TenantOperationUnknown": {
       "type": "object",
       "required": [
@@ -18108,7 +18487,7 @@
           ]
         },
         "operation": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       },
       "description": "The instance does not know the operation: it runs older code. The caller answers a retryable failure."
@@ -18124,6 +18503,9 @@
         },
         {
           "$ref": "#/components/schemas/TenantApi.TenantRequestInvalid"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.TenantLimitReached"
         }
       ],
       "discriminator": {
@@ -18131,7 +18513,8 @@
         "mapping": {
           "TenantApiVersionUnsupported": "#/components/schemas/TenantApi.TenantApiVersionUnsupported",
           "TenantOperationUnknown": "#/components/schemas/TenantApi.TenantOperationUnknown",
-          "TenantRequestInvalid": "#/components/schemas/TenantApi.TenantRequestInvalid"
+          "TenantRequestInvalid": "#/components/schemas/TenantApi.TenantRequestInvalid",
+          "TenantLimitReached": "#/components/schemas/TenantApi.TenantLimitReached"
         }
       },
       "description": "Why the tenant Durable Object served no result."
@@ -18551,6 +18934,9 @@
           "$ref": "#/components/schemas/TenantApi.ListHostUsageRequest"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.ReadUsageRequest"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.DeferredOffersRequest"
         },
         {
@@ -18709,6 +19095,7 @@
           "forgetHostUsage": "#/components/schemas/TenantApi.ForgetHostUsageRequest",
           "runningTurnsByHost": "#/components/schemas/TenantApi.RunningTurnsByHostRequest",
           "listHostUsage": "#/components/schemas/TenantApi.ListHostUsageRequest",
+          "readUsage": "#/components/schemas/TenantApi.ReadUsageRequest",
           "deferredOffers": "#/components/schemas/TenantApi.DeferredOffersRequest",
           "turnMetricDimensions": "#/components/schemas/TenantApi.TurnMetricDimensionsRequest",
           "prepareOffer": "#/components/schemas/TenantApi.PrepareOfferRequest",
@@ -18734,13 +19121,14 @@
           ]
         },
         "operation": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "issues": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/Detail"
+          },
+          "maxItems": 100
         }
       },
       "description": "The input fails the operation's schema: a caller bug, which the caller fails as a 500."
@@ -18777,7 +19165,7 @@
           "type": "boolean"
         },
         "storageKey": {
-          "type": "string"
+          "$ref": "#/components/schemas/StorageKey"
         },
         "range": {
           "$ref": "#/components/schemas/TenantApi.ByteRange"
@@ -18909,7 +19297,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/TranscriptLine"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -19277,6 +19666,14 @@
         }
       }
     },
+    "TenantApi.TurnMetricDimensions": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/components/schemas/ShortText"
+      },
+      "maxProperties": 32,
+      "description": "The dimensions one turn reported, by name."
+    },
     "TenantApi.TurnMetricDimensionsInput": {
       "type": "object",
       "required": [
@@ -19287,7 +19684,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 1000
         }
       }
     },
@@ -19322,11 +19720,9 @@
         "dimensions": {
           "type": "object",
           "additionalProperties": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
+            "$ref": "#/components/schemas/TenantApi.TurnMetricDimensions"
+          },
+          "maxProperties": 10000
         }
       }
     },
@@ -19415,7 +19811,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Turn"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -19436,7 +19833,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 1000
         }
       }
     },
@@ -19450,7 +19848,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 1000
         }
       }
     },
@@ -19486,7 +19885,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 10000
         }
       }
     },
@@ -19497,7 +19897,7 @@
       ],
       "properties": {
         "harness": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -19548,7 +19948,7 @@
           ]
         },
         "harness": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -19821,16 +20221,17 @@
           ]
         },
         "name": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "credentialKind": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "supported": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/ShortText"
+          },
+          "maxItems": 20
         }
       }
     },
@@ -20137,7 +20538,7 @@
           ]
         },
         "jobId": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       }
     },
@@ -20320,7 +20721,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 1000
         },
         "timeoutSeconds": {
           "type": "integer",
@@ -20430,13 +20832,13 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "credential": {
-          "type": "string"
+          "$ref": "#/components/schemas/Token"
         },
         "token": {
-          "type": "string"
+          "$ref": "#/components/schemas/Token"
         },
         "tokenExpiresAt": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         },
         "now": {
           "type": "integer",
@@ -20507,7 +20909,7 @@
           ]
         },
         "constraint": {
-          "type": "string"
+          "$ref": "#/components/schemas/ShortText"
         }
       },
       "description": "A unique constraint refused the write."
@@ -20567,6 +20969,12 @@
         },
         {
           "$ref": "#/components/schemas/TriggerStartRefusedEvent"
+        },
+        {
+          "$ref": "#/components/schemas/UsageNearLimitEvent"
+        },
+        {
+          "$ref": "#/components/schemas/UsageLimitReachedEvent"
         }
       ],
       "discriminator": {
@@ -20585,7 +20993,9 @@
           "PrebuildFailed": "#/components/schemas/PrebuildFailedEvent",
           "SubscriptionPaused": "#/components/schemas/SubscriptionPausedEvent",
           "SubscriptionEnded": "#/components/schemas/SubscriptionEndedEvent",
-          "TriggerStartRefused": "#/components/schemas/TriggerStartRefusedEvent"
+          "TriggerStartRefused": "#/components/schemas/TriggerStartRefusedEvent",
+          "UsageNearLimit": "#/components/schemas/UsageNearLimitEvent",
+          "UsageLimitReached": "#/components/schemas/UsageLimitReachedEvent"
         }
       },
       "description": "A record that something happened in a tenant. The control plane appends it in the same\ntransaction as the state change it reports. It holds ids and the fact that changed; read the\nresource for the rest."
@@ -20606,9 +21016,94 @@
         "PrebuildFailed",
         "SubscriptionPaused",
         "SubscriptionEnded",
-        "TriggerStartRefused"
+        "TriggerStartRefused",
+        "UsageNearLimit",
+        "UsageLimitReached"
       ],
       "description": "The kind of a tenant event, named for the state change it records."
+    },
+    "TenantTier": {
+      "type": "string",
+      "enum": [
+        "Free",
+        "Configured"
+      ],
+      "description": "The limits a tenant runs under. Free keeps the tenant inside the allowances the hosting plan\nincludes at no charge and refuses traffic past them; Configured runs under the limits its\ndeployment configures."
+    },
+    "TenantUsage": {
+      "type": "object",
+      "required": [
+        "tier",
+        "counters"
+      ],
+      "properties": {
+        "tier": {
+          "$ref": "#/components/schemas/TenantTier"
+        },
+        "counters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantUsageCounter"
+          },
+          "maxItems": 32
+        }
+      },
+      "description": "The tenant's tier and its usage against each of its limits, as of the current windows."
+    },
+    "TenantUsageCounter": {
+      "type": "object",
+      "required": [
+        "measure",
+        "window",
+        "used",
+        "limit",
+        "resetsAt"
+      ],
+      "properties": {
+        "measure": {
+          "$ref": "#/components/schemas/TenantUsageMeasure"
+        },
+        "window": {
+          "$ref": "#/components/schemas/TenantUsageWindow"
+        },
+        "used": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "resetsAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "One limit of a tenant and how much of it the current window has used. A request past `limit`\nis refused 429 until the window ends at `resetsAt`."
+    },
+    "TenantUsageMeasure": {
+      "type": "string",
+      "enum": [
+        "Requests",
+        "Writes",
+        "RowsWritten",
+        "RowsRead"
+      ],
+      "description": "What a tenant limit counts."
+    },
+    "TenantUsageWindow": {
+      "type": "string",
+      "enum": [
+        "Minute",
+        "Hour",
+        "Day"
+      ],
+      "description": "The fixed window a tenant limit counts over."
+    },
+    "Token": {
+      "type": "string",
+      "maxLength": 16384,
+      "description": "A token, a key, a code, a nonce or a signature, as its issuer encodes it."
     },
     "TranscriptLine": {
       "type": "object",
@@ -20634,7 +21129,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "text": {
-          "type": "string"
+          "$ref": "#/components/schemas/LongText"
         },
         "createdAt": {
           "type": "integer",
@@ -20912,7 +21407,11 @@
           "description": "The code Sessions_start answers for the same refusal, or TriggerFieldMissing when the prompt names a field the event lacks."
         },
         "detail": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "What failed and the fix, in plain words."
         }
       },
@@ -21058,7 +21557,11 @@
           "$ref": "#/components/schemas/TurnFailureReason"
         },
         "detail": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "What failed and what fixes it, as the turn's failure reads."
         }
       }
@@ -21088,7 +21591,11 @@
           "$ref": "#/components/schemas/TurnFailureReason"
         },
         "detail": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "What failed and what fixes it, with the tail of the harness's standard error when there is one."
         },
         "failedAt": {
@@ -21285,6 +21792,119 @@
         "Failed"
       ]
     },
+    "UrlText": {
+      "type": "string",
+      "maxLength": 4096,
+      "description": "A URL held as text: an origin, an endpoint, a redirect or a presigned upload URL."
+    },
+    "UsageLimitReachedEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "tier",
+        "measure",
+        "window",
+        "used",
+        "limit",
+        "resetsAt"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "UsageLimitReached"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "tier": {
+          "$ref": "#/components/schemas/TenantTier"
+        },
+        "measure": {
+          "$ref": "#/components/schemas/TenantUsageMeasure"
+        },
+        "window": {
+          "$ref": "#/components/schemas/TenantUsageWindow"
+        },
+        "used": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "resetsAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "UsageNearLimitEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "tier",
+        "measure",
+        "window",
+        "used",
+        "limit",
+        "resetsAt"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "UsageNearLimit"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "tier": {
+          "$ref": "#/components/schemas/TenantTier"
+        },
+        "measure": {
+          "$ref": "#/components/schemas/TenantUsageMeasure"
+        },
+        "window": {
+          "$ref": "#/components/schemas/TenantUsageWindow"
+        },
+        "used": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "resetsAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "WebhookDelivering": {
       "type": "object",
       "required": [
@@ -21353,7 +21973,8 @@
           "items": {
             "$ref": "#/components/schemas/TenantEventType"
           },
-          "minItems": 1
+          "minItems": 1,
+          "maxItems": 100
         },
         "status": {
           "allOf": [
@@ -21386,7 +22007,8 @@
           "items": {
             "$ref": "#/components/schemas/TenantEventType"
           },
-          "minItems": 1
+          "minItems": 1,
+          "maxItems": 100
         }
       },
       "description": "An HTTPS endpoint that receives the tenant's events of the listed types, in eventId order, at\nleast once. Each request is a POST of one event as JSON. Its `Tumpel-Signature` header is the\nbase64url Ed25519 signature, under the tenant's webhook signing key, over the request body;\n`Tumpel-Event-Id` repeats the eventId so a receiver drops a repeat. A failed request is retried\nafter 1 minute, doubling to 1 hour. The URL and types are fixed at create."
@@ -21406,7 +22028,11 @@
           ]
         },
         "detail": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "description": "How the last request failed: the status the endpoint answered, or that it did not answer within 10 seconds."
         },
         "failingSince": {
