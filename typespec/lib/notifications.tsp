@@ -124,6 +124,16 @@ model PushSubscriptionPath {
   @path pushSubscriptionId: EntityId;
 }
 
+@doc("The notification payload a service worker shows for a pushed tenant event.")
+model PushNotification {
+  title: string;
+  body: string;
+
+  @doc("The dashboard path a notification tap opens.")
+  @pattern("^/")
+  path: string;
+}
+
 @doc("The control plane's VAPID public key, an uncompressed P-256 point in base64url, which a browser passes as applicationServerKey.")
 model PushKey {
   @pattern("^[A-Za-z0-9_-]{87}$")
