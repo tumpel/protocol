@@ -25,6 +25,9 @@ enum ProblemCode {
   HostRevoked: "HostRevoked",
   NoHostAvailable: "NoHostAvailable",
   PoolExhausted: "PoolExhausted",
+
+  @doc("The tenant has hosts but none is healthy: every host missed its heartbeat plus the grace period and counts as Degraded until a heartbeat or reconnect shows otherwise.")
+  HostDegraded: "HostDegraded",
   HostOffline: "HostOffline",
   HarnessNotInCatalog: "HarnessNotInCatalog",
   NoCredential: "NoCredential",

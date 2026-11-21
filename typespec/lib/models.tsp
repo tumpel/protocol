@@ -68,7 +68,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 32;
+const ChannelProtocolVersion = 33;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -197,6 +197,9 @@ enum HostHealth {
 
   @doc("The host went RateLimited three times within an hour. It gets no offers until a person restores it or the host reconnects with a new Hello.")
   Unhealthy: "Unhealthy",
+
+  @doc("The host missed its heartbeat plus the grace period. It gets no offers until a heartbeat or a reconnect shows it is alive.")
+  Degraded: "Degraded",
 }
 
 @doc("The health a host reports of itself in its Heartbeat.")
@@ -447,6 +450,9 @@ enum TurnFailureReason {
 
   @doc("The host has no box slot, memory or disk budget left for the box, and no paused box with its last turn in a snapshot can be evicted to make room; the detail names what ran out, what the host holds and what the box asked for.")
   PoolExhausted: "PoolExhausted",
+
+  @doc("The tenant has hosts but none is healthy: every host missed its heartbeat plus the grace period and counts as Degraded until a heartbeat or reconnect shows otherwise, so the turn was refused.")
+  HostDegraded: "HostDegraded",
 
   SnapshotUnreadable: "SnapshotUnreadable",
   HarnessExited: "HarnessExited",

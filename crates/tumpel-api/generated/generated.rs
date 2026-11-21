@@ -1050,6 +1050,9 @@ pub mod types {
         pub box_id: EntityId,
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
+        ///How long the person may take from the sign-in URL to submitting the code before the host fails the setup SetupTimedOut.
+        #[serde(rename = "codeSeconds")]
+        pub code_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1065,6 +1068,9 @@ pub mod types {
         pub token_url: HttpUrl,
         #[serde(rename = "type")]
         pub type_: ChannelClaudeSetupBoxOfferType,
+        ///How long the box may take from this offer to printing the sign-in URL before the host fails the setup SetupUrlMissing.
+        #[serde(rename = "urlSeconds")]
+        pub url_seconds: ::std::num::NonZeroU32,
     }
     ///`ChannelClaudeSetupBoxOfferTokenCredential`
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -4262,6 +4268,9 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
+        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         pub credential: ChannelDispatchGrant,
         #[serde(rename = "gitAuthorEmail")]
         pub git_author_email: EmailAddress,
@@ -4285,6 +4294,9 @@ pub mod types {
         pub snapshots: ::std::vec::Vec<ChannelSnapshotDownload>,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
+        ///How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.
+        #[serde(rename = "turnSeconds")]
+        pub turn_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "type")]
         pub type_: ChannelTurnOfferType,
     }
@@ -12783,6 +12795,7 @@ pub mod types {
         Healthy,
         RateLimited,
         Unhealthy,
+        Degraded,
     }
     impl ::std::fmt::Display for HostHealth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12790,6 +12803,7 @@ pub mod types {
                 Self::Healthy => f.write_str("Healthy"),
                 Self::RateLimited => f.write_str("RateLimited"),
                 Self::Unhealthy => f.write_str("Unhealthy"),
+                Self::Degraded => f.write_str("Degraded"),
             }
         }
     }
@@ -12800,6 +12814,7 @@ pub mod types {
                 "Healthy" => Ok(Self::Healthy),
                 "RateLimited" => Ok(Self::RateLimited),
                 "Unhealthy" => Ok(Self::Unhealthy),
+                "Degraded" => Ok(Self::Degraded),
                 _ => Err("invalid value".into()),
             }
         }
@@ -18787,6 +18802,7 @@ pub mod types {
         HostRevoked,
         NoHostAvailable,
         PoolExhausted,
+        HostDegraded,
         HostOffline,
         HarnessNotInCatalog,
         NoCredential,
@@ -18880,6 +18896,7 @@ pub mod types {
                 Self::HostRevoked => f.write_str("HostRevoked"),
                 Self::NoHostAvailable => f.write_str("NoHostAvailable"),
                 Self::PoolExhausted => f.write_str("PoolExhausted"),
+                Self::HostDegraded => f.write_str("HostDegraded"),
                 Self::HostOffline => f.write_str("HostOffline"),
                 Self::HarnessNotInCatalog => f.write_str("HarnessNotInCatalog"),
                 Self::NoCredential => f.write_str("NoCredential"),
@@ -18970,6 +18987,7 @@ pub mod types {
                 "HostRevoked" => Ok(Self::HostRevoked),
                 "NoHostAvailable" => Ok(Self::NoHostAvailable),
                 "PoolExhausted" => Ok(Self::PoolExhausted),
+                "HostDegraded" => Ok(Self::HostDegraded),
                 "HostOffline" => Ok(Self::HostOffline),
                 "HarnessNotInCatalog" => Ok(Self::HarnessNotInCatalog),
                 "NoCredential" => Ok(Self::NoCredential),
@@ -41202,6 +41220,9 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
+        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: TenantApiStoredTurnOfferHarnessVersion,
@@ -41214,6 +41235,9 @@ pub mod types {
         pub session_id: EntityId,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
+        ///How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.
+        #[serde(rename = "turnSeconds")]
+        pub turn_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "type")]
         pub type_: TenantApiStoredTurnOfferType,
     }
@@ -47188,6 +47212,7 @@ pub mod types {
         CredentialExpired,
         BoxBootFailed,
         PoolExhausted,
+        HostDegraded,
         SnapshotUnreadable,
         HarnessExited,
         HarnessOutOfMemory,
@@ -47222,6 +47247,7 @@ pub mod types {
                 Self::CredentialExpired => f.write_str("CredentialExpired"),
                 Self::BoxBootFailed => f.write_str("BoxBootFailed"),
                 Self::PoolExhausted => f.write_str("PoolExhausted"),
+                Self::HostDegraded => f.write_str("HostDegraded"),
                 Self::SnapshotUnreadable => f.write_str("SnapshotUnreadable"),
                 Self::HarnessExited => f.write_str("HarnessExited"),
                 Self::HarnessOutOfMemory => f.write_str("HarnessOutOfMemory"),
@@ -47259,6 +47285,7 @@ pub mod types {
                 "CredentialExpired" => Ok(Self::CredentialExpired),
                 "BoxBootFailed" => Ok(Self::BoxBootFailed),
                 "PoolExhausted" => Ok(Self::PoolExhausted),
+                "HostDegraded" => Ok(Self::HostDegraded),
                 "SnapshotUnreadable" => Ok(Self::SnapshotUnreadable),
                 "HarnessExited" => Ok(Self::HarnessExited),
                 "HarnessOutOfMemory" => Ok(Self::HarnessOutOfMemory),
@@ -56472,7 +56499,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 18;
-    pub const VERSION: u16 = 32;
+    pub const VERSION: u16 = 33;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
@@ -56487,5 +56514,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 15;
+    pub const VERSION: u16 = 16;
 }

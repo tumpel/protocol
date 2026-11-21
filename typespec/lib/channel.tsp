@@ -355,6 +355,13 @@ model TurnOffer {
   gitAuthorName: DisplayName;
   gitAuthorEmail: EmailAddress;
 
+  @doc("What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout.")
+  boxRetention: BoxRetention;
+
+  @doc("How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.")
+  @minValue(1)
+  turnSeconds: int32;
+
   @doc("""
     The memory in MiB the box boots with: the persona's boxMemoryMib, or BoxMemoryLimit.DefaultMib. A box
     that is already warm keeps the memory it booted with. A supervisor given an offer without it boots
@@ -722,6 +729,16 @@ model ClaudeSetupBoxOffer {
   tokenUrl: HttpUrl;
   @minLength(43) tokenCredential: Token;
   expiresAt: offsetDateTime;
+
+  @doc("How long the box may take from this offer to printing the sign-in URL before the host fails the setup SetupUrlMissing.")
+  @minValue(1)
+  @maxValue(3600)
+  urlSeconds: int32;
+
+  @doc("How long the person may take from the sign-in URL to submitting the code before the host fails the setup SetupTimedOut.")
+  @minValue(1)
+  @maxValue(3600)
+  codeSeconds: int32;
 }
 
 @doc("""
