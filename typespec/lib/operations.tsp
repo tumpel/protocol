@@ -597,7 +597,7 @@ model SessionListQuery {
   @query
   cursor?: EntityId;
 
-  @doc("Shorten the prompt and the goal of each session's lastTurn to their first 200 characters.")
+  @doc("Answer each session as a CompactSession, whose lastTurn leaves out its prompt and goal.")
   @query
   compact?: boolean;
 }
@@ -1142,10 +1142,10 @@ namespace V1 {
       Lists the tenant's sessions newest first, optionally only those in one state, on one host, with no
       turn since a time, created after a time, carrying every tag named or started by one trigger. Pass
       the sessionId of a page's last session as cursor to read on; a page that holds fewer than `limit`
-      sessions is the last.
+      sessions is the last. With compact, each session comes as a CompactSession.
       """)
     @get
-    list(...SessionListQuery): Session[] | ProblemResponse;
+    list(...SessionListQuery): SessionList | ProblemResponse;
 
     @doc("Reads one session; its state is Starting, Idle, Running, Stopping, Stopped, Failed or Archived.")
     @route("/{sessionId}")

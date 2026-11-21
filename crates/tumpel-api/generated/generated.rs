@@ -5663,6 +5663,345 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///`CompactCompletedTurn`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct CompactCompletedTurn {
+        ///The control plane mints the id of the box that runs the turn.
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///The image the turn's box boots, recorded when the control plane offers the turn. A turn not yet offered has none.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub image: ::std::option::Option<TurnImage>,
+        ///How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.
+        #[serde(rename = "lineCount")]
+        pub line_count: Sequence,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub state: CompactCompletedTurnState,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+        ///A condition the turn completed under that the persona should act on, such as a box disk with less than a hundredth of it free, with its size and the boxDiskMib that raises it. Absent when there was none.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub warning: ::std::option::Option<CompactCompletedTurnWarning>,
+    }
+    ///`CompactCompletedTurnState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum CompactCompletedTurnState {
+        Completed,
+    }
+    impl ::std::fmt::Display for CompactCompletedTurnState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Completed => f.write_str("Completed"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for CompactCompletedTurnState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Completed" => Ok(Self::Completed),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for CompactCompletedTurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for CompactCompletedTurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A condition the turn completed under that the persona should act on, such as a box disk with less than a hundredth of it free, with its size and the boxDiskMib that raises it. Absent when there was none.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct CompactCompletedTurnWarning(::std::string::String);
+    impl ::std::ops::Deref for CompactCompletedTurnWarning {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<CompactCompletedTurnWarning> for ::std::string::String {
+        fn from(value: CompactCompletedTurnWarning) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for CompactCompletedTurnWarning {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() < 1usize {
+                return Err("shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for CompactCompletedTurnWarning {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for CompactCompletedTurnWarning {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for CompactCompletedTurnWarning {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///`CompactFailedTurn`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct CompactFailedTurn {
+        ///The control plane mints the id of the box that runs the turn.
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///What failed and what fixes it, with the tail of the harness's standard error when there is one.
+        pub detail: ::std::string::String,
+        #[serde(rename = "failedAt")]
+        pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The image the turn's box boots, recorded when the control plane offers the turn. A turn not yet offered has none.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub image: ::std::option::Option<TurnImage>,
+        ///How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.
+        #[serde(rename = "lineCount")]
+        pub line_count: Sequence,
+        pub reason: TurnFailureReason,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub state: CompactFailedTurnState,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`CompactFailedTurnState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum CompactFailedTurnState {
+        Failed,
+    }
+    impl ::std::fmt::Display for CompactFailedTurnState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Failed => f.write_str("Failed"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for CompactFailedTurnState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Failed" => Ok(Self::Failed),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for CompactFailedTurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for CompactFailedTurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`CompactOfferedTurn`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct CompactOfferedTurn {
+        ///The control plane mints the id of the box that runs the turn.
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///The image the turn's box boots, recorded when the control plane offers the turn. A turn not yet offered has none.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub image: ::std::option::Option<TurnImage>,
+        ///How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.
+        #[serde(rename = "lineCount")]
+        pub line_count: Sequence,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub state: CompactOfferedTurnState,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`CompactOfferedTurnState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum CompactOfferedTurnState {
+        Offered,
+    }
+    impl ::std::fmt::Display for CompactOfferedTurnState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Offered => f.write_str("Offered"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for CompactOfferedTurnState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Offered" => Ok(Self::Offered),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for CompactOfferedTurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for CompactOfferedTurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`CompactRunningTurn`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct CompactRunningTurn {
+        ///The control plane mints the id of the box that runs the turn.
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///The image the turn's box boots, recorded when the control plane offers the turn. A turn not yet offered has none.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub image: ::std::option::Option<TurnImage>,
+        ///How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.
+        #[serde(rename = "lineCount")]
+        pub line_count: Sequence,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub state: CompactRunningTurnState,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`CompactRunningTurnState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum CompactRunningTurnState {
+        Running,
+    }
+    impl ::std::fmt::Display for CompactRunningTurnState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Running => f.write_str("Running"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for CompactRunningTurnState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Running" => Ok(Self::Running),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for CompactRunningTurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for CompactRunningTurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A session as a compact session list carries it: its latest turn leaves out its prompt and goal.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct CompactSession {
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        ///What happens to the session's box after each turn, fixed when the session starts.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ::std::string::String,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        ///The session's latest turn without its prompt and goal, with why it failed once it is Failed.
+        #[serde(rename = "lastTurn")]
+        pub last_turn: CompactTurn,
+        ///When the latest turn last changed state.
+        #[serde(rename = "lastTurnAt")]
+        pub last_turn_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The session's latest turn. A start offers the first turn together with the session, so every session has one.
+        #[serde(rename = "lastTurnId")]
+        pub last_turn_id: EntityId,
+        ///The image the latest turn's box boots. Present once the control plane offered the latest turn.
+        #[serde(rename = "lastTurnImage", skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_turn_image: ::std::option::Option<TurnImage>,
+        #[serde(rename = "lastTurnState")]
+        pub last_turn_state: TurnState,
+        pub model: ModelName,
+        ///What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.
+        pub origin: SessionOrigin,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The prebuild layer the session's files start from, or why they start without one. The control
+        ///plane records it for each box it boots while the session holds no snapshot of its own; once a
+        ///snapshot exists, every box restores that snapshot and the layer stays. Present once the control
+        ///plane offered the session's first turn.
+        #[serde(rename = "prebuildLayer", skip_serializing_if = "::std::option::Option::is_none")]
+        pub prebuild_layer: ::std::option::Option<SessionPrebuildLayer>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
+        pub repository: RepositoryUrl,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
+        pub state: SessionState,
+        ///The tags the session carries, each once.
+        pub tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
     ///One kept line of a compact page: assistant text, or a tool call shortened to one line.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct CompactTranscriptLine {
@@ -5721,6 +6060,35 @@ pub mod types {
         pub lines: ::std::vec::Vec<CompactTranscriptLine>,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
+    }
+    ///A turn as a compact session list carries it: every field of the turn but its prompt and goal.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum CompactTurn {
+        OfferedTurn(CompactOfferedTurn),
+        RunningTurn(CompactRunningTurn),
+        CompletedTurn(CompactCompletedTurn),
+        FailedTurn(CompactFailedTurn),
+    }
+    impl ::std::convert::From<CompactOfferedTurn> for CompactTurn {
+        fn from(value: CompactOfferedTurn) -> Self {
+            Self::OfferedTurn(value)
+        }
+    }
+    impl ::std::convert::From<CompactRunningTurn> for CompactTurn {
+        fn from(value: CompactRunningTurn) -> Self {
+            Self::RunningTurn(value)
+        }
+    }
+    impl ::std::convert::From<CompactCompletedTurn> for CompactTurn {
+        fn from(value: CompactCompletedTurn) -> Self {
+            Self::CompletedTurn(value)
+        }
+    }
+    impl ::std::convert::From<CompactFailedTurn> for CompactTurn {
+        fn from(value: CompactFailedTurn) -> Self {
+            Self::FailedTurn(value)
+        }
     }
     ///`CompletedTurn`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -18243,6 +18611,23 @@ pub mod types {
             value.parse()
         }
     }
+    ///A list of sessions: whole sessions, or CompactSession rows when the list asked for compact.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum SessionList {
+        Variant0(::std::vec::Vec<Session>),
+        Variant1(::std::vec::Vec<CompactSession>),
+    }
+    impl ::std::convert::From<::std::vec::Vec<Session>> for SessionList {
+        fn from(value: ::std::vec::Vec<Session>) -> Self {
+            Self::Variant0(value)
+        }
+    }
+    impl ::std::convert::From<::std::vec::Vec<CompactSession>> for SessionList {
+        fn from(value: ::std::vec::Vec<CompactSession>) -> Self {
+            Self::Variant1(value)
+        }
+    }
     ///`SessionOrigin`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
@@ -30557,7 +30942,16 @@ pub mod types {
     ///`TenantApiListSessionsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiListSessionsInput {
+        ///Answer each session as a CompactSession, whose lastTurn leaves out its prompt and goal.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub compact: ::std::option::Option<bool>,
+        ///The sessionId of the last session of the previous page; the page starts after it.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub cursor: ::std::option::Option<EntityId>,
         pub filter: TenantApiSessionFilter,
+        ///The most sessions the page holds, newest first. Left out, the answer holds every session that matches.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub limit: ::std::option::Option<::std::num::NonZeroU32>,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -30606,7 +31000,7 @@ pub mod types {
     ///`TenantApiListSessionsResult`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiListSessionsResult {
-        pub sessions: ::std::vec::Vec<Session>,
+        pub sessions: SessionList,
     }
     ///`TenantApiListSnapshotsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -35098,6 +35492,9 @@ pub mod types {
     ///`TenantApiSessionFilter`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
     pub struct TenantApiSessionFilter {
+        ///Keep only the sessions created after this time.
+        #[serde(rename = "createdAfter", skip_serializing_if = "::std::option::Option::is_none")]
+        pub created_after: ::std::option::Option<i64>,
         #[serde(rename = "hostId", skip_serializing_if = "::std::option::Option::is_none")]
         pub host_id: ::std::option::Option<EntityId>,
         #[serde(rename = "lastTurnBefore", skip_serializing_if = "::std::option::Option::is_none")]
@@ -48909,12 +49306,12 @@ impl Client {
     ///Lists the tenant's sessions newest first, optionally only those in one state, on one host, with no
     ///turn since a time, created after a time, carrying every tag named or started by one trigger. Pass
     ///the sessionId of a page's last session as cursor to read on; a page that holds fewer than `limit`
-    ///sessions is the last.
+    ///sessions is the last. With compact, each session comes as a CompactSession.
     ///
     ///Sends a `GET` request to `/v1/sessions`
     ///
     ///Arguments:
-    ///- `compact`: Shorten the prompt and the goal of each session's lastTurn to their first 200 characters.
+    ///- `compact`: Answer each session as a CompactSession, whose lastTurn leaves out its prompt and goal.
     ///- `created_after`: Keep only the sessions created after this time.
     ///- `cursor`: The sessionId of the last session of the previous page; the page starts after it. Leave it out to read from the newest session.
     ///- `host_id`
@@ -48934,7 +49331,7 @@ impl Client {
         state: Option<types::SessionState>,
         tag: Option<&'a ::std::vec::Vec<types::SessionTag>>,
         trigger_id: Option<&'a types::EntityId>,
-    ) -> Result<ResponseValue<::std::vec::Vec<types::Session>>, Error<types::Problem>> {
+    ) -> Result<ResponseValue<types::SessionList>, Error<types::Problem>> {
         let url = format!("{}/v1/sessions", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
         header_map.append(
@@ -51340,5 +51737,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 8;
+    pub const VERSION: u16 = 9;
 }
