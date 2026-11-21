@@ -22,7 +22,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 7;
+const TenantApiVersion = 8;
 
 namespace TenantApi {
 
@@ -3398,8 +3398,15 @@ model SubscriptionCreatedOk {
   subscription: Subscription;
 }
 
+@doc("The session runs a persona without tumpelMcp, so it cannot start the crew its crew tags name.")
+model SubscriptionPersonaLacksTumpelMcp {
+  kind: "PersonaLacksTumpelMcp";
+  personaId: EntityId;
+  personaName: DisplayName;
+}
+
 model CreateSubscriptionResult {
-  created: SubscriptionCreatedOk | SessionNotFound | SessionArchivedState | SessionFailedState;
+  created: SubscriptionCreatedOk | SessionNotFound | SessionArchivedState | SessionFailedState | SubscriptionPersonaLacksTumpelMcp;
 }
 
 model ListSubscriptionsResult {
