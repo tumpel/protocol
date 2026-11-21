@@ -65,7 +65,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 30;
+const ChannelProtocolVersion = 31;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -127,6 +127,11 @@ enum BoxDiskLimit {
   DefaultMib: 32768,
   MaxMib: 262144,
 }
+
+@doc("The running time limit of a turn in seconds, from one second through 24 hours. Time spent Offered does not consume this budget.")
+@minValue(1)
+@maxValue(86400)
+scalar TurnTotalBudgetSeconds extends int32;
 
 @doc("What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode.")
 enum BoxRetention {
@@ -400,7 +405,7 @@ enum TurnFailureReason {
   @doc("The host reports the control plane did not answer its TurnClaim in time and the harness never started; the control plane offers the turn again, so no turn fails NotClaimed.")
   NotClaimed: "NotClaimed",
 
-  @doc("The dead letter: no host claimed the turn within turnTotalBudgetSeconds of its offer, so it never ran. The detail names the host and whether it is online.")
+  @doc("The dead letter: no host claimed the turn within the control plane's turnTotalBudgetSeconds setting of its offer, so it never ran. The detail names the host and whether it is online.")
   Undelivered: "Undelivered",
 
   NoFirstOutput: "NoFirstOutput",
@@ -633,6 +638,10 @@ model Session {
   @visibility(Lifecycle.Read) hostId: EntityId;
   @visibility(Lifecycle.Read) boxId: EntityId;
   personaId: EntityId;
+
+  @doc("The running time limit resolved for the latest turn. An explicit session-start budget overrides the persona; otherwise each new turn takes the persona's current budget. Time spent Offered does not consume it.")
+  @visibility(Lifecycle.Read)
+  turnTotalBudgetSeconds: TurnTotalBudgetSeconds;
 
   @doc("A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.")
   repository: RepositoryUrl;
@@ -1185,6 +1194,10 @@ model Persona {
   @visibility(Lifecycle.Read) tenantId: EntityId;
   name: DisplayName;
 
+  @doc("The running time limit for each new turn, unless its session start supplied a budget. Filled from the control-plane setting on create or replacement when omitted; editing it reaches existing sessions on their next turn. Time spent Offered does not consume it.")
+  @visibility(Lifecycle.Read)
+  turnTotalBudgetSeconds: TurnTotalBudgetSeconds;
+
   @doc("The harness every session of the persona runs, at the version the tenant pins. It is fixed when the persona is created.")
   @visibility(Lifecycle.Read, Lifecycle.Create)
   harness: Harness;
@@ -1468,9 +1481,8 @@ model ControlPlaneSettings {
   @minValue(1)
   turnFirstLineBudgetSeconds: int32;
 
-  @doc("How long a claimed turn may run before it fails TurnTimedOut, and how long an unclaimed turn stays Offered before it fails Undelivered.")
-  @minValue(1)
-  turnTotalBudgetSeconds: int32;
+  @doc("The default running time limit assigned to a persona on create or replacement when omitted, and how long an unclaimed turn stays Offered before it fails Undelivered. Time spent Offered does not consume a turn's running budget.")
+  turnTotalBudgetSeconds: TurnTotalBudgetSeconds;
 
   @doc("How many lines of a turn go into one transcript chunk object; the last chunk of a turn holds the rest.")
   @minValue(1)

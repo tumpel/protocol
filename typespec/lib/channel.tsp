@@ -312,6 +312,8 @@ union BootImage {
   `snapshots`, `personaFiles`, `image` and git identity.
   """)
 model TurnOffer {
+  @doc("The running time limit resolved for this turn. The supervisor enforces it from claim; time spent Offered does not consume it.")
+  turnTotalBudgetSeconds: TurnTotalBudgetSeconds;
   type: "TurnOffer";
   turnId: EntityId;
   sessionId: EntityId;

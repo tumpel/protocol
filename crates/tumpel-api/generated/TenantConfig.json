@@ -71,6 +71,10 @@
                     "maximum": 262144,
                     "description": "The disk in MiB of each box the persona's sessions boot, from BoxDiskLimit.DefaultMib up to BoxDiskLimit.MaxMib; left\nout, the boxes get BoxDiskLimit.DefaultMib. A host refuses a box whose disk does not fit its disk\nbudget, and a box already running keeps the disk it booted with."
                 },
+                "turnTotalBudgetSeconds": {
+                    "$ref": "#/$defs/TurnTotalBudgetSeconds",
+                    "description": "The running time limit of new turns; omitted, the control-plane setting applies."
+                },
                 "boxRetention": {
                     "$ref": "#/$defs/BoxRetention",
                     "description": "What happens to the box after each turn; left out, the persona's sessions get Auto."
@@ -208,6 +212,12 @@
                 "PiDev",
                 "MistralAgent"
             ]
+        },
+        "TurnTotalBudgetSeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 86400,
+            "description": "The running time limit of a turn in seconds, from one second through 24 hours. Time spent Offered does not consume this budget."
         },
         "BoxRetention": {
             "type": "string",

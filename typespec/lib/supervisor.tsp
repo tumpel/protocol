@@ -336,10 +336,6 @@ model BoxBudgets {
   @minValue(1)
   firstLineSeconds: int32;
 
-  @doc("TurnStart until TurnEnd; TurnTimedOut.")
-  @minValue(1)
-  turnSeconds: int32;
-
   @doc("Reading the paused box's drive until its files are cut into chunks in the chunk cache; SnapshotTimedOut. The chunk exchanges, the packing and the uploads run until the request's uploadExpiresAt; UploadExpired.")
   @minValue(1)
   snapshotSeconds: int32;
@@ -441,7 +437,7 @@ model GuestTurnStart {
   @pattern("^[0-9a-f]{40}$")
   prebuildCommitSha?: string;
 
-  @doc("The host's turn budget, budgets.turnSeconds of its runtime config, which the guest names to the harness beside the box's memory, disk and CPUs.")
+  @doc("The turn's running budget, turnTotalBudgetSeconds of its TurnOffer, which the guest names to the harness beside the box's memory, disk and CPUs.")
   @minValue(1)
   turnSeconds?: int32;
 }

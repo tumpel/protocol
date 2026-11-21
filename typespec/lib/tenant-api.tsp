@@ -22,7 +22,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 9;
+const TenantApiVersion = 10;
 
 namespace TenantApi {
 
@@ -42,6 +42,7 @@ model StoredFileRead {
 
 @doc("A persona as the tenant Durable Object stores it, its files named by digest.")
 model StoredPersona {
+  turnTotalBudgetSeconds: TurnTotalBudgetSeconds;
   personaId: EntityId;
   tenantId: EntityId;
   name: DisplayName;
@@ -59,6 +60,7 @@ model StoredPersona {
 
 @doc("What a persona edit writes. The harness is fixed at create.")
 model PersonaChange {
+  turnTotalBudgetSeconds: TurnTotalBudgetSeconds;
   name: DisplayName;
   secretSetId: EntityId;
   connectorIds: EntityId[];
@@ -3688,7 +3690,7 @@ model ListHostUsageResult {
 
 @doc("A turn offer as the control plane stores it, before it adds the parts minted at each send.")
 model StoredTurnOffer {
-  ...OmitProperties<Channel.TurnOffer, "credential" | "lastLineSeq" | "snapshots" | "personaFiles" | "image" | "gitAuthorName" | "gitAuthorEmail">;
+  ...OmitProperties<Channel.TurnOffer, "credential" | "lastLineSeq" | "snapshots" | "personaFiles" | "image" | "gitAuthorName" | "gitAuthorEmail" | "turnTotalBudgetSeconds">;
 }
 
 model TurnHandoff {
@@ -3707,7 +3709,7 @@ model TurnMetricDimensionsResult {
 
 model OfferReady {
   kind: "Ready";
-  ...PickProperties<Channel.TurnOffer, "credential" | "lastLineSeq" | "snapshots" | "personaFiles" | "image" | "gitAuthorName" | "gitAuthorEmail">;
+  ...PickProperties<Channel.TurnOffer, "credential" | "lastLineSeq" | "snapshots" | "personaFiles" | "image" | "gitAuthorName" | "gitAuthorEmail" | "turnTotalBudgetSeconds">;
 }
 
 model OfferWithdrawn {
