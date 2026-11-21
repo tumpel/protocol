@@ -20127,6 +20127,7 @@ pub mod types {
         ByRequest(SubscriptionPausedByRequest),
         DeliveryFailed(SubscriptionPausedDeliveryFailed),
         CrewFailing(SubscriptionPausedCrewFailing),
+        CreditExhausted(SubscriptionPausedCreditExhausted),
     }
     impl ::std::convert::From<SubscriptionPausedByRequest> for SubscriptionPauseReason {
         fn from(value: SubscriptionPausedByRequest) -> Self {
@@ -20141,6 +20142,11 @@ pub mod types {
     impl ::std::convert::From<SubscriptionPausedCrewFailing> for SubscriptionPauseReason {
         fn from(value: SubscriptionPausedCrewFailing) -> Self {
             Self::CrewFailing(value)
+        }
+    }
+    impl ::std::convert::From<SubscriptionPausedCreditExhausted> for SubscriptionPauseReason {
+        fn from(value: SubscriptionPausedCreditExhausted) -> Self {
+            Self::CreditExhausted(value)
         }
     }
     ///Someone paused the subscription with Subscriptions_pause, leaving a message.
@@ -20177,6 +20183,46 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedByRequestKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A crew or delivery turn failed CreditExhausted; the turn is turnId, whose failure Turns_getFailure reads. Add credits to the provider account before resuming.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionPausedCreditExhausted {
+        pub kind: SubscriptionPausedCreditExhaustedKind,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+    }
+    ///`SubscriptionPausedCreditExhaustedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SubscriptionPausedCreditExhaustedKind {
+        CreditExhausted,
+    }
+    impl ::std::fmt::Display for SubscriptionPausedCreditExhaustedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::CreditExhausted => f.write_str("CreditExhausted"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionPausedCreditExhaustedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "CreditExhausted" => Ok(Self::CreditExhausted),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionPausedCreditExhaustedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedCreditExhaustedKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -51325,5 +51371,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 8;
+    pub const VERSION: u16 = 9;
 }
