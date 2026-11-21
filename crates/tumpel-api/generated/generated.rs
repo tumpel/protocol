@@ -33948,8 +33948,6 @@ pub mod types {
         ///The trigger whose events to keep; null keeps every trigger's.
         #[serde(rename = "triggerId", deserialize_with = "::std::option::Option::deserialize")]
         pub trigger_id: ::std::option::Option<EntityId>,
-        #[serde(rename = "waitSeconds")]
-        pub wait_seconds: i32,
     }
     ///`TenantApiListEventsRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -50097,7 +50095,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Reads the tenant's events after afterEventId, waiting up to waitSeconds for one to match.
+    ///Reads the tenant's events after afterEventId and answers at once.
     ///With Accept: text/event-stream it answers a stream instead: one message per event, whose id
     ///is its eventId, resumed after the Last-Event-ID a reconnect sends.
     ///
@@ -50109,14 +50107,12 @@ impl Client {
     ///- `event`: Keep events of this type; repeat it for several types. Leave it out to keep every type.
     ///- `session_id`: Keep events of this session.
     ///- `trigger_id`: Keep events of this trigger.
-    ///- `wait_seconds`: The most seconds to wait when no event matches yet.
     pub async fn events_list<'a>(
         &'a self,
         after_event_id: Option<&'a types::Sequence>,
         event: Option<&'a ::std::vec::Vec<types::TenantEventType>>,
         session_id: Option<&'a types::EntityId>,
         trigger_id: Option<&'a types::EntityId>,
-        wait_seconds: i32,
     ) -> Result<ResponseValue<types::EventPage>, Error<types::EventProblem>> {
         let url = format!("{}/v1/events", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
@@ -50136,7 +50132,6 @@ impl Client {
             .query(&progenitor_client::QueryParam::new("event", &event))
             .query(&progenitor_client::QueryParam::new("sessionId", &session_id))
             .query(&progenitor_client::QueryParam::new("triggerId", &trigger_id))
-            .query(&progenitor_client::QueryParam::new("waitSeconds", &wait_seconds))
             .headers(header_map)
             .build()?;
         let info = OperationInfo {
@@ -56492,5 +56487,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 14;
+    pub const VERSION: u16 = 15;
 }
