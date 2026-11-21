@@ -196,6 +196,15 @@ enum ProblemCode {
 
   @doc("The connector's server could not be reached, or sent no first byte within 10 seconds; the tool call failed and the turn goes on.")
   ConnectorUnreachable: "ConnectorUnreachable",
+
+  @doc("The request body, or a message, is larger than the bound the operation names in detail; the control plane read none of it. Status 413.")
+  BodyTooLarge: "BodyTooLarge",
+
+  @doc("The tenant or host sent more requests in the last minute than its rate allows; detail names the rate. Retry after the retry-after header. Status 429.")
+  RateLimited: "RateLimited",
+
+  @doc("The tenant spent a usage limit of its tier, such as the rows it may write in an hour; detail names the limit and when its window resets. Status 429.")
+  UsageLimitReached: "UsageLimitReached",
 }
 
 @doc("Every refusal: what failed and what fixes it.")
@@ -208,7 +217,7 @@ model Problem {
 
 @error
 model ProblemResponse {
-  @statusCode statusCode: 400 | 401 | 403 | 404 | 409 | 410 | 422 | 429 | 503;
+  @statusCode statusCode: 400 | 401 | 403 | 404 | 409 | 410 | 413 | 422 | 429 | 503;
   @body body: Problem;
 }
 

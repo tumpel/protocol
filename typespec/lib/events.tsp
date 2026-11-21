@@ -242,7 +242,7 @@ union EventProblem {
 
 @error
 model EventProblemResponse {
-  @statusCode statusCode: 400 | 401 | 403 | 404 | 409 | 410 | 422 | 429 | 503;
+  @statusCode statusCode: 400 | 401 | 403 | 404 | 409 | 410 | 413 | 422 | 429 | 503;
   @body body: EventProblem;
 }
 

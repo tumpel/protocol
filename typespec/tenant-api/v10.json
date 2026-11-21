@@ -4283,7 +4283,10 @@
         "ConnectorTurnNotRunning",
         "ConnectorTurnTokenRefused",
         "ConnectorAuthRefused",
-        "ConnectorUnreachable"
+        "ConnectorUnreachable",
+        "BodyTooLarge",
+        "RateLimited",
+        "UsageLimitReached"
       ]
     },
     "Prompt": {
