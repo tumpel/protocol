@@ -1318,7 +1318,7 @@ pub mod types {
                 .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
-    ///Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, or a sequenced frame.
+    ///Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, or a sequenced frame.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ChannelControlEnvelope {
@@ -1327,6 +1327,7 @@ pub mod types {
         Heartbeat(ChannelHeartbeat),
         ReleasePublished(ChannelReleasePublished),
         FrameRefused(ChannelFrameRefused),
+        FrameRateLimited(ChannelFrameRateLimited),
         ControlFrame(ChannelControlFrame),
     }
     impl ::std::convert::From<ChannelChallenge> for ChannelControlEnvelope {
@@ -1352,6 +1353,11 @@ pub mod types {
     impl ::std::convert::From<ChannelFrameRefused> for ChannelControlEnvelope {
         fn from(value: ChannelFrameRefused) -> Self {
             Self::FrameRefused(value)
+        }
+    }
+    impl ::std::convert::From<ChannelFrameRateLimited> for ChannelControlEnvelope {
+        fn from(value: ChannelFrameRateLimited) -> Self {
+            Self::FrameRateLimited(value)
         }
     }
     impl ::std::convert::From<ChannelControlFrame> for ChannelControlEnvelope {
@@ -1882,6 +1888,125 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///The control plane's answer to a host frame past the tenant's per-host frame limit. It travels
+    ///outside frames, as Heartbeat does. The control plane counts that `seq` as received and records
+    ///nothing for it, so the host drops the frame from its unacked frames and never resends it.
+    ///`framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs
+    ///off its sends until then and reports RateLimited in its Heartbeat. The control plane sends it
+    ///only on a connection that speaks a protocol version of 32 or above, and FrameRefused below that.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ChannelFrameRateLimited {
+        #[serde(rename = "framesPerMinute")]
+        pub frames_per_minute: ::std::num::NonZeroU32,
+        pub reason: ChannelFrameRateLimitedReason,
+        #[serde(rename = "retryAfter")]
+        pub retry_after: ::chrono::DateTime<::chrono::FixedOffset>,
+        pub seq: Sequence,
+        #[serde(rename = "type")]
+        pub type_: ChannelFrameRateLimitedType,
+    }
+    ///`ChannelFrameRateLimitedReason`
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct ChannelFrameRateLimitedReason(::std::string::String);
+    impl ChannelFrameRateLimitedReason {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelFrameRateLimitedReason {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelFrameRateLimitedReason {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelFrameRateLimitedReason {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelFrameRateLimitedReason {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<ChannelFrameRateLimitedReason> for ::std::string::String {
+        fn from(value: ChannelFrameRateLimitedReason) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for ChannelFrameRateLimitedReason {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("ChannelFrameRateLimitedReason: longer than 16384 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("ChannelFrameRateLimitedReason: shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelFrameRateLimitedReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelFrameRateLimitedReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for ChannelFrameRateLimitedReason {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///`ChannelFrameRateLimitedType`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ChannelFrameRateLimitedType {
+        FrameRateLimited,
+    }
+    impl ::std::fmt::Display for ChannelFrameRateLimitedType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::FrameRateLimited => f.write_str("FrameRateLimited"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ChannelFrameRateLimitedType {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "FrameRateLimited" => Ok(Self::FrameRateLimited),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelFrameRateLimitedType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelFrameRateLimitedType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///The control plane's answer to a host frame whose message matches no HostMessage. It travels
     ///outside frames, as Heartbeat does. The control plane counts that `seq` as received, so the next
     ///frame follows it without a gap, records nothing for it, and names the mismatch in `reason`. The
@@ -2401,6 +2526,9 @@ pub mod types {
     ///list does not name with BoxLost.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelHostHeartbeat {
+        ///The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub health: ::std::option::Option<HostReportedHealth>,
         #[serde(rename = "heldSessionIds")]
         pub held_session_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "sentAt")]
@@ -3121,6 +3249,7 @@ pub mod types {
         UploadRejected,
         SnapshotTimedOut,
         NotAnswered,
+        RateLimited,
     }
     impl ::std::fmt::Display for ChannelSnapshotFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3131,6 +3260,7 @@ pub mod types {
                 Self::UploadRejected => f.write_str("UploadRejected"),
                 Self::SnapshotTimedOut => f.write_str("SnapshotTimedOut"),
                 Self::NotAnswered => f.write_str("NotAnswered"),
+                Self::RateLimited => f.write_str("RateLimited"),
             }
         }
     }
@@ -3144,6 +3274,7 @@ pub mod types {
                 "UploadRejected" => Ok(Self::UploadRejected),
                 "SnapshotTimedOut" => Ok(Self::SnapshotTimedOut),
                 "NotAnswered" => Ok(Self::NotAnswered),
+                "RateLimited" => Ok(Self::RateLimited),
                 _ => Err("invalid value".into()),
             }
         }
@@ -5659,6 +5790,7 @@ pub mod types {
         TokenNotStored,
         NoHostOnline,
         Superseded,
+        RateLimited,
     }
     impl ::std::fmt::Display for ClaudeSetupFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5670,6 +5802,7 @@ pub mod types {
                 Self::TokenNotStored => f.write_str("TokenNotStored"),
                 Self::NoHostOnline => f.write_str("NoHostOnline"),
                 Self::Superseded => f.write_str("Superseded"),
+                Self::RateLimited => f.write_str("RateLimited"),
             }
         }
     }
@@ -5684,6 +5817,7 @@ pub mod types {
                 "TokenNotStored" => Ok(Self::TokenNotStored),
                 "NoHostOnline" => Ok(Self::NoHostOnline),
                 "Superseded" => Ok(Self::Superseded),
+                "RateLimited" => Ok(Self::RateLimited),
                 _ => Err("invalid value".into()),
             }
         }
@@ -7438,7 +7572,7 @@ pub mod types {
         ///How many free tenants share one Cloudflare free plan; each gets this share of every daily allowance.
         #[serde(rename = "freeTenantsPerAccount")]
         pub free_tenants_per_account: ::std::num::NonZeroU32,
-        ///Channel frames a minute one host may send: binding HOST_FRAME_RATE.
+        ///Numbered channel frames a minute one host may send, counted in memory by its host channel, for every tier. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.
         #[serde(rename = "hostFramesPerMinute")]
         pub host_frames_per_minute: ::std::num::NonZeroU32,
         ///Requests a minute one tenant may send that only read: binding TENANT_READ_RATE.
@@ -12233,6 +12367,8 @@ pub mod types {
         ///The guest protocol range the host announced at its latest Hello.
         #[serde(rename = "guestProtocol")]
         pub guest_protocol: HostGuestProtocol,
+        ///The control plane's judgement of the host; it offers work to a Healthy host only.
+        pub health: HostHealth,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub labels: ::std::vec::Vec<HostLabel>,
@@ -12241,6 +12377,9 @@ pub mod types {
         pub name: DisplayName,
         #[serde(rename = "publicKey")]
         pub public_key: HostPublicKey,
+        ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
+        #[serde(rename = "reportedHealth")]
+        pub reported_health: HostReportedHealth,
         pub state: HostState,
         ///The latest supervisor update failure the host reported, kept by its tenant.
         #[serde(rename = "supervisorUpdateFailure")]
@@ -12632,6 +12771,93 @@ pub mod types {
             value.parse()
         }
     }
+    ///Whether the control plane offers a host work. It is the control plane's own judgement of the host, kept by its tenant and written once per change.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum HostHealth {
+        Healthy,
+        RateLimited,
+        Unhealthy,
+    }
+    impl ::std::fmt::Display for HostHealth {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Healthy => f.write_str("Healthy"),
+                Self::RateLimited => f.write_str("RateLimited"),
+                Self::Unhealthy => f.write_str("Unhealthy"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for HostHealth {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Healthy" => Ok(Self::Healthy),
+                "RateLimited" => Ok(Self::RateLimited),
+                "Unhealthy" => Ok(Self::Unhealthy),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostHealth {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostHealth {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`HostHealthChangedEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct HostHealthChangedEvent {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub detail: Detail,
+        pub event: HostHealthChangedEventEvent,
+        #[serde(rename = "eventId")]
+        pub event_id: Sequence,
+        pub health: HostHealth,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`HostHealthChangedEventEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum HostHealthChangedEventEvent {
+        HostHealthChanged,
+    }
+    impl ::std::fmt::Display for HostHealthChangedEventEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::HostHealthChanged => f.write_str("HostHealthChanged"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for HostHealthChangedEventEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "HostHealthChanged" => Ok(Self::HostHealthChanged),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostHealthChangedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostHealthChangedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///A label a host carries for placement, such as gpu or region-eu.
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
@@ -12915,6 +13141,42 @@ pub mod types {
             ::std::string::String::deserialize(deserializer)?
                 .parse()
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///The health a host reports of itself in its Heartbeat.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum HostReportedHealth {
+        Healthy,
+        RateLimited,
+    }
+    impl ::std::fmt::Display for HostReportedHealth {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Healthy => f.write_str("Healthy"),
+                Self::RateLimited => f.write_str("RateLimited"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for HostReportedHealth {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Healthy" => Ok(Self::Healthy),
+                "RateLimited" => Ok(Self::RateLimited),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostReportedHealth {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostReportedHealth {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
         }
     }
     ///`HostState`
@@ -23797,6 +24059,7 @@ pub mod types {
         UpdateNotOnline,
         ChannelUnreachable,
         FrameUndelivered,
+        RateLimited,
     }
     impl ::std::fmt::Display for SupervisorFailure {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23810,6 +24073,7 @@ pub mod types {
                 Self::UpdateNotOnline => f.write_str("UpdateNotOnline"),
                 Self::ChannelUnreachable => f.write_str("ChannelUnreachable"),
                 Self::FrameUndelivered => f.write_str("FrameUndelivered"),
+                Self::RateLimited => f.write_str("RateLimited"),
             }
         }
     }
@@ -23826,6 +24090,7 @@ pub mod types {
                 "UpdateNotOnline" => Ok(Self::UpdateNotOnline),
                 "ChannelUnreachable" => Ok(Self::ChannelUnreachable),
                 "FrameUndelivered" => Ok(Self::FrameUndelivered),
+                "RateLimited" => Ok(Self::RateLimited),
                 _ => Err("invalid value".into()),
             }
         }
@@ -32533,6 +32798,79 @@ pub mod types {
             value.parse()
         }
     }
+    ///`TenantApiHostHealthInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiHostHealthInput {
+        pub detail: Detail,
+        pub health: HostHealth,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        pub now: i64,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiHostHealthRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiHostHealthRequest {
+        pub input: TenantApiHostHealthInput,
+        pub operation: TenantApiHostHealthRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiHostHealthRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiHostHealthRequestOperation {
+        #[serde(rename = "hostHealth")]
+        HostHealth,
+    }
+    impl ::std::fmt::Display for TenantApiHostHealthRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::HostHealth => f.write_str("hostHealth"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiHostHealthRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "hostHealth" => Ok(Self::HostHealth),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiHostHealthRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHostHealthRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiHostHealthResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct TenantApiHostHealthResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
+    impl ::std::ops::Deref for TenantApiHostHealthResult {
+        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
+        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TenantApiHostHealthResult> for ::serde_json::Map<::std::string::String, ::serde_json::Value> {
+        fn from(value: TenantApiHostHealthResult) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>> for TenantApiHostHealthResult {
+        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
+            Self(value)
+        }
+    }
     ///`TenantApiHostHelloInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiHostHelloInput {
@@ -32947,6 +33285,8 @@ pub mod types {
         pub cpu_count: ::std::num::NonZeroU32,
         #[serde(rename = "createdAt")]
         pub created_at: i64,
+        ///The control plane's judgement of the host; it offers work to a Healthy host only.
+        pub health: HostHealth,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub labels: ::std::vec::Vec<HostLabel>,
@@ -32955,6 +33295,9 @@ pub mod types {
         pub name: DisplayName,
         #[serde(rename = "publicKey")]
         pub public_key: TenantApiHostRecordPublicKey,
+        ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
+        #[serde(rename = "reportedHealth")]
+        pub reported_health: HostReportedHealth,
         pub state: HostState,
         #[serde(rename = "supervisorVersion")]
         pub supervisor_version: TenantApiHostRecordSupervisorVersion,
@@ -41743,6 +42086,7 @@ pub mod types {
         TurnMetricDimensionsRequest(TenantApiTurnMetricDimensionsRequest),
         PrepareOfferRequest(TenantApiPrepareOfferRequest),
         HostPresenceRequest(TenantApiHostPresenceRequest),
+        HostHealthRequest(TenantApiHostHealthRequest),
         HostMessageRequest(TenantApiHostMessageRequest),
         DeadlineReachedRequest(TenantApiDeadlineReachedRequest),
     }
@@ -42454,6 +42798,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiHostPresenceRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiHostPresenceRequest) -> Self {
             Self::HostPresenceRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiHostHealthRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiHostHealthRequest) -> Self {
+            Self::HostHealthRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiHostMessageRequest> for TenantApiTenantRequest {
@@ -43794,6 +44143,7 @@ pub mod types {
     #[serde(untagged)]
     pub enum TenantApiUnplaceable {
         NotOnline(TenantApiUnplaceableNotOnline),
+        NotHealthy(TenantApiUnplaceableNotHealthy),
         NoImage(TenantApiUnplaceableNoImage),
         Full(TenantApiUnplaceableFull),
         MemoryFull(TenantApiUnplaceableMemoryFull),
@@ -43804,6 +44154,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiUnplaceableNotOnline> for TenantApiUnplaceable {
         fn from(value: TenantApiUnplaceableNotOnline) -> Self {
             Self::NotOnline(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiUnplaceableNotHealthy> for TenantApiUnplaceable {
+        fn from(value: TenantApiUnplaceableNotHealthy) -> Self {
+            Self::NotHealthy(value)
         }
     }
     impl ::std::convert::From<TenantApiUnplaceableNoImage> for TenantApiUnplaceable {
@@ -44281,6 +44636,79 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNoMemoryReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiUnplaceableNotHealthy {
+        pub host: TenantApiHostRecord,
+        pub kind: TenantApiUnplaceableNotHealthyKind,
+        pub reason: TenantApiUnplaceableNotHealthyReason,
+    }
+    ///`TenantApiUnplaceableNotHealthyKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUnplaceableNotHealthyKind {
+        Unplaceable,
+    }
+    impl ::std::fmt::Display for TenantApiUnplaceableNotHealthyKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Unplaceable => f.write_str("Unplaceable"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUnplaceableNotHealthyKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Unplaceable" => Ok(Self::Unplaceable),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHealthyKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHealthyKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiUnplaceableNotHealthyReason`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUnplaceableNotHealthyReason {
+        NotHealthy,
+    }
+    impl ::std::fmt::Display for TenantApiUnplaceableNotHealthyReason {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::NotHealthy => f.write_str("NotHealthy"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUnplaceableNotHealthyReason {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "NotHealthy" => Ok(Self::NotHealthy),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHealthyReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHealthyReason {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -45381,6 +45809,7 @@ pub mod types {
         SessionArchivedEvent(SessionArchivedEvent),
         HostOnlineEvent(HostOnlineEvent),
         HostOfflineEvent(HostOfflineEvent),
+        HostHealthChangedEvent(HostHealthChangedEvent),
         PrebuildDoneEvent(PrebuildDoneEvent),
         PrebuildFailedEvent(PrebuildFailedEvent),
         SubscriptionPausedEvent(SubscriptionPausedEvent),
@@ -45432,6 +45861,11 @@ pub mod types {
     impl ::std::convert::From<HostOfflineEvent> for TenantEvent {
         fn from(value: HostOfflineEvent) -> Self {
             Self::HostOfflineEvent(value)
+        }
+    }
+    impl ::std::convert::From<HostHealthChangedEvent> for TenantEvent {
+        fn from(value: HostHealthChangedEvent) -> Self {
+            Self::HostHealthChangedEvent(value)
         }
     }
     impl ::std::convert::From<PrebuildDoneEvent> for TenantEvent {
@@ -45492,6 +45926,7 @@ pub mod types {
         SessionArchived,
         HostOnline,
         HostOffline,
+        HostHealthChanged,
         PrebuildDone,
         PrebuildFailed,
         SubscriptionPaused,
@@ -45512,6 +45947,7 @@ pub mod types {
                 Self::SessionArchived => f.write_str("SessionArchived"),
                 Self::HostOnline => f.write_str("HostOnline"),
                 Self::HostOffline => f.write_str("HostOffline"),
+                Self::HostHealthChanged => f.write_str("HostHealthChanged"),
                 Self::PrebuildDone => f.write_str("PrebuildDone"),
                 Self::PrebuildFailed => f.write_str("PrebuildFailed"),
                 Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
@@ -45535,6 +45971,7 @@ pub mod types {
                 "SessionArchived" => Ok(Self::SessionArchived),
                 "HostOnline" => Ok(Self::HostOnline),
                 "HostOffline" => Ok(Self::HostOffline),
+                "HostHealthChanged" => Ok(Self::HostHealthChanged),
                 "PrebuildDone" => Ok(Self::PrebuildDone),
                 "PrebuildFailed" => Ok(Self::PrebuildFailed),
                 "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
@@ -46559,6 +46996,7 @@ pub mod types {
         Cancelled,
         ConnectorDisconnected,
         SnapshotNotStored,
+        RateLimited,
     }
     impl ::std::fmt::Display for TurnFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -46592,6 +47030,7 @@ pub mod types {
                 Self::Cancelled => f.write_str("Cancelled"),
                 Self::ConnectorDisconnected => f.write_str("ConnectorDisconnected"),
                 Self::SnapshotNotStored => f.write_str("SnapshotNotStored"),
+                Self::RateLimited => f.write_str("RateLimited"),
             }
         }
     }
@@ -46628,6 +47067,7 @@ pub mod types {
                 "Cancelled" => Ok(Self::Cancelled),
                 "ConnectorDisconnected" => Ok(Self::ConnectorDisconnected),
                 "SnapshotNotStored" => Ok(Self::SnapshotNotStored),
+                "RateLimited" => Ok(Self::RateLimited),
                 _ => Err("invalid value".into()),
             }
         }
@@ -50389,6 +50829,56 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "hosts_patch_labels",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Restores an Unhealthy or RateLimited host to Healthy, so it gets offers again.
+    ///
+    ///Sends a `POST` request to `/v1/hosts/{hostId}/restore-health`
+    ///
+    pub async fn hosts_restore_health<'a>(
+        &'a self,
+        host_id: &'a types::EntityId,
+    ) -> Result<ResponseValue<types::Host>, Error<types::Problem>> {
+        let url = format!(
+            "{}/v1/hosts/{}/restore-health",
+            self.baseurl,
+            encode_path(&host_id.to_string()),
+        );
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .post(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "hosts_restore_health",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;
@@ -55678,7 +56168,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 18;
-    pub const VERSION: u16 = 31;
+    pub const VERSION: u16 = 32;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
@@ -55693,5 +56183,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 11;
+    pub const VERSION: u16 = 12;
 }

@@ -22,7 +22,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 11;
+const TenantApiVersion = 12;
 
 namespace TenantApi {
 
@@ -1231,6 +1231,14 @@ model HostPresenceInput {
   now: int64;
 }
 
+model HostHealthInput {
+  tenantId: EntityId;
+  hostId: EntityId;
+  health: HostHealth;
+  detail: Detail;
+  now: int64;
+}
+
 model HostMessageInput {
   tenantId: EntityId;
   hostId: EntityId;
@@ -2115,6 +2123,12 @@ model HostPresenceRequest {
   input: HostPresenceInput;
 }
 
+model HostHealthRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "hostHealth";
+  input: HostHealthInput;
+}
+
 model HostMessageRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "hostMessage";
@@ -2272,6 +2286,7 @@ union TenantRequest {
   turnMetricDimensions: TurnMetricDimensionsRequest,
   prepareOffer: PrepareOfferRequest,
   hostPresence: HostPresenceRequest,
+  hostHealth: HostHealthRequest,
   hostMessage: HostMessageRequest,
   deadlineReached: DeadlineReachedRequest,
 }
@@ -2741,6 +2756,13 @@ model UnplaceableNotOnline {
   reason: "NotOnline";
 }
 
+@doc("The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again.")
+model UnplaceableNotHealthy {
+  kind: "Unplaceable";
+  host: HostRecord;
+  reason: "NotHealthy";
+}
+
 model UnplaceableNoImage {
   kind: "Unplaceable";
   host: HostRecord;
@@ -2790,6 +2812,7 @@ model UnplaceableNoConnectors {
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "reason" })
 union Unplaceable {
   NotOnline: UnplaceableNotOnline,
+  NotHealthy: UnplaceableNotHealthy,
   NoImage: UnplaceableNoImage,
   Full: UnplaceableFull,
   MemoryFull: UnplaceableMemoryFull,
@@ -3748,6 +3771,8 @@ model PrepareOfferResult {
 }
 
 model HostPresenceResult {}
+
+model HostHealthResult {}
 
 model HostFrameRefused {
   type: "Refused";

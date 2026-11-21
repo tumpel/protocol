@@ -68,7 +68,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 31;
+const ChannelProtocolVersion = 32;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -185,6 +185,27 @@ enum HostState {
   Online: "Online",
   Offline: "Offline",
   Revoked: "Revoked",
+}
+
+@doc("Whether the control plane offers a host work. It is the control plane's own judgement of the host, kept by its tenant and written once per change.")
+enum HostHealth {
+  @doc("The host stays within the tenant's limits and gets offers.")
+  Healthy: "Healthy",
+
+  @doc("The host sent more channel frames in a minute than the tenant's limits allow. It gets no offers until a full window passes without a limit hit.")
+  RateLimited: "RateLimited",
+
+  @doc("The host went RateLimited three times within an hour. It gets no offers until a person restores it or the host reconnects with a new Hello.")
+  Unhealthy: "Unhealthy",
+}
+
+@doc("The health a host reports of itself in its Heartbeat.")
+enum HostReportedHealth {
+  @doc("The supervisor sends at its normal pace and takes offers.")
+  Healthy: "Healthy",
+
+  @doc("The supervisor backs off after a rate refusal and refuses offers until a full window passes without one.")
+  RateLimited: "RateLimited",
 }
 
 @doc("""
@@ -482,6 +503,9 @@ enum TurnFailureReason {
 
   @doc("The harness finished the turn, but the snapshot of the box after it was not stored, so the turn holds no durable record of its work and does not complete; the detail names why the snapshot failed. The control plane records it, so no host sends it.")
   SnapshotNotStored: "SnapshotNotStored",
+
+  @doc("The turn's host sent more channel frames in a minute than the tenant's limits allow, so the control plane failed every running turn on that host and dropped its further frames; the detail names the limit. The control plane records it, so no host sends it.")
+  RateLimited: "RateLimited",
 }
 
 @doc("Why the box could not clone the session's repository.")
@@ -597,7 +621,7 @@ model ControlPlaneLimits {
   @minValue(1)
   writesPerMinute: int32;
 
-  @doc("Channel frames a minute one host may send: binding HOST_FRAME_RATE.")
+  @doc("Numbered channel frames a minute one host may send, counted in memory by its host channel, for every tier. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.")
   @minValue(1)
   hostFramesPerMinute: int32;
 }
@@ -684,6 +708,15 @@ model Host {
   @visibility(Lifecycle.Read) tenantId: EntityId;
   name: DisplayName;
   @visibility(Lifecycle.Read) state: HostState;
+
+  @doc("The control plane's judgement of the host; it offers work to a Healthy host only.")
+  @visibility(Lifecycle.Read)
+  health: HostHealth;
+
+  @doc("The health the host reported in its latest Heartbeat, Healthy for a host that reports none.")
+  @visibility(Lifecycle.Read)
+  reportedHealth: HostReportedHealth;
+
   architecture: HostArchitecture;
   @minValue(1) cpuCount: int32;
   @minValue(1) memoryBytes: int64;

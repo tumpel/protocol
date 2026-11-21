@@ -124,6 +124,22 @@ model FrameRefused {
 }
 
 @doc("""
+  The control plane's answer to a host frame past the tenant's per-host frame limit. It travels
+  outside frames, as Heartbeat does. The control plane counts that `seq` as received and records
+  nothing for it, so the host drops the frame from its unacked frames and never resends it.
+  `framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs
+  off its sends until then and reports RateLimited in its Heartbeat. The control plane sends it
+  only on a connection that speaks a protocol version of 32 or above, and FrameRefused below that.
+  """)
+model FrameRateLimited {
+  type: "FrameRateLimited";
+  seq: Sequence;
+  @minLength(1) reason: Detail;
+  @minValue(1) framesPerMinute: int32;
+  retryAfter: offsetDateTime;
+}
+
+@doc("""
   A HostFrame as channel.json keeps it until the control plane acks it. The message stays as the
   supervisor wrote it, so a supervisor of another version loads it whatever message kinds it reads
   and resends it unchanged; a message no control plane reads is answered with FrameRefused.
@@ -149,6 +165,9 @@ model HostHeartbeat {
   sentAt: offsetDateTime;
   usage: HostUsage;
   @maxItems(1000) heldSessionIds: EntityId[];
+
+  @doc("The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.")
+  health?: HostReportedHealth;
 }
 
 @doc("One environment variable for one turn: a secret set member's value. It lives in box memory only and is never written to the host's disk.")
@@ -622,6 +641,9 @@ enum SnapshotFailureReason {
 
   @doc("The control plane's own: the host did not answer within snapshotDeadlineSeconds of the request.")
   NotAnswered: "NotAnswered",
+
+  @doc("The control plane's own: the host sent more channel frames in a minute than the tenant's limits allow; the detail names the limit.")
+  RateLimited: "RateLimited",
 }
 
 @doc("The host could not store the snapshot. `detail` states what failed and what fixes it.")
@@ -848,7 +870,7 @@ union HostEnvelope {
   Frame: HostFrame,
 }
 
-@doc("Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, or a sequenced frame.")
+@doc("Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, or a sequenced frame.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "type" })
 union ControlEnvelope {
   Challenge: Challenge,
@@ -856,5 +878,6 @@ union ControlEnvelope {
   Heartbeat: Heartbeat,
   ReleasePublished: ReleasePublished,
   FrameRefused: FrameRefused,
+  FrameRateLimited: FrameRateLimited,
   Frame: ControlFrame,
 }

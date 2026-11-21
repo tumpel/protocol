@@ -82,6 +82,13 @@ enum SupervisorFailure {
     in its next Welcome.
     """)
   FrameUndelivered: "FrameUndelivered",
+
+  @doc("""
+    The control plane refused the host's frames for passing its frame limit after 10 backoffs in a
+    row, so the host failed its running turns with RateLimited and stopped. systemd does not start
+    the unit again; a person finds what floods the channel and starts it.
+    """)
+  RateLimited: "RateLimited",
 }
 
 @doc("""
