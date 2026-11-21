@@ -3,7 +3,7 @@ import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { lockVersion } from "./channel-window.mjs";
-import { baselineLockTexts, git } from "./channel-wire-baseline.mjs";
+import { baselineLockTexts, baselineRef, git } from "./channel-wire-baseline.mjs";
 import {
   channelProtocolRange,
   channelWireLock,
@@ -27,10 +27,8 @@ const fail = (message) => {
   process.exit(1);
 };
 
-const base = git(root, ["merge-base", "HEAD", "origin/main"]);
-if (!base.ok)
-  fail(`HEAD has no merge-base with origin/main (${base.stderr}); fetch origin main and run the check again`);
-const baseline = baselineLockTexts(root, base.stdout.trim(), TENANT_API_LOCK_DIR_PATH);
+const base = baselineRef(root, fail);
+const baseline = baselineLockTexts(root, base, TENANT_API_LOCK_DIR_PATH);
 if (!baseline.ok) fail(`could not read ${TENANT_API_LOCK_DIR_PATH} at origin/main (${baseline.error})`);
 const locks = new Map(
   readdirSync(lockDir)
@@ -47,7 +45,7 @@ if (stale.length > 0)
   fail(
     `TenantApiProtocol speaks ${range.oldest} to ${range.version} but the locks hold ${stale.map((version) => `v${version}`).join(", ")}; delete them`,
   );
-const release = git(root, ["describe", "--tags", "--abbrev=0", "--match", "v[0-9]*", base.stdout.trim()]);
+const release = git(root, ["describe", "--tags", "--abbrev=0", "--match", "v[0-9]*", base]);
 const released = release.ok
   ? baselineLockTexts(root, release.stdout.trim(), TENANT_API_LOCK_DIR_PATH)
   : { ok: true, locks: baseline.locks };

@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import openapiTS, { astToString } from "openapi-typescript";
 import { lockVersion } from "./channel-window.mjs";
-import { baselineLockTexts, git, LOCK_DIR_PATH } from "./channel-wire-baseline.mjs";
+import { baselineLockTexts, baselineRef, LOCK_DIR_PATH } from "./channel-wire-baseline.mjs";
 import { channelProtocolRange, channelWireLock, checkChannelLocks, lockShape } from "./channel-wire-shape.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -19,24 +19,6 @@ const frozenDir = join(openapiDir, "frozen");
 const fail = (message) => {
   console.error(`channel-wire: ${message}`);
   process.exit(1);
-};
-
-const baselineRef = () => {
-  if (!git(root, ["rev-parse", "--verify", "--quiet", "origin/main"]).ok) {
-    const fetched = git(root, ["fetch", "--no-tags", "--depth=1", "origin", "main"]);
-    if (!fetched.ok)
-      fail(
-        `origin/main is not in this checkout and fetching it failed (${fetched.stderr}); the wire shape needs it as the baseline, so add a remote named origin that holds main and run the check again`,
-      );
-    if (!git(root, ["update-ref", "refs/remotes/origin/main", "FETCH_HEAD"]).ok)
-      fail("fetched origin main but could not point origin/main at it; run git fetch origin main and try again");
-  }
-  const base = git(root, ["merge-base", "HEAD", "origin/main"]);
-  if (base.ok) return base.stdout.trim();
-  if (git(root, ["rev-parse", "--is-shallow-repository"]).stdout.trim() === "true") return "origin/main";
-  return fail(
-    `HEAD and origin/main share no commit (${base.stderr}), so there is no baseline for the wire shape; rebase onto origin/main and run the check again`,
-  );
 };
 
 const baselineLocks = (ref) => {
@@ -72,7 +54,7 @@ const frozenTypes = async (version, lock) => {
 mkdirSync(lockDir, { recursive: true });
 mkdirSync(frozenDir, { recursive: true });
 const locks = workingLocks();
-const baseline = baselineLocks(baselineRef());
+const baseline = baselineLocks(baselineRef(root, fail));
 const result = checkChannelLocks(baseline, locks, current, range.oldest);
 const lockList = (versions) => versions.map((version) => `${LOCK_DIR_PATH}/v${version}.json`).join(", ");
 if (!result.ok && result.missing.length > 0)
