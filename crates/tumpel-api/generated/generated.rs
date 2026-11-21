@@ -6854,6 +6854,30 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///The per-tenant limits of a deployment: the TUMPEL_LIMITS variable of the Worker, one JSON
+    ///object. The free tier derives its limits from the Cloudflare free plan in the control plane's
+    ///limits module; a configured tenant gets `configured`. The per-minute request rates are the
+    ///limits of the Workers Rate Limiting bindings named beside them and must match them.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ControlPlaneLimits {
+        ///The limits of a configured tenant, checked inside its Durable Object.
+        pub configured: ::std::vec::Vec<TenantLimit>,
+        ///The tier a new tenant gets; an existing tenant keeps the tier it has.
+        #[serde(rename = "defaultTier")]
+        pub default_tier: TenantTier,
+        ///How many free tenants share one Cloudflare free plan; each gets this share of every daily allowance.
+        #[serde(rename = "freeTenantsPerAccount")]
+        pub free_tenants_per_account: ::std::num::NonZeroU32,
+        ///Channel frames a minute one host may send: binding HOST_FRAME_RATE.
+        #[serde(rename = "hostFramesPerMinute")]
+        pub host_frames_per_minute: ::std::num::NonZeroU32,
+        ///Requests a minute one tenant may send that only read: binding TENANT_READ_RATE.
+        #[serde(rename = "readsPerMinute")]
+        pub reads_per_minute: ::std::num::NonZeroU32,
+        ///Requests a minute one tenant may send that write: binding TENANT_WRITE_RATE.
+        #[serde(rename = "writesPerMinute")]
+        pub writes_per_minute: ::std::num::NonZeroU32,
+    }
     ///The control plane's timing and storage settings: the TUMPEL_SETTINGS variable of the Worker, one
     ///JSON object. Every turn budget and the snapshot deadline run as a timer of the session and end in
     ///a named failure.
@@ -42659,6 +42683,13 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
+    }
+    ///One limit of a configured tenant: at most `limit` of `measure` in each `window`.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantLimit {
+        pub limit: ::std::num::NonZeroU64,
+        pub measure: TenantUsageMeasure,
+        pub window: TenantUsageWindow,
     }
     ///The limits a tenant runs under. Free keeps the tenant inside the allowances the hosting plan
     ///includes at no charge and refuses traffic past them; Configured runs under the limits its

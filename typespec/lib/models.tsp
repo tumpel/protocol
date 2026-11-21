@@ -560,6 +560,44 @@ model TenantUsage {
   @maxItems(32) counters: TenantUsageCounter[];
 }
 
+@doc("One limit of a configured tenant: at most `limit` of `measure` in each `window`.")
+model TenantLimit {
+  measure: TenantUsageMeasure;
+  window: TenantUsageWindow;
+  @minValue(1) limit: int64;
+}
+
+@doc("""
+  The per-tenant limits of a deployment: the TUMPEL_LIMITS variable of the Worker, one JSON
+  object. The free tier derives its limits from the Cloudflare free plan in the control plane's
+  limits module; a configured tenant gets `configured`. The per-minute request rates are the
+  limits of the Workers Rate Limiting bindings named beside them and must match them.
+  """)
+model ControlPlaneLimits {
+  @doc("The tier a new tenant gets; an existing tenant keeps the tier it has.")
+  defaultTier: TenantTier;
+
+  @doc("How many free tenants share one Cloudflare free plan; each gets this share of every daily allowance.")
+  @minValue(1)
+  freeTenantsPerAccount: int32;
+
+  @doc("The limits of a configured tenant, checked inside its Durable Object.")
+  @maxItems(32)
+  configured: TenantLimit[];
+
+  @doc("Requests a minute one tenant may send that only read: binding TENANT_READ_RATE.")
+  @minValue(1)
+  readsPerMinute: int32;
+
+  @doc("Requests a minute one tenant may send that write: binding TENANT_WRITE_RATE.")
+  @minValue(1)
+  writesPerMinute: int32;
+
+  @doc("Channel frames a minute one host may send: binding HOST_FRAME_RATE.")
+  @minValue(1)
+  hostFramesPerMinute: int32;
+}
+
 @doc("An account that owns principals, hosts and sessions.")
 model Tenant {
   @key @visibility(Lifecycle.Read) tenantId: EntityId;
