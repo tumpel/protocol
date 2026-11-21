@@ -51,7 +51,6 @@ jobs:
     if: needs.plan.outputs.version != ''
     permissions:
       contents: write
-      id-token: write
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -84,14 +83,9 @@ jobs:
           echo "published=$published" >> "$GITHUB_OUTPUT"
 
       - if: steps.crates.outputs.published == ''
-        name: Get a crates.io token through trusted publishing
-        id: crates-io-auth
-        uses: rust-lang/crates-io-auth-action@v1.0.6
-
-      - if: steps.crates.outputs.published == ''
         name: Publish tumpel-api to crates.io from the committed sources
         env:
-          CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
         run: cargo publish -p tumpel-api --allow-dirty --no-verify
 
       - name: Publish the GitHub pre-release with the tarballs and their sha256
