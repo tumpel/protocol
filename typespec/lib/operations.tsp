@@ -1311,9 +1311,9 @@ namespace V1 {
     @post
     uploadFile(@body body: PersonaFileUploadRequest): PersonaFileUpload | ProblemResponse;
 
-    @doc("Lists the tenant's personas.")
+    @doc("Lists the tenant's personas with file paths, digests, sizes and timestamps. Read one persona to get file content.")
     @get
-    list(): Persona[] | ProblemResponse;
+    list(): TenantApi.StoredPersona[] | ProblemResponse;
 
     @doc("Reads one persona.")
     @route("/{personaId}")
