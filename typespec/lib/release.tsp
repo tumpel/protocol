@@ -187,6 +187,9 @@ model ReleaseManifest {
   @doc("The base images of the latest image release, one per architecture, copied from `images.json` when the release is published. A turn boots layered on a host whose architecture has a base here and a harness layer of the session's harness version.")
   @minItems(1)
   bases: ReleaseBaseImage[];
+
+  @doc("True when the release rolls back to an older version. A supervisor replaces its binary with an older one only when this is true, and refuses an older version otherwise. A release that omits it is not a rollback.")
+  rollback?: boolean = false;
 }
 
 @doc("""

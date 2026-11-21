@@ -16931,6 +16931,9 @@ pub mod types {
         pub images: ::std::vec::Vec<ReleaseImage>,
         #[serde(rename = "releaseVersion")]
         pub release_version: ReleaseManifestReleaseVersion,
+        ///True when the release rolls back to an older version. A supervisor replaces its binary with an older one only when this is true, and refuses an older version otherwise. A release that omits it is not a rollback.
+        #[serde(default)]
+        pub rollback: bool,
         pub supervisors: ::std::vec::Vec<ReleaseSupervisor>,
     }
     ///`ReleaseManifestCommit`
