@@ -1292,6 +1292,21 @@ namespace V1 {
     turns(...MetricPath, ...MetricTurnQuery): MetricTurnPage | ProblemResponse;
   }
 
+  @route("/limits")
+  interface Limits {
+    @doc("Reads the limits profile the tenant runs under and where it comes from.")
+    @get
+    get(): TenantLimits | ProblemResponse;
+
+    @doc("""
+      Sets the limits the tenant runs under: a profile of its own, or the preset of a tier, which
+      drops the profile it had. Owner only. Refused InvalidRequest for a value past the deployment's
+      ceiling. A host channel takes the new frame limit when it next connects.
+      """)
+    @put
+    set(@body body: TenantLimitsSet): TenantLimits | ProblemResponse;
+  }
+
   @route("/harnesses")
   interface HarnessCatalog {
     @doc("Lists the harness catalog: every harness and version a tenant can pin.")
