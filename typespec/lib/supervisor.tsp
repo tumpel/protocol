@@ -134,10 +134,10 @@ model SupervisorHandoverBox {
   dirty: boolean;
   credentialFile?: CredentialText;
 
-  @doc("What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm one as BoxRetention defines.")
+  @doc("What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm or Auto one as BoxRetention defines.")
   boxRetention: BoxRetention;
 
-  @doc("The idle time left at the handover, counting down from the offer's idleSeconds as turnMilliseconds does for the turn, so an update does not reset it.")
+  @doc("The idle time an Auto box has left at the handover, as BoxRetention defines, counting down from the offer's idleSeconds as turnMilliseconds does for the turn, so an update does not reset it.")
   @minValue(0)
   idleMilliseconds: int64;
 

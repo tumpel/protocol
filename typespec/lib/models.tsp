@@ -136,10 +136,10 @@ enum BoxRetention {
   @doc("The control plane snapshots the box and tears it down as soon as the turn ends; the session reads Stopped, and its next turn boots a fresh box from the snapshot.")
   Off: "Off",
 
-  @doc("The box stays paused until a person stops or archives the session, or until it has been idle for the turn offer's idleSeconds. Placement never evicts it.")
+  @doc("The box stays paused until a person stops or archives the session. Idleness never tears it down and placement never evicts it.")
   Warm: "Warm",
 
-  @doc("The box stays paused until placement evicts it to free room for another session's turn; the eviction snapshots the box when needed, tears it down and leaves the session Stopped.")
+  @doc("The box stays paused until it has been idle for the turn offer's idleSeconds, when the host tears it down and reports BoxGone, or until placement evicts it sooner to free room for another session's turn, when the eviction snapshots the box when needed and tears it down; either way the session reads Stopped.")
   Auto: "Auto",
 }
 
@@ -1645,10 +1645,6 @@ model ControlPlaneSettings {
   @minValue(1)
   dispatchGrantTtlSeconds: int32;
 
-  @doc("How long a session stays idle after a completed turn before the control plane asks for a snapshot. A turn sent sooner resets the wait.")
-  @minValue(0)
-  snapshotDelaySeconds: int32;
-
   @doc("How long the host may take to answer a SnapshotRequest before the snapshot fails NotAnswered; its presigned upload expires then too.")
   @minValue(1)
   snapshotDeadlineSeconds: int32;
@@ -1661,10 +1657,6 @@ model ControlPlaneSettings {
   @minValue(1)
   turnImageFetchBudgetSeconds: int32;
 
-  @doc("How long a turn may take from TurnRepositoryReady to its first line before it fails NoFirstOutput; it stays at or above firstLineSeconds of the host.")
-  @minValue(1)
-  turnFirstLineBudgetSeconds: int32;
-
   @doc("How long a claimed turn may run before it fails TurnTimedOut, and how long an unclaimed turn stays Offered before it fails Undelivered.")
   @minValue(1)
   turnTotalBudgetSeconds: int32;
@@ -1673,16 +1665,6 @@ model ControlPlaneSettings {
   @minValue(1)
   @maxValue(1000)
   transcriptChunkLines: int32;
-
-  @doc("How long a prebuild's turn may stay offered before a host claims it; past it the prebuild fails in phase Dispatch.")
-  @minValue(1)
-  @maxValue(86400)
-  prebuildDispatchBudgetSeconds: int32;
-
-  @doc("How long a host may take from claiming the prebuild's turn to storing the box's snapshot before the prebuild fails in phase Build, or in phase Upload once the host started storing the snapshot.")
-  @minValue(1)
-  @maxValue(86400)
-  prebuildBuildBudgetSeconds: int32;
 
   @doc("How long a Claude setup box may take from its offer to printing the sign-in URL before the setup fails SetupUrlMissing; it covers the guest image fetch, the boot and claude setup-token starting.")
   @minValue(1)
