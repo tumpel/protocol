@@ -480,7 +480,7 @@ model GuestTurnStart {
   @pattern("^[0-9a-f]{40}$")
   prebuildCommitSha?: ShortText;
 
-  @doc("The host's turn budget, budgets.turnSeconds of its runtime config, which the guest names to the harness beside the box's memory, disk and CPUs.")
+  @doc("The turn budget, the TurnOffer's turnSeconds, which the guest names to the harness beside the box's memory, disk and CPUs.")
   @minValue(1)
   turnSeconds?: int32;
 }

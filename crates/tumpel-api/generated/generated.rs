@@ -12031,7 +12031,7 @@ pub mod types {
         pub repository: RepositoryUrl,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
-        ///The host's turn budget, budgets.turnSeconds of its runtime config, which the guest names to the harness beside the box's memory, disk and CPUs.
+        ///The turn budget, the TurnOffer's turnSeconds, which the guest names to the harness beside the box's memory, disk and CPUs.
         #[serde(rename = "turnSeconds", skip_serializing_if = "::std::option::Option::is_none")]
         pub turn_seconds: ::std::option::Option<::std::num::NonZeroU32>,
         #[serde(rename = "type")]
