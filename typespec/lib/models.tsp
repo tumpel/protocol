@@ -1674,17 +1674,12 @@ model ControlPlaneSettings {
   @maxValue(1000)
   transcriptChunkLines: int32;
 
-  @doc("How long the presigned PUTs a build job gets for its layer stay valid.")
-  @minValue(1)
-  @maxValue(604800)
-  prebuildUploadBudgetSeconds: int32;
-
-  @doc("How long a dispatched prebuild may wait for its run to start before it fails in phase Dispatch; the rootfs URL its dispatch hands the run stays valid for this plus prebuildBuildBudgetSeconds.")
+  @doc("How long a prebuild's turn may stay offered before a host claims it; past it the prebuild fails in phase Dispatch.")
   @minValue(1)
   @maxValue(86400)
   prebuildDispatchBudgetSeconds: int32;
 
-  @doc("How long a prebuild may run from the start of its run to the completion of its layer upload before it fails in phase Build, or in phase Upload once its upload started.")
+  @doc("How long a host may take from claiming the prebuild's turn to storing the box's snapshot before the prebuild fails in phase Build, or in phase Upload once the host started storing the snapshot.")
   @minValue(1)
   @maxValue(86400)
   prebuildBuildBudgetSeconds: int32;
@@ -1728,9 +1723,6 @@ model ControlPlaneSettings {
   @minValue(1)
   @maxValue(60)
   deviceSlowDownStepSeconds: int32;
-
-  @doc("The OIDC issuer of GitHub Actions job tokens, https://token.actions.githubusercontent.com on github.com; its keys are at <issuer>/.well-known/jwks.")
-  gitHubActionsIssuer: HttpUrl;
 }
 
 model Health {

@@ -5,7 +5,7 @@ import "./release.tsp";
 import "./issuer.tsp";
 import "./prebuild.tsp";
 import "./prebuild-template.tsp";
-import "./build-provider.tsp";
+import "./connection.tsp";
 import "./config.tsp";
 import "./claude-setup.tsp";
 
@@ -69,53 +69,13 @@ enum ProblemCode {
 
   @doc("The current release carries no guest image of the harness version for any architecture of the tenant's hosts, or the published release is unreadable; the detail names which.")
   ImageNotReleased: "ImageNotReleased",
-  NoBuildProvider: "NoBuildProvider",
-
-  @doc("The named build provider is connected, and this control plane cannot dispatch to it yet.")
-  BuildProviderUnavailable: "BuildProviderUnavailable",
-
-  @doc("The build provider refused the job: GitHub refused the installation token or the workflow dispatch, Actions are disabled in the repository, or CircleCI refused the pipeline; the title names the cause and the detail names the answer.")
-  DispatchRefused: "DispatchRefused",
-
   @doc("The GitHub App installation lacks a write permission the operation needs; the detail names it and the fix says how to accept it on GitHub.")
   GitHubAppPermissionMissing: "GitHubAppPermissionMissing",
-
-  @doc("GitHub refused to add or update the caller workflow on the default branch.")
-  CallerWorkflowRefused: "CallerWorkflowRefused",
 
   RepositoryUnreadable: "RepositoryUnreadable",
 
   @doc("GitHub did not answer the one-time read of the account type of an installation linked before the control plane stored account types; the detail quotes GitHub.")
   GitHubInstallationUnreadable: "GitHubInstallationUnreadable",
-
-  IssuerMissing: "IssuerMissing",
-
-  @doc("The build job token is missing, malformed, unsigned by GitHub Actions, meant for another audience, expired or not yet valid; the title names the check.")
-  JobTokenRefused: "JobTokenRefused",
-
-  @doc("The build job token is genuine and names another repository, workflow, ref or event than the prebuild and its connection; the title names the check.")
-  JobTokenMismatch: "JobTokenMismatch",
-
-  @doc("The prebuild is not Building: its build has not started, or it is past its upload.")
-  PrebuildNotUploading: "PrebuildNotUploading",
-
-  @doc("CircleCI refused the personal API token: it is mistyped, expired or revoked, or a project token.")
-  CircleCITokenRefused: "CircleCITokenRefused",
-
-  @doc("The repository has no CircleCI project binding, or the project slug names no project the token reads in the connected organization.")
-  CircleCIProjectMissing: "CircleCIProjectMissing",
-
-  @doc("The pipeline definition does not exist in the project or checks out another repository than the binding names.")
-  CircleCIDefinitionMismatch: "CircleCIDefinitionMismatch",
-
-  @doc("CircleCI answered a call the operation makes, such as registering or deleting a webhook, with an error; the detail names the call and the answer.")
-  CircleCIRefused: "CircleCIRefused",
-
-  @doc("The CircleCI authorization is not in the phase the operation needs, such as a redirect address sent twice or after the authorization ended.")
-  CircleCIAuthorizationNotWaiting: "CircleCIAuthorizationNotWaiting",
-
-  @doc("The completion finds no layer at the key its upload exchange signed.")
-  LayerNotUploaded: "LayerNotUploaded",
 
   @doc("Only an Owner of the tenant runs this operation.")
   OwnerRequired: "OwnerRequired",
@@ -1408,30 +1368,13 @@ namespace V1 {
   @route("/prebuilds")
   interface Prebuilds {
     @doc("""
-      Starts a prebuild of a repository's default branch on the named build provider. Answers the
+      Starts a prebuild of a repository's default branch. Answers the
       stored or running prebuild with the same key and starts no job, unless rebuild is true. Refused
-      before anything is stored: NoBuildProvider when the named provider is not connected,
-      HarnessNotInCatalog when the persona's harness has no version the tenant can run, NoRelease or
-      ImageNotReleased when the current release carries no Amd64 guest image of that version,
-      RepositoryUnreadable when GitHub refuses to show the inputs or no token reads them,
-      GitHubNotConnected when a GitHub Actions start finds no installation of the tenant on the
-      repository's owner, GitHubAppPermissionMissing when that installation cannot write Actions, or
-      Contents and Workflows while the caller workflow needs adding, CallerWorkflowRefused when
-      GitHub refuses that commit, CircleCIProjectMissing when a CircleCI start finds no project
-      binding for the repository, DispatchRefused when GitHub refuses the installation token, Actions
-      are disabled in the repository, the provider refuses the job or a CircleCI pipeline parameter
-      would pass 512 characters, and BuildProviderUnavailable while this control plane cannot
-      dispatch to the named provider. A GitHub Actions start reads the caller workflow on the
-      default branch with the installation token, each GitHub call within 10 s. When it is missing
-      or differs from the current example, the start commits the example, whose push trigger on its
-      own path starts the run, and reads the inputs at that commit; otherwise it reads them at the
-      branch's head and dispatches the caller workflow there with no inputs. The prebuild records
-      the commit it read; the run is picked up by that commit, from its workflow_run events or from
-      its call to prebuildInputs.read. Refused DevcontainerMissing, after the provider check, when the
-      default branch holds neither .devcontainer/devcontainer.json nor .devcontainer.json. A CircleCI start runs the binding's pipeline
-      definition with config and checkout on the default branch and the parameters
-      tumpel_prebuild_id, tumpel_tenant_id, tumpel_api_origin, tumpel_rootfs_url and
-      tumpel_image_digest, records the pipeline and answers it Building.
+      before anything is stored: HarnessNotInCatalog when the persona's harness has no version the
+      tenant can run, NoRelease or ImageNotReleased when the current release carries no Amd64 guest
+      image of that version, RepositoryUnreadable when GitHub refuses to show the inputs or no token
+      reads them, and DevcontainerMissing when the default branch holds neither
+      .devcontainer/devcontainer.json nor .devcontainer.json.
       """)
     @post
     start(@body body: PrebuildStart): Prebuild | ProblemResponse;
@@ -1510,73 +1453,9 @@ namespace V1 {
     getPullRequest(...PrebuildTemplatePullRequestQuery): PrebuildTemplatePullRequest | ProblemResponse;
   }
 
-  @doc("""
-    The run's side of a GitHub Actions prebuild. No principal signs in: the run presents its job's
-    GitHub Actions OIDC token, which must carry the API origin with no trailing slash as aud, be
-    unexpired and be signed by a key GitHub publishes. The tenant is the one whose GitHub App
-    installation is on the token's repository owner.
-    """)
-  @route("/prebuild-inputs")
-  interface PrebuildInputs {
-    @doc("""
-      Answers the inputs of the prebuild that waits for this run: the newest Dispatched GitHub
-      Actions prebuild of the token's repository whose start read the token's sha, or the prebuild
-      this run already took. The token must name the connection's caller workflow, the default
-      branch as ref, push or workflow_dispatch as event_name, and a job of
-      tumpel/workflows/.github/workflows/prebuild.yml at tag v2 or v2.x.y. The first call records
-      the token's run_id as the prebuild's run and moves it to Building. Refused JobTokenRefused
-      (401) naming the failed check, NotFound when no prebuild waits for a run at that commit,
-      JobTokenMismatch (403) naming the failed claim, and PrebuildNotUploading when the prebuild
-      is past Building.
-      """)
-    @useAuth(ProviderJobToken)
-    @post
-    read(): PrebuildJobInputs | ProblemResponse;
-  }
-
-  @doc("""
-    The upload job's side of a prebuild. No principal signs in: the job presents its provider's OIDC
-    token, which must carry the API origin with no trailing slash as aud and be unexpired. A GitHub
-    Actions token must be signed by a key GitHub publishes and name the prebuild's repository, the
-    connection's caller workflow, the repository's default branch as ref, push or workflow_dispatch
-    as event_name, a job of the reusable workflow at tag v2 or v2.x.y, and the run id and commit
-    sha the prebuild recorded as run_id and sha. A CircleCI
-    token must be issued by https://oidc.circleci.com/org/<organization id> and signed by a key at
-    its /.well-known/jwks-pub.json, name the connection's organization, the prebuild's repository
-    as vcs-origin, the binding's project, the recorded pipeline, the default branch as vcs-ref and
-    no SSH rerun; the first upload start records its job, and every later start and complete must
-    name the same job. That first start also reads the pipeline's revision from CircleCI, and a
-    revision other than the commit the start read fails the prebuild in phase Dispatch. A missing
-    tenant, a missing prebuild, another organization and another repository each answer the same
-    NotFound.
-    """)
-  @route("/prebuilds/{prebuildId}/uploads")
-  interface PrebuildUploads {
-    @doc("""
-      Records the layer's digest and size and exchanges the job token for one presigned PUT of the
-      layer to <tenantId>/prebuilds/<prebuildId>/layers/<digest> in the snapshot bucket, bound to
-      its sha256 and its size. Refused JobTokenRefused (401) naming the failed check, NotFound,
-      JobTokenMismatch (403) naming the failed claim, PrebuildNotUploading unless the prebuild
-      is Building, and Conflict when an earlier start of the same prebuild recorded another digest
-      or size; a repeat with the same digest and size answers a fresh grant.
-      """)
-    @useAuth(ProviderJobToken)
-    @post
-    start(...PrebuildPath, @body body: PrebuildUploadStart): PrebuildUploadGrant | ProblemResponse;
-
-    @doc("""
-      Moves the prebuild to Converting once the bucket holds the layer its start recorded. Refused
-      as start is, and LayerNotUploaded when the bucket lacks it.
-      """)
-    @route("/complete")
-    @useAuth(ProviderJobToken)
-    @post
-    complete(...PrebuildPath, @body body: PrebuildUploadComplete): Prebuild | ProblemResponse;
-  }
-
   @route("/connections")
   interface Connections {
-    @doc("Lists one row per connection kind, the GitHub App and each build provider, with its state and, once Connected, the account it bills.")
+    @doc("Lists one row per connection kind, the GitHub App and OpenRouter, with its state and, once Connected, the account.")
     @get
     list(): ConnectionSummary[] | ProblemResponse;
   }
@@ -1624,134 +1503,6 @@ namespace V1 {
     @route("/{grantId}")
     @delete
     revoke(...OAuthGrantPath): NoContentResponse | ProblemResponse;
-  }
-
-  @route("/github-actions-connection")
-  interface GitHubActionsConnections {
-    @doc("Reads the tenant's GitHub Actions build provider connection: Connected with its caller workflow, or NotConnected.")
-    @get
-    get(): GitHubActionsConnectionLink | ProblemResponse;
-
-    @doc("Connects the tenant's own GitHub Actions account, replacing an earlier GitHub Actions connection.")
-    @route("/start")
-    @post
-    start(@body body: GitHubActionsConnectionStart): GitHubActionsConnectionLink | ProblemResponse;
-
-    @doc("Disconnects the tenant's GitHub Actions account; prebuilds already stored stay.")
-    @delete
-    delete(): NoContentResponse | ProblemResponse;
-  }
-
-  @route("/namespace-connection")
-  interface NamespaceConnections {
-    @doc("Reads the tenant's Namespace build provider connection: the issuer, the subject pattern and the audience Tumpel defines for Namespace, to register there, or NotConfigured while the stage has no issuer; start is refused IssuerMissing then.")
-    @get
-    get(): NamespaceConnectionLink | ProblemResponse;
-
-    @doc("Connects the tenant's own Namespace workspace, replacing an earlier Namespace connection.")
-    @route("/start")
-    @post
-    start(@body body: NamespaceConnectionStart): NamespaceConnectionLink | ProblemResponse;
-
-    @doc("Disconnects the tenant's Namespace workspace; prebuilds already stored stay.")
-    @delete
-    delete(): NoContentResponse | ProblemResponse;
-  }
-
-  @route("/circleci-connection")
-  interface CircleCIConnections {
-    @doc("Reads the tenant's CircleCI build provider connection, the orb and the config to commit; the API token is never answered.")
-    @get
-    get(): CircleCIConnectionLink | ProblemResponse;
-
-    @doc("""
-      Connects the tenant's CircleCI organization with a pasted personal API token, the fallback to
-      authorize, replacing an earlier CircleCI connection; project bindings stay. Refused
-      CircleCITokenRefused when GET /api/v2/me refuses the token.
-      """)
-    @route("/start")
-    @post
-    start(@body body: CircleCIConnectionStart): CircleCIConnectionLink | ProblemResponse;
-
-    @doc("""
-      Starts an authorization that connects the tenant's CircleCI organization through CircleCI's
-      OAuth consent page, registering the tenant's CircleCI client first when it has none. Answers it
-      AwaitingRedirect with the consent URL. Refused CircleCIRefused when CircleCI refuses the client
-      registration.
-      """)
-    @route("/authorize")
-    @post
-    authorize(): CircleCIAuthorization | ProblemResponse;
-
-    @doc("""
-      Takes the address the browser landed on, spends its code with the authorization's verifier at
-      CircleCI's token endpoint and reads the organizations the token reads. The connection takes
-      the token at once when it already names one of them, or when there is one; otherwise the
-      authorization is ChoosingOrganization. A denied consent, a refused code or no organization
-      ends it Failed. Refused NotFound for another principal's authorization, InvalidRequest when
-      the address is not the redirect address with a code or an error or carries another state,
-      leaving the authorization AwaitingRedirect, and CircleCIAuthorizationNotWaiting unless the
-      authorization is AwaitingRedirect.
-      """)
-    @route("/complete")
-    @post
-    complete(@body body: CircleCIAuthorizationComplete): CircleCIAuthorization | ProblemResponse;
-
-    @doc("""
-      Connects the organization a ChoosingOrganization authorization lists, with the token it holds,
-      replacing an earlier CircleCI connection; project bindings stay. Refused NotFound for another
-      principal's authorization, InvalidRequest when the organization is not listed, and
-      CircleCIAuthorizationNotWaiting unless the authorization is ChoosingOrganization.
-      """)
-    @route("/choose")
-    @post
-    choose(@body body: CircleCIAuthorizationChoose): CircleCIAuthorization | ProblemResponse;
-
-    @doc("Disconnects the tenant's CircleCI organization and deletes its project bindings and their webhooks; prebuilds already stored stay.")
-    @delete
-    delete(): NoContentResponse | ProblemResponse;
-  }
-
-  @route("/circleci-projects")
-  interface CircleCIProjects {
-    @doc("Lists the repositories bound to a CircleCI project, by repository.")
-    @get
-    list(): CircleCIProject[] | ProblemResponse;
-
-    @doc("""
-      Binds a repository to its CircleCI project and pipeline definition, once per repository, and
-      registers a workflow-completed webhook on the project with a signing secret the control plane
-      generates and seals.
-      Refused NoBuildProvider while CircleCI is not connected, CircleCIProjectMissing when the slug
-      names no project of the connected organization, CircleCIDefinitionMismatch when the pipeline
-      definition is missing or checks out another repository, and Conflict when the repository is
-      already bound. CircleCITokenRefused or CircleCIRefused when CircleCI refuses the webhook.
-      """)
-    @post
-    add(@body body: CircleCIProjectAdd): CircleCIProject | ProblemResponse;
-
-    @doc("Deletes a repository's CircleCI project binding and its webhook at CircleCI.")
-    @route("/{circleCIProjectId}")
-    @delete
-    delete(...CircleCIProjectPath): NoContentResponse | ProblemResponse;
-  }
-
-  @doc("""
-    CircleCI's side of a prebuild. No principal signs in: CircleCI posts each workflow-completed
-    event of a bound project, signed with the binding's secret as v1=<hex HMAC-SHA256 of the body>
-    in circleci-signature. A failed tumpel-prebuild workflow fails its prebuild in phase Build, a
-    successful one without a completed upload in phase Upload; an event of a pipeline no prebuild
-    recorded is ignored.
-    """)
-  @route("/circleci-events/{tenantId}")
-  interface CircleCIEvents {
-    @doc("Takes one workflow-completed event. Refused NotFound for an unknown tenant or project and Forbidden when the signature does not match.")
-    @post
-    receive(
-      @path tenantId: EntityId,
-      @header("circleci-signature") signature: Token,
-      @body @TypeSpec.JsonSchema.maxProperties(1000) body: Record<unknown>,
-    ): NoContentResponse | ProblemResponse;
   }
 
   @route("/secret-sets")
