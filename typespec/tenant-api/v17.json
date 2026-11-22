@@ -3090,27 +3090,6 @@
       },
       "description": "The provider serves more models than the catalog lists, so any model passes to the provider and the provider checks it."
     },
-    "NamespaceConnectionStart": {
-      "type": "object",
-      "required": [
-        "accountLabel",
-        "workspaceId"
-      ],
-      "properties": {
-        "accountLabel": {
-          "$ref": "#/components/schemas/DisplayName"
-        },
-        "workspaceId": {
-          "$ref": "#/components/schemas/NamespaceWorkspaceId"
-        }
-      }
-    },
-    "NamespaceWorkspaceId": {
-      "type": "string",
-      "maxLength": 100,
-      "pattern": "^tenant_[A-Za-z0-9]+$",
-      "description": "A Namespace workspace id, such as tenant_123456789ab."
-    },
     "OAuthConnector": {
       "type": "object",
       "required": [
@@ -3650,7 +3629,7 @@
               "$ref": "#/components/schemas/EntityId"
             }
           ],
-          "description": "The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, whose harness version picks the guest image, and whose name the job's subject carries."
+          "description": "The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, and whose harness version picks the guest image."
         },
         "repository": {
           "allOf": [
@@ -3703,7 +3682,7 @@
           "format": "int64"
         }
       },
-      "description": "A repository's dependencies installed once by a build provider on the tenant's account, stored as\none layer. The repository, the input digest and the guest image digest are its key: every commit\nwith the same devcontainer files and lockfiles, built on the same guest image, shares one\nprebuild. A prebuild exists only once its provider accepted the job."
+      "description": "A repository's dependencies installed once by a turn on one of the tenant's online Amd64 hosts,\nas a turn of a session the session list leaves out, and stored as one layer: the host's snapshot\nof the box. The repository, the input digest and the guest image digest are its key: every commit\nwith the same devcontainer files and lockfiles, built on the same guest image, shares one\nprebuild. A prebuild exists only once its turn is offered to a host."
     },
     "PrebuildBuilding": {
       "type": "object",
@@ -3748,7 +3727,7 @@
               "$ref": "#/components/schemas/Sha256Digest"
             }
           ],
-          "description": "The sha256 of the compressed OCI layer the job uploaded."
+          "description": "The sha256 of the compressed OCI layer the host stored."
         },
         "layerSizeBytes": {
           "type": "integer",
@@ -3796,7 +3775,7 @@
               "$ref": "#/components/schemas/Sha256Digest"
             }
           ],
-          "description": "The sha256 of the OCI layer the provider uploaded."
+          "description": "The sha256 of the OCI layer the host stored."
         },
         "layerSizeBytes": {
           "type": "integer",
@@ -3932,7 +3911,7 @@
               "$ref": "#/components/schemas/Detail"
             }
           ],
-          "description": "What failed, with what the provider reported."
+          "description": "What failed, with what the turn reported."
         },
         "fix": {
           "allOf": [
@@ -3957,7 +3936,7 @@
         "Upload",
         "Conversion"
       ],
-      "description": "The phase a Failed prebuild stopped in. A provider that refuses the job refuses the start, and no prebuild exists."
+      "description": "The phase a Failed prebuild stopped in. A start the control plane refuses stores no prebuild."
     },
     "PrebuildLayerAbsence": {
       "type": "string",
@@ -4042,7 +4021,6 @@
         "GitHubAppPermissionMissing",
         "RepositoryUnreadable",
         "GitHubInstallationUnreadable",
-        "IssuerMissing",
         "OwnerRequired",
         "LastOwner",
         "InvitationExpired",
@@ -7058,108 +7036,6 @@
       },
       "description": "One write of a config apply, which the tenant Durable Object commits with the others in one transaction."
     },
-    "TenantApi.ConnectedAccounts": {
-      "type": "object",
-      "required": [
-        "Namespace"
-      ],
-      "properties": {
-        "Namespace": {
-          "type": "string",
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/ShortText"
-            }
-          ],
-          "nullable": true
-        }
-      }
-    },
-    "TenantApi.ConnectedAccountsInput": {
-      "type": "object"
-    },
-    "TenantApi.ConnectedAccountsRequest": {
-      "type": "object",
-      "required": [
-        "tenantApiVersion",
-        "operation",
-        "input"
-      ],
-      "properties": {
-        "tenantApiVersion": {
-          "$ref": "#/components/schemas/TenantApiProtocol"
-        },
-        "operation": {
-          "type": "string",
-          "enum": [
-            "connectedAccounts"
-          ]
-        },
-        "input": {
-          "$ref": "#/components/schemas/TenantApi.ConnectedAccountsInput"
-        }
-      }
-    },
-    "TenantApi.ConnectedAccountsResult": {
-      "type": "object",
-      "required": [
-        "accounts"
-      ],
-      "properties": {
-        "accounts": {
-          "$ref": "#/components/schemas/TenantApi.ConnectedAccounts"
-        }
-      }
-    },
-    "TenantApi.ConnectNamespaceInput": {
-      "type": "object",
-      "required": [
-        "start",
-        "now"
-      ],
-      "properties": {
-        "start": {
-          "$ref": "#/components/schemas/NamespaceConnectionStart"
-        },
-        "now": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
-    "TenantApi.ConnectNamespaceRequest": {
-      "type": "object",
-      "required": [
-        "tenantApiVersion",
-        "operation",
-        "input"
-      ],
-      "properties": {
-        "tenantApiVersion": {
-          "$ref": "#/components/schemas/TenantApiProtocol"
-        },
-        "operation": {
-          "type": "string",
-          "enum": [
-            "connectNamespace"
-          ]
-        },
-        "input": {
-          "$ref": "#/components/schemas/TenantApi.ConnectNamespaceInput"
-        }
-      }
-    },
-    "TenantApi.ConnectNamespaceResult": {
-      "type": "object",
-      "required": [
-        "connection"
-      ],
-      "properties": {
-        "connection": {
-          "$ref": "#/components/schemas/TenantApi.NamespaceConnectionRecord"
-        }
-      }
-    },
     "TenantApi.ConnectorAuthorizeStartedOk": {
       "type": "object",
       "required": [
@@ -8240,42 +8116,6 @@
             "$ref": "#/components/schemas/TenantApi.TurnHandoff"
           },
           "maxItems": 10000
-        }
-      }
-    },
-    "TenantApi.DeleteBuildConnectionInput": {
-      "type": "object"
-    },
-    "TenantApi.DeleteBuildConnectionRequest": {
-      "type": "object",
-      "required": [
-        "tenantApiVersion",
-        "operation",
-        "input"
-      ],
-      "properties": {
-        "tenantApiVersion": {
-          "$ref": "#/components/schemas/TenantApiProtocol"
-        },
-        "operation": {
-          "type": "string",
-          "enum": [
-            "deleteBuildConnection"
-          ]
-        },
-        "input": {
-          "$ref": "#/components/schemas/TenantApi.DeleteBuildConnectionInput"
-        }
-      }
-    },
-    "TenantApi.DeleteBuildConnectionResult": {
-      "type": "object",
-      "required": [
-        "deleted"
-      ],
-      "properties": {
-        "deleted": {
-          "type": "boolean"
         }
       }
     },
@@ -11398,78 +11238,6 @@
             "$ref": "#/components/schemas/ModelName"
           },
           "maxItems": 1000
-        }
-      }
-    },
-    "TenantApi.NamespaceConnectionInput": {
-      "type": "object"
-    },
-    "TenantApi.NamespaceConnectionRecord": {
-      "type": "object",
-      "required": [
-        "namespaceConnectionId",
-        "accountLabel",
-        "workspaceId",
-        "createdAt",
-        "updatedAt"
-      ],
-      "properties": {
-        "namespaceConnectionId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "accountLabel": {
-          "$ref": "#/components/schemas/ShortText"
-        },
-        "workspaceId": {
-          "$ref": "#/components/schemas/ShortText"
-        },
-        "createdAt": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "updatedAt": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "description": "The tenant's Namespace connection as the tenant Durable Object stores it."
-    },
-    "TenantApi.NamespaceConnectionRequest": {
-      "type": "object",
-      "required": [
-        "tenantApiVersion",
-        "operation",
-        "input"
-      ],
-      "properties": {
-        "tenantApiVersion": {
-          "$ref": "#/components/schemas/TenantApiProtocol"
-        },
-        "operation": {
-          "type": "string",
-          "enum": [
-            "namespaceConnection"
-          ]
-        },
-        "input": {
-          "$ref": "#/components/schemas/TenantApi.NamespaceConnectionInput"
-        }
-      }
-    },
-    "TenantApi.NamespaceConnectionResult": {
-      "type": "object",
-      "required": [
-        "connection"
-      ],
-      "properties": {
-        "connection": {
-          "type": "object",
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/TenantApi.NamespaceConnectionRecord"
-            }
-          ],
-          "nullable": true
         }
       }
     },
@@ -15515,7 +15283,8 @@
         "model",
         "prompt",
         "boxRetention",
-        "turnSeconds"
+        "turnSeconds",
+        "idleSeconds"
       ],
       "properties": {
         "type": {
@@ -15559,13 +15328,19 @@
               "$ref": "#/components/schemas/BoxRetention"
             }
           ],
-          "description": "What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout."
+          "description": "What the host does with the session's box after the turn ends; a Warm box stays until the session stops or idleSeconds pass with no turn."
         },
         "turnSeconds": {
           "type": "integer",
           "format": "int32",
           "minimum": 1,
           "description": "How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds."
+        },
+        "idleSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "How long the host keeps an idle box before it tears it down; the control plane's idle policy."
         },
         "boxMemoryMib": {
           "type": "integer",
@@ -16347,18 +16122,6 @@
           "$ref": "#/components/schemas/TenantApi.TranscriptCursorRequest"
         },
         {
-          "$ref": "#/components/schemas/TenantApi.ConnectedAccountsRequest"
-        },
-        {
-          "$ref": "#/components/schemas/TenantApi.DeleteBuildConnectionRequest"
-        },
-        {
-          "$ref": "#/components/schemas/TenantApi.NamespaceConnectionRequest"
-        },
-        {
-          "$ref": "#/components/schemas/TenantApi.ConnectNamespaceRequest"
-        },
-        {
           "$ref": "#/components/schemas/TenantApi.OfferSentRequest"
         },
         {
@@ -16512,10 +16275,6 @@
           "listCredentialHandovers": "#/components/schemas/TenantApi.ListCredentialHandoversRequest",
           "getSnapshot": "#/components/schemas/TenantApi.GetSnapshotRequest",
           "transcriptCursor": "#/components/schemas/TenantApi.TranscriptCursorRequest",
-          "connectedAccounts": "#/components/schemas/TenantApi.ConnectedAccountsRequest",
-          "deleteBuildConnection": "#/components/schemas/TenantApi.DeleteBuildConnectionRequest",
-          "namespaceConnection": "#/components/schemas/TenantApi.NamespaceConnectionRequest",
-          "connectNamespace": "#/components/schemas/TenantApi.ConnectNamespaceRequest",
           "offerSent": "#/components/schemas/TenantApi.OfferSentRequest",
           "hostHello": "#/components/schemas/TenantApi.HostHelloRequest",
           "hostUsage": "#/components/schemas/TenantApi.HostUsageRequest",

@@ -12,7 +12,7 @@ enum PrebuildState {
   @doc("The host claimed the turn and runs the setup step, then stores the box's snapshot as the layer.")
   Building: "Building",
 
-  @doc("The layer is uploaded and the control plane cuts it into chunks.")
+  @doc("The host stored the box's snapshot as the layer and the control plane cuts it into chunks.")
   Converting: "Converting",
 
   @doc("The layer is stored; a session of the repository on the same guest image restores it on its first turn instead of cloning and installing.")
@@ -31,7 +31,7 @@ enum PrebuildConfigSource {
   Default: "Default",
 }
 
-@doc("The phase a Failed prebuild stopped in. A provider that refuses the job refuses the start, and no prebuild exists.")
+@doc("The phase a Failed prebuild stopped in. A start the control plane refuses stores no prebuild.")
 enum PrebuildFailurePhase {
   @doc("The turn ended before its host claimed it: it failed Undelivered, or no installation token could be minted for the clone.")
   Dispatch: "Dispatch",
@@ -57,7 +57,7 @@ model PrebuildBuilding {
 model PrebuildConverting {
   state: PrebuildState.Converting;
 
-  @doc("The sha256 of the compressed OCI layer the job uploaded.")
+  @doc("The sha256 of the compressed OCI layer the host stored.")
   layerDigest: Sha256Digest;
 
   @minValue(1) layerSizeBytes: int64;
@@ -67,7 +67,7 @@ model PrebuildConverting {
 model PrebuildDone {
   state: PrebuildState.Done;
 
-  @doc("The sha256 of the OCI layer the provider uploaded.")
+  @doc("The sha256 of the OCI layer the host stored.")
   layerDigest: Sha256Digest;
 
   @minValue(0) layerSizeBytes: int64;
@@ -91,16 +91,17 @@ union PrebuildStatus {
 }
 
 @doc("""
-  A repository's dependencies installed once by a build provider on the tenant's account, stored as
-  one layer. The repository, the input digest and the guest image digest are its key: every commit
+  A repository's dependencies installed once by a turn on one of the tenant's online Amd64 hosts,
+  as a turn of a session the session list leaves out, and stored as one layer: the host's snapshot
+  of the box. The repository, the input digest and the guest image digest are its key: every commit
   with the same devcontainer files and lockfiles, built on the same guest image, shares one
-  prebuild. A prebuild exists only once its provider accepted the job.
+  prebuild. A prebuild exists only once its turn is offered to a host.
   """)
 model Prebuild {
   @key prebuildId: EntityId;
   tenantId: EntityId;
 
-  @doc("The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, whose harness version picks the guest image, and whose name the job's subject carries.")
+  @doc("The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, and whose harness version picks the guest image.")
   personaId: EntityId;
 
   @doc("The repository as https://github.com/<owner>/<name> in lower case, whatever form the start named it in.")
@@ -142,7 +143,7 @@ model PrebuildFailure {
   tenantId: EntityId;
   phase: PrebuildFailurePhase;
 
-  @doc("What failed, with what the provider reported.")
+  @doc("What failed, with what the turn reported.")
   detail: Detail;
 
   @doc("What fixes it.")

@@ -77,8 +77,6 @@ enum ProblemCode {
   @doc("GitHub did not answer the one-time read of the account type of an installation linked before the control plane stored account types; the detail quotes GitHub.")
   GitHubInstallationUnreadable: "GitHubInstallationUnreadable",
 
-  IssuerMissing: "IssuerMissing",
-
   @doc("Only an Owner of the tenant runs this operation.")
   OwnerRequired: "OwnerRequired",
 
@@ -1457,7 +1455,7 @@ namespace V1 {
 
   @route("/connections")
   interface Connections {
-    @doc("Lists one row per connection kind, the GitHub App and each build provider, with its state and, once Connected, the account it bills.")
+    @doc("Lists one row per connection kind, the GitHub App and OpenRouter, with its state and, once Connected, the account.")
     @get
     list(): ConnectionSummary[] | ProblemResponse;
   }
@@ -1505,22 +1503,6 @@ namespace V1 {
     @route("/{grantId}")
     @delete
     revoke(...OAuthGrantPath): NoContentResponse | ProblemResponse;
-  }
-
-  @route("/namespace-connection")
-  interface NamespaceConnections {
-    @doc("Reads the tenant's Namespace build provider connection: the issuer, the subject pattern and the audience Tumpel defines for Namespace, to register there, or NotConfigured while the stage has no issuer; start is refused IssuerMissing then.")
-    @get
-    get(): NamespaceConnectionLink | ProblemResponse;
-
-    @doc("Connects the tenant's own Namespace workspace, replacing an earlier Namespace connection.")
-    @route("/start")
-    @post
-    start(@body body: NamespaceConnectionStart): NamespaceConnectionLink | ProblemResponse;
-
-    @doc("Disconnects the tenant's Namespace workspace; prebuilds already stored stay.")
-    @delete
-    delete(): NoContentResponse | ProblemResponse;
   }
 
   @route("/secret-sets")

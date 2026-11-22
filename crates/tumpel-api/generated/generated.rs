@@ -4228,7 +4228,7 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
-        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout.
+        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops or idleSeconds pass with no turn.
         #[serde(rename = "boxRetention")]
         pub box_retention: BoxRetention,
         pub credential: ChannelDispatchGrant,
@@ -4239,6 +4239,9 @@ pub mod types {
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: ChannelTurnOfferHarnessVersion,
+        ///How long the host keeps an idle box before it tears it down; the control plane's idle policy.
+        #[serde(rename = "idleSeconds")]
+        pub idle_seconds: ::std::num::NonZeroU32,
         pub image: ChannelBootImage,
         #[serde(rename = "lastLineSeq")]
         pub last_line_seq: Sequence,
@@ -6058,7 +6061,7 @@ pub mod types {
     ///`ConnectedConnection`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ConnectedConnection {
-        ///What the connection is connected as: the GitHub logins of the tenant's installations, comma-separated, the account label the tenant gave a build provider, or for OpenRouter the names of the secret sets that hold an OpenRouter key, comma-separated, since OpenRouter's key exchange names no account.
+        ///What the connection is connected as: the GitHub logins of the tenant's installations, comma-separated, or for OpenRouter the names of the secret sets that hold an OpenRouter key, comma-separated, since OpenRouter's key exchange names no account.
         pub account: Summary,
         pub kind: ConnectionKind,
         pub state: ConnectedConnectionState,
@@ -6096,18 +6099,16 @@ pub mod types {
             value.parse()
         }
     }
-    ///An outside service the tenant links: the GitHub App, one build provider, or OpenRouter as a model provider.
+    ///An outside service the tenant links: the GitHub App or OpenRouter as a model provider.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectionKind {
         GitHub,
-        Namespace,
         OpenRouter,
     }
     impl ::std::fmt::Display for ConnectionKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GitHub => f.write_str("GitHub"),
-                Self::Namespace => f.write_str("Namespace"),
                 Self::OpenRouter => f.write_str("OpenRouter"),
             }
         }
@@ -6117,7 +6118,6 @@ pub mod types {
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
                 "GitHub" => Ok(Self::GitHub),
-                "Namespace" => Ok(Self::Namespace),
                 "OpenRouter" => Ok(Self::OpenRouter),
                 _ => Err("invalid value".into()),
             }
@@ -6141,8 +6141,6 @@ pub mod types {
         NotConfigured,
         NotConnected,
         Connected,
-        Expiring,
-        Expired,
     }
     impl ::std::fmt::Display for ConnectionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6150,8 +6148,6 @@ pub mod types {
                 Self::NotConfigured => f.write_str("NotConfigured"),
                 Self::NotConnected => f.write_str("NotConnected"),
                 Self::Connected => f.write_str("Connected"),
-                Self::Expiring => f.write_str("Expiring"),
-                Self::Expired => f.write_str("Expired"),
             }
         }
     }
@@ -6162,8 +6158,6 @@ pub mod types {
                 "NotConfigured" => Ok(Self::NotConfigured),
                 "NotConnected" => Ok(Self::NotConnected),
                 "Connected" => Ok(Self::Connected),
-                "Expiring" => Ok(Self::Expiring),
-                "Expired" => Ok(Self::Expired),
                 _ => Err("invalid value".into()),
             }
         }
@@ -6180,29 +6174,17 @@ pub mod types {
             value.parse()
         }
     }
-    ///One connection kind of the tenant with its state, its account once connected, and the expiry of a credential that is Expiring or Expired.
+    ///One connection kind of the tenant with its state and its account once connected.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ConnectionSummary {
         ConnectedConnection(ConnectedConnection),
-        ExpiringConnection(ExpiringConnection),
-        ExpiredConnection(ExpiredConnection),
         NotConnectedConnection(NotConnectedConnection),
         NotConfiguredConnection(NotConfiguredConnection),
     }
     impl ::std::convert::From<ConnectedConnection> for ConnectionSummary {
         fn from(value: ConnectedConnection) -> Self {
             Self::ConnectedConnection(value)
-        }
-    }
-    impl ::std::convert::From<ExpiringConnection> for ConnectionSummary {
-        fn from(value: ExpiringConnection) -> Self {
-            Self::ExpiringConnection(value)
-        }
-    }
-    impl ::std::convert::From<ExpiredConnection> for ConnectionSummary {
-        fn from(value: ExpiredConnection) -> Self {
-            Self::ExpiredConnection(value)
         }
     }
     impl ::std::convert::From<NotConnectedConnection> for ConnectionSummary {
@@ -6722,10 +6704,10 @@ pub mod types {
         ///The heartbeat interval of the channel, 10 in production: the control plane answers a host message with a Heartbeat once it has sent nothing for half of it. It matches heartbeatIntervalSeconds of the hosts' runtime.json.
         #[serde(rename = "heartbeatIntervalSeconds")]
         pub heartbeat_interval_seconds: ::std::num::NonZeroU32,
-        ///How long a prebuild may run from the start of its run to the completion of its layer upload before it fails in phase Build, or in phase Upload once its upload started.
+        ///How long a host may take from claiming the prebuild's turn to storing the box's snapshot before the prebuild fails in phase Build, or in phase Upload once the host started storing the snapshot.
         #[serde(rename = "prebuildBuildBudgetSeconds")]
         pub prebuild_build_budget_seconds: ::std::num::NonZeroU32,
-        ///How long a dispatched prebuild may wait for its run to start before it fails in phase Dispatch; the rootfs URL its dispatch hands the run stays valid for this plus prebuildBuildBudgetSeconds.
+        ///How long a prebuild's turn may stay offered before a host claims it; past it the prebuild fails in phase Dispatch.
         #[serde(rename = "prebuildDispatchBudgetSeconds")]
         pub prebuild_dispatch_budget_seconds: ::std::num::NonZeroU32,
         ///How long the host may take to answer a SnapshotRequest before the snapshot fails NotAnswered; its presigned upload expires then too.
@@ -8044,92 +8026,6 @@ pub mod types {
     impl ::std::convert::From<Problem> for EventProblem {
         fn from(value: Problem) -> Self {
             Self::Problem(value)
-        }
-    }
-    ///A connection whose credential stopped working; prebuilds on it fail until the tenant connects again.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct ExpiredConnection {
-        pub account: Summary,
-        ///When the credential stopped working.
-        #[serde(rename = "expiredAt")]
-        pub expired_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub kind: ConnectionKind,
-        pub state: ExpiredConnectionState,
-    }
-    ///`ExpiredConnectionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum ExpiredConnectionState {
-        Expired,
-    }
-    impl ::std::fmt::Display for ExpiredConnectionState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Expired => f.write_str("Expired"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ExpiredConnectionState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Expired" => Ok(Self::Expired),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ExpiredConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ExpiredConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///A Connected connection whose credential stops working within the renewal window.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct ExpiringConnection {
-        pub account: Summary,
-        ///When the credential stops working.
-        #[serde(rename = "expiresAt")]
-        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub kind: ConnectionKind,
-        pub state: ExpiringConnectionState,
-    }
-    ///`ExpiringConnectionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum ExpiringConnectionState {
-        Expiring,
-    }
-    impl ::std::fmt::Display for ExpiringConnectionState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Expiring => f.write_str("Expiring"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ExpiringConnectionState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Expiring" => Ok(Self::Expiring),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ExpiringConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ExpiringConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///A turn that ended Failed, with why.
@@ -14172,263 +14068,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`NamespaceConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnected {
-        pub connection: NamespaceConnection,
-        pub state: NamespaceConnectedState,
-    }
-    ///`NamespaceConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum NamespaceConnectedState {
-        Connected,
-    }
-    impl ::std::fmt::Display for NamespaceConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Connected => f.write_str("Connected"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for NamespaceConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Connected" => Ok(Self::Connected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The tenant's Namespace build provider. Namespace trusts tokens of the stage's issuer whose sub
-    ///matches `subjectPattern` and whose aud is `audience`.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnection {
-        ///The Namespace workspace that bills the builds, as the tenant names it.
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        ///The aud Tumpel defines for Namespace: federation.namespaceapis.com.
-        pub audience: OidcAudience,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        ///The stage's OIDC issuer Namespace registers.
-        pub issuer: HttpUrl,
-        #[serde(rename = "namespaceConnectionId")]
-        pub namespace_connection_id: EntityId,
-        ///The sub of a prebuild token: tenant:<tenantId>:persona:<personaName>:job:prebuild, with the prebuild's persona name.
-        #[serde(rename = "subjectPattern")]
-        pub subject_pattern: ShortText,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-        ///The Namespace workspace the builds run in, such as tenant_123456789ab.
-        #[serde(rename = "workspaceId")]
-        pub workspace_id: NamespaceWorkspaceId,
-    }
-    ///The tenant's Namespace build provider connection.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnectionLink {
-        pub link: NamespaceLink,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`NamespaceConnectionStart`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnectionStart {
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        #[serde(rename = "workspaceId")]
-        pub workspace_id: NamespaceWorkspaceId,
-    }
-    ///`NamespaceLink`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum NamespaceLink {
-        Connected(NamespaceConnected),
-        NotConnected(NamespaceNotConnected),
-        NotConfigured(NamespaceNotConfigured),
-    }
-    impl ::std::convert::From<NamespaceConnected> for NamespaceLink {
-        fn from(value: NamespaceConnected) -> Self {
-            Self::Connected(value)
-        }
-    }
-    impl ::std::convert::From<NamespaceNotConnected> for NamespaceLink {
-        fn from(value: NamespaceNotConnected) -> Self {
-            Self::NotConnected(value)
-        }
-    }
-    impl ::std::convert::From<NamespaceNotConfigured> for NamespaceLink {
-        fn from(value: NamespaceNotConfigured) -> Self {
-            Self::NotConfigured(value)
-        }
-    }
-    ///The stage has no issuer hostname yet, so Namespace cannot trust its tokens; `fix` says how to deploy it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceNotConfigured {
-        pub detail: Detail,
-        pub fix: Detail,
-        pub state: NamespaceNotConfiguredState,
-    }
-    ///`NamespaceNotConfiguredState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum NamespaceNotConfiguredState {
-        NotConfigured,
-    }
-    impl ::std::fmt::Display for NamespaceNotConfiguredState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConfigured => f.write_str("NotConfigured"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for NamespaceNotConfiguredState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConfigured" => Ok(Self::NotConfigured),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceNotConfiguredState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceNotConfiguredState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The trust material to register at Namespace before connecting.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceNotConnected {
-        ///The aud Tumpel defines for Namespace: federation.namespaceapis.com.
-        pub audience: OidcAudience,
-        pub issuer: HttpUrl,
-        pub state: NamespaceNotConnectedState,
-        #[serde(rename = "subjectPattern")]
-        pub subject_pattern: ShortText,
-    }
-    ///`NamespaceNotConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum NamespaceNotConnectedState {
-        NotConnected,
-    }
-    impl ::std::fmt::Display for NamespaceNotConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConnected => f.write_str("NotConnected"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for NamespaceNotConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConnected" => Ok(Self::NotConnected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///A Namespace workspace id, such as tenant_123456789ab.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct NamespaceWorkspaceId(::std::string::String);
-    impl NamespaceWorkspaceId {
-        pub fn as_str(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::convert::AsRef<str> for NamespaceWorkspaceId {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::fmt::Display for NamespaceWorkspaceId {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            f.write_str(&self.0)
-        }
-    }
-    impl ::std::convert::AsRef<::std::ffi::OsStr> for NamespaceWorkspaceId {
-        fn as_ref(&self) -> &::std::ffi::OsStr {
-            self.0.as_ref()
-        }
-    }
-    impl ::std::ops::Deref for NamespaceWorkspaceId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<NamespaceWorkspaceId> for ::std::string::String {
-        fn from(value: NamespaceWorkspaceId) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for NamespaceWorkspaceId {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 100usize {
-                return Err("NamespaceWorkspaceId: longer than 100 characters".into());
-            }
-            static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
-                ::std::sync::LazyLock::new(|| ::regress::Regex::new("^tenant_[A-Za-z0-9]+$").unwrap());
-            if PATTERN.find(value).is_none() {
-                return Err("NamespaceWorkspaceId: doesn't match pattern \"^tenant_[A-Za-z0-9]+$\"".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceWorkspaceId {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceWorkspaceId {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for NamespaceWorkspaceId {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
     ///`NotConfiguredConnection`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct NotConfiguredConnection {
@@ -15115,75 +14754,6 @@ pub mod types {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
-        }
-    }
-    ///The aud claim a provider requires on Tumpel's tokens, such as federation.namespaceapis.com.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct OidcAudience(::std::string::String);
-    impl OidcAudience {
-        pub fn as_str(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::convert::AsRef<str> for OidcAudience {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::fmt::Display for OidcAudience {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            f.write_str(&self.0)
-        }
-    }
-    impl ::std::convert::AsRef<::std::ffi::OsStr> for OidcAudience {
-        fn as_ref(&self) -> &::std::ffi::OsStr {
-            self.0.as_ref()
-        }
-    }
-    impl ::std::ops::Deref for OidcAudience {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<OidcAudience> for ::std::string::String {
-        fn from(value: OidcAudience) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for OidcAudience {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 500usize {
-                return Err("OidcAudience: longer than 500 characters".into());
-            }
-            if value.chars().count() < 1usize {
-                return Err("OidcAudience: shorter than 1 characters".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for OidcAudience {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for OidcAudience {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for OidcAudience {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
     ///The OpenID Connect discovery document of the stage's issuer, served at
@@ -16390,10 +15960,11 @@ pub mod types {
         #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
         pub tumpel_mcp: ::std::option::Option<bool>,
     }
-    ///A repository's dependencies installed once by a build provider on the tenant's account, stored as
-    ///one layer. The repository, the input digest and the guest image digest are its key: every commit
+    ///A repository's dependencies installed once by a turn on one of the tenant's online Amd64 hosts,
+    ///as a turn of a session the session list leaves out, and stored as one layer: the host's snapshot
+    ///of the box. The repository, the input digest and the guest image digest are its key: every commit
     ///with the same devcontainer files and lockfiles, built on the same guest image, shares one
-    ///prebuild. A prebuild exists only once its provider accepted the job.
+    ///prebuild. A prebuild exists only once its turn is offered to a host.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct Prebuild {
         #[serde(rename = "configSource")]
@@ -16417,7 +15988,7 @@ pub mod types {
         ///The transcript of the prebuild's turn: the output of the repository's setup step.
         #[serde(rename = "logUrl")]
         pub log_url: HttpUrl,
-        ///The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, whose harness version picks the guest image, and whose name the job's subject carries.
+        ///The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, and whose harness version picks the guest image.
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
         #[serde(rename = "prebuildId")]
@@ -16509,7 +16080,7 @@ pub mod types {
     ///`PrebuildConverting`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildConverting {
-        ///The sha256 of the compressed OCI layer the job uploaded.
+        ///The sha256 of the compressed OCI layer the host stored.
         #[serde(rename = "layerDigest")]
         pub layer_digest: Sha256Digest,
         #[serde(rename = "layerSizeBytes")]
@@ -16594,7 +16165,7 @@ pub mod types {
     pub struct PrebuildDone {
         #[serde(rename = "finishedAt")]
         pub finished_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///The sha256 of the OCI layer the provider uploaded.
+        ///The sha256 of the OCI layer the host stored.
         #[serde(rename = "layerDigest")]
         pub layer_digest: Sha256Digest,
         #[serde(rename = "layerSizeBytes")]
@@ -16775,7 +16346,7 @@ pub mod types {
     pub struct PrebuildFailure {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
-        ///What failed, with what the provider reported.
+        ///What failed, with what the turn reported.
         pub detail: Detail,
         ///What fixes it.
         pub fix: Detail,
@@ -16785,7 +16356,7 @@ pub mod types {
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
-    ///The phase a Failed prebuild stopped in. A provider that refuses the job refuses the start, and no prebuild exists.
+    ///The phase a Failed prebuild stopped in. A start the control plane refuses stores no prebuild.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildFailurePhase {
         Dispatch,
@@ -17724,7 +17295,6 @@ pub mod types {
         GitHubAppPermissionMissing,
         RepositoryUnreadable,
         GitHubInstallationUnreadable,
-        IssuerMissing,
         OwnerRequired,
         LastOwner,
         InvitationExpired,
@@ -17800,7 +17370,6 @@ pub mod types {
                 Self::GitHubAppPermissionMissing => f.write_str("GitHubAppPermissionMissing"),
                 Self::RepositoryUnreadable => f.write_str("RepositoryUnreadable"),
                 Self::GitHubInstallationUnreadable => f.write_str("GitHubInstallationUnreadable"),
-                Self::IssuerMissing => f.write_str("IssuerMissing"),
                 Self::OwnerRequired => f.write_str("OwnerRequired"),
                 Self::LastOwner => f.write_str("LastOwner"),
                 Self::InvitationExpired => f.write_str("InvitationExpired"),
@@ -17878,7 +17447,6 @@ pub mod types {
                 "GitHubAppPermissionMissing" => Ok(Self::GitHubAppPermissionMissing),
                 "RepositoryUnreadable" => Ok(Self::RepositoryUnreadable),
                 "GitHubInstallationUnreadable" => Ok(Self::GitHubInstallationUnreadable),
-                "IssuerMissing" => Ok(Self::IssuerMissing),
                 "OwnerRequired" => Ok(Self::OwnerRequired),
                 "LastOwner" => Ok(Self::LastOwner),
                 "InvitationExpired" => Ok(Self::InvitationExpired),
@@ -23014,6 +22582,9 @@ pub mod types {
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<CredentialText>,
         pub dirty: bool,
+        ///The idle time left before the box is torn down at the handover, so an update does not reset the offer's idleSeconds; like turnMilliseconds, it counts down from the offer's budget.
+        #[serde(rename = "idleMilliseconds")]
+        pub idle_milliseconds: i64,
         pub image: SupervisorHandoverImage,
         pub machine: SupervisorHandoverMachine,
         pub queued: ::std::vec::Vec<SupervisorHandoverCommand>,
@@ -25624,136 +25195,6 @@ pub mod types {
             Self::DeleteTriggerWrite(value)
         }
     }
-    ///`TenantApiConnectNamespaceInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectNamespaceInput {
-        pub now: i64,
-        pub start: NamespaceConnectionStart,
-    }
-    ///`TenantApiConnectNamespaceRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectNamespaceRequest {
-        pub input: TenantApiConnectNamespaceInput,
-        pub operation: TenantApiConnectNamespaceRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiConnectNamespaceRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiConnectNamespaceRequestOperation {
-        #[serde(rename = "connectNamespace")]
-        ConnectNamespace,
-    }
-    impl ::std::fmt::Display for TenantApiConnectNamespaceRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ConnectNamespace => f.write_str("connectNamespace"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiConnectNamespaceRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "connectNamespace" => Ok(Self::ConnectNamespace),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiConnectNamespaceRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiConnectNamespaceRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiConnectNamespaceResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectNamespaceResult {
-        pub connection: TenantApiNamespaceConnectionRecord,
-    }
-    ///`TenantApiConnectedAccounts`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectedAccounts {
-        #[serde(rename = "Namespace", deserialize_with = "::std::option::Option::deserialize")]
-        pub namespace: ::std::option::Option<ShortText>,
-    }
-    ///`TenantApiConnectedAccountsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiConnectedAccountsInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiConnectedAccountsInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiConnectedAccountsInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiConnectedAccountsInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiConnectedAccountsInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///`TenantApiConnectedAccountsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectedAccountsRequest {
-        pub input: TenantApiConnectedAccountsInput,
-        pub operation: TenantApiConnectedAccountsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiConnectedAccountsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiConnectedAccountsRequestOperation {
-        #[serde(rename = "connectedAccounts")]
-        ConnectedAccounts,
-    }
-    impl ::std::fmt::Display for TenantApiConnectedAccountsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ConnectedAccounts => f.write_str("connectedAccounts"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiConnectedAccountsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "connectedAccounts" => Ok(Self::ConnectedAccounts),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiConnectedAccountsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiConnectedAccountsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiConnectedAccountsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectedAccountsResult {
-        pub accounts: TenantApiConnectedAccounts,
-    }
     ///`TenantApiConnectorAuthorizeStartedOk`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorAuthorizeStartedOk {
@@ -27662,77 +27103,6 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiDeferredOffersResult {
         pub handoffs: ::std::vec::Vec<TenantApiTurnHandoff>,
-    }
-    ///`TenantApiDeleteBuildConnectionInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiDeleteBuildConnectionInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiDeleteBuildConnectionInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiDeleteBuildConnectionInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiDeleteBuildConnectionInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiDeleteBuildConnectionInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///`TenantApiDeleteBuildConnectionRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteBuildConnectionRequest {
-        pub input: TenantApiDeleteBuildConnectionInput,
-        pub operation: TenantApiDeleteBuildConnectionRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiDeleteBuildConnectionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiDeleteBuildConnectionRequestOperation {
-        #[serde(rename = "deleteBuildConnection")]
-        DeleteBuildConnection,
-    }
-    impl ::std::fmt::Display for TenantApiDeleteBuildConnectionRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::DeleteBuildConnection => f.write_str("deleteBuildConnection"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiDeleteBuildConnectionRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "deleteBuildConnection" => Ok(Self::DeleteBuildConnection),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiDeleteBuildConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiDeleteBuildConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiDeleteBuildConnectionResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteBuildConnectionResult {
-        pub deleted: bool,
     }
     ///`TenantApiDeleteConnectorInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -31462,92 +30832,6 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
-    }
-    ///`TenantApiNamespaceConnectionInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiNamespaceConnectionInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiNamespaceConnectionInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiNamespaceConnectionInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiNamespaceConnectionInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiNamespaceConnectionInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///The tenant's Namespace connection as the tenant Durable Object stores it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiNamespaceConnectionRecord {
-        #[serde(rename = "accountLabel")]
-        pub account_label: ShortText,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        #[serde(rename = "namespaceConnectionId")]
-        pub namespace_connection_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-        #[serde(rename = "workspaceId")]
-        pub workspace_id: ShortText,
-    }
-    ///`TenantApiNamespaceConnectionRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiNamespaceConnectionRequest {
-        pub input: TenantApiNamespaceConnectionInput,
-        pub operation: TenantApiNamespaceConnectionRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiNamespaceConnectionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiNamespaceConnectionRequestOperation {
-        #[serde(rename = "namespaceConnection")]
-        NamespaceConnection,
-    }
-    impl ::std::fmt::Display for TenantApiNamespaceConnectionRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NamespaceConnection => f.write_str("namespaceConnection"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiNamespaceConnectionRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "namespaceConnection" => Ok(Self::NamespaceConnection),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiNamespaceConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiNamespaceConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiNamespaceConnectionResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiNamespaceConnectionResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub connection: ::std::option::Option<TenantApiNamespaceConnectionRecord>,
     }
     ///`TenantApiNewClaudeSetup`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -37103,12 +36387,15 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
-        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout.
+        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops or idleSeconds pass with no turn.
         #[serde(rename = "boxRetention")]
         pub box_retention: BoxRetention,
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: TenantApiStoredTurnOfferHarnessVersion,
+        ///How long the host keeps an idle box before it tears it down; the control plane's idle policy.
+        #[serde(rename = "idleSeconds")]
+        pub idle_seconds: ::std::num::NonZeroU32,
         pub model: ModelName,
         #[serde(rename = "prebuildCommitSha", skip_serializing_if = "::std::option::Option::is_none")]
         pub prebuild_commit_sha: ::std::option::Option<TenantApiStoredTurnOfferPrebuildCommitSha>,
@@ -38069,10 +37356,6 @@ pub mod types {
         ListCredentialHandoversRequest(TenantApiListCredentialHandoversRequest),
         GetSnapshotRequest(TenantApiGetSnapshotRequest),
         TranscriptCursorRequest(TenantApiTranscriptCursorRequest),
-        ConnectedAccountsRequest(TenantApiConnectedAccountsRequest),
-        DeleteBuildConnectionRequest(TenantApiDeleteBuildConnectionRequest),
-        NamespaceConnectionRequest(TenantApiNamespaceConnectionRequest),
-        ConnectNamespaceRequest(TenantApiConnectNamespaceRequest),
         OfferSentRequest(TenantApiOfferSentRequest),
         HostHelloRequest(TenantApiHostHelloRequest),
         HostUsageRequest(TenantApiHostUsageRequest),
@@ -38584,26 +37867,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiTranscriptCursorRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiTranscriptCursorRequest) -> Self {
             Self::TranscriptCursorRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiConnectedAccountsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiConnectedAccountsRequest) -> Self {
-            Self::ConnectedAccountsRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiDeleteBuildConnectionRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiDeleteBuildConnectionRequest) -> Self {
-            Self::DeleteBuildConnectionRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiNamespaceConnectionRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiNamespaceConnectionRequest) -> Self {
-            Self::NamespaceConnectionRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiConnectNamespaceRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiConnectNamespaceRequest) -> Self {
-            Self::ConnectNamespaceRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiOfferSentRequest> for TenantApiTenantRequest {
@@ -44056,7 +43319,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Lists one row per connection kind, the GitHub App and each build provider, with its state and, once Connected, the account it bills.
+    ///Lists one row per connection kind, the GitHub App and OpenRouter, with its state and, once Connected, the account.
     ///
     ///Sends a `GET` request to `/v1/connections`
     ///
@@ -46233,141 +45496,6 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "metrics_turns",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Reads the tenant's Namespace build provider connection: the issuer, the subject pattern and the audience Tumpel defines for Namespace, to register there, or NotConfigured while the stage has no issuer; start is refused IssuerMissing then.
-    ///
-    ///Sends a `GET` request to `/v1/namespace-connection`
-    ///
-    pub async fn namespace_connections_get<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<types::NamespaceConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/namespace-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "namespace_connections_get",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Disconnects the tenant's Namespace workspace; prebuilds already stored stay.
-    ///
-    ///Sends a `DELETE` request to `/v1/namespace-connection`
-    ///
-    pub async fn namespace_connections_delete<'a>(&'a self) -> Result<ResponseValue<()>, Error<types::Problem>> {
-        let url = format!("{}/v1/namespace-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .delete(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "namespace_connections_delete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Connects the tenant's own Namespace workspace, replacing an earlier Namespace connection.
-    ///
-    ///Sends a `POST` request to `/v1/namespace-connection/start`
-    ///
-    pub async fn namespace_connections_start<'a>(
-        &'a self,
-        body: &'a types::NamespaceConnectionStart,
-    ) -> Result<ResponseValue<types::NamespaceConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/namespace-connection/start", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "namespace_connections_start",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;
@@ -50772,7 +49900,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 18;
-    pub const VERSION: u16 = 33;
+    pub const VERSION: u16 = 34;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;

@@ -928,17 +928,6 @@ model TranscriptCursorInput {
   maxBytes?: int64;
 }
 
-model ConnectedAccountsInput {}
-
-model DeleteBuildConnectionInput {}
-
-model NamespaceConnectionInput {}
-
-model ConnectNamespaceInput {
-  start: NamespaceConnectionStart;
-  now: int64;
-}
-
 model OfferSentInput {
   turnId: EntityId;
 }
@@ -1651,30 +1640,6 @@ model TranscriptCursorRequest {
   input: TranscriptCursorInput;
 }
 
-model ConnectedAccountsRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "connectedAccounts";
-  input: ConnectedAccountsInput;
-}
-
-model DeleteBuildConnectionRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "deleteBuildConnection";
-  input: DeleteBuildConnectionInput;
-}
-
-model NamespaceConnectionRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "namespaceConnection";
-  input: NamespaceConnectionInput;
-}
-
-model ConnectNamespaceRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "connectNamespace";
-  input: ConnectNamespaceInput;
-}
-
 model OfferSentRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "offerSent";
@@ -1879,10 +1844,6 @@ union TenantRequest {
   listCredentialHandovers: ListCredentialHandoversRequest,
   getSnapshot: GetSnapshotRequest,
   transcriptCursor: TranscriptCursorRequest,
-  connectedAccounts: ConnectedAccountsRequest,
-  deleteBuildConnection: DeleteBuildConnectionRequest,
-  namespaceConnection: NamespaceConnectionRequest,
-  connectNamespace: ConnectNamespaceRequest,
   offerSent: OfferSentRequest,
   hostHello: HostHelloRequest,
   hostUsage: HostUsageRequest,
@@ -2967,35 +2928,6 @@ model TranscriptLines {
 
 model TranscriptCursorResult {
   cursor: TranscriptChunk | TranscriptLines | null;
-}
-
-model ConnectedAccounts {
-  Namespace: ShortText | null;
-}
-
-model ConnectedAccountsResult {
-  accounts: ConnectedAccounts;
-}
-
-model DeleteBuildConnectionResult {
-  deleted: boolean;
-}
-
-@doc("The tenant's Namespace connection as the tenant Durable Object stores it.")
-model NamespaceConnectionRecord {
-  namespaceConnectionId: EntityId;
-  accountLabel: ShortText;
-  workspaceId: ShortText;
-  createdAt: int64;
-  updatedAt: int64;
-}
-
-model NamespaceConnectionResult {
-  connection: NamespaceConnectionRecord | null;
-}
-
-model ConnectNamespaceResult {
-  connection: NamespaceConnectionRecord;
 }
 
 model OfferSentResult {}
