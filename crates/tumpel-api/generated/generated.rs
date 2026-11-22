@@ -2219,6 +2219,8 @@ pub mod types {
     ///channel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves
     ///it out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host
     ///accepts from a box. The control plane records both ranges and shows them on the host.
+    ///`heldTurnIds` names the turns the host holds as it connects, as Heartbeat does; the control plane
+    ///fails each Running turn on the host that it does not name with HostDropped.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelHello {
         #[serde(rename = "boxCapacity")]
@@ -2230,6 +2232,8 @@ pub mod types {
         pub channel_protocol_oldest: ::std::option::Option<::std::num::NonZeroU32>,
         #[serde(rename = "guestProtocol", skip_serializing_if = "::std::option::Option::is_none")]
         pub guest_protocol: ::std::option::Option<GuestProtocolRange>,
+        #[serde(rename = "heldTurnIds")]
+        pub held_turn_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "protocolVersion")]
@@ -2498,6 +2502,13 @@ pub mod types {
         pub held_claude_setup_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "heldSessionIds")]
         pub held_session_ids: ::std::vec::Vec<EntityId>,
+        ///The turnId of every turn the host holds: each offer it took and has not ended, queued or
+        ///running, and each turn named by a frame the control plane has not acked yet. On each Heartbeat
+        ///the control plane fails with HostDropped every Running turn on the host the list does not name,
+        ///and every Offered turn whose offer it sent before the previous Heartbeat that this list and the
+        ///previous one both leave out.
+        #[serde(rename = "heldTurnIds")]
+        pub held_turn_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "sentAt")]
         pub sent_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "type")]
@@ -29030,6 +29041,8 @@ pub mod types {
         pub box_capacity: i32,
         #[serde(rename = "channelProtocol")]
         pub channel_protocol: i32,
+        #[serde(rename = "heldTurnIds")]
+        pub held_turn_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub now: i64,
@@ -32937,6 +32950,83 @@ pub mod types {
     }
     impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
         for TenantApiReconcileHeldBoxesResult
+    {
+        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
+            Self(value)
+        }
+    }
+    ///`TenantApiReconcileHeldTurnsInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReconcileHeldTurnsInput {
+        #[serde(rename = "heldTurnIds")]
+        pub held_turn_ids: ::std::vec::Vec<EntityId>,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        pub now: i64,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiReconcileHeldTurnsRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReconcileHeldTurnsRequest {
+        pub input: TenantApiReconcileHeldTurnsInput,
+        pub operation: TenantApiReconcileHeldTurnsRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiReconcileHeldTurnsRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiReconcileHeldTurnsRequestOperation {
+        #[serde(rename = "reconcileHeldTurns")]
+        ReconcileHeldTurns,
+    }
+    impl ::std::fmt::Display for TenantApiReconcileHeldTurnsRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ReconcileHeldTurns => f.write_str("reconcileHeldTurns"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiReconcileHeldTurnsRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "reconcileHeldTurns" => Ok(Self::ReconcileHeldTurns),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiReconcileHeldTurnsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiReconcileHeldTurnsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiReconcileHeldTurnsResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct TenantApiReconcileHeldTurnsResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
+    impl ::std::ops::Deref for TenantApiReconcileHeldTurnsResult {
+        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
+        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TenantApiReconcileHeldTurnsResult>
+        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
+    {
+        fn from(value: TenantApiReconcileHeldTurnsResult) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
+        for TenantApiReconcileHeldTurnsResult
     {
         fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
             Self(value)
@@ -37345,6 +37435,7 @@ pub mod types {
         HostHelloRequest(TenantApiHostHelloRequest),
         HostUsageRequest(TenantApiHostUsageRequest),
         ReconcileHeldBoxesRequest(TenantApiReconcileHeldBoxesRequest),
+        ReconcileHeldTurnsRequest(TenantApiReconcileHeldTurnsRequest),
         ForgetHostUsageRequest(TenantApiForgetHostUsageRequest),
         RunningTurnsByHostRequest(TenantApiRunningTurnsByHostRequest),
         ListHostUsageRequest(TenantApiListHostUsageRequest),
@@ -37872,6 +37963,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiReconcileHeldBoxesRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiReconcileHeldBoxesRequest) -> Self {
             Self::ReconcileHeldBoxesRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiReconcileHeldTurnsRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiReconcileHeldTurnsRequest) -> Self {
+            Self::ReconcileHeldTurnsRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiForgetHostUsageRequest> for TenantApiTenantRequest {
@@ -41764,6 +41860,7 @@ pub mod types {
         ImageFetchTimedOut,
         HostUpdating,
         BoxLost,
+        HostDropped,
         Cancelled,
         ConnectorDisconnected,
         SnapshotNotStored,
@@ -41799,6 +41896,7 @@ pub mod types {
                 Self::ImageFetchTimedOut => f.write_str("ImageFetchTimedOut"),
                 Self::HostUpdating => f.write_str("HostUpdating"),
                 Self::BoxLost => f.write_str("BoxLost"),
+                Self::HostDropped => f.write_str("HostDropped"),
                 Self::Cancelled => f.write_str("Cancelled"),
                 Self::ConnectorDisconnected => f.write_str("ConnectorDisconnected"),
                 Self::SnapshotNotStored => f.write_str("SnapshotNotStored"),
@@ -41837,6 +41935,7 @@ pub mod types {
                 "ImageFetchTimedOut" => Ok(Self::ImageFetchTimedOut),
                 "HostUpdating" => Ok(Self::HostUpdating),
                 "BoxLost" => Ok(Self::BoxLost),
+                "HostDropped" => Ok(Self::HostDropped),
                 "Cancelled" => Ok(Self::Cancelled),
                 "ConnectorDisconnected" => Ok(Self::ConnectorDisconnected),
                 "SnapshotNotStored" => Ok(Self::SnapshotNotStored),
@@ -49963,8 +50062,8 @@ impl types::ChannelCloseCode {
     pub const UNSUPPORTED_VERSION: u16 = 4426;
 }
 impl types::ChannelProtocol {
-    pub const OLDEST: u16 = 34;
-    pub const VERSION: u16 = 34;
+    pub const OLDEST: u16 = 35;
+    pub const VERSION: u16 = 35;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
@@ -49979,5 +50078,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 19;
+    pub const VERSION: u16 = 20;
 }

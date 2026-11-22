@@ -67,8 +67,8 @@ scalar Sha256Digest extends string;
 @TypeSpec.OpenAPI.extension("x-bound-names", #["Oldest", "Version"])
 scalar ChannelProtocol extends int32;
 
-const ChannelProtocolOldest = 34;
-const ChannelProtocolVersion = 34;
+const ChannelProtocolOldest = 35;
+const ChannelProtocolVersion = 35;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -500,6 +500,9 @@ enum TurnFailureReason {
 
   @doc("The host's first Heartbeat after it reconnected named no box for the turn's session, for example after its supervisor restarted, so the turn's work since its last snapshot is gone; the detail names the host.")
   BoxLost: "BoxLost",
+
+  @doc("The host's Hello or Heartbeat did not name the turn among the turns it holds: a Running turn the host no longer runs, or an offer the host never took by the second Heartbeat after it was sent; the detail names the host. The control plane records it, so no host sends it.")
+  HostDropped: "HostDropped",
 
   @doc("A person stopped the session with cancelTurn while the turn was in flight or waiting, or cancelled the turn while it waited; the detail names who.")
   Cancelled: "Cancelled",

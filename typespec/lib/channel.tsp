@@ -58,6 +58,8 @@ model Challenge {
   channel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves
   it out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host
   accepts from a box. The control plane records both ranges and shows them on the host.
+  `heldTurnIds` names the turns the host holds as it connects, as Heartbeat does; the control plane
+  fails each Running turn on the host that it does not name with HostDropped.
   """)
 model Hello {
   type: "Hello";
@@ -69,6 +71,7 @@ model Hello {
   @minValue(1) @maxValue(256) boxCapacity: int32;
   usage: HostUsage;
   guestProtocol?: GuestProtocolRange;
+  @maxItems(1000) heldTurnIds: EntityId[];
 }
 
 @doc("""
@@ -165,6 +168,16 @@ model HostHeartbeat {
   sentAt: offsetDateTime;
   usage: HostUsage;
   @maxItems(1000) heldSessionIds: EntityId[];
+
+  @doc("""
+    The turnId of every turn the host holds: each offer it took and has not ended, queued or
+    running, and each turn named by a frame the control plane has not acked yet. On each Heartbeat
+    the control plane fails with HostDropped every Running turn on the host the list does not name,
+    and every Offered turn whose offer it sent before the previous Heartbeat that this list and the
+    previous one both leave out.
+    """)
+  @maxItems(1000)
+  heldTurnIds: EntityId[];
 
   @doc("The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name.")
   @maxItems(1000)

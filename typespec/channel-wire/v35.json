@@ -1,5 +1,5 @@
 {
-  "channelProtocolVersion": 34,
+  "channelProtocolVersion": 35,
   "schemas": {
     "BoxRetention": {
       "type": "string",
@@ -854,7 +854,8 @@
         "supervisorVersion",
         "signature",
         "boxCapacity",
-        "usage"
+        "usage",
+        "heldTurnIds"
       ],
       "properties": {
         "type": {
@@ -903,9 +904,16 @@
         },
         "guestProtocol": {
           "$ref": "#/components/schemas/GuestProtocolRange"
+        },
+        "heldTurnIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          },
+          "maxItems": 1000
         }
       },
-      "description": "The host's answer to Challenge. `signature` is the base64 Ed25519 signature, by the host key\nmade at enrolment, over these bytes in order: the ASCII string `tumpel-channel-hello-v1`, one\n0x00 byte, the ASCII bytes of the Challenge `nonce`, one 0x00 byte, and the UTF-8 bytes of\n`hostId`. The control plane rebuilds those bytes from the nonce it sent and verifies the\nsignature against the host's stored public key. It answers Welcome, and closes the connection\nwith BadSignature on a bad signature, Revoked for a revoked host, and UnsupportedVersion for a\nprotocol version outside ChannelProtocol.Oldest to ChannelProtocol.Version. `boxCapacity` is the host's box slots from\nits runtime config and `usage` what it holds as it connects; the control plane keeps both for\nthe host's tenant before it reads the host Online. `channelProtocolOldest` is the oldest\nchannel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves\nit out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host\naccepts from a box. The control plane records both ranges and shows them on the host."
+      "description": "The host's answer to Challenge. `signature` is the base64 Ed25519 signature, by the host key\nmade at enrolment, over these bytes in order: the ASCII string `tumpel-channel-hello-v1`, one\n0x00 byte, the ASCII bytes of the Challenge `nonce`, one 0x00 byte, and the UTF-8 bytes of\n`hostId`. The control plane rebuilds those bytes from the nonce it sent and verifies the\nsignature against the host's stored public key. It answers Welcome, and closes the connection\nwith BadSignature on a bad signature, Revoked for a revoked host, and UnsupportedVersion for a\nprotocol version outside ChannelProtocol.Oldest to ChannelProtocol.Version. `boxCapacity` is the host's box slots from\nits runtime config and `usage` what it holds as it connects; the control plane keeps both for\nthe host's tenant before it reads the host Online. `channelProtocolOldest` is the oldest\nchannel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves\nit out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host\naccepts from a box. The control plane records both ranges and shows them on the host.\n`heldTurnIds` names the turns the host holds as it connects, as Heartbeat does; the control plane\nfails each Running turn on the host that it does not name with HostDropped."
     },
     "Channel.HostEnvelope": {
       "type": "object",
@@ -964,6 +972,7 @@
         "sentAt",
         "usage",
         "heldSessionIds",
+        "heldTurnIds",
         "heldClaudeSetupIds"
       ],
       "properties": {
@@ -986,6 +995,14 @@
             "$ref": "#/components/schemas/EntityId"
           },
           "maxItems": 1000
+        },
+        "heldTurnIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          },
+          "maxItems": 1000,
+          "description": "The turnId of every turn the host holds: each offer it took and has not ended, queued or\nrunning, and each turn named by a frame the control plane has not acked yet. On each Heartbeat\nthe control plane fails with HostDropped every Running turn on the host the list does not name,\nand every Offered turn whose offer it sent before the previous Heartbeat that this list and the\nprevious one both leave out."
         },
         "heldClaudeSetupIds": {
           "type": "array",
@@ -2594,6 +2611,7 @@
         "ImageFetchTimedOut",
         "HostUpdating",
         "BoxLost",
+        "HostDropped",
         "Cancelled",
         "ConnectorDisconnected",
         "SnapshotNotStored",
