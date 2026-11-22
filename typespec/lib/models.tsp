@@ -419,6 +419,9 @@ enum SessionState {
 
   @doc("The box could not clone the session's repository, and the failure of its last turn says why. The session takes no more turns; archive it and start a new session.")
   Failed: "Failed",
+
+  @doc("The session's host missed its heartbeats past the heartbeat deadline, so the control plane cannot tell whether the session's turn still runs. The host's next hello or heartbeat settles it.")
+  Unknown: "Unknown",
 }
 
 enum TurnState {
@@ -426,6 +429,9 @@ enum TurnState {
   Running: "Running",
   Completed: "Completed",
   Failed: "Failed",
+
+  @doc("The turn was Offered or Running on a host that missed its heartbeats past the heartbeat deadline. The host's next hello or heartbeat settles it: a turn the host still holds carries on, and one it no longer holds fails HostDropped.")
+  Unknown: "Unknown",
 }
 
 @doc("Why a turn ended Failed. Each reason names the phase the turn stopped in.")
@@ -1025,6 +1031,15 @@ model FailedTurn {
   failedAt: offsetDateTime;
 }
 
+@doc("A turn whose host missed its heartbeats past the heartbeat deadline, read in place of Offered or Running until the host speaks again.")
+model UnknownTurn {
+  ...TurnBase;
+  state: TurnState.Unknown;
+
+  @doc("Which host went silent and since when.")
+  detail: Detail;
+}
+
 @doc("One prompt and the harness's completion of it, run on a session's box.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
 union Turn {
@@ -1032,6 +1047,7 @@ union Turn {
   Running: RunningTurn,
   Completed: CompletedTurn,
   Failed: FailedTurn,
+  Unknown: UnknownTurn,
 }
 
 enum SteerState {

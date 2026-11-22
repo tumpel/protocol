@@ -19890,6 +19890,7 @@ pub mod types {
         Stopped,
         Archived,
         Failed,
+        Unknown,
     }
     impl ::std::fmt::Display for SessionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -19901,6 +19902,7 @@ pub mod types {
                 Self::Stopped => f.write_str("Stopped"),
                 Self::Archived => f.write_str("Archived"),
                 Self::Failed => f.write_str("Failed"),
+                Self::Unknown => f.write_str("Unknown"),
             }
         }
     }
@@ -19915,6 +19917,7 @@ pub mod types {
                 "Stopped" => Ok(Self::Stopped),
                 "Archived" => Ok(Self::Archived),
                 "Failed" => Ok(Self::Failed),
+                "Unknown" => Ok(Self::Unknown),
                 _ => Err("invalid value".into()),
             }
         }
@@ -41587,6 +41590,7 @@ pub mod types {
         RunningTurn(RunningTurn),
         CompletedTurn(CompletedTurn),
         FailedTurn(FailedTurn),
+        UnknownTurn(UnknownTurn),
     }
     impl ::std::convert::From<OfferedTurn> for Turn {
         fn from(value: OfferedTurn) -> Self {
@@ -41606,6 +41610,11 @@ pub mod types {
     impl ::std::convert::From<FailedTurn> for Turn {
         fn from(value: FailedTurn) -> Self {
             Self::FailedTurn(value)
+        }
+    }
+    impl ::std::convert::From<UnknownTurn> for Turn {
+        fn from(value: UnknownTurn) -> Self {
+            Self::UnknownTurn(value)
         }
     }
     ///The fields every turn carries, whatever its state.
@@ -42093,6 +42102,7 @@ pub mod types {
         Running,
         Completed,
         Failed,
+        Unknown,
     }
     impl ::std::fmt::Display for TurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42101,6 +42111,7 @@ pub mod types {
                 Self::Running => f.write_str("Running"),
                 Self::Completed => f.write_str("Completed"),
                 Self::Failed => f.write_str("Failed"),
+                Self::Unknown => f.write_str("Unknown"),
             }
         }
     }
@@ -42112,6 +42123,7 @@ pub mod types {
                 "Running" => Ok(Self::Running),
                 "Completed" => Ok(Self::Completed),
                 "Failed" => Ok(Self::Failed),
+                "Unknown" => Ok(Self::Unknown),
                 _ => Err("invalid value".into()),
             }
         }
@@ -42123,6 +42135,69 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A turn whose host missed its heartbeats past the heartbeat deadline, read in place of Offered or Running until the host speaks again.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct UnknownTurn {
+        ///The control plane mints the id of the box that runs the turn.
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///Which host went silent and since when.
+        pub detail: Detail,
+        ///A condition the harness keeps working toward until it holds; only a session whose harness has goals in the harness catalog accepts it.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub goal: ::std::option::Option<Goal>,
+        ///The image the turn's box boots, recorded when the control plane offers the turn. A turn not yet offered has none.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub image: ::std::option::Option<TurnImage>,
+        ///How many transcript lines this turn has written so far, counting its own lines alone. A line's `lineSeq` numbers the session's lines instead, so the turn's last line is the `lineSeq` the session held before the turn plus `lineCount`.
+        #[serde(rename = "lineCount")]
+        pub line_count: Sequence,
+        pub prompt: Prompt,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        pub state: UnknownTurnState,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`UnknownTurnState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum UnknownTurnState {
+        Unknown,
+    }
+    impl ::std::fmt::Display for UnknownTurnState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Unknown => f.write_str("Unknown"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for UnknownTurnState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Unknown" => Ok(Self::Unknown),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for UnknownTurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for UnknownTurnState {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -49999,5 +50074,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 20;
+    pub const VERSION: u16 = 21;
 }
