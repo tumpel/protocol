@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 18;
+const TenantApiVersion = 19;
 
 namespace TenantApi {
 
@@ -2296,6 +2296,13 @@ model UnplaceableNotHealthy {
   reason: "NotHealthy";
 }
 
+@doc("The host is Online, but it has not sent a Hello since its tenant restarted, so the tenant does not know its usage yet.")
+model UnplaceableNotHeard {
+  kind: "Unplaceable";
+  host: HostRecord;
+  reason: "NotHeard";
+}
+
 model UnplaceableNoImage {
   kind: "Unplaceable";
   host: HostRecord;
@@ -2346,6 +2353,7 @@ model UnplaceableNoConnectors {
 union Unplaceable {
   NotOnline: UnplaceableNotOnline,
   NotHealthy: UnplaceableNotHealthy,
+  NotHeard: UnplaceableNotHeard,
   NoImage: UnplaceableNoImage,
   Full: UnplaceableFull,
   MemoryFull: UnplaceableMemoryFull,
