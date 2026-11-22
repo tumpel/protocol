@@ -1426,6 +1426,32 @@ model Persona {
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
 
+@doc("A persona's metadata, with file paths, digests, sizes and timestamps and no file content or download URLs.")
+model PersonaMetadata {
+  personaId: EntityId;
+  tenantId: EntityId;
+  name: DisplayName;
+  harness: Harness;
+  secretSetId: EntityId;
+  @maxItems(100) connectorIds: EntityId[];
+  @minValue(512) @maxValue(65536) boxMemoryMib?: int32;
+  @minValue(32768) @maxValue(262144) boxDiskMib?: int32;
+  boxRetention: BoxRetention;
+  tumpelMcp: boolean;
+  @maxItems(100) files: PersonaFileMetadata[];
+  createdAt: int64;
+  updatedAt: int64;
+}
+
+@doc("A persona file's metadata, without its content or a download URL.")
+model PersonaFileMetadata {
+  path: PersonaFilePath;
+  digest: Sha256Digest;
+  sizeBytes: PersonaFileSize;
+  createdAt: int64;
+  updatedAt: int64;
+}
+
 enum PersonaFileSource {
   @doc("The file's bytes travel in the request, base64, up to PersonaFileLimit.InlineFileBytes.")
   Inline: "Inline",

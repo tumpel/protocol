@@ -15643,6 +15643,18 @@ pub mod types {
                 .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///A persona file's metadata, without its content or a download URL.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct PersonaFileMetadata {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub digest: Sha256Digest,
+        pub path: PersonaFilePath,
+        #[serde(rename = "sizeBytes")]
+        pub size_bytes: PersonaFileSize,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
     ///One change to one file of a persona; every other file is left as it is.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
@@ -15893,23 +15905,83 @@ pub mod types {
             Self::StoredPersonaFile(value)
         }
     }
+    ///`PersonaListView`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum PersonaListView {
+        Metadata,
+    }
+    impl ::std::fmt::Display for PersonaListView {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Metadata => f.write_str("Metadata"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for PersonaListView {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Metadata" => Ok(Self::Metadata),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for PersonaListView {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for PersonaListView {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A persona's metadata, with file paths, digests, sizes and timestamps and no file content or download URLs.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct PersonaMetadata {
+        #[serde(rename = "boxDiskMib", skip_serializing_if = "::std::option::Option::is_none")]
+        pub box_disk_mib: ::std::option::Option<i32>,
+        #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
+        pub box_memory_mib: ::std::option::Option<i32>,
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        #[serde(rename = "connectorIds")]
+        pub connector_ids: ::std::vec::Vec<EntityId>,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub files: ::std::vec::Vec<PersonaFileMetadata>,
+        pub harness: Harness,
+        pub name: DisplayName,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        #[serde(rename = "secretSetId")]
+        pub secret_set_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "tumpelMcp")]
+        pub tumpel_mcp: bool,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
     ///The tenant's personas with file metadata and no file content, at most 10,000 entries.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(transparent)]
-    pub struct PersonaList(pub ::std::vec::Vec<TenantApiStoredPersona>);
-    impl ::std::ops::Deref for PersonaList {
-        type Target = ::std::vec::Vec<TenantApiStoredPersona>;
-        fn deref(&self) -> &::std::vec::Vec<TenantApiStoredPersona> {
+    pub struct PersonaMetadataList(pub ::std::vec::Vec<PersonaMetadata>);
+    impl ::std::ops::Deref for PersonaMetadataList {
+        type Target = ::std::vec::Vec<PersonaMetadata>;
+        fn deref(&self) -> &::std::vec::Vec<PersonaMetadata> {
             &self.0
         }
     }
-    impl ::std::convert::From<PersonaList> for ::std::vec::Vec<TenantApiStoredPersona> {
-        fn from(value: PersonaList) -> Self {
+    impl ::std::convert::From<PersonaMetadataList> for ::std::vec::Vec<PersonaMetadata> {
+        fn from(value: PersonaMetadataList) -> Self {
             value.0
         }
     }
-    impl ::std::convert::From<::std::vec::Vec<TenantApiStoredPersona>> for PersonaList {
-        fn from(value: ::std::vec::Vec<TenantApiStoredPersona>) -> Self {
+    impl ::std::convert::From<::std::vec::Vec<PersonaMetadata>> for PersonaMetadataList {
+        fn from(value: ::std::vec::Vec<PersonaMetadata>) -> Self {
             Self(value)
         }
     }
@@ -15968,6 +16040,13 @@ pub mod types {
         ///Whether the persona's sessions reach the Tumpel MCP server; left out, false.
         #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
         pub tumpel_mcp: ::std::option::Option<bool>,
+    }
+    ///`PersonasListResponse`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum PersonasListResponse {
+        Variant0(::std::vec::Vec<Persona>),
+        Variant1(PersonaMetadataList),
     }
     ///A repository's dependencies installed once by a turn on one of the tenant's online Amd64 hosts,
     ///as a turn of a session the session list leaves out, and stored as one layer: the host's snapshot
@@ -45901,11 +45980,16 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Lists the tenant's personas with file paths, digests, sizes and timestamps. Read one persona to get file content.
+    ///Lists the tenant's full personas by default. With view=Metadata, returns persona metadata and each file's path, digest, size and timestamps without content or download URLs; read one persona to get file content.
     ///
     ///Sends a `GET` request to `/v1/personas`
     ///
-    pub async fn personas_list<'a>(&'a self) -> Result<ResponseValue<types::PersonaList>, Error<types::Problem>> {
+    ///Arguments:
+    ///- `view`: With Metadata, return persona and file metadata without content or download URLs. Left out, return the full personas with file content or download URLs.
+    pub async fn personas_list<'a>(
+        &'a self,
+        view: Option<types::PersonaListView>,
+    ) -> Result<ResponseValue<types::PersonasListResponse>, Error<types::Problem>> {
         let url = format!("{}/v1/personas", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
         header_map.append(
@@ -45920,6 +46004,7 @@ impl Client {
                 ::reqwest::header::ACCEPT,
                 ::reqwest::header::HeaderValue::from_static("application/json"),
             )
+            .query(&progenitor_client::QueryParam::new("view", &view))
             .headers(header_map)
             .build()?;
         let info = OperationInfo {

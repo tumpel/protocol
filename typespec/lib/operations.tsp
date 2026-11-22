@@ -682,7 +682,16 @@ model CompactTranscriptLine {
 
 @doc("The tenant's personas with file metadata and no file content, at most 10,000 entries.")
 @maxItems(10000)
-model PersonaList is TenantApi.StoredPersona[];
+model PersonaMetadataList is PersonaMetadata[];
+
+enum PersonaListView {
+  Metadata: "Metadata",
+}
+
+model PersonaListQuery {
+  @doc("With Metadata, return persona and file metadata without content or download URLs. Left out, return the full personas with file content or download URLs.")
+  @query view?: PersonaListView;
+}
 
 @doc("A new persona with its whole file set: at most PersonaFileLimit.PersonaBytes together, each at a path its harness accepts.")
 model PersonaCreate is Create<Persona> {
@@ -1290,9 +1299,9 @@ namespace V1 {
     @post
     uploadFile(@body body: PersonaFileUploadRequest): PersonaFileUpload | ProblemResponse;
 
-    @doc("Lists the tenant's personas with file paths, digests, sizes and timestamps. Read one persona to get file content.")
+    @doc("Lists the tenant's full personas by default. With view=Metadata, returns persona metadata and each file's path, digest, size and timestamps without content or download URLs; read one persona to get file content.")
     @get
-    list(): PersonaList | ProblemResponse;
+    list(...PersonaListQuery): Persona[] | PersonaMetadataList | ProblemResponse;
 
     @doc("Reads one persona.")
     @route("/{personaId}")

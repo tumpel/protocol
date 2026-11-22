@@ -33,24 +33,11 @@ model StoredFile {
 }
 
 @doc("A stored persona file with its timestamps, as a persona read carries it.")
-model StoredFileRead {
-  ...StoredFile;
-  createdAt: int64;
-  updatedAt: int64;
-}
+model StoredFileRead is PersonaFileMetadata;
 
 @doc("A persona as the tenant Durable Object stores it, its files named by digest.")
 model StoredPersona {
-  personaId: EntityId;
-  tenantId: EntityId;
-  name: DisplayName;
-  harness: Harness;
-  secretSetId: EntityId;
-  @maxItems(100) connectorIds: EntityId[];
-  @minValue(512) @maxValue(65536) boxMemoryMib?: int32;
-  @minValue(32768) @maxValue(262144) boxDiskMib?: int32;
-  boxRetention: BoxRetention;
-  tumpelMcp: boolean;
+  ...OmitProperties<PersonaMetadata, "files" | "createdAt" | "updatedAt">;
   @maxItems(100) files: StoredFileRead[];
   createdAt: int64;
   updatedAt: int64;
