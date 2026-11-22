@@ -23,10 +23,10 @@ model ReleaseSupervisor {
 
   @doc("The version of the supervisor release this binary comes from, the one it reports in Hello.")
   @minLength(1)
-  supervisorVersion: string;
+  supervisorVersion: ShortText;
 
   @doc("The URL of the release asset that holds this binary, written by the publisher; the binary there has `sha256` and `sizeBytes`.")
-  downloadUrl: url;
+  downloadUrl: HttpUrl;
 
   @doc("The GuestProtocol.Version the supervisor and the guest drive inside it speak; a release that keeps this supervisor refuses to publish from a commit whose GuestProtocol.Oldest to GuestProtocol.Version leaves it out.")
   @minValue(1)
@@ -41,13 +41,13 @@ model ReleaseSupervisor {
   N commits after the latest stable tag; semver orders it before the stable `X.Y.Z` it leads to.
   """)
 model SupervisorRelease {
-  @pattern("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$") supervisorVersion: string;
-  @pattern("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$") tumpelApiVersion: string;
+  @pattern("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$") supervisorVersion: ShortText;
+  @pattern("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$") tumpelApiVersion: ShortText;
   @minValue(1) channelProtocolOldest: int32;
   @minValue(1) channelProtocolVersion: int32;
   @minValue(1) guestProtocolOldest: int32;
   @minValue(1) guestProtocolVersion: int32;
-  @minItems(1) binaries: SupervisorReleaseBinary[];
+  @minItems(1) @maxItems(100) binaries: SupervisorReleaseBinary[];
 }
 
 @doc("One static supervisor binary of a supervisor release, attached as `tumpel-supervisor-<arch>-linux`.")
@@ -69,10 +69,10 @@ model ReleaseCli {
 
   @doc("The version of the CLI release this binary comes from, the one `tumpel --version` prints.")
   @minLength(1)
-  cliVersion: string;
+  cliVersion: ShortText;
 
   @doc("The URL of the release asset that holds this binary, written by the publisher; the binary there has `sha256` and `sizeBytes`.")
-  downloadUrl: url;
+  downloadUrl: HttpUrl;
 }
 
 @doc("""
@@ -121,12 +121,12 @@ model ReleaseBaseImage {
   """)
 model BaseImageManifest {
   imageDigest: Sha256Digest;
-  kernelUrl: url;
+  kernelUrl: HttpUrl;
   kernelDigest: Sha256Digest;
-  baseRootfsUrl: url;
+  baseRootfsUrl: HttpUrl;
   baseRootfsDigest: Sha256Digest;
   @minValue(1) baseLayoutVersion: int32;
-  components: GuestImageComponent[];
+  @maxItems(100) components: GuestImageComponent[];
 }
 
 @doc("""
@@ -170,23 +170,23 @@ model HarnessLayerManifest {
   supervisor and one CLI per architecture and one image per harness, harness version and architecture.
   """)
 model ReleaseManifest {
-  @minLength(1) releaseVersion: string;
-  @pattern("^[0-9a-f]{40}$") commit: string;
+  @minLength(1) releaseVersion: ShortText;
+  @pattern("^[0-9a-f]{40}$") commit: ShortText;
   @doc("The ChannelProtocol.Version the release's supervisors speak; the host channel handshake accepts a supervisor that speaks ChannelProtocol.Oldest to ChannelProtocol.Version and refuses one outside it.")
   @minValue(1)
   channelProtocolVersion: int32;
-  @minItems(1) supervisors: ReleaseSupervisor[];
-  @minItems(1) clis: ReleaseCli[];
+  @minItems(1) @maxItems(100) supervisors: ReleaseSupervisor[];
+  @minItems(1) @maxItems(100) clis: ReleaseCli[];
   @doc("The images of the latest image release, copied from `images.json` when the release is published.")
-  images: ReleaseImage[];
+  @maxItems(100) images: ReleaseImage[];
 
   @doc("The harness layers of the release, one per harness, harness version and architecture; the binaries job builds the ones whose recipe the release bucket lacks.")
   @minItems(1)
-  harnessLayers: ReleaseHarnessLayer[];
+  @maxItems(100) harnessLayers: ReleaseHarnessLayer[];
 
   @doc("The base images of the latest image release, one per architecture, copied from `images.json` when the release is published. A turn boots layered on a host whose architecture has a base here and a harness layer of the session's harness version.")
   @minItems(1)
-  bases: ReleaseBaseImage[];
+  @maxItems(100) bases: ReleaseBaseImage[];
 
   @doc("True when the release rolls back to an older version. A supervisor replaces its binary with an older one only when this is true, and refuses an older version otherwise. A release that omits it is not a rollback.")
   rollback?: boolean = false;
@@ -201,10 +201,10 @@ model ReleaseManifest {
   it refuses to publish until a new image release.
   """)
 model ImageRelease {
-  @pattern("^images-v[0-9]+\\.[0-9]+\\.[0-9]+$") imageReleaseVersion: string;
-  @pattern("^[0-9a-f]{40}$") commit: string;
+  @pattern("^images-v[0-9]+\\.[0-9]+\\.[0-9]+$") imageReleaseVersion: ShortText;
+  @pattern("^[0-9a-f]{40}$") commit: ShortText;
   @minValue(1) guestProtocolVersion: int32;
-  @minItems(1) images: ReleaseImage[];
+  @minItems(1) @maxItems(100) images: ReleaseImage[];
 
   @doc("The BaseLayout.Version the base images of this image release carry.")
   @minValue(1)
@@ -212,7 +212,7 @@ model ImageRelease {
 
   @doc("One base image per architecture.")
   @minItems(1)
-  bases: ReleaseBaseImage[];
+  @maxItems(100) bases: ReleaseBaseImage[];
 }
 
 model ReleaseSupervisorPath {
@@ -222,7 +222,7 @@ model ReleaseSupervisorPath {
 @doc("The current supervisor binary: `location` is the `downloadUrl` of its ReleaseSupervisor.")
 model SupervisorDownload {
   @statusCode statusCode: 302;
-  @header location: string;
+  @header location: UrlText;
 }
 
 model ReleaseCliPath {
@@ -232,7 +232,7 @@ model ReleaseCliPath {
 @doc("The current CLI binary: `location` is the `downloadUrl` of its ReleaseCli.")
 model CliDownload {
   @statusCode statusCode: 302;
-  @header location: string;
+  @header location: UrlText;
 }
 
 @doc("""
@@ -241,7 +241,7 @@ model CliDownload {
   """)
 model CliInstallScript {
   @header contentType: "text/plain";
-  @body script: string;
+  @body script: LongText;
 }
 
 @doc("""
@@ -250,7 +250,7 @@ model CliInstallScript {
   as the bearer until the control plane reports the new commit.
   """)
 model DeployDrain {
-  @pattern("^[A-Za-z0-9_-]{43}$") drainToken: string;
+  @pattern("^[A-Za-z0-9_-]{43}$") drainToken: Token;
 }
 
 @doc("A host with turns Offered or Running on it.")
@@ -275,10 +275,10 @@ model RolloutChannelProtocol {
   `channelProtocols` counts the Online hosts per newest channel protocol version, oldest first.
   """)
 model ReleaseRollout {
-  @pattern("^[0-9a-f]{40}$") deployedCommit: string;
+  @pattern("^[0-9a-f]{40}$") deployedCommit: ShortText;
   drained: boolean;
-  hosts: RolloutHost[];
-  channelProtocols: RolloutChannelProtocol[];
+  @maxItems(1000) hosts: RolloutHost[];
+  @maxItems(100) channelProtocols: RolloutChannelProtocol[];
 }
 
 @doc("The drainToken of the deploy drain in place.")

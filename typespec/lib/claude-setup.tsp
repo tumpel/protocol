@@ -49,6 +49,9 @@ enum ClaudeSetupFailureReason {
 
   @doc("A newer setup of the same secret set started; a secret set runs one setup at a time, and its box is discarded.")
   Superseded: "Superseded",
+
+  @doc("The setup's host sent more channel frames in a minute than the tenant's limits allow, so the control plane failed the setup; the detail names the limit.")
+  RateLimited: "RateLimited",
 }
 
 @doc("The phase a Claude setup is in.")
@@ -82,7 +85,7 @@ model ClaudeSetupAwaitingCode {
   state: ClaudeSetupState.AwaitingCode;
 
   @doc("Where the person signs in; for Claude Code the page shows the code to submit.")
-  signInUrl: url;
+  signInUrl: HttpUrl;
 
   @doc("The one-time code a Codex setup shows, for the person to enter at signInUrl. A Codex setup takes no submitted code: its box stores the token once the person signs in.")
   userCode?: ClaudeSetupUserCode;
@@ -118,7 +121,7 @@ model ClaudeSetupFailed {
   reason: ClaudeSetupFailureReason;
 
   @doc("What failed and what fixes it.")
-  detail: string;
+  detail: Detail;
 
   failedAt: offsetDateTime;
 }

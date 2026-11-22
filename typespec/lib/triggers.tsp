@@ -106,6 +106,7 @@ model TriggerPath {
 }
 
 @doc("An event's JSON payload as the source sent it, such as the body of a GitHub webhook delivery.")
+@TypeSpec.JsonSchema.maxProperties(1000)
 model TriggerPayload is Record<unknown>;
 
 @doc("Tests a stored trigger against a payload.")
@@ -134,7 +135,7 @@ model TriggerConditionVerdict {
   ...TriggerCondition;
 
   @doc("The JSON text of each value the payload holds at the field: one for a scalar, one per element when the path crosses an array, none when the path leads nowhere.")
-  actual: string[];
+  @maxItems(1000) actual: Detail[];
 
   holds: boolean;
 }
@@ -144,13 +145,13 @@ model TriggerTestResult {
   @doc("Whether every condition holds, so a delivery of the payload would start a session.")
   matched: boolean;
 
-  conditions: TriggerConditionVerdict[];
+  @maxItems(10000) conditions: TriggerConditionVerdict[];
 
   @doc("The prompt the session would get. A placeholder the payload lacks stays as written.")
-  prompt: string;
+  prompt: Prompt;
 
   @doc("Each placeholder of the prompt the payload lacks; a delivery with any is refused TriggerFieldMissing.")
-  missingFields: TriggerFieldPath[];
+  @maxItems(10000) missingFields: TriggerFieldPath[];
 }
 
 @doc("Why a trigger matched a delivery and started no session.")
@@ -159,7 +160,7 @@ model TriggerStartRefusal {
   code: ProblemCode;
 
   @doc("What failed and the fix, in plain words.")
-  detail: string;
+  detail: Detail;
 }
 
 namespace V1 {

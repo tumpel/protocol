@@ -54,7 +54,7 @@ union ConfigSecret {
 @extension("additionalProperties", false)
 model ConfigSecretSet {
   ...OmitProperties<SecretSetCreate, "secrets">;
-  secrets: ConfigSecret[];
+  @maxItems(200) secrets: ConfigSecret[];
 }
 
 @doc("A path on the machine that applies the file, relative to the tenant config file.")
@@ -80,8 +80,8 @@ model ConfigPersona {
   secretSetName: DisplayName;
 
   @doc("The connectors of the persona, by name. The tenant creates and connects them; config apply never writes a connector or its credential, and fails the plan on a name the tenant has no connector for.")
-  connectorNames: DisplayName[];
-  files: ConfigPersonaFile[];
+  @maxItems(100) connectorNames: DisplayName[];
+  @maxItems(100) files: ConfigPersonaFile[];
 }
 @doc("A trigger of the file. It names its persona by the persona's name in the same file.")
 @extension("additionalProperties", false)
@@ -109,19 +109,19 @@ model ConfigHost {
 @extension("additionalProperties", false)
 model TenantConfig {
   @doc("The address of a copy of this schema, so an editor validates the file.")
-  `$schema`?: url;
+  `$schema`?: HttpUrl;
 
-  personas: ConfigPersona[];
-  secretSets: ConfigSecretSet[];
-  harnessPins: HarnessPinCreate[];
-  hosts: ConfigHost[];
+  @maxItems(1000) personas: ConfigPersona[];
+  @maxItems(1000) secretSets: ConfigSecretSet[];
+  @maxItems(1000) harnessPins: HarnessPinCreate[];
+  @maxItems(1000) hosts: ConfigHost[];
 
   @doc("""
     The tenant's triggers, matched by name; a trigger the list leaves out is deleted. Left out,
     apply keeps the tenant's triggers as they are. Only an Owner applies a config that creates,
     changes or deletes a trigger.
     """)
-  triggers?: ConfigTrigger[];
+  @maxItems(1000) triggers?: ConfigTrigger[];
 }
 
 @doc("The value of one environment variable a secret of the config names in valueFrom, entered where the config is applied.")
@@ -168,15 +168,15 @@ union ConfigFileWrite {
 @doc("A tenant config to plan, with the digest of each persona file it names and the value of each expiry variable.")
 model TenantConfigPlanRequest {
   config: TenantConfig;
-  files: ConfigFileDigest[];
-  expiryValues: ConfigExpiryValue[];
+  @maxItems(5000) files: ConfigFileDigest[];
+  @maxItems(1000) expiryValues: ConfigExpiryValue[];
 
   @doc("""
     The environment variables apply will send in secretValues, by name and never with a value. An
     empty list keeps the stored values of every secret set the config keeps; any other list must
     name every variable the config names, and plans a Rewrite of every kept set.
     """)
-  secretValues: SecretValueSource[];
+  @maxItems(1000) secretValues: SecretValueSource[];
 }
 
 @doc("""
@@ -188,9 +188,9 @@ model TenantConfigPlanRequest {
   """)
 model TenantConfigApply {
   config: TenantConfig;
-  files: ConfigFileWrite[];
-  secretValues: ConfigSecretValue[];
-  expiryValues: ConfigExpiryValue[];
+  @maxItems(5000) files: ConfigFileWrite[];
+  @maxItems(1000) secretValues: ConfigSecretValue[];
+  @maxItems(1000) expiryValues: ConfigExpiryValue[];
 }
 
 enum ConfigChangeAction {
@@ -216,12 +216,12 @@ model ConfigChange {
   resource: ConfigResource;
 
   @doc("The persona, secret set or trigger name, the harness of a pin, or the hostId of a host.")
-  name: string;
+  name: ShortText;
 
-  description: string;
+  description: Detail;
 }
 
 @doc("The changes that make the tenant match a config, in the order apply makes them.")
 model ConfigPlan {
-  changes: ConfigChange[];
+  @maxItems(5000) changes: ConfigChange[];
 }

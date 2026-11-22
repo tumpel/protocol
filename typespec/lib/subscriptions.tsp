@@ -52,12 +52,19 @@ model SubscriptionPausedCrewFailing {
   kind: "CrewFailing";
 }
 
+@doc("A crew or delivery turn failed CreditExhausted; the turn is turnId, whose failure Turns_getFailure reads. Add credits to the provider account before resuming.")
+model SubscriptionPausedCreditExhausted {
+  kind: "CreditExhausted";
+  turnId: EntityId;
+}
+
 @doc("Why a subscription is Paused.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union SubscriptionPauseReason {
   ByRequest: SubscriptionPausedByRequest,
   DeliveryFailed: SubscriptionPausedDeliveryFailed,
   CrewFailing: SubscriptionPausedCrewFailing,
+  CreditExhausted: SubscriptionPausedCreditExhausted,
 }
 
 @doc("Why a subscription is Ended.")
@@ -95,7 +102,7 @@ model SubscriptionBase {
   @doc("The event types that start a delivery turn.")
   @minItems(1)
   @visibility(Lifecycle.Read, Lifecycle.Create)
-  events: SubscriptionEventType[];
+  @maxItems(100) events: SubscriptionEventType[];
 
   @doc("The tags a session must all carry to be part of the crew.")
   @maxItems(16)

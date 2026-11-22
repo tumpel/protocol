@@ -1,6 +1,5 @@
 import "@typespec/http";
 import "./models.tsp";
-import "./build-provider.tsp";
 
 using TypeSpec.Http;
 
@@ -13,7 +12,7 @@ enum PrebuildState {
   @doc("The host claimed the turn and runs the setup step, then stores the box's snapshot as the layer.")
   Building: "Building",
 
-  @doc("The layer is uploaded and the control plane cuts it into chunks.")
+  @doc("The host stored the box's snapshot as the layer and the control plane cuts it into chunks.")
   Converting: "Converting",
 
   @doc("The layer is stored; a session of the repository on the same guest image restores it on its first turn instead of cloning and installing.")
@@ -32,7 +31,7 @@ enum PrebuildConfigSource {
   Default: "Default",
 }
 
-@doc("The phase a Failed prebuild stopped in. A provider that refuses the job refuses the start, and no prebuild exists.")
+@doc("The phase a Failed prebuild stopped in. A start the control plane refuses stores no prebuild.")
 enum PrebuildFailurePhase {
   @doc("The turn ended before its host claimed it: it failed Undelivered, or no installation token could be minted for the clone.")
   Dispatch: "Dispatch",
@@ -58,7 +57,7 @@ model PrebuildBuilding {
 model PrebuildConverting {
   state: PrebuildState.Converting;
 
-  @doc("The sha256 of the compressed OCI layer the job uploaded.")
+  @doc("The sha256 of the compressed OCI layer the host stored.")
   layerDigest: Sha256Digest;
 
   @minValue(1) layerSizeBytes: int64;
@@ -68,7 +67,7 @@ model PrebuildConverting {
 model PrebuildDone {
   state: PrebuildState.Done;
 
-  @doc("The sha256 of the OCI layer the provider uploaded.")
+  @doc("The sha256 of the OCI layer the host stored.")
   layerDigest: Sha256Digest;
 
   @minValue(0) layerSizeBytes: int64;
@@ -92,16 +91,17 @@ union PrebuildStatus {
 }
 
 @doc("""
-  A repository's dependencies installed once by a build provider on the tenant's account, stored as
-  one layer. The repository, the input digest and the guest image digest are its key: every commit
+  A repository's dependencies installed once by a turn on one of the tenant's online Amd64 hosts,
+  as a turn of a session the session list leaves out, and stored as one layer: the host's snapshot
+  of the box. The repository, the input digest and the guest image digest are its key: every commit
   with the same devcontainer files and lockfiles, built on the same guest image, shares one
-  prebuild. A prebuild exists only once its provider accepted the job.
+  prebuild. A prebuild exists only once its turn is offered to a host.
   """)
 model Prebuild {
   @key prebuildId: EntityId;
   tenantId: EntityId;
 
-  @doc("The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, whose harness version picks the guest image, and whose name the job's subject carries.")
+  @doc("The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, and whose harness version picks the guest image.")
   personaId: EntityId;
 
   @doc("The repository as https://github.com/<owner>/<name> in lower case, whatever form the start named it in.")
@@ -125,16 +125,13 @@ model Prebuild {
     """)
   guestImageDigest: Sha256Digest;
 
-  @doc("The provider the start named. The prebuild runs on one of the tenant's online Amd64 hosts, as a turn of a session the session list leaves out.")
-  provider: BuildProvider;
-
   configSource: PrebuildConfigSource;
 
   status: PrebuildStatus;
   startedAt: offsetDateTime;
 
   @doc("The transcript of the prebuild's turn: the output of the repository's setup step.")
-  logUrl: url;
+  logUrl: HttpUrl;
 
   createdAt: int64;
   updatedAt: int64;
@@ -146,11 +143,11 @@ model PrebuildFailure {
   tenantId: EntityId;
   phase: PrebuildFailurePhase;
 
-  @doc("What failed, with what the provider reported.")
-  detail: string;
+  @doc("What failed, with what the turn reported.")
+  detail: Detail;
 
   @doc("What fixes it.")
-  fix: string;
+  fix: Detail;
 
   createdAt: int64;
 }
@@ -167,9 +164,6 @@ model PrebuildStart {
   @doc("The persona whose secret set's GITHUB_TOKEN reads the repository when the tenant's GitHub App installation does not cover it, and whose harness version picks the guest image.")
   personaId: EntityId;
 
-  @doc("Recorded on the prebuild; the prebuild runs on one of the tenant's online Amd64 hosts, which builds no other prebuild.")
-  provider: BuildProvider;
-
   @doc("Start a job even when a prebuild with the same key is stored or running; false when left out.")
   rebuild?: boolean;
 }
@@ -178,63 +172,6 @@ model PrebuildListQuery {
   @doc("A GitHub repository, in any form a start accepts. Leave it out to list every prebuild of the tenant.")
   @query
   repository?: RepositoryUrl;
-}
-
-@doc("""
-  What a GitHub Actions run of the caller workflow needs to build its prebuild. The start keeps the
-  rest of the job's inputs out of the caller workflow, so the workflow holds only the API origin.
-  """)
-model PrebuildJobInputs {
-  prebuildId: EntityId;
-  tenantId: EntityId;
-
-  @doc("A presigned GET of the guest image's root filesystem tar, valid for the dispatch and build budgets from this answer.")
-  rootfsUrl: url;
-
-  @doc("The digest of the guest image the layer is built on.")
-  imageDigest: Sha256Digest;
-}
-
-@doc("""
-  The OIDC token of the prebuild's upload job: a GitHub Actions token, or a CircleCI V2 job token
-  that circleci run oidc get mints. Its aud is the origin of the API the job calls with no trailing
-  slash, such as https://api.example.com.
-  """)
-model ProviderJobToken is BearerAuth;
-
-@doc("Asks for the presigned upload of a prebuild's layer: one OCI layer tar, named by its sha256 and size.")
-model PrebuildUploadStart {
-  @doc("The tenant that started the prebuild; the dispatch hands it to the job with the prebuild id.")
-  tenantId: EntityId;
-
-  layerDigest: Sha256Digest;
-
-  @doc("At most 5 GiB, what one presigned PUT takes.")
-  @minValue(1)
-  @maxValue(5368709120)
-  layerSizeBytes: int64;
-}
-
-@doc("""
-  Where to PUT the layer: one PUT to `url` carrying content-length of the layer size and
-  x-amz-checksum-sha256 of `sha256`, the two headers the URL signs,
-  before `uploadExpiresAt`, the prebuild upload budget after the exchange. /opt/tumpel/prebuild.mjs
-  upload in the guest image asks for it and makes the PUT.
-  """)
-model PrebuildUploadGrant {
-  prebuildId: EntityId;
-  tenantId: EntityId;
-
-  @doc("The layer digest the PUT is signed for.")
-  sha256: Sha256Digest;
-
-  url: url;
-  uploadExpiresAt: offsetDateTime;
-}
-
-@doc("Tells the control plane the job uploaded the layer its start recorded.")
-model PrebuildUploadComplete {
-  tenantId: EntityId;
 }
 
 @doc("Where the devcontainer.json a preview reads came from.")
@@ -299,10 +236,10 @@ model PrebuildPreviewCommand {
   lifecycle: PrebuildLifecycleCommand;
 
   @doc("The command's name in the file: the lifecycle field, or <field>.<key> for an entry of an object-form command.")
-  label: string;
+  label: ShortText;
 
   @doc("The program and its arguments; a string command runs as /bin/sh -c <command>.")
-  argv: string[];
+  @maxItems(256) argv: Detail[];
 }
 
 @doc("What a preview finds wrong with a config.")
@@ -325,10 +262,10 @@ model PrebuildFinding {
   code: PrebuildFindingCode;
 
   @doc("The field or file the finding is about.")
-  field: string;
+  field: ShortText;
 
-  detail: string;
-  fix: string;
+  detail: Detail;
+  fix: Detail;
 }
 
 @doc("What a prebuild of the repository would run, read without starting one.")
@@ -339,14 +276,14 @@ model PrebuildPreview {
   configSource: PrebuildPreviewSource;
 
   @doc("Every command in run order: onCreateCommand, updateContentCommand, postCreateCommand, then postStartCommand; the entries of one object-form command run at once.")
-  commands: PrebuildPreviewCommand[];
+  @maxItems(100) commands: PrebuildPreviewCommand[];
 
   @doc("The containerEnv the commands run with, as the file writes it.")
-  containerEnv: Record<string>;
+  @TypeSpec.JsonSchema.maxProperties(256) containerEnv: Record<Detail>;
 
   @doc("The input digest a start would record now, over the default branch's files; a supplied config counts as .devcontainer/devcontainer.json.")
   inputDigest: Sha256Digest;
 
   @doc("What a build would refuse or fail on; empty when the config is ready to build.")
-  findings: PrebuildFinding[];
+  @maxItems(100) findings: PrebuildFinding[];
 }

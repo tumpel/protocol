@@ -5,7 +5,7 @@ import "./release.tsp";
 import "./issuer.tsp";
 import "./prebuild.tsp";
 import "./prebuild-template.tsp";
-import "./build-provider.tsp";
+import "./connection.tsp";
 import "./config.tsp";
 import "./claude-setup.tsp";
 
@@ -25,6 +25,9 @@ enum ProblemCode {
   HostRevoked: "HostRevoked",
   NoHostAvailable: "NoHostAvailable",
   PoolExhausted: "PoolExhausted",
+
+  @doc("The tenant has hosts but none is healthy: every host missed its heartbeat plus the grace period and counts as Degraded until a heartbeat or reconnect shows otherwise.")
+  HostDegraded: "HostDegraded",
   HostOffline: "HostOffline",
   HarnessNotInCatalog: "HarnessNotInCatalog",
   NoCredential: "NoCredential",
@@ -66,53 +69,13 @@ enum ProblemCode {
 
   @doc("The current release carries no guest image of the harness version for any architecture of the tenant's hosts, or the published release is unreadable; the detail names which.")
   ImageNotReleased: "ImageNotReleased",
-  NoBuildProvider: "NoBuildProvider",
-
-  @doc("The named build provider is connected, and this control plane cannot dispatch to it yet.")
-  BuildProviderUnavailable: "BuildProviderUnavailable",
-
-  @doc("The build provider refused the job: GitHub refused the installation token or the workflow dispatch, Actions are disabled in the repository, or CircleCI refused the pipeline; the title names the cause and the detail names the answer.")
-  DispatchRefused: "DispatchRefused",
-
   @doc("The GitHub App installation lacks a write permission the operation needs; the detail names it and the fix says how to accept it on GitHub.")
   GitHubAppPermissionMissing: "GitHubAppPermissionMissing",
-
-  @doc("GitHub refused to add or update the caller workflow on the default branch.")
-  CallerWorkflowRefused: "CallerWorkflowRefused",
 
   RepositoryUnreadable: "RepositoryUnreadable",
 
   @doc("GitHub did not answer the one-time read of the account type of an installation linked before the control plane stored account types; the detail quotes GitHub.")
   GitHubInstallationUnreadable: "GitHubInstallationUnreadable",
-
-  IssuerMissing: "IssuerMissing",
-
-  @doc("The build job token is missing, malformed, unsigned by GitHub Actions, meant for another audience, expired or not yet valid; the title names the check.")
-  JobTokenRefused: "JobTokenRefused",
-
-  @doc("The build job token is genuine and names another repository, workflow, ref or event than the prebuild and its connection; the title names the check.")
-  JobTokenMismatch: "JobTokenMismatch",
-
-  @doc("The prebuild is not Building: its build has not started, or it is past its upload.")
-  PrebuildNotUploading: "PrebuildNotUploading",
-
-  @doc("CircleCI refused the personal API token: it is mistyped, expired or revoked, or a project token.")
-  CircleCITokenRefused: "CircleCITokenRefused",
-
-  @doc("The repository has no CircleCI project binding, or the project slug names no project the token reads in the connected organization.")
-  CircleCIProjectMissing: "CircleCIProjectMissing",
-
-  @doc("The pipeline definition does not exist in the project or checks out another repository than the binding names.")
-  CircleCIDefinitionMismatch: "CircleCIDefinitionMismatch",
-
-  @doc("CircleCI answered a call the operation makes, such as registering or deleting a webhook, with an error; the detail names the call and the answer.")
-  CircleCIRefused: "CircleCIRefused",
-
-  @doc("The CircleCI authorization is not in the phase the operation needs, such as a redirect address sent twice or after the authorization ended.")
-  CircleCIAuthorizationNotWaiting: "CircleCIAuthorizationNotWaiting",
-
-  @doc("The completion finds no layer at the key its upload exchange signed.")
-  LayerNotUploaded: "LayerNotUploaded",
 
   @doc("Only an Owner of the tenant runs this operation.")
   OwnerRequired: "OwnerRequired",
@@ -196,19 +159,31 @@ enum ProblemCode {
 
   @doc("The connector's server could not be reached, or sent no first byte within 10 seconds; the tool call failed and the turn goes on.")
   ConnectorUnreachable: "ConnectorUnreachable",
+
+  @doc("The request body, or a message, is larger than the bound the operation names in detail; the control plane read none of it. Status 413.")
+  BodyTooLarge: "BodyTooLarge",
+
+  @doc("The tenant or host sent more requests in the last minute than its rate allows; detail names the rate. Retry after the retry-after header. Status 429.")
+  RateLimited: "RateLimited",
+
+  @doc("The tenant spent a usage limit of its tier, such as the rows it may write in an hour; detail names the limit and when its window resets. Status 429.")
+  UsageLimitReached: "UsageLimitReached",
+
+  @doc("A Free tenant asked for the Configured preset or a limit above the Free preset; only a deployment operator raises a tenant above Free, through the deployment config. Status 403.")
+  AboveFreeTier: "AboveFreeTier",
 }
 
 @doc("Every refusal: what failed and what fixes it.")
 model Problem {
   code: ProblemCode;
-  title: string;
-  detail: string;
-  fix: string;
+  title: Summary;
+  detail: Detail;
+  fix: Detail;
 }
 
 @error
 model ProblemResponse {
-  @statusCode statusCode: 400 | 401 | 403 | 404 | 409 | 410 | 422 | 429 | 503;
+  @statusCode statusCode: 400 | 401 | 403 | 404 | 409 | 410 | 413 | 422 | 429 | 503;
   @body body: Problem;
 }
 
@@ -277,7 +252,7 @@ model HarnessPath {
 model GitHubInstallStartQuery {
   @doc("A page on the dashboard's origin the browser returns to once GitHub sends the installer back.")
   @query
-  returnUrl?: url;
+  returnUrl?: HttpUrl;
 
   @doc("The GitHub account to install on; GitHub then opens on that account instead of asking which one.")
   @query
@@ -294,7 +269,7 @@ model Whoami {
 @doc("The tenant and principal the caller acts as, and the origin of the API that answered, which every path of the API is relative to.")
 model WhoamiWithEndpoint {
   ...Whoami;
-  endpoint: url;
+  endpoint: HttpUrl;
 }
 
 @doc("The OAuth error codes of RFC 6749, RFC 7591, RFC 8628 and RFC 8707 the control plane answers with.")
@@ -316,7 +291,7 @@ enum OAuthErrorCode {
 @doc("An OAuth refusal, in the wire shape RFC 6749 gives it, so stock OAuth and device-flow clients read it.")
 model OAuthError {
   error: OAuthErrorCode;
-  error_description: string;
+  error_description: Detail;
 }
 
 @error
@@ -331,22 +306,22 @@ model DeviceCodeRequest {
 
 @doc("RFC 8628 device authorization, in its snake_case wire shape.")
 model DeviceAuthorization {
-  device_code: string;
-  user_code: string;
-  verification_uri: url;
-  verification_uri_complete: url;
+  device_code: Token;
+  user_code: Token;
+  verification_uri: HttpUrl;
+  verification_uri_complete: HttpUrl;
   @minValue(1) expires_in: int32;
   @minValue(1) interval: int32;
 }
 
 @doc("A user code the signed-in principal approves or denies, as the terminal printed it.")
 model DeviceDecision {
-  userCode: string;
+  userCode: Token;
 }
 
 @doc("A user code the signed-in principal approves, and the tenant of theirs the device acts in.")
 model DeviceApproval {
-  userCode: string;
+  userCode: Token;
   tenantId: EntityId;
 }
 
@@ -358,65 +333,65 @@ model InvitationCreate is Create<Invitation>;
   """)
 model InvitationCreated {
   invitation: Invitation;
-  acceptUrl: url;
+  acceptUrl: HttpUrl;
 }
 
 @doc("The token of an invitation's accept link.")
 model InvitationAccept {
-  @minLength(1) token: string;
+  @minLength(1) token: Token;
 }
 
 model DeviceTokenRequest {
   grant_type: "urn:ietf:params:oauth:grant-type:device_code";
-  device_code: string;
+  device_code: Token;
 }
 
 model DeviceToken {
-  access_token: string;
+  access_token: Token;
   token_type: "Bearer";
 }
 
 @doc("RFC 9728 metadata for the hosted MCP endpoint.")
 model ProtectedResourceMetadata {
-  resource: url;
-  authorization_servers: url[];
-  scopes_supported: string[];
-  bearer_methods_supported: string[];
-  resource_name: string;
+  resource: HttpUrl;
+  @maxItems(20) authorization_servers: HttpUrl[];
+  @maxItems(20) scopes_supported: ShortText[];
+  @maxItems(20) bearer_methods_supported: ShortText[];
+  resource_name: Summary;
 }
 
 @doc("RFC 8414 metadata for the control plane's OAuth authorization server.")
 model AuthorizationServerMetadata {
-  issuer: url;
-  authorization_endpoint: url;
-  token_endpoint: url;
-  revocation_endpoint: url;
-  registration_endpoint: url;
-  scopes_supported: string[];
-  response_types_supported: string[];
-  response_modes_supported: string[];
-  grant_types_supported: string[];
-  token_endpoint_auth_methods_supported: string[];
-  code_challenge_methods_supported: string[];
+  issuer: HttpUrl;
+  authorization_endpoint: HttpUrl;
+  token_endpoint: HttpUrl;
+  revocation_endpoint: HttpUrl;
+  registration_endpoint: HttpUrl;
+  @maxItems(20) scopes_supported: ShortText[];
+  @maxItems(20) response_types_supported: ShortText[];
+  @maxItems(20) response_modes_supported: ShortText[];
+  @maxItems(20) grant_types_supported: ShortText[];
+  @maxItems(20) token_endpoint_auth_methods_supported: ShortText[];
+  @maxItems(20) code_challenge_methods_supported: ShortText[];
   authorization_response_iss_parameter_supported: boolean;
   resource_indicators_supported: boolean;
 }
 
 @doc("RFC 7591 dynamic client registration. Only the redirect addresses and the name are read.")
 model OAuthClientRegistration {
-  @minItems(1) @maxItems(10) redirect_uris: url[];
-  client_name?: string;
+  @minItems(1) @maxItems(10) redirect_uris: HttpUrl[];
+  client_name?: Summary;
 }
 
 model OAuthClient {
-  client_id: string;
+  client_id: ShortText;
   client_id_issued_at: int64;
-  client_name: string;
-  redirect_uris: url[];
-  grant_types: string[];
-  response_types: string[];
+  client_name: Summary;
+  @maxItems(20) redirect_uris: HttpUrl[];
+  @maxItems(1000) grant_types: ShortText[];
+  @maxItems(1000) response_types: ShortText[];
   token_endpoint_auth_method: "none";
-  scope: string;
+  scope: Summary;
 }
 
 model OAuthClientRegistered {
@@ -425,37 +400,37 @@ model OAuthClientRegistered {
 }
 
 model OAuthAuthorizeQuery {
-  @query response_type: string;
-  @query client_id: string;
-  @query redirect_uri?: string;
-  @query state?: string;
-  @query code_challenge: string;
-  @query code_challenge_method: string;
-  @query resource?: string;
+  @query response_type: ShortText;
+  @query client_id: ShortText;
+  @query redirect_uri?: UrlText;
+  @query state?: ShortText;
+  @query code_challenge: Token;
+  @query code_challenge_method: ShortText;
+  @query resource?: UrlText;
 }
 
 @doc("Where the browser goes next: the consent page, or the client's callback carrying an error.")
 model SeeOther {
   @statusCode statusCode: 303;
-  @header location: string;
+  @header location: UrlText;
 }
 
 @doc("An RFC 6749 authorization code redemption, with the PKCE verifier and the RFC 8707 resource.")
 model OAuthAuthorizationCodeRequest {
   grant_type: "authorization_code";
-  client_id: string;
-  code: string;
-  code_verifier: string;
-  redirect_uri: string;
-  resource?: string;
+  client_id: ShortText;
+  code: Token;
+  code_verifier: Token;
+  redirect_uri: UrlText;
+  resource?: UrlText;
 }
 
 @doc("An RFC 6749 refresh, which spends the refresh token and issues a new pair.")
 model OAuthRefreshTokenRequest {
   grant_type: "refresh_token";
-  client_id: string;
-  refresh_token: string;
-  resource?: string;
+  client_id: ShortText;
+  refresh_token: Token;
+  resource?: UrlText;
 }
 
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "grant_type" })
@@ -465,18 +440,18 @@ union OAuthTokenRequest {
 }
 
 model OAuthToken {
-  access_token: string;
+  access_token: Token;
   token_type: "Bearer";
   expires_in: int32;
-  refresh_token: string;
-  scope: string;
+  refresh_token: Token;
+  scope: Summary;
 }
 
 @doc("An RFC 7009 revocation by a public client: the token and every token of its grant stop working. An unknown token is answered as revoked.")
 model OAuthRevocationRequest {
-  token: string;
-  client_id: string;
-  token_type_hint?: string;
+  token: Token;
+  client_id: ShortText;
+  token_type_hint?: ShortText;
 }
 
 model OAuthRevoked {
@@ -490,28 +465,28 @@ model EnrolmentTokenMint {
 @doc("A freshly minted enrolment token. `token` is shown here once and never again.")
 model MintedEnrolmentToken {
   enrolmentToken: EnrolmentToken;
-  token: string;
+  token: Token;
 
   @doc("Downloads, installs and enrols the supervisor on a new host. It holds no token: it reads `token` from stdin.")
-  installCommand: string;
+  installCommand: Detail;
 }
 
 model HostEnrol is Create<Host> {
-  @minLength(1) enrolmentToken: string;
+  @minLength(1) enrolmentToken: Token;
 }
 
 @doc("Replaces every label of a host.")
 model HostLabels {
-  labels: HostLabel[];
+  @maxItems(64) labels: HostLabel[];
 }
 
 @doc("Adds and removes labels of a host; every label it names in neither list stays.")
 model HostLabelsPatch {
   @doc("Labels to add; a label the host already has stays once.")
-  add?: HostLabel[];
+  @maxItems(64) add?: HostLabel[];
 
   @doc("Labels to remove; a label the host does not have is ignored.")
-  remove?: HostLabel[];
+  @maxItems(64) remove?: HostLabel[];
 }
 
 model SessionStart is Create<Session> {
@@ -548,10 +523,10 @@ model SessionTags {
 @doc("Adds and removes tags of a session; every tag it names in neither list stays.")
 model SessionTagsPatch {
   @doc("Tags to add; a tag the session already has stays once.")
-  add?: SessionTag[];
+  @maxItems(16) add?: SessionTag[];
 
   @doc("Tags to remove; a tag the session does not have is ignored.")
-  remove?: SessionTag[];
+  @maxItems(64) remove?: SessionTag[];
 }
 
 @doc("The answer to a start, sent before the harness writes anything.")
@@ -607,7 +582,7 @@ model MetricWindow {
 
   @doc("dimension:value; one key repeated is OR, different keys AND")
   @query(#{ explode: true })
-  filter?: string[];
+  @maxItems(32) filter?: Summary[];
 }
 
 model MetricPath {
@@ -621,7 +596,7 @@ model MetricSeriesQuery {
   @doc("Up to two dimensions to group the series by; left out, every series merges into one.")
   @query(#{ explode: true })
   @maxItems(2)
-  groupBy?: string[];
+  groupBy?: ShortText[];
 }
 
 model MetricTurnQuery {
@@ -633,21 +608,7 @@ model MetricTurnQuery {
 
   @doc("The cursor of the previous page; leave it out to read from `from`.")
   @query
-  cursor?: string;
-}
-
-model TurnWaitQuery {
-  @doc("A turn to wait on; repeat it to wait on several turns of any of the tenant's sessions.")
-  @query(#{ explode: true })
-  @minItems(1)
-  @maxItems(50)
-  turnId: EntityId[];
-
-  @doc("The most seconds to wait for one of the turns to end.")
-  @query
-  @minValue(0)
-  @maxValue(50)
-  timeoutSeconds: int32;
+  cursor?: Summary;
 }
 
 model TranscriptQuery {
@@ -692,7 +653,7 @@ union TranscriptPage {
 model RawTranscriptPage {
   form: "Raw";
   sessionState: SessionState;
-  lines: TranscriptLine[];
+  @maxItems(10000) lines: TranscriptLine[];
   cursor: Sequence;
   finished: boolean;
 }
@@ -702,7 +663,7 @@ model CompactTranscriptPage {
   form: "Compact";
   sessionId: EntityId;
   sessionState: SessionState;
-  turns: CompactTranscriptTurn[];
+  @maxItems(10000) turns: CompactTranscriptTurn[];
   cursor: Sequence;
   finished: boolean;
 }
@@ -710,19 +671,23 @@ model CompactTranscriptPage {
 @doc("The kept lines of one turn on a compact page, in order.")
 model CompactTranscriptTurn {
   turnId: EntityId;
-  lines: CompactTranscriptLine[];
+  @maxItems(1000) lines: CompactTranscriptLine[];
 }
 
 @doc("One kept line of a compact page: assistant text, or a tool call shortened to one line.")
 model CompactTranscriptLine {
   lineSeq: Sequence;
-  text: string;
+  text: LongText;
 }
+
+@doc("The tenant's personas with file metadata and no file content, at most 10,000 entries.")
+@maxItems(10000)
+model PersonaList is TenantApi.StoredPersona[];
 
 @doc("A new persona with its whole file set: at most PersonaFileLimit.PersonaBytes together, each at a path its harness accepts.")
 model PersonaCreate is Create<Persona> {
   @doc("The persona's files; none when left out.")
-  files?: PersonaFileWrite[];
+  @maxItems(100) files?: PersonaFileWrite[];
 
   @doc("What happens to the box after each turn; left out, the persona's sessions get Auto.")
   boxRetention?: BoxRetention;
@@ -733,7 +698,7 @@ model PersonaCreate is Create<Persona> {
 
 @doc("Replaces the persona's name, secret set, connectors, box memory, box retention, Tumpel MCP and whole file set: a file the update leaves out is deleted, a box memory it leaves out goes back to BoxMemoryLimit.DefaultMib, a box retention it leaves out goes back to Auto, and a tumpelMcp it leaves out goes back to false. The harness is fixed at create.")
 model PersonaUpdate is Update<Persona> {
-  files: PersonaFileWrite[];
+  @maxItems(100) files: PersonaFileWrite[];
   @doc("What happens to the box after each turn; left out, the persona's sessions get Auto.")
   boxRetention?: BoxRetention;
 
@@ -774,8 +739,8 @@ model RemovePersonaFilePatch {
 model EditPersonaFilePatch {
   kind: PersonaFilePatchKind.Edit;
   path: PersonaFilePath;
-  @minLength(1) oldText: string;
-  newText: string;
+  @minLength(1) oldText: PersonaFileContent;
+  newText: PersonaFileContent;
 }
 
 @doc("One change to one file of a persona; every other file is left as it is.")
@@ -801,14 +766,14 @@ model PersonaFileUploadRequest {
 model PersonaFileUpload {
   digest: Sha256Digest;
   sizeBytes: PersonaFileSize;
-  uploadUrl: url;
+  uploadUrl: HttpUrl;
   uploadExpiresAt: offsetDateTime;
 }
 
 model HarnessPinCreate is Create<HarnessPin>;
 
 model SecretSetCreate is Create<SecretSet> {
-  secrets: SecretValue[];
+  @maxItems(200) secrets: SecretValue[];
 }
 
 @doc("""
@@ -817,7 +782,7 @@ model SecretSetCreate is Create<SecretSet> {
   name when it is not renamed.
   """)
 model SecretSetUpdate is Update<SecretSet> {
-  secrets: SecretMemberUpdate[];
+  @maxItems(200) secrets: SecretMemberUpdate[];
 }
 
 @doc("""
@@ -826,7 +791,7 @@ model SecretSetUpdate is Update<SecretSet> {
   it is not renamed. Every member it leaves out keeps its value.
   """)
 model SecretSetPatch is OptionalProperties<Update<SecretSet>> {
-  secrets?: SecretMemberUpdate[];
+  @maxItems(200) secrets?: SecretMemberUpdate[];
 }
 
 @route("/healthz")
@@ -1055,6 +1020,11 @@ namespace V1 {
     @post
     revoke(...HostPath): Host | ProblemResponse;
 
+    @doc("Restores an Unhealthy or RateLimited host to Healthy, so it gets offers again.")
+    @route("/{hostId}/restore-health")
+    @post
+    restoreHealth(...HostPath): Host | ProblemResponse;
+
     @doc("Replaces every label of a host.")
     @route("/{hostId}/labels")
     @put
@@ -1190,15 +1160,6 @@ namespace V1 {
     @get
     list(...SessionPath): Turn[] | ProblemResponse;
 
-    @doc("""
-      Waits until one of the turns is Completed or Failed, or until timeoutSeconds pass, then reads
-      every turn in the order asked; answers at once when one has already ended. Refused NotFound,
-      naming the turn, when a turnId names no turn of the tenant.
-      """)
-    @route("/turns/wait")
-    @get
-    wait(...TurnWaitQuery): Turn[] | ProblemResponse;
-
     @doc("Reads one turn; its state is Offered, Running, Completed or Failed.")
     @route("/turns/{turnId}")
     @get
@@ -1259,9 +1220,9 @@ namespace V1 {
 
   @route("/metrics")
   interface Metrics {
-    @doc("Lists every metric with series seen in the window, with its dimensions and their values; filter narrows the series counted.")
+    @doc("Lists every metric with series seen in the window, with its dimensions and their values; filter narrows the series counted. It also reads the tenant's tier and its usage against each of its limits in the current windows.")
     @get
-    catalog(...MetricWindow): MetricCatalog | ProblemResponse;
+    catalog(...MetricWindow): TenantMetricCatalog | ProblemResponse;
 
     @doc("""
       Reads a metric's buckets in the window, grouped by up to two dimensions. Refused
@@ -1276,6 +1237,24 @@ namespace V1 {
     @route("/{metric}/turns")
     @get
     turns(...MetricPath, ...MetricTurnQuery): MetricTurnPage | ProblemResponse;
+  }
+
+  @route("/limits")
+  interface Limits {
+    @doc("Reads the limits profile the tenant runs under and where it comes from.")
+    @get
+    get(): TenantLimits | ProblemResponse;
+
+    @doc("""
+      Sets the limits the tenant runs under: a profile of its own, or a reset, which drops the
+      profile it had so it runs under the preset of its tier. Owner only. Refused InvalidRequest for
+      a value past the deployment's ceiling. A Free tenant may set values at or below the Free
+      preset only; a higher value is refused AboveFreeTier. This operation never changes the tier:
+      moving a tenant between tiers is a deployment operator action. A host channel takes the new
+      frame limit when it next connects.
+      """)
+    @put
+    set(@body body: TenantLimitsSet): TenantLimits | ProblemResponse;
   }
 
   @route("/harnesses")
@@ -1313,7 +1292,7 @@ namespace V1 {
 
     @doc("Lists the tenant's personas with file paths, digests, sizes and timestamps. Read one persona to get file content.")
     @get
-    list(): TenantApi.StoredPersona[] | ProblemResponse;
+    list(): PersonaList | ProblemResponse;
 
     @doc("Reads one persona.")
     @route("/{personaId}")
@@ -1393,30 +1372,13 @@ namespace V1 {
   @route("/prebuilds")
   interface Prebuilds {
     @doc("""
-      Starts a prebuild of a repository's default branch on the named build provider. Answers the
+      Starts a prebuild of a repository's default branch. Answers the
       stored or running prebuild with the same key and starts no job, unless rebuild is true. Refused
-      before anything is stored: NoBuildProvider when the named provider is not connected,
-      HarnessNotInCatalog when the persona's harness has no version the tenant can run, NoRelease or
-      ImageNotReleased when the current release carries no Amd64 guest image of that version,
-      RepositoryUnreadable when GitHub refuses to show the inputs or no token reads them,
-      GitHubNotConnected when a GitHub Actions start finds no installation of the tenant on the
-      repository's owner, GitHubAppPermissionMissing when that installation cannot write Actions, or
-      Contents and Workflows while the caller workflow needs adding, CallerWorkflowRefused when
-      GitHub refuses that commit, CircleCIProjectMissing when a CircleCI start finds no project
-      binding for the repository, DispatchRefused when GitHub refuses the installation token, Actions
-      are disabled in the repository, the provider refuses the job or a CircleCI pipeline parameter
-      would pass 512 characters, and BuildProviderUnavailable while this control plane cannot
-      dispatch to the named provider. A GitHub Actions start reads the caller workflow on the
-      default branch with the installation token, each GitHub call within 10 s. When it is missing
-      or differs from the current example, the start commits the example, whose push trigger on its
-      own path starts the run, and reads the inputs at that commit; otherwise it reads them at the
-      branch's head and dispatches the caller workflow there with no inputs. The prebuild records
-      the commit it read; the run is picked up by that commit, from its workflow_run events or from
-      its call to prebuildInputs.read. Refused DevcontainerMissing, after the provider check, when the
-      default branch holds neither .devcontainer/devcontainer.json nor .devcontainer.json. A CircleCI start runs the binding's pipeline
-      definition with config and checkout on the default branch and the parameters
-      tumpel_prebuild_id, tumpel_tenant_id, tumpel_api_origin, tumpel_rootfs_url and
-      tumpel_image_digest, records the pipeline and answers it Building.
+      before anything is stored: HarnessNotInCatalog when the persona's harness has no version the
+      tenant can run, NoRelease or ImageNotReleased when the current release carries no Amd64 guest
+      image of that version, RepositoryUnreadable when GitHub refuses to show the inputs or no token
+      reads them, and DevcontainerMissing when the default branch holds neither
+      .devcontainer/devcontainer.json nor .devcontainer.json.
       """)
     @post
     start(@body body: PrebuildStart): Prebuild | ProblemResponse;
@@ -1495,73 +1457,9 @@ namespace V1 {
     getPullRequest(...PrebuildTemplatePullRequestQuery): PrebuildTemplatePullRequest | ProblemResponse;
   }
 
-  @doc("""
-    The run's side of a GitHub Actions prebuild. No principal signs in: the run presents its job's
-    GitHub Actions OIDC token, which must carry the API origin with no trailing slash as aud, be
-    unexpired and be signed by a key GitHub publishes. The tenant is the one whose GitHub App
-    installation is on the token's repository owner.
-    """)
-  @route("/prebuild-inputs")
-  interface PrebuildInputs {
-    @doc("""
-      Answers the inputs of the prebuild that waits for this run: the newest Dispatched GitHub
-      Actions prebuild of the token's repository whose start read the token's sha, or the prebuild
-      this run already took. The token must name the connection's caller workflow, the default
-      branch as ref, push or workflow_dispatch as event_name, and a job of
-      tumpel/workflows/.github/workflows/prebuild.yml at tag v2 or v2.x.y. The first call records
-      the token's run_id as the prebuild's run and moves it to Building. Refused JobTokenRefused
-      (401) naming the failed check, NotFound when no prebuild waits for a run at that commit,
-      JobTokenMismatch (403) naming the failed claim, and PrebuildNotUploading when the prebuild
-      is past Building.
-      """)
-    @useAuth(ProviderJobToken)
-    @post
-    read(): PrebuildJobInputs | ProblemResponse;
-  }
-
-  @doc("""
-    The upload job's side of a prebuild. No principal signs in: the job presents its provider's OIDC
-    token, which must carry the API origin with no trailing slash as aud and be unexpired. A GitHub
-    Actions token must be signed by a key GitHub publishes and name the prebuild's repository, the
-    connection's caller workflow, the repository's default branch as ref, push or workflow_dispatch
-    as event_name, a job of the reusable workflow at tag v2 or v2.x.y, and the run id and commit
-    sha the prebuild recorded as run_id and sha. A CircleCI
-    token must be issued by https://oidc.circleci.com/org/<organization id> and signed by a key at
-    its /.well-known/jwks-pub.json, name the connection's organization, the prebuild's repository
-    as vcs-origin, the binding's project, the recorded pipeline, the default branch as vcs-ref and
-    no SSH rerun; the first upload start records its job, and every later start and complete must
-    name the same job. That first start also reads the pipeline's revision from CircleCI, and a
-    revision other than the commit the start read fails the prebuild in phase Dispatch. A missing
-    tenant, a missing prebuild, another organization and another repository each answer the same
-    NotFound.
-    """)
-  @route("/prebuilds/{prebuildId}/uploads")
-  interface PrebuildUploads {
-    @doc("""
-      Records the layer's digest and size and exchanges the job token for one presigned PUT of the
-      layer to <tenantId>/prebuilds/<prebuildId>/layers/<digest> in the snapshot bucket, bound to
-      its sha256 and its size. Refused JobTokenRefused (401) naming the failed check, NotFound,
-      JobTokenMismatch (403) naming the failed claim, PrebuildNotUploading unless the prebuild
-      is Building, and Conflict when an earlier start of the same prebuild recorded another digest
-      or size; a repeat with the same digest and size answers a fresh grant.
-      """)
-    @useAuth(ProviderJobToken)
-    @post
-    start(...PrebuildPath, @body body: PrebuildUploadStart): PrebuildUploadGrant | ProblemResponse;
-
-    @doc("""
-      Moves the prebuild to Converting once the bucket holds the layer its start recorded. Refused
-      as start is, and LayerNotUploaded when the bucket lacks it.
-      """)
-    @route("/complete")
-    @useAuth(ProviderJobToken)
-    @post
-    complete(...PrebuildPath, @body body: PrebuildUploadComplete): Prebuild | ProblemResponse;
-  }
-
   @route("/connections")
   interface Connections {
-    @doc("Lists one row per connection kind, the GitHub App and each build provider, with its state and, once Connected, the account it bills.")
+    @doc("Lists one row per connection kind, the GitHub App and OpenRouter, with its state and, once Connected, the account.")
     @get
     list(): ConnectionSummary[] | ProblemResponse;
   }
@@ -1609,134 +1507,6 @@ namespace V1 {
     @route("/{grantId}")
     @delete
     revoke(...OAuthGrantPath): NoContentResponse | ProblemResponse;
-  }
-
-  @route("/github-actions-connection")
-  interface GitHubActionsConnections {
-    @doc("Reads the tenant's GitHub Actions build provider connection: Connected with its caller workflow, or NotConnected.")
-    @get
-    get(): GitHubActionsConnectionLink | ProblemResponse;
-
-    @doc("Connects the tenant's own GitHub Actions account, replacing an earlier GitHub Actions connection.")
-    @route("/start")
-    @post
-    start(@body body: GitHubActionsConnectionStart): GitHubActionsConnectionLink | ProblemResponse;
-
-    @doc("Disconnects the tenant's GitHub Actions account; prebuilds already stored stay.")
-    @delete
-    delete(): NoContentResponse | ProblemResponse;
-  }
-
-  @route("/namespace-connection")
-  interface NamespaceConnections {
-    @doc("Reads the tenant's Namespace build provider connection: the issuer, the subject pattern and the audience Tumpel defines for Namespace, to register there, or NotConfigured while the stage has no issuer; start is refused IssuerMissing then.")
-    @get
-    get(): NamespaceConnectionLink | ProblemResponse;
-
-    @doc("Connects the tenant's own Namespace workspace, replacing an earlier Namespace connection.")
-    @route("/start")
-    @post
-    start(@body body: NamespaceConnectionStart): NamespaceConnectionLink | ProblemResponse;
-
-    @doc("Disconnects the tenant's Namespace workspace; prebuilds already stored stay.")
-    @delete
-    delete(): NoContentResponse | ProblemResponse;
-  }
-
-  @route("/circleci-connection")
-  interface CircleCIConnections {
-    @doc("Reads the tenant's CircleCI build provider connection, the orb and the config to commit; the API token is never answered.")
-    @get
-    get(): CircleCIConnectionLink | ProblemResponse;
-
-    @doc("""
-      Connects the tenant's CircleCI organization with a pasted personal API token, the fallback to
-      authorize, replacing an earlier CircleCI connection; project bindings stay. Refused
-      CircleCITokenRefused when GET /api/v2/me refuses the token.
-      """)
-    @route("/start")
-    @post
-    start(@body body: CircleCIConnectionStart): CircleCIConnectionLink | ProblemResponse;
-
-    @doc("""
-      Starts an authorization that connects the tenant's CircleCI organization through CircleCI's
-      OAuth consent page, registering the tenant's CircleCI client first when it has none. Answers it
-      AwaitingRedirect with the consent URL. Refused CircleCIRefused when CircleCI refuses the client
-      registration.
-      """)
-    @route("/authorize")
-    @post
-    authorize(): CircleCIAuthorization | ProblemResponse;
-
-    @doc("""
-      Takes the address the browser landed on, spends its code with the authorization's verifier at
-      CircleCI's token endpoint and reads the organizations the token reads. The connection takes
-      the token at once when it already names one of them, or when there is one; otherwise the
-      authorization is ChoosingOrganization. A denied consent, a refused code or no organization
-      ends it Failed. Refused NotFound for another principal's authorization, InvalidRequest when
-      the address is not the redirect address with a code or an error or carries another state,
-      leaving the authorization AwaitingRedirect, and CircleCIAuthorizationNotWaiting unless the
-      authorization is AwaitingRedirect.
-      """)
-    @route("/complete")
-    @post
-    complete(@body body: CircleCIAuthorizationComplete): CircleCIAuthorization | ProblemResponse;
-
-    @doc("""
-      Connects the organization a ChoosingOrganization authorization lists, with the token it holds,
-      replacing an earlier CircleCI connection; project bindings stay. Refused NotFound for another
-      principal's authorization, InvalidRequest when the organization is not listed, and
-      CircleCIAuthorizationNotWaiting unless the authorization is ChoosingOrganization.
-      """)
-    @route("/choose")
-    @post
-    choose(@body body: CircleCIAuthorizationChoose): CircleCIAuthorization | ProblemResponse;
-
-    @doc("Disconnects the tenant's CircleCI organization and deletes its project bindings and their webhooks; prebuilds already stored stay.")
-    @delete
-    delete(): NoContentResponse | ProblemResponse;
-  }
-
-  @route("/circleci-projects")
-  interface CircleCIProjects {
-    @doc("Lists the repositories bound to a CircleCI project, by repository.")
-    @get
-    list(): CircleCIProject[] | ProblemResponse;
-
-    @doc("""
-      Binds a repository to its CircleCI project and pipeline definition, once per repository, and
-      registers a workflow-completed webhook on the project with a signing secret the control plane
-      generates and seals.
-      Refused NoBuildProvider while CircleCI is not connected, CircleCIProjectMissing when the slug
-      names no project of the connected organization, CircleCIDefinitionMismatch when the pipeline
-      definition is missing or checks out another repository, and Conflict when the repository is
-      already bound. CircleCITokenRefused or CircleCIRefused when CircleCI refuses the webhook.
-      """)
-    @post
-    add(@body body: CircleCIProjectAdd): CircleCIProject | ProblemResponse;
-
-    @doc("Deletes a repository's CircleCI project binding and its webhook at CircleCI.")
-    @route("/{circleCIProjectId}")
-    @delete
-    delete(...CircleCIProjectPath): NoContentResponse | ProblemResponse;
-  }
-
-  @doc("""
-    CircleCI's side of a prebuild. No principal signs in: CircleCI posts each workflow-completed
-    event of a bound project, signed with the binding's secret as v1=<hex HMAC-SHA256 of the body>
-    in circleci-signature. A failed tumpel-prebuild workflow fails its prebuild in phase Build, a
-    successful one without a completed upload in phase Upload; an event of a pipeline no prebuild
-    recorded is ignored.
-    """)
-  @route("/circleci-events/{tenantId}")
-  interface CircleCIEvents {
-    @doc("Takes one workflow-completed event. Refused NotFound for an unknown tenant or project and Forbidden when the signature does not match.")
-    @post
-    receive(
-      @path tenantId: EntityId,
-      @header("circleci-signature") signature: string,
-      @body body: Record<unknown>,
-    ): NoContentResponse | ProblemResponse;
   }
 
   @route("/secret-sets")

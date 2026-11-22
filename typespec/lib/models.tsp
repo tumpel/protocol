@@ -1,6 +1,7 @@
 import "@typespec/openapi";
 import "@typespec/http";
 import "./triggers.tsp";
+import "./limits.tsp";
 
 using TypeSpec.Http;
 
@@ -48,10 +49,12 @@ scalar Sequence extends int64;
 scalar SecretName extends string;
 
 @minLength(1)
+@maxLength(100)
 scalar HarnessVersion extends string;
 
 @doc("A lower-case hex SHA-256 digest: the name of a file in the image cache, or of a persona file blob.")
 @pattern("^[0-9a-f]{64}$")
+@maxLength(64)
 scalar Sha256Digest extends string;
 
 @doc("""
@@ -64,8 +67,8 @@ scalar Sha256Digest extends string;
 @TypeSpec.OpenAPI.extension("x-bound-names", #["Oldest", "Version"])
 scalar ChannelProtocol extends int32;
 
-const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 30;
+const ChannelProtocolOldest = 34;
+const ChannelProtocolVersion = 34;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -133,10 +136,10 @@ enum BoxRetention {
   @doc("The control plane snapshots the box and tears it down as soon as the turn ends; the session reads Stopped, and its next turn boots a fresh box from the snapshot.")
   Off: "Off",
 
-  @doc("The box stays paused until a person stops or archives the session. Placement never evicts it.")
+  @doc("The box stays paused until a person stops or archives the session. Idleness never tears it down and placement never evicts it.")
   Warm: "Warm",
 
-  @doc("The box stays paused until placement evicts it to free room for another session's turn; the eviction snapshots the box when needed, tears it down and leaves the session Stopped.")
+  @doc("The box stays paused until it has been idle for the turn offer's idleSeconds, when the host tears it down and reports BoxGone, or until placement evicts it sooner to free room for another session's turn, when the eviction snapshots the box when needed and tears it down; either way the session reads Stopped.")
   Auto: "Auto",
 }
 
@@ -154,12 +157,18 @@ scalar PersonaFileSize extends int64;
 @maxLength(87384)
 scalar PersonaFileContent extends string;
 
+@doc("A persona file the host hands its guest, base64: at most PersonaFileLimit.PersonaBytes before encoding, since a file uploaded by digest may exceed InlineFileBytes.")
+@maxLength(349528)
+scalar GuestPersonaFileContent extends string;
+
 @doc("A label a host carries for placement, such as gpu or region-eu.")
 @pattern("^[a-z0-9][a-z0-9._=-]{0,62}$")
+@maxLength(63)
 scalar HostLabel extends string;
 
 @doc("A tag that groups sessions, such as crew:docs. A session carries at most 16.")
 @pattern("^[a-z0-9][a-z0-9:._-]{0,62}$")
+@maxLength(63)
 scalar SessionTag extends string;
 
 enum HealthStatus {
@@ -176,6 +185,30 @@ enum HostState {
   Online: "Online",
   Offline: "Offline",
   Revoked: "Revoked",
+}
+
+@doc("Whether the control plane offers a host work. It is the control plane's own judgement of the host, kept by its tenant and written once per change.")
+enum HostHealth {
+  @doc("The host stays within the tenant's limits and gets offers.")
+  Healthy: "Healthy",
+
+  @doc("The host sent more channel frames in a minute than the tenant's limits allow. It gets no offers until a full window passes without a limit hit.")
+  RateLimited: "RateLimited",
+
+  @doc("The host went RateLimited three times within an hour. It gets no offers until a person restores it or the host reconnects with a new Hello.")
+  Unhealthy: "Unhealthy",
+
+  @doc("The host missed its heartbeat plus the grace period. It gets no offers until a heartbeat or a reconnect shows it is alive.")
+  Degraded: "Degraded",
+}
+
+@doc("The health a host reports of itself in its Heartbeat.")
+enum HostReportedHealth {
+  @doc("The supervisor sends at its normal pace and takes offers.")
+  Healthy: "Healthy",
+
+  @doc("The supervisor backs off after a rate refusal and refuses offers until a full window passes without one.")
+  RateLimited: "RateLimited",
 }
 
 @doc("""
@@ -227,7 +260,7 @@ enum SupervisorUpdateFailureReason {
 model SupervisorUpdateStepReport {
   fromSha256: Sha256Digest;
   toSha256: Sha256Digest;
-  @minLength(1) releaseVersion: string;
+  @minLength(1) releaseVersion: ShortText;
   @minValue(0) boxesRunning: int32;
   phase: SupervisorUpdatePhase;
   at: offsetDateTime;
@@ -242,8 +275,8 @@ model SupervisorUpdateFailureReport {
   fromSha256: Sha256Digest;
   toSha256: Sha256Digest;
   reason: SupervisorUpdateFailureReason;
-  detail: string;
-  @maxItems(20) outputTail: string[];
+  detail: Detail;
+  @maxItems(20) outputTail: Detail[];
   failedAt: offsetDateTime;
 }
 
@@ -418,6 +451,9 @@ enum TurnFailureReason {
   @doc("The host has no box slot, memory or disk budget left for the box, and no paused box with its last turn in a snapshot can be evicted to make room; the detail names what ran out, what the host holds and what the box asked for.")
   PoolExhausted: "PoolExhausted",
 
+  @doc("The tenant has hosts but none is healthy: every host missed its heartbeat plus the grace period and counts as Degraded until a heartbeat or reconnect shows otherwise, so the turn was refused.")
+  HostDegraded: "HostDegraded",
+
   SnapshotUnreadable: "SnapshotUnreadable",
   HarnessExited: "HarnessExited",
 
@@ -473,6 +509,9 @@ enum TurnFailureReason {
 
   @doc("The harness finished the turn, but the snapshot of the box after it was not stored, so the turn holds no durable record of its work and does not complete; the detail names why the snapshot failed. The control plane records it, so no host sends it.")
   SnapshotNotStored: "SnapshotNotStored",
+
+  @doc("The turn's host sent more channel frames in a minute than the tenant's limits allow, so the control plane failed every running turn on that host and dropped its further frames; the detail names the limit. The control plane records it, so no host sends it.")
+  RateLimited: "RateLimited",
 }
 
 @doc("Why the box could not clone the session's repository.")
@@ -505,10 +544,159 @@ enum ModelProvider {
   OpenRouter: "OpenRouter",
 }
 
+@doc("""
+  The limits a tenant runs under. Free keeps the tenant inside the allowances the hosting plan
+  includes at no charge and refuses traffic past them; Configured runs under the limits its
+  deployment configures.
+  """)
+enum TenantTier {
+  Free: "Free",
+  Configured: "Configured",
+}
+
+@doc("What a tenant limit counts.")
+enum TenantUsageMeasure {
+  @doc("Every request the tenant serves: API calls, MCP tool calls and host channel frames.")
+  Requests: "Requests",
+
+  @doc("The requests that change the tenant's state.")
+  Writes: "Writes",
+
+  @doc("The database rows the tenant's requests write.")
+  RowsWritten: "RowsWritten",
+
+  @doc("The database rows the tenant's requests read.")
+  RowsRead: "RowsRead",
+}
+
+@doc("The fixed window a tenant limit counts over.")
+enum TenantUsageWindow {
+  Minute: "Minute",
+  Hour: "Hour",
+  Day: "Day",
+}
+
+@doc("""
+  One limit of a tenant and how much of it the current window has used. A request past `limit`
+  is refused 429 until the window ends at `resetsAt`.
+  """)
+model TenantUsageCounter {
+  measure: TenantUsageMeasure;
+  window: TenantUsageWindow;
+  used: int64;
+  limit: int64;
+  resetsAt: offsetDateTime;
+}
+
+@doc("The tenant's tier and its usage against each of its limits, as of the current windows.")
+model TenantUsage {
+  tier: TenantTier;
+  @maxItems(32) counters: TenantUsageCounter[];
+}
+
+@doc("One usage budget of a tenant: at most `limit` of `measure` in each `window`.")
+model TenantLimit {
+  measure: TenantUsageMeasure;
+  window: TenantUsageWindow;
+  @minValue(1) limit: int64;
+}
+
+@doc("""
+  Every limit one tenant runs under. The tenant Durable Object counts the writing requests and the
+  usage budgets, and the host channel counts the frames of each host. A request rate is a usage
+  budget of Requests per Minute.
+  """)
+model TenantLimitsProfile {
+  @doc("Requests a minute the tenant may send that change its state.")
+  @minValue(1)
+  writesPerMinute: int32;
+
+  @doc("Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.")
+  @minValue(1)
+  hostFramesPerMinute: int32;
+
+  @doc("The usage budgets of the tenant.")
+  @maxItems(32)
+  usage: TenantLimit[];
+}
+
+@doc("Where the profile a tenant runs under comes from.")
+enum TenantLimitsSource {
+  @doc("The Free preset, which keeps the tenant inside the allowances the hosting plan includes at no charge.")
+  Free: "Free",
+
+  @doc("The deployment's default profile.")
+  Configured: "Configured",
+
+  @doc("A profile set for this tenant.")
+  Custom: "Custom",
+}
+
+@doc("The limits profile a tenant runs under and where it comes from.")
+model TenantLimits {
+  source: TenantLimitsSource;
+  profile: TenantLimitsProfile;
+}
+
+@doc("Drops the profile set for the tenant, so it runs under the preset of the tier it has. It never changes the tier.")
+model TenantLimitsReset {
+  reset: true;
+}
+
+@doc("What a limits change sets: a reset to the preset of the tenant's tier, or a profile of the tenant's own.")
+union TenantLimitsSet {
+  TenantLimitsReset,
+  TenantLimitsProfile,
+}
+
+@doc("""
+  The per-tenant limits of a deployment: the TUMPEL_LIMITS variable of the Worker, one JSON
+  object. The free tier derives its limits from the Cloudflare free plan in the control plane's
+  limits module; a configured tenant gets `configured`. The per-minute request rates are the
+  limits of the Workers Rate Limiting bindings named beside them and must match them. A tenant
+  with a profile of its own runs under it instead; `ceiling` bounds what a profile holds.
+  """)
+model ControlPlaneLimits {
+  @doc("The tier a new tenant gets; an existing tenant keeps the tier it has.")
+  defaultTier: TenantTier;
+
+  @doc("How many free tenants share one Cloudflare free plan; each gets this share of every daily allowance.")
+  @minValue(1)
+  freeTenantsPerAccount: int32;
+
+  @doc("The limits of a configured tenant, checked inside its Durable Object.")
+  @maxItems(32)
+  configured: TenantLimit[];
+
+  @doc("Requests a minute one tenant may send that only read: binding TENANT_READ_RATE.")
+  @minValue(1)
+  readsPerMinute: int32;
+
+  @doc("Requests a minute one tenant may send that write: binding TENANT_WRITE_RATE.")
+  @minValue(1)
+  writesPerMinute: int32;
+
+  @doc("Numbered channel frames a minute one host may send, counted in memory by its host channel, for every tier. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.")
+  @minValue(1)
+  hostFramesPerMinute: int32;
+
+  @doc("""
+    The most a profile set through the API may hold: each rate at most the ceiling's, and each usage
+    budget at most the ceiling's budget of the same measure and window. Its `writesPerMinute` and
+    any Requests per Minute budget must not pass `writesPerMinute` and `readsPerMinute`, the limits
+    of the Workers Rate Limiting bindings the Worker checks before it knows the tenant.
+    """)
+  ceiling: TenantLimitsProfile;
+}
+
 @doc("An account that owns principals, hosts and sessions.")
 model Tenant {
   @key @visibility(Lifecycle.Read) tenantId: EntityId;
   name: DisplayName;
+
+  @doc("The limits the tenant runs under; a new tenant gets its deployment's default tier.")
+  @visibility(Lifecycle.Read) tier: TenantTier;
+
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
@@ -565,13 +753,13 @@ model OAuthGrant {
   grantId: EntityId;
 
   @doc("The client_id the client registered with, or tumpel-dashboard for the dashboard.")
-  clientId: string;
+  clientId: ShortText;
 
   @doc("The name the client registered with, such as Claude.")
-  clientName: string;
+  clientName: Summary;
 
   @doc("The origin of the client's registered callback, such as https://claude.ai.")
-  redirectOrigin: url;
+  redirectOrigin: HttpUrl;
 
   @doc("When the client was last issued a token for the caller.")
   lastIssuedAt: int64;
@@ -583,16 +771,25 @@ model Host {
   @visibility(Lifecycle.Read) tenantId: EntityId;
   name: DisplayName;
   @visibility(Lifecycle.Read) state: HostState;
+
+  @doc("The control plane's judgement of the host; it offers work to a Healthy host only.")
+  @visibility(Lifecycle.Read)
+  health: HostHealth;
+
+  @doc("The health the host reported in its latest Heartbeat, Healthy for a host that reports none.")
+  @visibility(Lifecycle.Read)
+  reportedHealth: HostReportedHealth;
+
   architecture: HostArchitecture;
   @minValue(1) cpuCount: int32;
   @minValue(1) memoryBytes: int64;
 
   @doc("The host's Ed25519 public key, base64. The private key never leaves the host.")
   @minLength(1)
-  publicKey: string;
+  publicKey: Token;
 
-  @minLength(1) supervisorVersion: string;
-  @visibility(Lifecycle.Read) labels: HostLabel[];
+  @minLength(1) supervisorVersion: ShortText;
+  @visibility(Lifecycle.Read) @maxItems(64) labels: HostLabel[];
 
   @doc("The latest supervisor update phase the host reported, kept by its tenant.")
   @visibility(Lifecycle.Read)
@@ -651,7 +848,7 @@ model Session {
   tags: SessionTag[];
 
   @visibility(Lifecycle.Read) harness: Harness;
-  @visibility(Lifecycle.Read) harnessVersion: string;
+  @visibility(Lifecycle.Read) harnessVersion: ShortText;
   `model`: ModelName;
   @visibility(Lifecycle.Read) state: SessionState;
 
@@ -694,9 +891,9 @@ model Session {
 model SessionIssue {
   @key sessionId: EntityId;
   issueNumber: GitHubIssueNumber;
-  title: string;
-  htmlUrl: url;
-  branch: string;
+  title: Summary;
+  htmlUrl: HttpUrl;
+  branch: ShortText;
 }
 
 @doc("The session started with a prompt sent with Sessions_start.")
@@ -761,7 +958,7 @@ model StopFailure {
   reason: StopFailureReason;
 
   @doc("What failed and what fixes it.")
-  detail: string;
+  detail: Detail;
 
   failedAt: offsetDateTime;
   createdAt: int64;
@@ -810,7 +1007,7 @@ model CompletedTurn {
 
   @doc("A condition the turn completed under that the persona should act on, such as a box disk with less than a hundredth of it free, with its size and the boxDiskMib that raises it. Absent when there was none.")
   @minLength(1)
-  warning?: string;
+  warning?: Detail;
 }
 
 @doc("A turn that ended Failed, with why.")
@@ -820,7 +1017,7 @@ model FailedTurn {
   reason: TurnFailureReason;
 
   @doc("What failed and what fixes it, with the tail of the harness's standard error when there is one.")
-  detail: string;
+  detail: Detail;
 
   failedAt: offsetDateTime;
 }
@@ -864,7 +1061,7 @@ model TurnFailure {
   reason: TurnFailureReason;
 
   @doc("What failed and what fixes it, with the tail of the harness's standard error when there is one.")
-  detail: string;
+  detail: Detail;
 
   failedAt: offsetDateTime;
   createdAt: int64;
@@ -904,7 +1101,7 @@ model SessionPrebuildLayerStored {
 model SessionPrebuildLayerAbsent {
   layer: "None";
   reason: PrebuildLayerAbsence;
-  detail: string;
+  detail: Detail;
 }
 
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "layer" })
@@ -942,7 +1139,7 @@ model TranscriptLine {
   @key lineSeq: Sequence;
   tenantId: EntityId;
   turnId: EntityId;
-  text: string;
+  text: LongText;
   createdAt: int64;
 }
 
@@ -956,7 +1153,7 @@ model SnapshotStored {
 model SnapshotFailure {
   state: "Failed";
   reason: Channel.SnapshotFailureReason;
-  detail: string;
+  detail: Detail;
   failedAt: offsetDateTime;
 }
 
@@ -1000,7 +1197,7 @@ model CredentialHandover {
   turnId: EntityId;
   hostId: EntityId;
   boxId: EntityId;
-  variableNames: string[];
+  @maxItems(1000) variableNames: ShortText[];
 
   @doc("Where the GITHUB_TOKEN this offer carried came from.")
   repositoryCredentialSource: RepositoryCredentialSource;
@@ -1018,12 +1215,12 @@ model HarnessCatalogEntry {
     holds under `variable`, beside its `fixed` variables; the session's model passes through.
     """)
   @minItems(1)
-  credentials: HarnessCredential[];
+  @maxItems(1000) credentials: HarnessCredential[];
 
   credentialChoice: CredentialChoice;
 
   @doc("The paths, relative to the harness home in the box, this harness reads persona files from. A persona file at any other path is refused.")
-  personaFilePaths: PersonaFilePath[];
+  @maxItems(1000) personaFilePaths: PersonaFilePath[];
 
   @doc("How the guest image installs this version.")
   installRecipe: InstallRecipe;
@@ -1045,14 +1242,14 @@ union InstallRecipe {
 @doc("The single native npm package the harness ships as; the build installs `<package>-linux-<arch>` at `packageVersion`.")
 model NpmInstallRecipe {
   kind: "Npm";
-  @minLength(1) package: string;
-  @minLength(1) packageVersion: string;
+  @minLength(1) package: ShortText;
+  @minLength(1) packageVersion: ShortText;
 }
 
 @doc("The pinned release tarball the harness ships as, one per architecture; the build refuses an archive whose sha256 differs.")
 model ArchiveInstallRecipe {
   kind: "Archive";
-  @minItems(1) archives: InstallArchive[];
+  @minItems(1) @maxItems(100) archives: InstallArchive[];
 
   @doc("How many leading path components tar strips when it unpacks an archive.")
   @minValue(0)
@@ -1062,7 +1259,7 @@ model ArchiveInstallRecipe {
 @doc("The release tarball of a harness version for one architecture.")
 model InstallArchive {
   architecture: HostArchitecture;
-  @minLength(1) url: string;
+  @minLength(1) url: UrlText;
   sha256: Sha256Digest;
 
   @doc("""
@@ -1070,13 +1267,13 @@ model InstallArchive {
     codex-x86_64-unknown-linux-musl; the build moves it to the binary name the guest runs.
     """)
   @minLength(1)
-  binaryPath: string;
+  binaryPath: PathText;
 
   @doc("""
     The paths of the other executables in the unpacked archive that the harness spawns from beside
     its binary, such as codex-code-mode-host; the build moves each next to the binary under its file name.
     """)
-  siblingBinaryPaths: string[];
+  @maxItems(100) siblingBinaryPaths: ShortText[];
 }
 
 @doc("How a turn picks one of the credentials a harness accepts.")
@@ -1130,8 +1327,8 @@ model HarnessCredential {
   provider: ModelProvider;
   kind: CredentialKind;
   variable: SecretName;
-  fixed: FixedVariable[];
-  arguments: string[];
+  @maxItems(100) fixed: FixedVariable[];
+  @maxItems(64) arguments: Summary[];
   costBasis: CostBasis;
 
   @doc("For a CredentialFile, the file under the harness home the guest writes it to, mode 0600, in place of the variable; the harness may rewrite it, and a changed file is stored back in the secret set at the end of the turn.")
@@ -1144,7 +1341,7 @@ model HarnessCredential {
 @doc("The harness runs only the listed models with the credential. A session start or turn send naming another model is refused before a box boots.")
 model ModelSupportListed {
   kind: "Listed";
-  @minItems(1) models: ModelName[];
+  @minItems(1) @maxItems(1000) models: ModelName[];
 }
 
 @doc("The provider serves more models than the catalog lists, so any model passes to the provider and the provider checks it.")
@@ -1162,7 +1359,7 @@ union ModelSupport {
 @doc("A variable a turn gets with a fixed value beside a credential, such as the base URL of the provider serving the harness's model API.")
 model FixedVariable {
   name: SecretName;
-  @minLength(1) value: string;
+  @minLength(1) value: CredentialText;
 }
 
 @doc("The harness version a tenant runs for one harness. It names an entry of the harness catalog.")
@@ -1193,7 +1390,7 @@ model Persona {
   secretSetId: EntityId;
 
   @doc("The connectors every session of the persona reaches, each once; a repeated id is refused InvalidRequest and another tenant's NotFound. A session copies the list when it starts; a later edit changes later sessions only.")
-  connectorIds: EntityId[];
+  @maxItems(100) connectorIds: EntityId[];
 
   @doc("""
     The memory in MiB of each box the persona's sessions boot, from BoxMemoryLimit.MinMib up to
@@ -1223,7 +1420,7 @@ model Persona {
 
   @doc("The harness's own config files, written under the harness home in the box before the harness starts.")
   @visibility(Lifecycle.Read)
-  files: PersonaFile[];
+  @maxItems(100) files: PersonaFile[];
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
@@ -1269,7 +1466,7 @@ model InlinePersonaFileRead {
 @doc("A persona file larger than PersonaFileLimit.InlineFileBytes as a read returns it: the Stored write with a presigned GET of its bytes, valid until `downloadExpiresAt`.")
 model StoredPersonaFileRead {
   ...StoredPersonaFile;
-  downloadUrl: url;
+  downloadUrl: HttpUrl;
   downloadExpiresAt: offsetDateTime;
   createdAt: int64;
   updatedAt: int64;
@@ -1433,7 +1630,7 @@ model SecretSet {
   @key @visibility(Lifecycle.Read) secretSetId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
   name: DisplayName;
-  @visibility(Lifecycle.Read) keys: SecretKey[];
+  @visibility(Lifecycle.Read) @maxItems(200) keys: SecretKey[];
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
@@ -1448,10 +1645,6 @@ model ControlPlaneSettings {
   @minValue(1)
   dispatchGrantTtlSeconds: int32;
 
-  @doc("How long a session stays idle after a completed turn before the control plane asks for a snapshot. A turn sent sooner resets the wait.")
-  @minValue(0)
-  snapshotDelaySeconds: int32;
-
   @doc("How long the host may take to answer a SnapshotRequest before the snapshot fails NotAnswered; its presigned upload expires then too.")
   @minValue(1)
   snapshotDeadlineSeconds: int32;
@@ -1464,10 +1657,6 @@ model ControlPlaneSettings {
   @minValue(1)
   turnImageFetchBudgetSeconds: int32;
 
-  @doc("How long a turn may take from TurnRepositoryReady to its first line before it fails NoFirstOutput; it stays at or above firstLineSeconds of the host.")
-  @minValue(1)
-  turnFirstLineBudgetSeconds: int32;
-
   @doc("How long a claimed turn may run before it fails TurnTimedOut, and how long an unclaimed turn stays Offered before it fails Undelivered.")
   @minValue(1)
   turnTotalBudgetSeconds: int32;
@@ -1476,21 +1665,6 @@ model ControlPlaneSettings {
   @minValue(1)
   @maxValue(1000)
   transcriptChunkLines: int32;
-
-  @doc("How long the presigned PUTs a build job gets for its layer stay valid.")
-  @minValue(1)
-  @maxValue(604800)
-  prebuildUploadBudgetSeconds: int32;
-
-  @doc("How long a dispatched prebuild may wait for its run to start before it fails in phase Dispatch; the rootfs URL its dispatch hands the run stays valid for this plus prebuildBuildBudgetSeconds.")
-  @minValue(1)
-  @maxValue(86400)
-  prebuildDispatchBudgetSeconds: int32;
-
-  @doc("How long a prebuild may run from the start of its run to the completion of its layer upload before it fails in phase Build, or in phase Upload once its upload started.")
-  @minValue(1)
-  @maxValue(86400)
-  prebuildBuildBudgetSeconds: int32;
 
   @doc("How long a Claude setup box may take from its offer to printing the sign-in URL before the setup fails SetupUrlMissing; it covers the guest image fetch, the boot and claude setup-token starting.")
   @minValue(1)
@@ -1531,9 +1705,6 @@ model ControlPlaneSettings {
   @minValue(1)
   @maxValue(60)
   deviceSlowDownStepSeconds: int32;
-
-  @doc("The OIDC issuer of GitHub Actions job tokens, https://token.actions.githubusercontent.com on github.com; its keys are at <issuer>/.well-known/jwks.")
-  gitHubActionsIssuer: url;
 }
 
 model Health {
@@ -1556,9 +1727,9 @@ enum MetricKind {
 @doc("A metric's declaration: its unit as OpenTelemetry writes it (s, MiB, {token}), its kind and what it measures.")
 model MetricInstrument {
   metric: MetricName;
-  @minLength(1) unit: string;
+  @minLength(1) unit: ShortText;
   kind: MetricKind;
-  @minLength(1) description: string;
+  @minLength(1) description: Detail;
 }
 
 @doc("One value of a Sample metric at a moment, with its dimensions.")
@@ -1566,7 +1737,7 @@ model SamplePoint {
   metric: MetricName;
   at: offsetDateTime;
   value: float64;
-  dimensions: Record<string>;
+  @TypeSpec.JsonSchema.maxProperties(32) dimensions: Record<ShortText>;
 }
 
 @doc("One value of a Turn metric, with the turn and session it belongs to.")
@@ -1581,7 +1752,7 @@ model TurnPoint {
   metrics. A point whose metric the batch and the store both lack is refused.
   """)
 model MetricBatch {
-  instruments: MetricInstrument[];
+  @maxItems(1000) instruments: MetricInstrument[];
   @maxItems(500) samples: SamplePoint[];
   @maxItems(500) turns: TurnPoint[];
 }
@@ -1599,22 +1770,28 @@ enum MetricBucket {
 
 @doc("Every metric with series seen in the window, each with its dimensions and their values.")
 model MetricCatalog {
-  metrics: MetricEntry[];
+  @maxItems(10000) metrics: MetricEntry[];
+}
+
+@doc("The metric catalog of a window, with the tenant's usage against its limits in the current windows.")
+model TenantMetricCatalog {
+  ...MetricCatalog;
+  usage: TenantUsage;
 }
 
 model MetricEntry {
   ...MetricInstrument;
-  facets: MetricFacet[];
+  @maxItems(100) facets: MetricFacet[];
 }
 
 @doc("One dimension of a metric's series in the window and the values it takes.")
 model MetricFacet {
-  dimension: string;
-  values: MetricFacetValue[];
+  dimension: ShortText;
+  @maxItems(10000) values: MetricFacetValue[];
 }
 
 model MetricFacetValue {
-  value: string;
+  value: ShortText;
   seriesCount: int32;
 }
 
@@ -1624,15 +1801,15 @@ model MetricFacetValue {
   """)
 model MetricSeriesSet {
   metric: MetricName;
-  unit: string;
+  unit: ShortText;
   bucket: MetricBucket;
-  series: MetricSeries[];
+  @maxItems(10000) series: MetricSeries[];
 }
 
 @doc("The buckets of one group, keyed by the values of its groupBy dimensions; a bucket with no points is left out.")
 model MetricSeries {
-  group: Record<string>;
-  points: MetricPoint[];
+  @TypeSpec.JsonSchema.maxProperties(32) group: Record<ShortText>;
+  @maxItems(10000) points: MetricPoint[];
 }
 
 @doc("One bucket of a series, in the offset of `from`; percentiles come from merged rollup histograms.")
@@ -1652,8 +1829,8 @@ model MetricPoint {
   is true when no point in the window follows it.
   """)
 model MetricTurnPage {
-  points: MetricTurnPoint[];
-  cursor: string;
+  @maxItems(10000) points: MetricTurnPoint[];
+  cursor: Summary;
   finished: boolean;
 }
 
@@ -1662,5 +1839,5 @@ model MetricTurnPoint {
   sessionId: EntityId;
   at: offsetDateTime;
   value: float64;
-  dimensions: Record<string>;
+  @TypeSpec.JsonSchema.maxProperties(32) dimensions: Record<ShortText>;
 }

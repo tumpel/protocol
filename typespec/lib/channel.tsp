@@ -28,7 +28,7 @@ enum CloseCode {
   counters and unacked frames to disk before it sends a frame; when it starts without that state
   it does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.
   Challenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,
-  with no `seq` or `ack`. Each side ignores fields it does not know.
+  with no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know.
   """)
 model Sequenced {
   seq: Sequence;
@@ -42,7 +42,7 @@ model Sequenced {
   """)
 model Challenge {
   type: "Challenge";
-  @minLength(43) nonce: string;
+  @minLength(43) nonce: Token;
 }
 
 @doc("""
@@ -64,18 +64,25 @@ model Hello {
   hostId: EntityId;
   @minValue(1) protocolVersion: int32;
   @minValue(1) channelProtocolOldest?: int32;
-  @minLength(1) supervisorVersion: string;
-  @minLength(1) signature: string;
+  @minLength(1) supervisorVersion: ShortText;
+  @minLength(1) signature: Token;
   @minValue(1) @maxValue(256) boxCapacity: int32;
   usage: HostUsage;
   guestProtocol?: GuestProtocolRange;
 }
 
-@doc("The control plane accepts the host. Both sides then resend their unacked frames.")
+@doc("""
+  The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the
+  highest host `seq` the control plane has received with no gap before it. The host drops its
+  unacked frames at or below it before it resends, so a frame the control plane took on an earlier
+  connection is never counted as undelivered. A control plane that leaves it out acks only with its
+  next frame.
+  """)
 model Welcome {
   type: "Welcome";
   hostId: EntityId;
   @minValue(1) protocolVersion: int32;
+  ack?: Sequence;
 }
 
 @doc("""
@@ -98,7 +105,7 @@ model Heartbeat {
   """)
 model ReleasePublished {
   type: "ReleasePublished";
-  @minLength(1) releaseVersion: string;
+  @minLength(1) releaseVersion: ShortText;
 }
 
 @doc("""
@@ -113,7 +120,23 @@ model ReleasePublished {
 model FrameRefused {
   type: "FrameRefused";
   seq: Sequence;
-  @minLength(1) reason: string;
+  @minLength(1) reason: Detail;
+}
+
+@doc("""
+  The control plane's answer to a host frame past the tenant's per-host frame limit. It travels
+  outside frames, as Heartbeat does. The control plane counts that `seq` as received and records
+  nothing for it, so the host drops the frame from its unacked frames and never resends it.
+  `framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs
+  off its sends until then and reports RateLimited in its Heartbeat. The control plane sends it
+  only on a connection that speaks a protocol version of 32 or above, and FrameRefused below that.
+  """)
+model FrameRateLimited {
+  type: "FrameRateLimited";
+  seq: Sequence;
+  @minLength(1) reason: Detail;
+  @minValue(1) framesPerMinute: int32;
+  retryAfter: offsetDateTime;
 }
 
 @doc("""
@@ -141,13 +164,20 @@ model HostHeartbeat {
   type: "Heartbeat";
   sentAt: offsetDateTime;
   usage: HostUsage;
-  heldSessionIds: EntityId[];
+  @maxItems(1000) heldSessionIds: EntityId[];
+
+  @doc("The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name.")
+  @maxItems(1000)
+  heldClaudeSetupIds: EntityId[];
+
+  @doc("The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.")
+  health?: HostReportedHealth;
 }
 
 @doc("One environment variable for one turn: a secret set member's value. It lives in box memory only and is never written to the host's disk.")
 model DispatchVariable {
-  @minLength(1) name: string;
-  @minLength(1) value: string;
+  @minLength(1) name: ShortText;
+  @minLength(1) value: CredentialText;
 }
 
 @doc("""
@@ -163,19 +193,19 @@ model DispatchVariable {
 model DispatchGrant {
   credentialHandoverId: EntityId;
   expiresAt: offsetDateTime;
-  variables: DispatchVariable[];
+  @maxItems(1000) variables: DispatchVariable[];
 
   @doc("The harness arguments the catalog maps the credential to; they hold no secret. A grant without them gives the guest none.")
-  arguments?: string[];
+  @maxItems(64) arguments?: Summary[];
 
   @doc("A CredentialFile credential: the guest writes `value` to `path` under the harness home, mode 0600, before the harness starts, and deletes it at the end of the turn.")
   credentialFile?: {
-    @minLength(1) path: string;
-    @minLength(1) value: string;
+    @minLength(1) path: PathText;
+    @minLength(1) value: CredentialText;
   };
 
   @doc("The session's connectors, none when its persona lists none. The guest forwarder serves each at its loopback route and fetches its access token from tokenUrl with tokenCredential. Neither reaches the harness.")
-  connectors: DispatchConnector[];
+  @maxItems(1000) connectors: DispatchConnector[];
 }
 
 @doc("""
@@ -189,9 +219,9 @@ model DispatchGrant {
 model DispatchConnector {
   connectorId: EntityId;
   name?: DisplayName;
-  url: url;
-  tokenUrl: url;
-  @minLength(43) tokenCredential: string;
+  url: HttpUrl;
+  tokenUrl: HttpUrl;
+  @minLength(43) tokenCredential: Token;
 }
 
 @doc("""
@@ -203,7 +233,7 @@ model SnapshotDownload {
   snapshotId: EntityId;
   snapshotSeq: Sequence;
   storageKey: StorageKey;
-  downloadUrl: url;
+  downloadUrl: HttpUrl;
   downloadExpiresAt: offsetDateTime;
 }
 
@@ -217,7 +247,7 @@ model PersonaFileDownload {
   path: PersonaFilePath;
   digest: Sha256Digest;
   sizeBytes: PersonaFileSize;
-  downloadUrl: url;
+  downloadUrl: HttpUrl;
   downloadExpiresAt: offsetDateTime;
 }
 
@@ -240,9 +270,9 @@ model GuestImageDownload {
   imageDigest: Sha256Digest;
   kernelDigest: Sha256Digest;
   manifestDigest: Sha256Digest;
-  imageUrl: url;
-  kernelUrl: url;
-  manifestUrl: url;
+  imageUrl: HttpUrl;
+  kernelUrl: HttpUrl;
+  manifestUrl: HttpUrl;
   downloadExpiresAt: offsetDateTime;
   @minValue(1) fetchSeconds: int32;
 }
@@ -257,9 +287,9 @@ model BaseImageDownload {
   imageDigest: Sha256Digest;
   kernelDigest: Sha256Digest;
   manifestDigest: Sha256Digest;
-  imageUrl: url;
-  kernelUrl: url;
-  manifestUrl: url;
+  imageUrl: HttpUrl;
+  kernelUrl: HttpUrl;
+  manifestUrl: HttpUrl;
 }
 
 @doc("""
@@ -270,8 +300,8 @@ model BaseImageDownload {
   """)
 model HarnessLayerDownload {
   layer: ReleaseHarnessLayer;
-  layerUrl: url;
-  manifestUrl: url;
+  layerUrl: HttpUrl;
+  manifestUrl: HttpUrl;
 }
 
 @doc("""
@@ -318,16 +348,27 @@ model TurnOffer {
   boxId: EntityId;
   repository: RepositoryUrl;
   harness: Harness;
-  @minLength(1) harnessVersion: string;
+  @minLength(1) harnessVersion: ShortText;
   `model`: ModelName;
   prompt: Prompt;
   credential: DispatchGrant;
   lastLineSeq: Sequence;
   @maxItems(1) snapshots: SnapshotDownload[];
-  personaFiles: PersonaFileDownload[];
+  @maxItems(100) personaFiles: PersonaFileDownload[];
   image: BootImage;
   gitAuthorName: DisplayName;
   gitAuthorEmail: EmailAddress;
+
+  @doc("What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays.")
+  boxRetention: BoxRetention;
+
+  @doc("How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.")
+  @minValue(1)
+  turnSeconds: int32;
+
+  @doc("The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy.")
+  @minValue(1)
+  idleSeconds: int32;
 
   @doc("""
     The memory in MiB the box boots with: the persona's boxMemoryMib, or BoxMemoryLimit.DefaultMib. A box
@@ -356,7 +397,7 @@ model TurnOffer {
     prebuild's layer.
     """)
   @pattern("^[0-9a-f]{40}$")
-  prebuildCommitSha?: string;
+  prebuildCommitSha?: ShortText;
 }
 
 @doc("""
@@ -414,7 +455,7 @@ model TurnLine {
   type: "TurnLine";
   turnId: EntityId;
   lineSeq: Sequence;
-  text: string;
+  text: LongText;
 }
 
 @doc("The harness finished the turn. `lastLineSeq` is the turn's final line; the control plane holds every line up to it and stores the snapshot after it before the turn reads Completed, and fails the turn SnapshotNotStored when that snapshot is not stored.")
@@ -426,11 +467,11 @@ model TurnComplete {
 
   @doc("The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member.")
   @minLength(1)
-  credentialFile?: string;
+  credentialFile?: CredentialText;
 
   @doc("The guest's warning for a turn the harness completed, such as a box disk with less than a hundredth of it free; the control plane shows it on the turn read.")
   @minLength(1)
-  warning?: string;
+  warning?: Detail;
 }
 
 @doc("The box could not clone the session's repository; the turn fails RepositoryCloneFailed. `detail` carries what git reported.")
@@ -438,7 +479,7 @@ model TurnRepositoryCloneFailed {
   type: "TurnRepositoryCloneFailed";
   turnId: EntityId;
   cause: RepositoryCloneFailureCause;
-  detail: string;
+  detail: Detail;
   failedAt: offsetDateTime;
 }
 
@@ -446,12 +487,12 @@ model TurnFailed {
   type: "TurnFailed";
   turnId: EntityId;
   reason: TurnFailureReason;
-  detail: string;
+  detail: Detail;
   failedAt: offsetDateTime;
 
   @doc("The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member.")
   @minLength(1)
-  credentialFile?: string;
+  credentialFile?: CredentialText;
 }
 
 @doc("""
@@ -483,7 +524,7 @@ model SnapshotRequest {
   turnId: EntityId;
   snapshotSeq: Sequence;
   storageKey: StorageKey;
-  uploadUrl: url;
+  uploadUrl: HttpUrl;
   uploadExpiresAt: offsetDateTime;
 }
 
@@ -513,7 +554,7 @@ model Pack {
 model PackUrl {
   packDigest: Sha256Digest;
   @minValue(1) sizeBytes: int64;
-  url: url;
+  url: HttpUrl;
 }
 
 @doc("""
@@ -615,6 +656,9 @@ enum SnapshotFailureReason {
 
   @doc("The control plane's own: the host did not answer within snapshotDeadlineSeconds of the request.")
   NotAnswered: "NotAnswered",
+
+  @doc("The control plane's own: the host sent more channel frames in a minute than the tenant's limits allow; the detail names the limit.")
+  RateLimited: "RateLimited",
 }
 
 @doc("The host could not store the snapshot. `detail` states what failed and what fixes it.")
@@ -622,14 +666,15 @@ model SnapshotFailed {
   type: "SnapshotFailed";
   snapshotId: EntityId;
   reason: SnapshotFailureReason;
-  detail: string;
+  detail: Detail;
   failedAt: offsetDateTime;
 }
 
 @doc("""
   Asks the host to tear down the box of a session once a snapshot holds its last completed turn:
   when a person stops or archives the session, after each turn of an Off session, and when placement
-  evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it. The host
+  evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it, except that it
+  tears down an Auto box idle for the offer's idleSeconds itself and reports it with an unsolicited BoxGone. The host
   answers BoxGone, also when it runs no box of the session with that boxId, or BoxTeardownFailed.
   """)
 model BoxTeardown {
@@ -648,7 +693,7 @@ model BoxDiscard {
   boxId: EntityId;
 }
 
-@doc("The host runs no box of the session any more and returned its TAP device to the pool.")
+@doc("The host runs no box of the session any more and returned its TAP device to the pool. It answers BoxTeardown or BoxDiscard, or comes unsolicited after the host tore down an Auto box idle for the offer's idleSeconds.")
 model BoxGone {
   type: "BoxGone";
   sessionId: EntityId;
@@ -667,7 +712,7 @@ model BoxTeardownFailed {
   sessionId: EntityId;
   boxId: EntityId;
   reason: BoxTeardownFailureReason;
-  detail: string;
+  detail: Detail;
   failedAt: offsetDateTime;
 }
 
@@ -690,9 +735,19 @@ model ClaudeSetupBoxOffer {
   harness?: ClaudeSetupHarness;
   harnessVersion: HarnessVersion;
   image: BootImage;
-  tokenUrl: url;
-  @minLength(43) tokenCredential: string;
+  tokenUrl: HttpUrl;
+  @minLength(43) tokenCredential: Token;
   expiresAt: offsetDateTime;
+
+  @doc("How long the box may take from this offer to printing the sign-in URL before the host fails the setup SetupUrlMissing.")
+  @minValue(1)
+  @maxValue(3600)
+  urlSeconds: int32;
+
+  @doc("How long the person may take from the sign-in URL to submitting the code before the host fails the setup SetupTimedOut.")
+  @minValue(1)
+  @maxValue(3600)
+  codeSeconds: int32;
 }
 
 @doc("""
@@ -725,7 +780,7 @@ model ClaudeSetupBoxDiscard {
 model ClaudeSetupBoxUrl {
   type: "ClaudeSetupBoxUrl";
   claudeSetupId: EntityId;
-  signInUrl: url;
+  signInUrl: HttpUrl;
   @minLength(1) @maxLength(64) userCode?: string;
 }
 
@@ -737,7 +792,7 @@ model ClaudeSetupBoxFailed {
   type: "ClaudeSetupBoxFailed";
   claudeSetupId: EntityId;
   reason: ClaudeSetupFailureReason;
-  detail: string;
+  detail: Detail;
   failedAt: offsetDateTime;
 }
 
@@ -841,7 +896,7 @@ union HostEnvelope {
   Frame: HostFrame,
 }
 
-@doc("Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, or a sequenced frame.")
+@doc("Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, or a sequenced frame.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "type" })
 union ControlEnvelope {
   Challenge: Challenge,
@@ -849,5 +904,6 @@ union ControlEnvelope {
   Heartbeat: Heartbeat,
   ReleasePublished: ReleasePublished,
   FrameRefused: FrameRefused,
+  FrameRateLimited: FrameRateLimited,
   Frame: ControlFrame,
 }

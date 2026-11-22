@@ -34,7 +34,7 @@ model WebhookFailing {
   delivery: WebhookDelivery.Failing;
 
   @doc("How the last request failed: the status the endpoint answered, or that it did not answer within 10 seconds.")
-  detail: string;
+  detail: Detail;
 
   failingSince: offsetDateTime;
 }
@@ -60,7 +60,7 @@ model WebhookEndpoint {
 
   @minItems(1)
   @visibility(Lifecycle.Read, Lifecycle.Create)
-  events: TenantEventType[];
+  @maxItems(100) events: TenantEventType[];
 
   @visibility(Lifecycle.Read) status: WebhookDeliveryStatus;
   @visibility(Lifecycle.Read) createdAt: int64;
@@ -77,7 +77,7 @@ model WebhookSigningKey {
   algorithm: "Ed25519";
 
   @pattern("^[A-Za-z0-9_-]{43}$")
-  publicKey: string;
+  publicKey: Token;
 }
 
 @doc("The HTTPS push service address a browser's push subscription names.")
@@ -89,11 +89,11 @@ scalar PushEndpointUrl extends url;
 model PushSubscriptionKeys {
   @doc("The browser's P-256 public key, uncompressed.")
   @pattern("^[A-Za-z0-9_-]{87}$")
-  p256dh: string;
+  p256dh: Token;
 
   @doc("The 16-byte authentication secret.")
   @pattern("^[A-Za-z0-9_-]{22}$")
-  auth: string;
+  auth: Token;
 }
 
 @doc("""
@@ -109,7 +109,7 @@ model PushSubscription {
 
   @minItems(1)
   @visibility(Lifecycle.Read, Lifecycle.Create)
-  events: TenantEventType[];
+  @maxItems(100) events: TenantEventType[];
 
   @visibility(Lifecycle.Read) createdAt: int64;
 }
@@ -126,18 +126,18 @@ model PushSubscriptionPath {
 
 @doc("The notification payload a service worker shows for a pushed tenant event.")
 model PushNotification {
-  title: string;
-  body: string;
+  title: Summary;
+  body: Detail;
 
   @doc("The dashboard path a notification tap opens.")
   @pattern("^/")
-  path: string;
+  path: PathText;
 }
 
 @doc("The control plane's VAPID public key, an uncompressed P-256 point in base64url, which a browser passes as applicationServerKey.")
 model PushKey {
   @pattern("^[A-Za-z0-9_-]{87}$")
-  applicationServerKey: string;
+  applicationServerKey: Token;
 }
 
 namespace V1 {

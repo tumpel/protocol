@@ -289,19 +289,19 @@ pub mod types {
     ///RFC 8414 metadata for the control plane's OAuth authorization server.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct AuthorizationServerMetadata {
-        pub authorization_endpoint: ::std::string::String,
+        pub authorization_endpoint: HttpUrl,
         pub authorization_response_iss_parameter_supported: bool,
-        pub code_challenge_methods_supported: ::std::vec::Vec<::std::string::String>,
-        pub grant_types_supported: ::std::vec::Vec<::std::string::String>,
-        pub issuer: ::std::string::String,
-        pub registration_endpoint: ::std::string::String,
+        pub code_challenge_methods_supported: ::std::vec::Vec<ShortText>,
+        pub grant_types_supported: ::std::vec::Vec<ShortText>,
+        pub issuer: HttpUrl,
+        pub registration_endpoint: HttpUrl,
         pub resource_indicators_supported: bool,
-        pub response_modes_supported: ::std::vec::Vec<::std::string::String>,
-        pub response_types_supported: ::std::vec::Vec<::std::string::String>,
-        pub revocation_endpoint: ::std::string::String,
-        pub scopes_supported: ::std::vec::Vec<::std::string::String>,
-        pub token_endpoint: ::std::string::String,
-        pub token_endpoint_auth_methods_supported: ::std::vec::Vec<::std::string::String>,
+        pub response_modes_supported: ::std::vec::Vec<ShortText>,
+        pub response_types_supported: ::std::vec::Vec<ShortText>,
+        pub revocation_endpoint: HttpUrl,
+        pub scopes_supported: ::std::vec::Vec<ShortText>,
+        pub token_endpoint: HttpUrl,
+        pub token_endpoint_auth_methods_supported: ::std::vec::Vec<ShortText>,
     }
     ///What `npm run guest:image -- base` built, <imageDigest>.json in the base directory of the image
     ///output next to <imageDigest>.ext4. `baseLayoutVersion` is the BaseLayout.Version the image
@@ -313,14 +313,14 @@ pub mod types {
         #[serde(rename = "baseRootfsDigest")]
         pub base_rootfs_digest: Sha256Digest,
         #[serde(rename = "baseRootfsUrl")]
-        pub base_rootfs_url: ::std::string::String,
+        pub base_rootfs_url: HttpUrl,
         pub components: ::std::vec::Vec<GuestImageComponent>,
         #[serde(rename = "imageDigest")]
         pub image_digest: Sha256Digest,
         #[serde(rename = "kernelDigest")]
         pub kernel_digest: Sha256Digest,
         #[serde(rename = "kernelUrl")]
-        pub kernel_url: ::std::string::String,
+        pub kernel_url: HttpUrl,
     }
     ///The contract between the base image's stub init and the guest drive's init: the base writes it to
     #[doc = "/etc/tumpel/base-layout and the guest drive holds it as base-layout. The guest drive's init fails"]
@@ -372,9 +372,6 @@ pub mod types {
         ///Reading the paused box's drive until its files are cut into chunks in the chunk cache; SnapshotTimedOut. The chunk exchanges, the packing and the uploads run until the request's uploadExpiresAt; UploadExpired.
         #[serde(rename = "snapshotSeconds")]
         pub snapshot_seconds: ::std::num::NonZeroU32,
-        ///TurnStart until TurnEnd; TurnTimedOut.
-        #[serde(rename = "turnSeconds")]
-        pub turn_seconds: ::std::num::NonZeroU32,
     }
     ///The disk of a box in MiB, a sparse drive that costs the host only what the box writes. A persona
     ///that names no boxDiskMib runs its boxes with DefaultMib; one that names it may ask for up to MaxMib.
@@ -485,46 +482,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///A build provider that runs prebuilds on the tenant's own account and bills it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum BuildProvider {
-        GitHubActions,
-        #[serde(rename = "CircleCI")]
-        CircleCi,
-        Namespace,
-    }
-    impl ::std::fmt::Display for BuildProvider {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::GitHubActions => f.write_str("GitHubActions"),
-                Self::CircleCi => f.write_str("CircleCI"),
-                Self::Namespace => f.write_str("Namespace"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for BuildProvider {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "GitHubActions" => Ok(Self::GitHubActions),
-                "CircleCI" => Ok(Self::CircleCi),
-                "Namespace" => Ok(Self::Namespace),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for BuildProvider {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for BuildProvider {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///The base image of a layered boot, the current release's ReleaseBaseImage for the host's
     ///architecture. `imageUrl`, `kernelUrl` and `manifestUrl` are presigned GETs of the ext4 image, the
     ///kernel and the BaseImageManifest document stored under `imageDigest`, `kernelDigest` and
@@ -534,15 +491,15 @@ pub mod types {
         #[serde(rename = "imageDigest")]
         pub image_digest: Sha256Digest,
         #[serde(rename = "imageUrl")]
-        pub image_url: ::std::string::String,
+        pub image_url: HttpUrl,
         #[serde(rename = "kernelDigest")]
         pub kernel_digest: Sha256Digest,
         #[serde(rename = "kernelUrl")]
-        pub kernel_url: ::std::string::String,
+        pub kernel_url: HttpUrl,
         #[serde(rename = "manifestDigest")]
         pub manifest_digest: Sha256Digest,
         #[serde(rename = "manifestUrl")]
-        pub manifest_url: ::std::string::String,
+        pub manifest_url: HttpUrl,
     }
     ///What a box boots from: a full guest image, or a base image with a harness layer.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -605,7 +562,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///The host runs no box of the session any more and returned its TAP device to the pool.
+    ///The host runs no box of the session any more and returned its TAP device to the pool. It answers BoxTeardown or BoxDiscard, or comes unsolicited after the host tore down an Auto box idle for the offer's idleSeconds.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelBoxGone {
         #[serde(rename = "boxId")]
@@ -650,7 +607,8 @@ pub mod types {
     }
     ///Asks the host to tear down the box of a session once a snapshot holds its last completed turn:
     ///when a person stops or archives the session, after each turn of an Off session, and when placement
-    ///evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it. The host
+    ///evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it, except that it
+    ///tears down an Auto box idle for the offer's idleSeconds itself and reports it with an unsolicited BoxGone. The host
     ///answers BoxGone, also when it runs no box of the session with that boxId, or BoxTeardownFailed.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelBoxTeardown {
@@ -666,7 +624,7 @@ pub mod types {
     pub struct ChannelBoxTeardownFailed {
         #[serde(rename = "boxId")]
         pub box_id: EntityId,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ChannelBoxTeardownFailureReason,
@@ -787,6 +745,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelChallengeNonce(::std::string::String);
+    impl ChannelChallengeNonce {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelChallengeNonce {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelChallengeNonce {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelChallengeNonce {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelChallengeNonce {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -801,8 +779,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelChallengeNonce {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("ChannelChallengeNonce: longer than 16384 characters".into());
+            }
             if value.chars().count() < 43usize {
-                return Err("shorter than 43 characters".into());
+                return Err("ChannelChallengeNonce: shorter than 43 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -972,7 +953,7 @@ pub mod types {
     pub struct ChannelClaudeSetupBoxFailed {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ClaudeSetupFailureReason,
@@ -1027,6 +1008,9 @@ pub mod types {
         pub box_id: EntityId,
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
+        ///How long the person may take from the sign-in URL to submitting the code before the host fails the setup SetupTimedOut.
+        #[serde(rename = "codeSeconds")]
+        pub code_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1039,14 +1023,37 @@ pub mod types {
         #[serde(rename = "tokenCredential")]
         pub token_credential: ChannelClaudeSetupBoxOfferTokenCredential,
         #[serde(rename = "tokenUrl")]
-        pub token_url: ::std::string::String,
+        pub token_url: HttpUrl,
         #[serde(rename = "type")]
         pub type_: ChannelClaudeSetupBoxOfferType,
+        ///How long the box may take from this offer to printing the sign-in URL before the host fails the setup SetupUrlMissing.
+        #[serde(rename = "urlSeconds")]
+        pub url_seconds: ::std::num::NonZeroU32,
     }
     ///`ChannelClaudeSetupBoxOfferTokenCredential`
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelClaudeSetupBoxOfferTokenCredential(::std::string::String);
+    impl ChannelClaudeSetupBoxOfferTokenCredential {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelClaudeSetupBoxOfferTokenCredential {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelClaudeSetupBoxOfferTokenCredential {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelClaudeSetupBoxOfferTokenCredential {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelClaudeSetupBoxOfferTokenCredential {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -1061,8 +1068,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelClaudeSetupBoxOfferTokenCredential {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("ChannelClaudeSetupBoxOfferTokenCredential: longer than 16384 characters".into());
+            }
             if value.chars().count() < 43usize {
-                return Err("shorter than 43 characters".into());
+                return Err("ChannelClaudeSetupBoxOfferTokenCredential: shorter than 43 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1128,7 +1138,7 @@ pub mod types {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
         #[serde(rename = "signInUrl")]
-        pub sign_in_url: ::std::string::String,
+        pub sign_in_url: HttpUrl,
         #[serde(rename = "type")]
         pub type_: ChannelClaudeSetupBoxUrlType,
         #[serde(rename = "userCode", skip_serializing_if = "::std::option::Option::is_none")]
@@ -1171,6 +1181,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelClaudeSetupBoxUrlUserCode(::std::string::String);
+    impl ChannelClaudeSetupBoxUrlUserCode {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelClaudeSetupBoxUrlUserCode {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelClaudeSetupBoxUrlUserCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelClaudeSetupBoxUrlUserCode {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelClaudeSetupBoxUrlUserCode {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -1186,10 +1216,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 64usize {
-                return Err("longer than 64 characters".into());
+                return Err("ChannelClaudeSetupBoxUrlUserCode: longer than 64 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelClaudeSetupBoxUrlUserCode: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1252,7 +1282,7 @@ pub mod types {
                 .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
-    ///Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, or a sequenced frame.
+    ///Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, or a sequenced frame.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ChannelControlEnvelope {
@@ -1261,6 +1291,7 @@ pub mod types {
         Heartbeat(ChannelHeartbeat),
         ReleasePublished(ChannelReleasePublished),
         FrameRefused(ChannelFrameRefused),
+        FrameRateLimited(ChannelFrameRateLimited),
         ControlFrame(ChannelControlFrame),
     }
     impl ::std::convert::From<ChannelChallenge> for ChannelControlEnvelope {
@@ -1286,6 +1317,11 @@ pub mod types {
     impl ::std::convert::From<ChannelFrameRefused> for ChannelControlEnvelope {
         fn from(value: ChannelFrameRefused) -> Self {
             Self::FrameRefused(value)
+        }
+    }
+    impl ::std::convert::From<ChannelFrameRateLimited> for ChannelControlEnvelope {
+        fn from(value: ChannelFrameRateLimited) -> Self {
+            Self::FrameRateLimited(value)
         }
     }
     impl ::std::convert::From<ChannelControlFrame> for ChannelControlEnvelope {
@@ -1433,13 +1469,33 @@ pub mod types {
         #[serde(rename = "tokenCredential")]
         pub token_credential: ChannelDispatchConnectorTokenCredential,
         #[serde(rename = "tokenUrl")]
-        pub token_url: ::std::string::String,
-        pub url: ::std::string::String,
+        pub token_url: HttpUrl,
+        pub url: HttpUrl,
     }
     ///`ChannelDispatchConnectorTokenCredential`
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelDispatchConnectorTokenCredential(::std::string::String);
+    impl ChannelDispatchConnectorTokenCredential {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelDispatchConnectorTokenCredential {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelDispatchConnectorTokenCredential {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelDispatchConnectorTokenCredential {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelDispatchConnectorTokenCredential {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -1454,8 +1510,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelDispatchConnectorTokenCredential {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("ChannelDispatchConnectorTokenCredential: longer than 16384 characters".into());
+            }
             if value.chars().count() < 43usize {
-                return Err("shorter than 43 characters".into());
+                return Err("ChannelDispatchConnectorTokenCredential: shorter than 43 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1494,7 +1553,7 @@ pub mod types {
     pub struct ChannelDispatchGrant {
         ///The harness arguments the catalog maps the credential to; they hold no secret. A grant without them gives the guest none.
         #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub arguments: ::std::vec::Vec<::std::string::String>,
+        pub arguments: ::std::vec::Vec<Summary>,
         ///The session's connectors, none when its persona lists none. The guest forwarder serves each at its loopback route and fetches its access token from tokenUrl with tokenCredential. Neither reaches the harness.
         pub connectors: ::std::vec::Vec<ChannelDispatchConnector>,
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
@@ -1515,6 +1574,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelDispatchGrantCredentialFilePath(::std::string::String);
+    impl ChannelDispatchGrantCredentialFilePath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelDispatchGrantCredentialFilePath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelDispatchGrantCredentialFilePath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelDispatchGrantCredentialFilePath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelDispatchGrantCredentialFilePath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -1529,8 +1608,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelDispatchGrantCredentialFilePath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("ChannelDispatchGrantCredentialFilePath: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelDispatchGrantCredentialFilePath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1561,6 +1643,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelDispatchGrantCredentialFileValue(::std::string::String);
+    impl ChannelDispatchGrantCredentialFileValue {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelDispatchGrantCredentialFileValue {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelDispatchGrantCredentialFileValue {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelDispatchGrantCredentialFileValue {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelDispatchGrantCredentialFileValue {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -1575,8 +1677,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelDispatchGrantCredentialFileValue {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("ChannelDispatchGrantCredentialFileValue: longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelDispatchGrantCredentialFileValue: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1613,6 +1718,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelDispatchVariableName(::std::string::String);
+    impl ChannelDispatchVariableName {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelDispatchVariableName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelDispatchVariableName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelDispatchVariableName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelDispatchVariableName {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -1627,8 +1752,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelDispatchVariableName {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ChannelDispatchVariableName: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelDispatchVariableName: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1659,6 +1787,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelDispatchVariableValue(::std::string::String);
+    impl ChannelDispatchVariableValue {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelDispatchVariableValue {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelDispatchVariableValue {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelDispatchVariableValue {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelDispatchVariableValue {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -1673,8 +1821,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelDispatchVariableValue {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("ChannelDispatchVariableValue: longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelDispatchVariableValue: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1701,6 +1852,125 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///The control plane's answer to a host frame past the tenant's per-host frame limit. It travels
+    ///outside frames, as Heartbeat does. The control plane counts that `seq` as received and records
+    ///nothing for it, so the host drops the frame from its unacked frames and never resends it.
+    ///`framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs
+    ///off its sends until then and reports RateLimited in its Heartbeat. The control plane sends it
+    ///only on a connection that speaks a protocol version of 32 or above, and FrameRefused below that.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ChannelFrameRateLimited {
+        #[serde(rename = "framesPerMinute")]
+        pub frames_per_minute: ::std::num::NonZeroU32,
+        pub reason: ChannelFrameRateLimitedReason,
+        #[serde(rename = "retryAfter")]
+        pub retry_after: ::chrono::DateTime<::chrono::FixedOffset>,
+        pub seq: Sequence,
+        #[serde(rename = "type")]
+        pub type_: ChannelFrameRateLimitedType,
+    }
+    ///`ChannelFrameRateLimitedReason`
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct ChannelFrameRateLimitedReason(::std::string::String);
+    impl ChannelFrameRateLimitedReason {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelFrameRateLimitedReason {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelFrameRateLimitedReason {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelFrameRateLimitedReason {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ChannelFrameRateLimitedReason {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<ChannelFrameRateLimitedReason> for ::std::string::String {
+        fn from(value: ChannelFrameRateLimitedReason) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for ChannelFrameRateLimitedReason {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("ChannelFrameRateLimitedReason: longer than 16384 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("ChannelFrameRateLimitedReason: shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelFrameRateLimitedReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelFrameRateLimitedReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for ChannelFrameRateLimitedReason {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///`ChannelFrameRateLimitedType`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ChannelFrameRateLimitedType {
+        FrameRateLimited,
+    }
+    impl ::std::fmt::Display for ChannelFrameRateLimitedType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::FrameRateLimited => f.write_str("FrameRateLimited"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ChannelFrameRateLimitedType {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "FrameRateLimited" => Ok(Self::FrameRateLimited),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelFrameRateLimitedType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelFrameRateLimitedType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///The control plane's answer to a host frame whose message matches no HostMessage. It travels
     ///outside frames, as Heartbeat does. The control plane counts that `seq` as received, so the next
     ///frame follows it without a gap, records nothing for it, and names the mismatch in `reason`. The
@@ -1719,6 +1989,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelFrameRefusedReason(::std::string::String);
+    impl ChannelFrameRefusedReason {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelFrameRefusedReason {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelFrameRefusedReason {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelFrameRefusedReason {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelFrameRefusedReason {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -1733,8 +2023,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelFrameRefusedReason {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("ChannelFrameRefusedReason: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelFrameRefusedReason: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1815,16 +2108,16 @@ pub mod types {
         #[serde(rename = "imageDigest")]
         pub image_digest: Sha256Digest,
         #[serde(rename = "imageUrl")]
-        pub image_url: ::std::string::String,
+        pub image_url: HttpUrl,
         #[serde(rename = "kernelDigest")]
         pub kernel_digest: Sha256Digest,
         #[serde(rename = "kernelUrl")]
-        pub kernel_url: ::std::string::String,
+        pub kernel_url: HttpUrl,
         pub kind: ChannelGuestImageDownloadKind,
         #[serde(rename = "manifestDigest")]
         pub manifest_digest: Sha256Digest,
         #[serde(rename = "manifestUrl")]
-        pub manifest_url: ::std::string::String,
+        pub manifest_url: HttpUrl,
     }
     ///`ChannelGuestImageDownloadKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -1867,9 +2160,9 @@ pub mod types {
     pub struct ChannelHarnessLayerDownload {
         pub layer: ReleaseHarnessLayer,
         #[serde(rename = "layerUrl")]
-        pub layer_url: ::std::string::String,
+        pub layer_url: HttpUrl,
         #[serde(rename = "manifestUrl")]
-        pub manifest_url: ::std::string::String,
+        pub manifest_url: HttpUrl,
     }
     ///The control plane sends one when it has sent nothing else for its heartbeat interval of 10
     ///seconds. A side that has received nothing for 30 seconds treats the connection as dead and closes
@@ -1952,6 +2245,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelHelloSignature(::std::string::String);
+    impl ChannelHelloSignature {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelHelloSignature {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelHelloSignature {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelHelloSignature {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelHelloSignature {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -1966,8 +2279,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelHelloSignature {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("ChannelHelloSignature: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelHelloSignature: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -1998,6 +2314,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelHelloSupervisorVersion(::std::string::String);
+    impl ChannelHelloSupervisorVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelHelloSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelHelloSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelHelloSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelHelloSupervisorVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -2012,8 +2348,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelHelloSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ChannelHelloSupervisorVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelHelloSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -2151,6 +2490,12 @@ pub mod types {
     ///list does not name with BoxLost.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelHostHeartbeat {
+        ///The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub health: ::std::option::Option<HostReportedHealth>,
+        ///The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name.
+        #[serde(rename = "heldClaudeSetupIds")]
+        pub held_claude_setup_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "heldSessionIds")]
         pub held_session_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "sentAt")]
@@ -2380,7 +2725,7 @@ pub mod types {
         pub pack_digest: Sha256Digest,
         #[serde(rename = "sizeBytes")]
         pub size_bytes: ::std::num::NonZeroU64,
-        pub url: ::std::string::String,
+        pub url: HttpUrl,
     }
     ///One file of the session's persona. `downloadUrl` is a presigned GET of the blob stored under
     ///`digest`, valid until `downloadExpiresAt`, the DispatchGrant's expiresAt. The supervisor
@@ -2392,7 +2737,7 @@ pub mod types {
         #[serde(rename = "downloadExpiresAt")]
         pub download_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "downloadUrl")]
-        pub download_url: ::std::string::String,
+        pub download_url: HttpUrl,
         pub path: PersonaFilePath,
         #[serde(rename = "sizeBytes")]
         pub size_bytes: PersonaFileSize,
@@ -2459,6 +2804,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelReleasePublishedReleaseVersion(::std::string::String);
+    impl ChannelReleasePublishedReleaseVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelReleasePublishedReleaseVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelReleasePublishedReleaseVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelReleasePublishedReleaseVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelReleasePublishedReleaseVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -2473,8 +2838,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelReleasePublishedReleaseVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ChannelReleasePublishedReleaseVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelReleasePublishedReleaseVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -2639,7 +3007,7 @@ pub mod types {
     ///counters and unacked frames to disk before it sends a frame; when it starts without that state
     ///it does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.
     ///Challenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,
-    ///with no `seq` or `ack`. Each side ignores fields it does not know.
+    ///with no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSequenced {
         pub ack: Sequence,
@@ -2786,7 +3154,7 @@ pub mod types {
         #[serde(rename = "downloadExpiresAt")]
         pub download_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "downloadUrl")]
-        pub download_url: ::std::string::String,
+        pub download_url: HttpUrl,
         #[serde(rename = "snapshotId")]
         pub snapshot_id: EntityId,
         #[serde(rename = "snapshotSeq")]
@@ -2797,7 +3165,7 @@ pub mod types {
     ///The host could not store the snapshot. `detail` states what failed and what fixes it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSnapshotFailed {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ChannelSnapshotFailureReason,
@@ -2848,6 +3216,7 @@ pub mod types {
         UploadRejected,
         SnapshotTimedOut,
         NotAnswered,
+        RateLimited,
     }
     impl ::std::fmt::Display for ChannelSnapshotFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -2858,6 +3227,7 @@ pub mod types {
                 Self::UploadRejected => f.write_str("UploadRejected"),
                 Self::SnapshotTimedOut => f.write_str("SnapshotTimedOut"),
                 Self::NotAnswered => f.write_str("NotAnswered"),
+                Self::RateLimited => f.write_str("RateLimited"),
             }
         }
     }
@@ -2871,6 +3241,7 @@ pub mod types {
                 "UploadRejected" => Ok(Self::UploadRejected),
                 "SnapshotTimedOut" => Ok(Self::SnapshotTimedOut),
                 "NotAnswered" => Ok(Self::NotAnswered),
+                "RateLimited" => Ok(Self::RateLimited),
                 _ => Err("invalid value".into()),
             }
         }
@@ -3010,7 +3381,7 @@ pub mod types {
         #[serde(rename = "uploadExpiresAt")]
         pub upload_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "uploadUrl")]
-        pub upload_url: ::std::string::String,
+        pub upload_url: HttpUrl,
     }
     ///`ChannelSnapshotRequestType`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -3094,13 +3465,13 @@ pub mod types {
     ///hidden, and is empty for every other reason.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSupervisorUpdateFailed {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "fromSha256")]
         pub from_sha256: Sha256Digest,
         #[serde(rename = "outputTail")]
-        pub output_tail: ::std::vec::Vec<::std::string::String>,
+        pub output_tail: ::std::vec::Vec<Detail>,
         pub reason: SupervisorUpdateFailureReason,
         #[serde(rename = "toSha256")]
         pub to_sha256: Sha256Digest,
@@ -3161,6 +3532,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelSupervisorUpdateStepReleaseVersion(::std::string::String);
+    impl ChannelSupervisorUpdateStepReleaseVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelSupervisorUpdateStepReleaseVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelSupervisorUpdateStepReleaseVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelSupervisorUpdateStepReleaseVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelSupervisorUpdateStepReleaseVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -3175,8 +3566,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelSupervisorUpdateStepReleaseVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ChannelSupervisorUpdateStepReleaseVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelSupervisorUpdateStepReleaseVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3424,7 +3818,6 @@ pub mod types {
     pub struct ChannelTurnComplete {
         #[serde(rename = "completedAt")]
         pub completed_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member.
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<ChannelTurnCompleteCredentialFile>,
         #[serde(rename = "lastLineSeq")]
@@ -3433,7 +3826,6 @@ pub mod types {
         pub turn_id: EntityId,
         #[serde(rename = "type")]
         pub type_: ChannelTurnCompleteType,
-        ///The guest's warning for a turn the harness completed, such as a box disk with less than a hundredth of it free; the control plane shows it on the turn read.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub warning: ::std::option::Option<ChannelTurnCompleteWarning>,
     }
@@ -3441,6 +3833,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelTurnCompleteCredentialFile(::std::string::String);
+    impl ChannelTurnCompleteCredentialFile {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelTurnCompleteCredentialFile {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelTurnCompleteCredentialFile {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelTurnCompleteCredentialFile {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelTurnCompleteCredentialFile {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -3455,8 +3867,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelTurnCompleteCredentialFile {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("ChannelTurnCompleteCredentialFile: longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelTurnCompleteCredentialFile: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3520,6 +3935,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelTurnCompleteWarning(::std::string::String);
+    impl ChannelTurnCompleteWarning {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelTurnCompleteWarning {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelTurnCompleteWarning {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelTurnCompleteWarning {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelTurnCompleteWarning {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -3534,8 +3969,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelTurnCompleteWarning {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("ChannelTurnCompleteWarning: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelTurnCompleteWarning: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3565,10 +4003,9 @@ pub mod types {
     ///`ChannelTurnFailed`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelTurnFailed {
-        ///The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member.
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<ChannelTurnFailedCredentialFile>,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: TurnFailureReason,
@@ -3581,6 +4018,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelTurnFailedCredentialFile(::std::string::String);
+    impl ChannelTurnFailedCredentialFile {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelTurnFailedCredentialFile {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelTurnFailedCredentialFile {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelTurnFailedCredentialFile {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelTurnFailedCredentialFile {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -3595,8 +4052,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelTurnFailedCredentialFile {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("ChannelTurnFailedCredentialFile: longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelTurnFailedCredentialFile: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3707,7 +4167,7 @@ pub mod types {
     pub struct ChannelTurnLine {
         #[serde(rename = "lineSeq")]
         pub line_seq: Sequence,
-        pub text: ::std::string::String,
+        pub text: LongText,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
         #[serde(rename = "type")]
@@ -3769,6 +4229,9 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
+        ///What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         pub credential: ChannelDispatchGrant,
         #[serde(rename = "gitAuthorEmail")]
         pub git_author_email: EmailAddress,
@@ -3777,17 +4240,15 @@ pub mod types {
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: ChannelTurnOfferHarnessVersion,
+        ///The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy.
+        #[serde(rename = "idleSeconds")]
+        pub idle_seconds: ::std::num::NonZeroU32,
         pub image: ChannelBootImage,
         #[serde(rename = "lastLineSeq")]
         pub last_line_seq: Sequence,
         pub model: ModelName,
         #[serde(rename = "personaFiles")]
         pub persona_files: ::std::vec::Vec<ChannelPersonaFileDownload>,
-        ///Set when the turn builds a prebuild: the box clones the repository at this commit and runs the
-        ///repository's setup step, /opt/tumpel/prebuild.mjs run, in place of the harness, its output lines
-        ///being the turn's lines. The credential then holds only a GITHUB_TOKEN that reads the
-        ///repository's contents, and the snapshot the control plane asks for after the turn is the
-        ///prebuild's layer.
         #[serde(rename = "prebuildCommitSha", skip_serializing_if = "::std::option::Option::is_none")]
         pub prebuild_commit_sha: ::std::option::Option<ChannelTurnOfferPrebuildCommitSha>,
         pub prompt: Prompt,
@@ -3797,6 +4258,9 @@ pub mod types {
         pub snapshots: ::std::vec::Vec<ChannelSnapshotDownload>,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
+        ///How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.
+        #[serde(rename = "turnSeconds")]
+        pub turn_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "type")]
         pub type_: ChannelTurnOfferType,
     }
@@ -3804,6 +4268,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelTurnOfferHarnessVersion(::std::string::String);
+    impl ChannelTurnOfferHarnessVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelTurnOfferHarnessVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelTurnOfferHarnessVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelTurnOfferHarnessVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelTurnOfferHarnessVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -3818,8 +4302,11 @@ pub mod types {
     impl ::std::str::FromStr for ChannelTurnOfferHarnessVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ChannelTurnOfferHarnessVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ChannelTurnOfferHarnessVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3854,6 +4341,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ChannelTurnOfferPrebuildCommitSha(::std::string::String);
+    impl ChannelTurnOfferPrebuildCommitSha {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ChannelTurnOfferPrebuildCommitSha {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ChannelTurnOfferPrebuildCommitSha {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ChannelTurnOfferPrebuildCommitSha {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ChannelTurnOfferPrebuildCommitSha {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -3868,10 +4375,13 @@ pub mod types {
     impl ::std::str::FromStr for ChannelTurnOfferPrebuildCommitSha {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ChannelTurnOfferPrebuildCommitSha: longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err("ChannelTurnOfferPrebuildCommitSha: doesn't match pattern \"^[0-9a-f]{40}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -3935,7 +4445,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelTurnRepositoryCloneFailed {
         pub cause: RepositoryCloneFailureCause,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "turnId")]
@@ -4061,9 +4571,15 @@ pub mod types {
             value.parse()
         }
     }
-    ///The control plane accepts the host. Both sides then resend their unacked frames.
+    ///The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the
+    ///highest host `seq` the control plane has received with no gap before it. The host drops its
+    ///unacked frames at or below it before it resends, so a frame the control plane took on an earlier
+    ///connection is never counted as undelivered. A control plane that leaves it out acks only with its
+    ///next frame.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelWelcome {
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub ack: ::std::option::Option<Sequence>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "protocolVersion")]
@@ -4139,802 +4655,6 @@ pub mod types {
                 .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
-    ///One OAuth 2.0 authorization code flow with PKCE S256 that connects the tenant's CircleCI
-    ///organization. The tenant's own client, registered once through CircleCI's dynamic client
-    ///registration, sends the person to CircleCI's consent page; CircleCI sends the browser back to a
-    ///loopback address. The verifier and the token are held sealed and never answered.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorization {
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        #[serde(rename = "principalId")]
-        pub principal_id: EntityId,
-        pub status: CircleCiAuthorizationStatus,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-    }
-    ///`CircleCiAuthorizationAwaitingRedirect`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationAwaitingRedirect {
-        ///CircleCI's consent page, with this authorization's client_id, PKCE S256 challenge and state.
-        #[serde(rename = "authorizeUrl")]
-        pub authorize_url: ::std::string::String,
-        ///When the redirect address must arrive by, or the authorization fails AuthorizationTimedOut.
-        #[serde(rename = "redirectDueAt")]
-        pub redirect_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///The loopback address CircleCI sends the browser to, http://127.0.0.1:47151/circleci/callback; nothing listens there unless the tumpel CLI does.
-        #[serde(rename = "redirectUri")]
-        pub redirect_uri: ::std::string::String,
-        pub state: CircleCiAuthorizationAwaitingRedirectState,
-    }
-    ///`CircleCiAuthorizationAwaitingRedirectState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationAwaitingRedirectState {
-        AwaitingRedirect,
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationAwaitingRedirectState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::AwaitingRedirect => f.write_str("AwaitingRedirect"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationAwaitingRedirectState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "AwaitingRedirect" => Ok(Self::AwaitingRedirect),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationAwaitingRedirectState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationAwaitingRedirectState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The organization a ChoosingOrganization authorization connects; one its organizations lists.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationChoose {
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-        #[serde(rename = "organizationId")]
-        pub organization_id: CircleCiUuid,
-    }
-    ///`CircleCiAuthorizationChoosingOrganization`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationChoosingOrganization {
-        ///When the organization must be chosen by, or the authorization fails AuthorizationTimedOut and the token is discarded.
-        #[serde(rename = "chooseDueAt")]
-        pub choose_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub organizations: ::std::vec::Vec<CircleCiOrganization>,
-        pub state: CircleCiAuthorizationChoosingOrganizationState,
-    }
-    ///`CircleCiAuthorizationChoosingOrganizationState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationChoosingOrganizationState {
-        ChoosingOrganization,
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationChoosingOrganizationState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ChoosingOrganization => f.write_str("ChoosingOrganization"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationChoosingOrganizationState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "ChoosingOrganization" => Ok(Self::ChoosingOrganization),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationChoosingOrganizationState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationChoosingOrganizationState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The redirect address of an authorization. Its code is spent once at CircleCI's token endpoint and never stored.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationComplete {
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-        #[serde(rename = "redirectedUrl")]
-        pub redirected_url: CircleCiRedirectedUrl,
-    }
-    ///`CircleCiAuthorizationCompleted`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationCompleted {
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        #[serde(rename = "completedAt")]
-        pub completed_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///When the token stops working.
-        #[serde(rename = "expiresAt")]
-        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        #[serde(rename = "organizationId")]
-        pub organization_id: CircleCiUuid,
-        pub state: CircleCiAuthorizationCompletedState,
-    }
-    ///`CircleCiAuthorizationCompletedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationCompletedState {
-        Completed,
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationCompletedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Completed => f.write_str("Completed"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationCompletedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Completed" => Ok(Self::Completed),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationCompletedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationCompletedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`CircleCiAuthorizationFailed`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationFailed {
-        ///What failed and what fixes it.
-        pub detail: ::std::string::String,
-        #[serde(rename = "failedAt")]
-        pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub reason: CircleCiAuthorizationFailureReason,
-        pub state: CircleCiAuthorizationFailedState,
-    }
-    ///`CircleCiAuthorizationFailedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationFailedState {
-        Failed,
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationFailedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Failed => f.write_str("Failed"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationFailedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Failed" => Ok(Self::Failed),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationFailedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationFailedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///Why a CircleCI authorization ended Failed. Each reason names the phase it stopped in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationFailureReason {
-        AuthorizationTimedOut,
-        AccessDenied,
-        CodeRefused,
-        NoOrganization,
-        ExchangeFailed,
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationFailureReason {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::AuthorizationTimedOut => f.write_str("AuthorizationTimedOut"),
-                Self::AccessDenied => f.write_str("AccessDenied"),
-                Self::CodeRefused => f.write_str("CodeRefused"),
-                Self::NoOrganization => f.write_str("NoOrganization"),
-                Self::ExchangeFailed => f.write_str("ExchangeFailed"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationFailureReason {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "AuthorizationTimedOut" => Ok(Self::AuthorizationTimedOut),
-                "AccessDenied" => Ok(Self::AccessDenied),
-                "CodeRefused" => Ok(Self::CodeRefused),
-                "NoOrganization" => Ok(Self::NoOrganization),
-                "ExchangeFailed" => Ok(Self::ExchangeFailed),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationFailureReason {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationFailureReason {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The phase a CircleCI authorization is in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationState {
-        AwaitingRedirect,
-        ChoosingOrganization,
-        Completed,
-        Failed,
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::AwaitingRedirect => f.write_str("AwaitingRedirect"),
-                Self::ChoosingOrganization => f.write_str("ChoosingOrganization"),
-                Self::Completed => f.write_str("Completed"),
-                Self::Failed => f.write_str("Failed"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "AwaitingRedirect" => Ok(Self::AwaitingRedirect),
-                "ChoosingOrganization" => Ok(Self::ChoosingOrganization),
-                "Completed" => Ok(Self::Completed),
-                "Failed" => Ok(Self::Failed),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///Where a CircleCI authorization is: the consent URL while it waits for the redirect, the organizations while it waits for a choice, the organization once Completed, the reason once Failed.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum CircleCiAuthorizationStatus {
-        AwaitingRedirect(CircleCiAuthorizationAwaitingRedirect),
-        ChoosingOrganization(CircleCiAuthorizationChoosingOrganization),
-        Completed(CircleCiAuthorizationCompleted),
-        Failed(CircleCiAuthorizationFailed),
-    }
-    impl ::std::convert::From<CircleCiAuthorizationAwaitingRedirect> for CircleCiAuthorizationStatus {
-        fn from(value: CircleCiAuthorizationAwaitingRedirect) -> Self {
-            Self::AwaitingRedirect(value)
-        }
-    }
-    impl ::std::convert::From<CircleCiAuthorizationChoosingOrganization> for CircleCiAuthorizationStatus {
-        fn from(value: CircleCiAuthorizationChoosingOrganization) -> Self {
-            Self::ChoosingOrganization(value)
-        }
-    }
-    impl ::std::convert::From<CircleCiAuthorizationCompleted> for CircleCiAuthorizationStatus {
-        fn from(value: CircleCiAuthorizationCompleted) -> Self {
-            Self::Completed(value)
-        }
-    }
-    impl ::std::convert::From<CircleCiAuthorizationFailed> for CircleCiAuthorizationStatus {
-        fn from(value: CircleCiAuthorizationFailed) -> Self {
-            Self::Failed(value)
-        }
-    }
-    ///`CircleCiAuthorizedCredential`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizedCredential {
-        ///When the token stops working; the connection reads Expiring from 14 days before it and Expired from it.
-        #[serde(rename = "expiresAt")]
-        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub kind: CircleCiAuthorizedCredentialKind,
-    }
-    ///`CircleCiAuthorizedCredentialKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizedCredentialKind {
-        Authorized,
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizedCredentialKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Authorized => f.write_str("Authorized"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizedCredentialKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Authorized" => Ok(Self::Authorized),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizedCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizedCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`CircleCiConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiConnected {
-        pub connection: CircleCiConnection,
-        pub state: CircleCiConnectedState,
-    }
-    ///`CircleCiConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiConnectedState {
-        Connected,
-    }
-    impl ::std::fmt::Display for CircleCiConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Connected => f.write_str("Connected"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Connected" => Ok(Self::Connected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The tenant's CircleCI build provider. A prebuild runs the pipeline definition of the
-    ///repository's project binding with the tenant's personal API token, which Tumpel holds sealed and
-    ///never answers; the job's upload is accepted only from a token of the organization's issuer.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiConnection {
-        ///The CircleCI organization that bills the builds, as the tenant names it.
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        #[serde(rename = "circleCIConnectionId")]
-        pub circle_ci_connection_id: EntityId,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        pub credential: CircleCiCredential,
-        ///The organization's OIDC issuer, https://oidc.circleci.com/org/<organizationId>, whose job tokens upload the layers.
-        pub issuer: ::std::string::String,
-        ///The CircleCI organization id, from Organization Settings > Overview.
-        #[serde(rename = "organizationId")]
-        pub organization_id: CircleCiUuid,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-    }
-    ///The tenant's CircleCI build provider connection.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiConnectionLink {
-        ///The prebuild config to commit, such as .circleci/tumpel-prebuild.yml, as YAML text to copy; its pipeline definition gets no trigger.
-        #[serde(rename = "configExample")]
-        pub config_example: ::std::string::String,
-        pub link: CircleCiLink,
-        ///The orb a repository's prebuild config imports: tumpel/prebuild@1.
-        pub orb: ::std::string::String,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///Connects CircleCI with a pasted token, the fallback to an authorization. The control plane checks the token with GET /api/v2/me and seals it; no operation answers it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiConnectionStart {
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        ///A personal API token of a member of the organization; CircleCI's API v2 refuses project tokens.
-        #[serde(rename = "apiToken")]
-        pub api_token: SecretText,
-        #[serde(rename = "organizationId")]
-        pub organization_id: CircleCiUuid,
-    }
-    ///`CircleCiCredential`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum CircleCiCredential {
-        AuthorizedCredential(CircleCiAuthorizedCredential),
-        PastedCredential(CircleCiPastedCredential),
-    }
-    impl ::std::convert::From<CircleCiAuthorizedCredential> for CircleCiCredential {
-        fn from(value: CircleCiAuthorizedCredential) -> Self {
-            Self::AuthorizedCredential(value)
-        }
-    }
-    impl ::std::convert::From<CircleCiPastedCredential> for CircleCiCredential {
-        fn from(value: CircleCiPastedCredential) -> Self {
-            Self::PastedCredential(value)
-        }
-    }
-    ///How the connection's personal API token reached Tumpel.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiCredentialKind {
-        Authorized,
-        Pasted,
-    }
-    impl ::std::fmt::Display for CircleCiCredentialKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Authorized => f.write_str("Authorized"),
-                Self::Pasted => f.write_str("Pasted"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiCredentialKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Authorized" => Ok(Self::Authorized),
-                "Pasted" => Ok(Self::Pasted),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`CircleCiLink`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum CircleCiLink {
-        Connected(CircleCiConnected),
-        NotConnected(CircleCiNotConnected),
-    }
-    impl ::std::convert::From<CircleCiConnected> for CircleCiLink {
-        fn from(value: CircleCiConnected) -> Self {
-            Self::Connected(value)
-        }
-    }
-    impl ::std::convert::From<CircleCiNotConnected> for CircleCiLink {
-        fn from(value: CircleCiNotConnected) -> Self {
-            Self::NotConnected(value)
-        }
-    }
-    ///`CircleCiNotConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiNotConnected {
-        pub state: CircleCiNotConnectedState,
-    }
-    ///`CircleCiNotConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiNotConnectedState {
-        NotConnected,
-    }
-    impl ::std::fmt::Display for CircleCiNotConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConnected => f.write_str("NotConnected"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiNotConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConnected" => Ok(Self::NotConnected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///A CircleCI organization the authorized token reads, from GET /api/v2/me/collaborations.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiOrganization {
-        pub name: DisplayName,
-        #[serde(rename = "organizationId")]
-        pub organization_id: CircleCiUuid,
-        ///The organization's slug, such as gh/acme or circleci/<id>.
-        pub slug: ::std::string::String,
-    }
-    ///`CircleCiPastedCredential`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiPastedCredential {
-        pub kind: CircleCiPastedCredentialKind,
-    }
-    ///`CircleCiPastedCredentialKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiPastedCredentialKind {
-        Pasted,
-    }
-    impl ::std::fmt::Display for CircleCiPastedCredentialKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Pasted => f.write_str("Pasted"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiPastedCredentialKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Pasted" => Ok(Self::Pasted),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiPastedCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiPastedCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///Binds one repository to the CircleCI project and pipeline definition its prebuilds run. The
-    ///pipeline definition must check out the repository.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiProject {
-        #[serde(rename = "circleCIProjectId")]
-        pub circle_ci_project_id: EntityId,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        ///The pipeline definition the prebuilds run, from Project Settings > Project Setup.
-        #[serde(rename = "pipelineDefinitionId")]
-        pub pipeline_definition_id: CircleCiUuid,
-        ///The CircleCI project id, read from the project at the binding.
-        #[serde(rename = "projectId")]
-        pub project_id: CircleCiUuid,
-        #[serde(rename = "projectSlug")]
-        pub project_slug: CircleCiProjectSlug,
-        ///The repository as https://github.com/<owner>/<name> in lower case.
-        pub repository: RepositoryUrl,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-    }
-    ///`CircleCiProjectAdd`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiProjectAdd {
-        #[serde(rename = "pipelineDefinitionId")]
-        pub pipeline_definition_id: CircleCiUuid,
-        #[serde(rename = "projectSlug")]
-        pub project_slug: CircleCiProjectSlug,
-        ///A GitHub repository, such as https://github.com/acme/app.git.
-        pub repository: RepositoryUrl,
-    }
-    ///A CircleCI project slug: gh/<owner>/<name> in a GitHub OAuth organization, or
-    ///circleci/<organization id>/<project id> in a GitHub App organization.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct CircleCiProjectSlug(::std::string::String);
-    impl ::std::ops::Deref for CircleCiProjectSlug {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<CircleCiProjectSlug> for ::std::string::String {
-        fn from(value: CircleCiProjectSlug) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for CircleCiProjectSlug {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
-            }
-            static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
-                ::regress::Regex::new("^(gh|github|circleci)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$").unwrap()
-            });
-            if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^(gh|github|circleci)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$\"".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiProjectSlug {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiProjectSlug {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for CircleCiProjectSlug {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
-    ///The address the browser landed on after CircleCI's consent page, such as http://127.0.0.1:47151/circleci/callback?code=...&state=....
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct CircleCiRedirectedUrl(::std::string::String);
-    impl ::std::ops::Deref for CircleCiRedirectedUrl {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<CircleCiRedirectedUrl> for ::std::string::String {
-        fn from(value: CircleCiRedirectedUrl) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for CircleCiRedirectedUrl {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 4000usize {
-                return Err("longer than 4000 characters".into());
-            }
-            if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiRedirectedUrl {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiRedirectedUrl {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for CircleCiRedirectedUrl {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
-    ///A CircleCI id: an organization, a project or a pipeline definition, as a lower-case UUID.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct CircleCiUuid(::std::string::String);
-    impl ::std::ops::Deref for CircleCiUuid {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<CircleCiUuid> for ::std::string::String {
-        fn from(value: CircleCiUuid) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for CircleCiUuid {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
-                ::regress::Regex::new("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap()
-            });
-            if PATTERN.find(value).is_none() {
-                return Err(
-                    "doesn't match pattern \"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$\"".into(),
-                );
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiUuid {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiUuid {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for CircleCiUuid {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
     ///A short-lived box that signs in to the setup's harness and stores the token in a secret set: it
     ///runs `claude setup-token` from the tenant's pinned Claude Code and stores the SubscriptionToken
     ///member CLAUDE_CODE_OAUTH_TOKEN for Anthropic, or `codex login --device-auth` from the pinned Codex
@@ -4971,7 +4691,7 @@ pub mod types {
         pub code_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///Where the person signs in; for Claude Code the page shows the code to submit.
         #[serde(rename = "signInUrl")]
-        pub sign_in_url: ::std::string::String,
+        pub sign_in_url: HttpUrl,
         pub state: ClaudeSetupAwaitingCodeState,
         ///The one-time code a Codex setup shows, for the person to enter at signInUrl. A Codex setup takes no submitted code: its box stores the token once the person signs in.
         #[serde(rename = "userCode", skip_serializing_if = "::std::option::Option::is_none")]
@@ -5019,6 +4739,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ClaudeSetupCodeText(::std::string::String);
+    impl ClaudeSetupCodeText {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ClaudeSetupCodeText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ClaudeSetupCodeText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ClaudeSetupCodeText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ClaudeSetupCodeText {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -5034,10 +4774,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 2000usize {
-                return Err("longer than 2000 characters".into());
+                return Err("ClaudeSetupCodeText: longer than 2000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ClaudeSetupCodeText: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -5114,7 +4854,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ClaudeSetupFailed {
         ///What failed and what fixes it.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ClaudeSetupFailureReason,
@@ -5163,6 +4903,7 @@ pub mod types {
         TokenNotStored,
         NoHostOnline,
         Superseded,
+        RateLimited,
     }
     impl ::std::fmt::Display for ClaudeSetupFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5174,6 +4915,7 @@ pub mod types {
                 Self::TokenNotStored => f.write_str("TokenNotStored"),
                 Self::NoHostOnline => f.write_str("NoHostOnline"),
                 Self::Superseded => f.write_str("Superseded"),
+                Self::RateLimited => f.write_str("RateLimited"),
             }
         }
     }
@@ -5188,6 +4930,7 @@ pub mod types {
                 "TokenNotStored" => Ok(Self::TokenNotStored),
                 "NoHostOnline" => Ok(Self::NoHostOnline),
                 "Superseded" => Ok(Self::Superseded),
+                "RateLimited" => Ok(Self::RateLimited),
                 _ => Err("invalid value".into()),
             }
         }
@@ -5463,6 +5206,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ClaudeSetupUserCode(::std::string::String);
+    impl ClaudeSetupUserCode {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ClaudeSetupUserCode {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ClaudeSetupUserCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ClaudeSetupUserCode {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ClaudeSetupUserCode {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -5478,10 +5241,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 64usize {
-                return Err("longer than 64 characters".into());
+                return Err("ClaudeSetupUserCode: longer than 64 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ClaudeSetupUserCode: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -5513,13 +5276,33 @@ pub mod types {
     ///its line. The token answers only the endpoint it was issued by.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct CliCredentials {
-        pub endpoint: ::std::string::String,
+        pub endpoint: HttpUrl,
         pub token: CliCredentialsToken,
     }
     ///`CliCredentialsToken`
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CliCredentialsToken(::std::string::String);
+    impl CliCredentialsToken {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CliCredentialsToken {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CliCredentialsToken {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for CliCredentialsToken {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for CliCredentialsToken {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -5534,8 +5317,11 @@ pub mod types {
     impl ::std::str::FromStr for CliCredentialsToken {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("CliCredentialsToken: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("CliCredentialsToken: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -5575,6 +5361,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CliProofCredentialsClientId(::std::string::String);
+    impl CliProofCredentialsClientId {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CliProofCredentialsClientId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CliProofCredentialsClientId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for CliProofCredentialsClientId {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for CliProofCredentialsClientId {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -5589,8 +5395,11 @@ pub mod types {
     impl ::std::str::FromStr for CliProofCredentialsClientId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("CliProofCredentialsClientId: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("CliProofCredentialsClientId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -5621,6 +5430,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CliProofCredentialsClientSecret(::std::string::String);
+    impl CliProofCredentialsClientSecret {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CliProofCredentialsClientSecret {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CliProofCredentialsClientSecret {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for CliProofCredentialsClientSecret {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for CliProofCredentialsClientSecret {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -5635,8 +5464,11 @@ pub mod types {
     impl ::std::str::FromStr for CliProofCredentialsClientSecret {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("CliProofCredentialsClientSecret: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("CliProofCredentialsClientSecret: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -5668,7 +5500,7 @@ pub mod types {
     pub struct CompactTranscriptLine {
         #[serde(rename = "lineSeq")]
         pub line_seq: Sequence,
-        pub text: ::std::string::String,
+        pub text: LongText,
     }
     ///A page of a session's compact transcript: the session named once, and each turn once above its kept lines.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -5749,7 +5581,6 @@ pub mod types {
         pub turn_id: EntityId,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
-        ///A condition the turn completed under that the persona should act on, such as a box disk with less than a hundredth of it free, with its size and the boxDiskMib that raises it. Absent when there was none.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub warning: ::std::option::Option<CompletedTurnWarning>,
     }
@@ -5790,6 +5621,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct CompletedTurnWarning(::std::string::String);
+    impl CompletedTurnWarning {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CompletedTurnWarning {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CompletedTurnWarning {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for CompletedTurnWarning {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for CompletedTurnWarning {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -5804,8 +5655,11 @@ pub mod types {
     impl ::std::str::FromStr for CompletedTurnWarning {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("CompletedTurnWarning: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("CompletedTurnWarning: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -5878,9 +5732,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ConfigChange {
         pub action: ConfigChangeAction,
-        pub description: ::std::string::String,
+        pub description: Detail,
         ///The persona, secret set or trigger name, the harness of a pin, or the hostId of a host.
-        pub name: ::std::string::String,
+        pub name: ShortText,
         pub resource: ConfigResource,
     }
     ///`ConfigChangeAction`
@@ -6208,8 +6062,8 @@ pub mod types {
     ///`ConnectedConnection`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ConnectedConnection {
-        ///What the connection is connected as: the GitHub logins of the tenant's installations, comma-separated, the account label the tenant gave a build provider, or for OpenRouter the names of the secret sets that hold an OpenRouter key, comma-separated, since OpenRouter's key exchange names no account.
-        pub account: ::std::string::String,
+        ///What the connection is connected as: the GitHub logins of the tenant's installations, comma-separated, or for OpenRouter the names of the secret sets that hold an OpenRouter key, comma-separated, since OpenRouter's key exchange names no account.
+        pub account: Summary,
         pub kind: ConnectionKind,
         pub state: ConnectedConnectionState,
     }
@@ -6246,23 +6100,16 @@ pub mod types {
             value.parse()
         }
     }
-    ///An outside service the tenant links: the GitHub App, one build provider, or OpenRouter as a model provider.
+    ///An outside service the tenant links: the GitHub App or OpenRouter as a model provider.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectionKind {
         GitHub,
-        GitHubActions,
-        #[serde(rename = "CircleCI")]
-        CircleCi,
-        Namespace,
         OpenRouter,
     }
     impl ::std::fmt::Display for ConnectionKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GitHub => f.write_str("GitHub"),
-                Self::GitHubActions => f.write_str("GitHubActions"),
-                Self::CircleCi => f.write_str("CircleCI"),
-                Self::Namespace => f.write_str("Namespace"),
                 Self::OpenRouter => f.write_str("OpenRouter"),
             }
         }
@@ -6272,9 +6119,6 @@ pub mod types {
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
                 "GitHub" => Ok(Self::GitHub),
-                "GitHubActions" => Ok(Self::GitHubActions),
-                "CircleCI" => Ok(Self::CircleCi),
-                "Namespace" => Ok(Self::Namespace),
                 "OpenRouter" => Ok(Self::OpenRouter),
                 _ => Err("invalid value".into()),
             }
@@ -6298,8 +6142,6 @@ pub mod types {
         NotConfigured,
         NotConnected,
         Connected,
-        Expiring,
-        Expired,
     }
     impl ::std::fmt::Display for ConnectionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6307,8 +6149,6 @@ pub mod types {
                 Self::NotConfigured => f.write_str("NotConfigured"),
                 Self::NotConnected => f.write_str("NotConnected"),
                 Self::Connected => f.write_str("Connected"),
-                Self::Expiring => f.write_str("Expiring"),
-                Self::Expired => f.write_str("Expired"),
             }
         }
     }
@@ -6319,8 +6159,6 @@ pub mod types {
                 "NotConfigured" => Ok(Self::NotConfigured),
                 "NotConnected" => Ok(Self::NotConnected),
                 "Connected" => Ok(Self::Connected),
-                "Expiring" => Ok(Self::Expiring),
-                "Expired" => Ok(Self::Expired),
                 _ => Err("invalid value".into()),
             }
         }
@@ -6337,29 +6175,17 @@ pub mod types {
             value.parse()
         }
     }
-    ///One connection kind of the tenant with its state, its account once connected, and the expiry of a credential that is Expiring or Expired.
+    ///One connection kind of the tenant with its state and its account once connected.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ConnectionSummary {
         ConnectedConnection(ConnectedConnection),
-        ExpiringConnection(ExpiringConnection),
-        ExpiredConnection(ExpiredConnection),
         NotConnectedConnection(NotConnectedConnection),
         NotConfiguredConnection(NotConfiguredConnection),
     }
     impl ::std::convert::From<ConnectedConnection> for ConnectionSummary {
         fn from(value: ConnectedConnection) -> Self {
             Self::ConnectedConnection(value)
-        }
-    }
-    impl ::std::convert::From<ExpiringConnection> for ConnectionSummary {
-        fn from(value: ExpiringConnection) -> Self {
-            Self::ExpiringConnection(value)
-        }
-    }
-    impl ::std::convert::From<ExpiredConnection> for ConnectionSummary {
-        fn from(value: ExpiredConnection) -> Self {
-            Self::ExpiredConnection(value)
         }
     }
     impl ::std::convert::From<NotConnectedConnection> for ConnectionSummary {
@@ -6442,7 +6268,7 @@ pub mod types {
     pub struct ConnectorAuthorization {
         ///The provider's authorization page, with the control plane's callback, this authorization's PKCE S256 challenge, its signed state and the resource.
         #[serde(rename = "authorizeUrl")]
-        pub authorize_url: ::std::string::String,
+        pub authorize_url: HttpUrl,
         ///When the callback must arrive by, or the connector reads AuthorizationFailed AuthorizationExpired.
         #[serde(rename = "callbackDueAt")]
         pub callback_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
@@ -6455,7 +6281,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ConnectorAuthorizationFailed {
         ///What failed and what fixes it, with the provider's answer sanitized; it never quotes a token response.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ConnectorAuthorizationFailureReason,
@@ -6750,6 +6576,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ConnectorUrl(::std::string::String);
+    impl ConnectorUrl {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ConnectorUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ConnectorUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ConnectorUrl {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ConnectorUrl {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -6765,12 +6611,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 2048usize {
-                return Err("longer than 2048 characters".into());
+                return Err("ConnectorUrl: longer than 2048 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^https://[^/@?#\\s]+(/[^?#\\s]*)?$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^https://[^/@?#\\s]+(/[^?#\\s]*)?$\"".into());
+                return Err("ConnectorUrl: doesn't match pattern \"^https://[^/@?#\\s]+(/[^?#\\s]*)?$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -6796,6 +6642,36 @@ pub mod types {
                 .parse()
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
+    }
+    ///The per-tenant limits of a deployment: the TUMPEL_LIMITS variable of the Worker, one JSON
+    ///object. The free tier derives its limits from the Cloudflare free plan in the control plane's
+    ///limits module; a configured tenant gets `configured`. The per-minute request rates are the
+    ///limits of the Workers Rate Limiting bindings named beside them and must match them. A tenant
+    ///with a profile of its own runs under it instead; `ceiling` bounds what a profile holds.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ControlPlaneLimits {
+        ///The most a profile set through the API may hold: each rate at most the ceiling's, and each usage
+        ///budget at most the ceiling's budget of the same measure and window. Its `writesPerMinute` and
+        ///any Requests per Minute budget must not pass `writesPerMinute` and `readsPerMinute`, the limits
+        ///of the Workers Rate Limiting bindings the Worker checks before it knows the tenant.
+        pub ceiling: TenantLimitsProfile,
+        ///The limits of a configured tenant, checked inside its Durable Object.
+        pub configured: ::std::vec::Vec<TenantLimit>,
+        ///The tier a new tenant gets; an existing tenant keeps the tier it has.
+        #[serde(rename = "defaultTier")]
+        pub default_tier: TenantTier,
+        ///How many free tenants share one Cloudflare free plan; each gets this share of every daily allowance.
+        #[serde(rename = "freeTenantsPerAccount")]
+        pub free_tenants_per_account: ::std::num::NonZeroU32,
+        ///Numbered channel frames a minute one host may send, counted in memory by its host channel, for every tier. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.
+        #[serde(rename = "hostFramesPerMinute")]
+        pub host_frames_per_minute: ::std::num::NonZeroU32,
+        ///Requests a minute one tenant may send that only read: binding TENANT_READ_RATE.
+        #[serde(rename = "readsPerMinute")]
+        pub reads_per_minute: ::std::num::NonZeroU32,
+        ///Requests a minute one tenant may send that write: binding TENANT_WRITE_RATE.
+        #[serde(rename = "writesPerMinute")]
+        pub writes_per_minute: ::std::num::NonZeroU32,
     }
     ///The control plane's timing and storage settings: the TUMPEL_SETTINGS variable of the Worker, one
     ///JSON object. Every turn budget and the snapshot deadline run as a timer of the session and end in
@@ -6823,36 +6699,18 @@ pub mod types {
         ///How long after a TurnOffer is sent the supervisor still hands its dispatch variables to a box, at least; the expiresAt of its DispatchGrant is the longer of this and turnOfferTtlSeconds plus turnImageFetchBudgetSeconds.
         #[serde(rename = "dispatchGrantTtlSeconds")]
         pub dispatch_grant_ttl_seconds: ::std::num::NonZeroU32,
-        ///The OIDC issuer of GitHub Actions job tokens, https://token.actions.githubusercontent.com on github.com; its keys are at <issuer>/.well-known/jwks.
-        #[serde(rename = "gitHubActionsIssuer")]
-        pub git_hub_actions_issuer: ::std::string::String,
         ///How long a host connection may stay silent before the control plane closes it HeartbeatDeadline and reads the host Offline, 30 in production; a claimed turn whose host stays Offline this long fails HostOffline.
         #[serde(rename = "heartbeatDeadlineSeconds")]
         pub heartbeat_deadline_seconds: ::std::num::NonZeroU32,
         ///The heartbeat interval of the channel, 10 in production: the control plane answers a host message with a Heartbeat once it has sent nothing for half of it. It matches heartbeatIntervalSeconds of the hosts' runtime.json.
         #[serde(rename = "heartbeatIntervalSeconds")]
         pub heartbeat_interval_seconds: ::std::num::NonZeroU32,
-        ///How long a prebuild may run from the start of its run to the completion of its layer upload before it fails in phase Build, or in phase Upload once its upload started.
-        #[serde(rename = "prebuildBuildBudgetSeconds")]
-        pub prebuild_build_budget_seconds: ::std::num::NonZeroU32,
-        ///How long a dispatched prebuild may wait for its run to start before it fails in phase Dispatch; the rootfs URL its dispatch hands the run stays valid for this plus prebuildBuildBudgetSeconds.
-        #[serde(rename = "prebuildDispatchBudgetSeconds")]
-        pub prebuild_dispatch_budget_seconds: ::std::num::NonZeroU32,
-        ///How long the presigned PUTs a build job gets for its layer stay valid.
-        #[serde(rename = "prebuildUploadBudgetSeconds")]
-        pub prebuild_upload_budget_seconds: ::std::num::NonZeroU32,
         ///How long the host may take to answer a SnapshotRequest before the snapshot fails NotAnswered; its presigned upload expires then too.
         #[serde(rename = "snapshotDeadlineSeconds")]
         pub snapshot_deadline_seconds: ::std::num::NonZeroU32,
-        ///How long a session stays idle after a completed turn before the control plane asks for a snapshot. A turn sent sooner resets the wait.
-        #[serde(rename = "snapshotDelaySeconds")]
-        pub snapshot_delay_seconds: i32,
         ///How many lines of a turn go into one transcript chunk object; the last chunk of a turn holds the rest.
         #[serde(rename = "transcriptChunkLines")]
         pub transcript_chunk_lines: ::std::num::NonZeroU32,
-        ///How long a turn may take from TurnRepositoryReady to its first line before it fails NoFirstOutput; it stays at or above firstLineSeconds of the host.
-        #[serde(rename = "turnFirstLineBudgetSeconds")]
-        pub turn_first_line_budget_seconds: ::std::num::NonZeroU32,
         ///How long the host may take to download a guest image its cache lacks, after it sends TurnImageFetching; the offer's image.fetchSeconds. The image URLs stay valid for turnOfferTtlSeconds plus this. A host that runs past it fails the turn ImageFetchTimedOut.
         #[serde(rename = "turnImageFetchBudgetSeconds")]
         pub turn_image_fetch_budget_seconds: ::std::num::NonZeroU32,
@@ -7143,7 +7001,7 @@ pub mod types {
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
         #[serde(rename = "variableNames")]
-        pub variable_names: ::std::vec::Vec<::std::string::String>,
+        pub variable_names: ::std::vec::Vec<ShortText>,
     }
     ///The kinds of provider credential a secret set can hold.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -7184,6 +7042,72 @@ pub mod types {
             value.parse()
         }
     }
+    ///A credential file or a variable value a harness reads, such as an OAuth credentials JSON.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct CredentialText(::std::string::String);
+    impl CredentialText {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for CredentialText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for CredentialText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for CredentialText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for CredentialText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<CredentialText> for ::std::string::String {
+        fn from(value: CredentialText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for CredentialText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("CredentialText: longer than 65536 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for CredentialText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for CredentialText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for CredentialText {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
     ///The deploy drain. While it is in place the control plane starts no session and no turn, and
     ///refuses both with DeployInProgress. The deploy reads `GET /v1/releases/rollout` with `drainToken`
     ///as the bearer until the control plane reports the new commit.
@@ -7196,6 +7120,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct DeployDrainDrainToken(::std::string::String);
+    impl DeployDrainDrainToken {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for DeployDrainDrainToken {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for DeployDrainDrainToken {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for DeployDrainDrainToken {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for DeployDrainDrainToken {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -7210,10 +7154,13 @@ pub mod types {
     impl ::std::str::FromStr for DeployDrainDrainToken {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("DeployDrainDrainToken: longer than 16384 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{43}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
+                return Err("DeployDrainDrainToken: doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7231,6 +7178,73 @@ pub mod types {
         }
     }
     impl<'de> ::serde::Deserialize<'de> for DeployDrainDrainToken {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///What failed and what fixes it, a warning, or a description. It may carry the tail of a
+    ///harness's output, which the harness caps well below this.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct Detail(::std::string::String);
+    impl Detail {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Detail {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Detail {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for Detail {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for Detail {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<Detail> for ::std::string::String {
+        fn from(value: Detail) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for Detail {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("Detail: longer than 16384 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for Detail {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for Detail {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for Detail {
         fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
         where
             D: ::serde::Deserializer<'de>,
@@ -7261,17 +7275,17 @@ pub mod types {
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
         #[serde(rename = "userCode")]
-        pub user_code: ::std::string::String,
+        pub user_code: Token,
     }
     ///RFC 8628 device authorization, in its snake_case wire shape.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct DeviceAuthorization {
-        pub device_code: ::std::string::String,
+        pub device_code: Token,
         pub expires_in: ::std::num::NonZeroU32,
         pub interval: ::std::num::NonZeroU32,
-        pub user_code: ::std::string::String,
-        pub verification_uri: ::std::string::String,
-        pub verification_uri_complete: ::std::string::String,
+        pub user_code: Token,
+        pub verification_uri: HttpUrl,
+        pub verification_uri_complete: HttpUrl,
     }
     ///`DeviceCodeRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -7282,18 +7296,18 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct DeviceDecision {
         #[serde(rename = "userCode")]
-        pub user_code: ::std::string::String,
+        pub user_code: Token,
     }
     ///`DeviceToken`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct DeviceToken {
-        pub access_token: ::std::string::String,
+        pub access_token: Token,
         pub token_type: DeviceTokenTokenType,
     }
     ///`DeviceTokenRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct DeviceTokenRequest {
-        pub device_code: ::std::string::String,
+        pub device_code: Token,
         pub grant_type: DeviceTokenRequestGrantType,
     }
     ///`DeviceTokenRequestGrantType`
@@ -7369,6 +7383,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct DisplayName(::std::string::String);
+    impl DisplayName {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for DisplayName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for DisplayName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for DisplayName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for DisplayName {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -7384,10 +7418,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 100usize {
-                return Err("longer than 100 characters".into());
+                return Err("DisplayName: longer than 100 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("DisplayName: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7459,7 +7493,7 @@ pub mod types {
     pub struct EditPersonaFilePatch {
         pub kind: EditPersonaFilePatchKind,
         #[serde(rename = "newText")]
-        pub new_text: ::std::string::String,
+        pub new_text: PersonaFileContent,
         #[serde(rename = "oldText")]
         pub old_text: EditPersonaFilePatchOldText,
         pub path: PersonaFilePath,
@@ -7501,6 +7535,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct EditPersonaFilePatchOldText(::std::string::String);
+    impl EditPersonaFilePatchOldText {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for EditPersonaFilePatchOldText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for EditPersonaFilePatchOldText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for EditPersonaFilePatchOldText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for EditPersonaFilePatchOldText {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -7515,8 +7569,11 @@ pub mod types {
     impl ::std::str::FromStr for EditPersonaFilePatchOldText {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 87384usize {
+                return Err("EditPersonaFilePatchOldText: longer than 87384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("EditPersonaFilePatchOldText: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7555,6 +7612,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct EmailAddress(::std::string::String);
+    impl EmailAddress {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for EmailAddress {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for EmailAddress {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for EmailAddress {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for EmailAddress {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -7570,10 +7647,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 320usize {
-                return Err("longer than 320 characters".into());
+                return Err("EmailAddress: longer than 320 characters".into());
             }
             if value.chars().count() < 3usize {
-                return Err("shorter than 3 characters".into());
+                return Err("EmailAddress: shorter than 3 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7736,6 +7813,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct EntityId(::std::string::String);
+    impl EntityId {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for EntityId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for EntityId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for EntityId {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for EntityId {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -7751,10 +7848,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 64usize {
-                return Err("longer than 64 characters".into());
+                return Err("EntityId: longer than 64 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("EntityId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7785,6 +7882,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct EnvironmentVariableName(::std::string::String);
+    impl EnvironmentVariableName {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for EnvironmentVariableName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for EnvironmentVariableName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for EnvironmentVariableName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for EnvironmentVariableName {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -7800,12 +7917,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("EnvironmentVariableName: longer than 200 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Z_][A-Z0-9_]*$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Z_][A-Z0-9_]*$\"".into());
+                return Err("EnvironmentVariableName: doesn't match pattern \"^[A-Z_][A-Z0-9_]*$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -7836,11 +7953,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct EventCursorExpiredProblem {
         pub code: EventCursorExpiredProblemCode,
-        pub detail: ::std::string::String,
-        pub fix: ::std::string::String,
+        pub detail: Detail,
+        pub fix: Detail,
         #[serde(rename = "oldestEventId")]
         pub oldest_event_id: Sequence,
-        pub title: ::std::string::String,
+        pub title: Summary,
     }
     ///`EventCursorExpiredProblemCode`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -7900,92 +8017,6 @@ pub mod types {
             Self::Problem(value)
         }
     }
-    ///A connection whose credential stopped working; prebuilds on it fail until the tenant connects again.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct ExpiredConnection {
-        pub account: ::std::string::String,
-        ///When the credential stopped working.
-        #[serde(rename = "expiredAt")]
-        pub expired_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub kind: ConnectionKind,
-        pub state: ExpiredConnectionState,
-    }
-    ///`ExpiredConnectionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum ExpiredConnectionState {
-        Expired,
-    }
-    impl ::std::fmt::Display for ExpiredConnectionState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Expired => f.write_str("Expired"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ExpiredConnectionState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Expired" => Ok(Self::Expired),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ExpiredConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ExpiredConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///A Connected connection whose credential stops working within the renewal window.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct ExpiringConnection {
-        pub account: ::std::string::String,
-        ///When the credential stops working.
-        #[serde(rename = "expiresAt")]
-        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub kind: ConnectionKind,
-        pub state: ExpiringConnectionState,
-    }
-    ///`ExpiringConnectionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum ExpiringConnectionState {
-        Expiring,
-    }
-    impl ::std::fmt::Display for ExpiringConnectionState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Expiring => f.write_str("Expiring"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ExpiringConnectionState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Expiring" => Ok(Self::Expiring),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ExpiringConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ExpiringConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///A turn that ended Failed, with why.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct FailedTurn {
@@ -7995,7 +8026,7 @@ pub mod types {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///What failed and what fixes it, with the tail of the harness's standard error when there is one.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///A condition the harness keeps working toward until it holds; only a session whose harness has goals in the harness catalog accepts it.
@@ -8062,6 +8093,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct FixedVariableValue(::std::string::String);
+    impl FixedVariableValue {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for FixedVariableValue {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for FixedVariableValue {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for FixedVariableValue {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for FixedVariableValue {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -8076,8 +8127,11 @@ pub mod types {
     impl ::std::str::FromStr for FixedVariableValue {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("FixedVariableValue: longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("FixedVariableValue: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -8140,146 +8194,11 @@ pub mod types {
             value.parse()
         }
     }
-    ///`GitHubActionsConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct GitHubActionsConnected {
-        pub connection: GitHubActionsConnection,
-        pub state: GitHubActionsConnectedState,
-    }
-    ///`GitHubActionsConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum GitHubActionsConnectedState {
-        Connected,
-    }
-    impl ::std::fmt::Display for GitHubActionsConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Connected => f.write_str("Connected"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for GitHubActionsConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Connected" => Ok(Self::Connected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for GitHubActionsConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for GitHubActionsConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The tenant's GitHub Actions build provider. A prebuild dispatches the caller workflow in the
-    ///repository, which calls Tumpel's reusable prebuild workflow; the job's upload is accepted only
-    ///from a run of that workflow.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct GitHubActionsConnection {
-        ///The account GitHub Actions bills, as the tenant names it.
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        ///The caller workflow each repository holds; the start commits or dispatches it and the job token must name it.
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: WorkflowPath,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        #[serde(rename = "gitHubActionsConnectionId")]
-        pub git_hub_actions_connection_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-    }
-    ///The tenant's GitHub Actions build provider connection.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct GitHubActionsConnectionLink {
-        ///The caller workflow a prebuild start commits in each repository at the connection's callerWorkflow path, or at .github/workflows/tumpel-prebuild.yml while not connected, as YAML text.
-        #[serde(rename = "callerWorkflowExample")]
-        pub caller_workflow_example: ::std::string::String,
-        pub link: GitHubActionsLink,
-        ///The reusable workflow a caller workflow calls: tumpel/workflows/.github/workflows/prebuild.yml@v2.
-        #[serde(rename = "reusableWorkflow")]
-        pub reusable_workflow: ::std::string::String,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`GitHubActionsConnectionStart`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct GitHubActionsConnectionStart {
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: WorkflowPath,
-    }
-    ///`GitHubActionsLink`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum GitHubActionsLink {
-        Connected(GitHubActionsConnected),
-        NotConnected(GitHubActionsNotConnected),
-    }
-    impl ::std::convert::From<GitHubActionsConnected> for GitHubActionsLink {
-        fn from(value: GitHubActionsConnected) -> Self {
-            Self::Connected(value)
-        }
-    }
-    impl ::std::convert::From<GitHubActionsNotConnected> for GitHubActionsLink {
-        fn from(value: GitHubActionsNotConnected) -> Self {
-            Self::NotConnected(value)
-        }
-    }
-    ///`GitHubActionsNotConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct GitHubActionsNotConnected {
-        pub state: GitHubActionsNotConnectedState,
-    }
-    ///`GitHubActionsNotConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum GitHubActionsNotConnectedState {
-        NotConnected,
-    }
-    impl ::std::fmt::Display for GitHubActionsNotConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConnected => f.write_str("NotConnected"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for GitHubActionsNotConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConnected" => Ok(Self::NotConnected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for GitHubActionsNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for GitHubActionsNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///The stage has no GitHub App yet; a person creates it once at `setupUrl`.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GitHubAppMissing {
         #[serde(rename = "setupUrl")]
-        pub setup_url: ::std::string::String,
+        pub setup_url: HttpUrl,
         pub state: GitHubAppMissingState,
     }
     ///`GitHubAppMissingState`
@@ -8319,7 +8238,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GitHubAppReady {
         #[serde(rename = "appSlug")]
-        pub app_slug: ::std::string::String,
+        pub app_slug: ShortText,
         pub state: GitHubAppReadyState,
     }
     ///`GitHubAppReadyState`
@@ -8470,7 +8389,7 @@ pub mod types {
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "installUrl")]
-        pub install_url: ::std::string::String,
+        pub install_url: HttpUrl,
     }
     ///An installation of the stage's GitHub App on one GitHub account, linked to the tenant when GitHub sent the installer back. A tenant holds one per connected account or organization.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -8532,12 +8451,12 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GitHubIssue {
         #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
+        pub html_url: HttpUrl,
         #[serde(rename = "issueNumber")]
         pub issue_number: GitHubIssueNumber,
         ///The names of the issue's labels.
-        pub labels: ::std::vec::Vec<::std::string::String>,
-        pub title: ::std::string::String,
+        pub labels: ::std::vec::Vec<ShortText>,
+        pub title: Summary,
         ///When the issue last changed on GitHub.
         #[serde(rename = "updatedAt")]
         pub updated_at: ::chrono::DateTime<::chrono::FixedOffset>,
@@ -8589,6 +8508,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GitHubLogin(::std::string::String);
+    impl GitHubLogin {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GitHubLogin {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GitHubLogin {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GitHubLogin {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GitHubLogin {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -8603,10 +8542,13 @@ pub mod types {
     impl ::std::str::FromStr for GitHubLogin {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 39usize {
+                return Err("GitHubLogin: longer than 39 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$\"".into());
+                return Err("GitHubLogin: doesn't match pattern \"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -8637,9 +8579,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GitHubRepository {
         #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
+        pub default_branch: ShortText,
         #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
+        pub html_url: HttpUrl,
         pub name: GitHubRepositoryName,
         pub owner: GitHubLogin,
         pub private: bool,
@@ -8648,6 +8590,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GitHubRepositoryName(::std::string::String);
+    impl GitHubRepositoryName {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GitHubRepositoryName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GitHubRepositoryName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GitHubRepositoryName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GitHubRepositoryName {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -8662,10 +8624,13 @@ pub mod types {
     impl ::std::str::FromStr for GitHubRepositoryName {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 100usize {
+                return Err("GitHubRepositoryName: longer than 100 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9._-]{1,100}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9._-]{1,100}$\"".into());
+                return Err("GitHubRepositoryName: doesn't match pattern \"^[A-Za-z0-9._-]{1,100}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -8783,6 +8748,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct Goal(::std::string::String);
+    impl Goal {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Goal {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Goal {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for Goal {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for Goal {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -8798,10 +8783,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 100000usize {
-                return Err("longer than 100000 characters".into());
+                return Err("Goal: longer than 100000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("Goal: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -8819,6 +8804,72 @@ pub mod types {
         }
     }
     impl<'de> ::serde::Deserialize<'de> for Goal {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///Guest bytes read and not decoded yet, base64: up to one whole guest frame of 4 MiB and its 4-byte length.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct GuestBufferText(::std::string::String);
+    impl GuestBufferText {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestBufferText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestBufferText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestBufferText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for GuestBufferText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<GuestBufferText> for ::std::string::String {
+        fn from(value: GuestBufferText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for GuestBufferText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 5592412usize {
+                return Err("GuestBufferText: longer than 5592412 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for GuestBufferText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for GuestBufferText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for GuestBufferText {
         fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
         where
             D: ::serde::Deserializer<'de>,
@@ -8879,7 +8930,7 @@ pub mod types {
     pub struct GuestClaudeSetupFailed {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub reason: GuestClaudeSetupFailureReason,
         #[serde(rename = "type")]
         pub type_: GuestClaudeSetupFailedType,
@@ -8979,7 +9030,7 @@ pub mod types {
         #[serde(rename = "tokenCredential")]
         pub token_credential: GuestClaudeSetupStartTokenCredential,
         #[serde(rename = "tokenUrl")]
-        pub token_url: ::std::string::String,
+        pub token_url: HttpUrl,
         #[serde(rename = "type")]
         pub type_: GuestClaudeSetupStartType,
     }
@@ -8987,6 +9038,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestClaudeSetupStartTokenCredential(::std::string::String);
+    impl GuestClaudeSetupStartTokenCredential {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestClaudeSetupStartTokenCredential {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestClaudeSetupStartTokenCredential {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestClaudeSetupStartTokenCredential {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestClaudeSetupStartTokenCredential {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9001,8 +9072,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestClaudeSetupStartTokenCredential {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("GuestClaudeSetupStartTokenCredential: longer than 16384 characters".into());
+            }
             if value.chars().count() < 43usize {
-                return Err("shorter than 43 characters".into());
+                return Err("GuestClaudeSetupStartTokenCredential: shorter than 43 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9109,7 +9183,7 @@ pub mod types {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
         #[serde(rename = "signInUrl")]
-        pub sign_in_url: ::std::string::String,
+        pub sign_in_url: HttpUrl,
         #[serde(rename = "type")]
         pub type_: GuestClaudeSetupUrlType,
         #[serde(rename = "userCode", skip_serializing_if = "::std::option::Option::is_none")]
@@ -9163,6 +9237,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestEnvironmentHome(::std::string::String);
+    impl GuestEnvironmentHome {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestEnvironmentHome {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestEnvironmentHome {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestEnvironmentHome {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestEnvironmentHome {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9177,8 +9271,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestEnvironmentHome {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("GuestEnvironmentHome: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestEnvironmentHome: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9209,6 +9306,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestEnvironmentLang(::std::string::String);
+    impl GuestEnvironmentLang {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestEnvironmentLang {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestEnvironmentLang {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestEnvironmentLang {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestEnvironmentLang {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9223,8 +9340,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestEnvironmentLang {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("GuestEnvironmentLang: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestEnvironmentLang: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9255,6 +9375,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestEnvironmentPath(::std::string::String);
+    impl GuestEnvironmentPath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestEnvironmentPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestEnvironmentPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestEnvironmentPath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestEnvironmentPath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9269,8 +9409,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestEnvironmentPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("GuestEnvironmentPath: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestEnvironmentPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9308,7 +9451,7 @@ pub mod types {
     pub struct GuestHarness {
         #[serde(rename = "cloneSeconds")]
         pub clone_seconds: ::std::num::NonZeroU32,
-        pub command: ::std::vec::Vec<::std::string::String>,
+        pub command: ::std::vec::Vec<Detail>,
         pub environment: GuestEnvironment,
         #[serde(rename = "fixedVariables")]
         pub fixed_variables: ::std::vec::Vec<FixedVariable>,
@@ -9323,6 +9466,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestHarnessHarness(::std::string::String);
+    impl GuestHarnessHarness {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestHarnessHarness {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestHarnessHarness {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestHarnessHarness {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestHarnessHarness {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9337,8 +9500,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestHarnessHarness {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("GuestHarnessHarness: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestHarnessHarness: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9369,6 +9535,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestHarnessHarnessVersion(::std::string::String);
+    impl GuestHarnessHarnessVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestHarnessHarnessVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestHarnessHarnessVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestHarnessHarnessVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestHarnessHarnessVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9383,8 +9569,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestHarnessHarnessVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("GuestHarnessHarnessVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestHarnessHarnessVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9460,6 +9649,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestHarnessWorkingDirectory(::std::string::String);
+    impl GuestHarnessWorkingDirectory {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestHarnessWorkingDirectory {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestHarnessWorkingDirectory {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestHarnessWorkingDirectory {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestHarnessWorkingDirectory {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9474,8 +9683,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestHarnessWorkingDirectory {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("GuestHarnessWorkingDirectory: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestHarnessWorkingDirectory: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9523,6 +9735,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestHelloHarness(::std::string::String);
+    impl GuestHelloHarness {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestHelloHarness {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestHelloHarness {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestHelloHarness {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestHelloHarness {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9537,8 +9769,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestHelloHarness {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("GuestHelloHarness: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestHelloHarness: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9569,6 +9804,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestHelloHarnessVersion(::std::string::String);
+    impl GuestHelloHarnessVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestHelloHarnessVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestHelloHarnessVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestHelloHarnessVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestHelloHarnessVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9583,8 +9838,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestHelloHarnessVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("GuestHelloHarnessVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestHelloHarnessVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9649,13 +9907,33 @@ pub mod types {
     pub struct GuestImageComponent {
         pub digest: Sha256Digest,
         pub name: GuestImageComponentName,
-        pub url: ::std::string::String,
+        pub url: HttpUrl,
         pub version: GuestImageComponentVersion,
     }
     ///`GuestImageComponentName`
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestImageComponentName(::std::string::String);
+    impl GuestImageComponentName {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestImageComponentName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestImageComponentName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestImageComponentName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestImageComponentName {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9670,8 +9948,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestImageComponentName {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("GuestImageComponentName: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestImageComponentName: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9702,6 +9983,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestImageComponentVersion(::std::string::String);
+    impl GuestImageComponentVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestImageComponentVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestImageComponentVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestImageComponentVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestImageComponentVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9716,8 +10017,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestImageComponentVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("GuestImageComponentVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestImageComponentVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9751,7 +10055,7 @@ pub mod types {
         #[serde(rename = "baseRootfsDigest")]
         pub base_rootfs_digest: Sha256Digest,
         #[serde(rename = "baseRootfsUrl")]
-        pub base_rootfs_url: ::std::string::String,
+        pub base_rootfs_url: HttpUrl,
         pub components: ::std::vec::Vec<GuestImageComponent>,
         pub harness: GuestHarness,
         #[serde(rename = "imageDigest")]
@@ -9759,7 +10063,7 @@ pub mod types {
         #[serde(rename = "kernelDigest")]
         pub kernel_digest: Sha256Digest,
         #[serde(rename = "kernelUrl")]
-        pub kernel_url: ::std::string::String,
+        pub kernel_url: HttpUrl,
     }
     ///One frame from the host to the guest.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -9848,7 +10152,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GuestMetric {
         pub description: GuestMetricDescription,
-        pub dimensions: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub dimensions: ::std::collections::HashMap<::std::string::String, ShortText>,
         pub kind: MetricKind,
         pub metric: MetricName,
         pub unit: GuestMetricUnit,
@@ -9858,6 +10162,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestMetricDescription(::std::string::String);
+    impl GuestMetricDescription {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestMetricDescription {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestMetricDescription {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestMetricDescription {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestMetricDescription {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9872,8 +10196,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestMetricDescription {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("GuestMetricDescription: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestMetricDescription: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9904,6 +10231,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestMetricUnit(::std::string::String);
+    impl GuestMetricUnit {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestMetricUnit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestMetricUnit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestMetricUnit {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestMetricUnit {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -9918,8 +10265,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestMetricUnit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("GuestMetricUnit: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestMetricUnit: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -9949,9 +10299,75 @@ pub mod types {
     ///One persona file for the guest to write under the harness home: its path, digest and base64 bytes.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GuestPersonaFile {
-        pub content: ::std::string::String,
+        pub content: GuestPersonaFileContent,
         pub digest: Sha256Digest,
         pub path: PersonaFilePath,
+    }
+    ///A persona file the host hands its guest, base64: at most PersonaFileLimit.PersonaBytes before encoding, since a file uploaded by digest may exceed InlineFileBytes.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct GuestPersonaFileContent(::std::string::String);
+    impl GuestPersonaFileContent {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestPersonaFileContent {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestPersonaFileContent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestPersonaFileContent {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for GuestPersonaFileContent {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<GuestPersonaFileContent> for ::std::string::String {
+        fn from(value: GuestPersonaFileContent) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for GuestPersonaFileContent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 349528usize {
+                return Err("GuestPersonaFileContent: longer than 349528 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for GuestPersonaFileContent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for GuestPersonaFileContent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for GuestPersonaFileContent {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
     }
     ///A guest protocol version, from Oldest, the oldest version the supervisor still speaks, to Version,
     ///the one this build's guest names in GuestHello; the supervisor fails a box whose guest speaks a
@@ -10054,10 +10470,9 @@ pub mod types {
     ///The turn ended. `detail` carries the tail of the harness's standard error when it did not complete.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GuestTurnEnd {
-        ///The turn's credential file as the harness left it, when it differs from the one the turn wrote; the guest deletes the file at the end of the turn.
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<GuestTurnEndCredentialFile>,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "lastLineSeq")]
         pub last_line_seq: Sequence,
         ///What the harness reported the turn used, read from its lines: turn.tokens per TokenKind and,
@@ -10070,7 +10485,6 @@ pub mod types {
         pub turn_id: EntityId,
         #[serde(rename = "type")]
         pub type_: GuestTurnEndType,
-        ///Set on a Completed end when the box's disk has less than a hundredth of it free: its size and the boxDiskMib that raises it. A guest older than guest protocol 13 never sends it.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub warning: ::std::option::Option<GuestTurnEndWarning>,
     }
@@ -10078,6 +10492,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestTurnEndCredentialFile(::std::string::String);
+    impl GuestTurnEndCredentialFile {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestTurnEndCredentialFile {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestTurnEndCredentialFile {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestTurnEndCredentialFile {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestTurnEndCredentialFile {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -10092,8 +10526,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestTurnEndCredentialFile {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 65536usize {
+                return Err("GuestTurnEndCredentialFile: longer than 65536 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestTurnEndCredentialFile: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10205,6 +10642,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestTurnEndWarning(::std::string::String);
+    impl GuestTurnEndWarning {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestTurnEndWarning {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestTurnEndWarning {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestTurnEndWarning {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestTurnEndWarning {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -10219,8 +10676,11 @@ pub mod types {
     impl ::std::str::FromStr for GuestTurnEndWarning {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("GuestTurnEndWarning: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("GuestTurnEndWarning: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10252,7 +10712,7 @@ pub mod types {
     pub struct GuestTurnLine {
         #[serde(rename = "lineSeq")]
         pub line_seq: Sequence,
-        pub text: ::std::string::String,
+        pub text: LongText,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
         #[serde(rename = "type")]
@@ -10295,7 +10755,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GuestTurnRepositoryCloneFailed {
         pub cause: RepositoryCloneFailureCause,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
         #[serde(rename = "type")]
@@ -10399,18 +10859,13 @@ pub mod types {
         #[serde(rename = "lastLineSeq")]
         pub last_line_seq: Sequence,
         pub model: ModelName,
-        ///The TurnOffer's: once the working directory holds the repository, the guest resets its branch
-        ///to this commit, writes the marker .git/tumpel-prebuilt and runs /opt/tumpel/prebuild.mjs run as
-        ///the turn's process with the image environment and no credential, in place of the harness. A
-        ///later turn that finds the marker, in a box restored from the prebuild's snapshot, pulls the
-        ///branch fast-forward before the harness starts and deletes the marker.
         #[serde(rename = "prebuildCommitSha", skip_serializing_if = "::std::option::Option::is_none")]
         pub prebuild_commit_sha: ::std::option::Option<GuestTurnStartPrebuildCommitSha>,
         pub prompt: Prompt,
         pub repository: RepositoryUrl,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
-        ///The host's turn budget, budgets.turnSeconds of its runtime config, which the guest names to the harness beside the box's memory, disk and CPUs.
+        ///The turn budget, the TurnOffer's turnSeconds, which the guest names to the harness beside the box's memory, disk and CPUs.
         #[serde(rename = "turnSeconds", skip_serializing_if = "::std::option::Option::is_none")]
         pub turn_seconds: ::std::option::Option<::std::num::NonZeroU32>,
         #[serde(rename = "type")]
@@ -10424,6 +10879,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct GuestTurnStartPrebuildCommitSha(::std::string::String);
+    impl GuestTurnStartPrebuildCommitSha {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for GuestTurnStartPrebuildCommitSha {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for GuestTurnStartPrebuildCommitSha {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for GuestTurnStartPrebuildCommitSha {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for GuestTurnStartPrebuildCommitSha {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -10438,10 +10913,13 @@ pub mod types {
     impl ::std::str::FromStr for GuestTurnStartPrebuildCommitSha {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("GuestTurnStartPrebuildCommitSha: longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err("GuestTurnStartPrebuildCommitSha: doesn't match pattern \"^[0-9a-f]{40}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10575,7 +11053,7 @@ pub mod types {
     ///as the Codex model provider that reads `variable`. The arguments hold no secret.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct HarnessCredential {
-        pub arguments: ::std::vec::Vec<::std::string::String>,
+        pub arguments: ::std::vec::Vec<Summary>,
         #[serde(rename = "costBasis")]
         pub cost_basis: CostBasis,
         pub fixed: ::std::vec::Vec<FixedVariable>,
@@ -10624,6 +11102,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HarnessVersion(::std::string::String);
+    impl HarnessVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HarnessVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HarnessVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for HarnessVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for HarnessVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -10638,8 +11136,11 @@ pub mod types {
     impl ::std::str::FromStr for HarnessVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 100usize {
+                return Err("HarnessVersion: longer than 100 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HarnessVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10718,15 +11219,19 @@ pub mod types {
         ///The guest protocol range the host announced at its latest Hello.
         #[serde(rename = "guestProtocol")]
         pub guest_protocol: HostGuestProtocol,
+        ///The control plane's judgement of the host; it offers work to a Healthy host only.
+        pub health: HostHealth,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub labels: ::std::vec::Vec<HostLabel>,
         #[serde(rename = "memoryBytes")]
         pub memory_bytes: ::std::num::NonZeroU64,
         pub name: DisplayName,
-        ///The host's Ed25519 public key, base64. The private key never leaves the host.
         #[serde(rename = "publicKey")]
         pub public_key: HostPublicKey,
+        ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
+        #[serde(rename = "reportedHealth")]
+        pub reported_health: HostReportedHealth,
         pub state: HostState,
         ///The latest supervisor update failure the host reported, kept by its tenant.
         #[serde(rename = "supervisorUpdateFailure")]
@@ -10847,7 +11352,6 @@ pub mod types {
         #[serde(rename = "memoryBytes")]
         pub memory_bytes: ::std::num::NonZeroU64,
         pub name: DisplayName,
-        ///The host's Ed25519 public key, base64. The private key never leaves the host.
         #[serde(rename = "publicKey")]
         pub public_key: HostEnrolPublicKey,
         #[serde(rename = "supervisorVersion")]
@@ -10857,6 +11361,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostEnrolEnrolmentToken(::std::string::String);
+    impl HostEnrolEnrolmentToken {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostEnrolEnrolmentToken {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostEnrolEnrolmentToken {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for HostEnrolEnrolmentToken {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for HostEnrolEnrolmentToken {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -10871,8 +11395,11 @@ pub mod types {
     impl ::std::str::FromStr for HostEnrolEnrolmentToken {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("HostEnrolEnrolmentToken: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HostEnrolEnrolmentToken: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10903,6 +11430,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostEnrolPublicKey(::std::string::String);
+    impl HostEnrolPublicKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostEnrolPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostEnrolPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for HostEnrolPublicKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for HostEnrolPublicKey {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -10917,8 +11464,11 @@ pub mod types {
     impl ::std::str::FromStr for HostEnrolPublicKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("HostEnrolPublicKey: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HostEnrolPublicKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -10949,6 +11499,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostEnrolSupervisorVersion(::std::string::String);
+    impl HostEnrolSupervisorVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostEnrolSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostEnrolSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for HostEnrolSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for HostEnrolSupervisorVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -10963,8 +11533,11 @@ pub mod types {
     impl ::std::str::FromStr for HostEnrolSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("HostEnrolSupervisorVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HostEnrolSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11050,10 +11623,120 @@ pub mod types {
             value.parse()
         }
     }
+    ///Whether the control plane offers a host work. It is the control plane's own judgement of the host, kept by its tenant and written once per change.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum HostHealth {
+        Healthy,
+        RateLimited,
+        Unhealthy,
+        Degraded,
+    }
+    impl ::std::fmt::Display for HostHealth {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Healthy => f.write_str("Healthy"),
+                Self::RateLimited => f.write_str("RateLimited"),
+                Self::Unhealthy => f.write_str("Unhealthy"),
+                Self::Degraded => f.write_str("Degraded"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for HostHealth {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Healthy" => Ok(Self::Healthy),
+                "RateLimited" => Ok(Self::RateLimited),
+                "Unhealthy" => Ok(Self::Unhealthy),
+                "Degraded" => Ok(Self::Degraded),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostHealth {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostHealth {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`HostHealthChangedEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct HostHealthChangedEvent {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub detail: Detail,
+        pub event: HostHealthChangedEventEvent,
+        #[serde(rename = "eventId")]
+        pub event_id: Sequence,
+        pub health: HostHealth,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`HostHealthChangedEventEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum HostHealthChangedEventEvent {
+        HostHealthChanged,
+    }
+    impl ::std::fmt::Display for HostHealthChangedEventEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::HostHealthChanged => f.write_str("HostHealthChanged"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for HostHealthChangedEventEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "HostHealthChanged" => Ok(Self::HostHealthChanged),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostHealthChangedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostHealthChangedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///A label a host carries for placement, such as gpu or region-eu.
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostLabel(::std::string::String);
+    impl HostLabel {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostLabel {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostLabel {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for HostLabel {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for HostLabel {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -11068,10 +11751,13 @@ pub mod types {
     impl ::std::str::FromStr for HostLabel {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 63usize {
+                return Err("HostLabel: longer than 63 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z0-9][a-z0-9._=-]{0,62}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[a-z0-9][a-z0-9._=-]{0,62}$\"".into());
+                return Err("HostLabel: doesn't match pattern \"^[a-z0-9][a-z0-9._=-]{0,62}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11247,6 +11933,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostPublicKey(::std::string::String);
+    impl HostPublicKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for HostPublicKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for HostPublicKey {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -11261,8 +11967,11 @@ pub mod types {
     impl ::std::str::FromStr for HostPublicKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("HostPublicKey: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HostPublicKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11287,6 +11996,42 @@ pub mod types {
             ::std::string::String::deserialize(deserializer)?
                 .parse()
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///The health a host reports of itself in its Heartbeat.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum HostReportedHealth {
+        Healthy,
+        RateLimited,
+    }
+    impl ::std::fmt::Display for HostReportedHealth {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Healthy => f.write_str("Healthy"),
+                Self::RateLimited => f.write_str("RateLimited"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for HostReportedHealth {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Healthy" => Ok(Self::Healthy),
+                "RateLimited" => Ok(Self::RateLimited),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostReportedHealth {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostReportedHealth {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
         }
     }
     ///`HostState`
@@ -11335,6 +12080,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct HostSupervisorVersion(::std::string::String);
+    impl HostSupervisorVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for HostSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for HostSupervisorVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -11349,8 +12114,11 @@ pub mod types {
     impl ::std::str::FromStr for HostSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("HostSupervisorVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("HostSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11403,6 +12171,72 @@ pub mod types {
         pub memory_budget_mib: ::std::option::Option<i64>,
         #[serde(rename = "memoryHeldMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub memory_held_mib: ::std::option::Option<i64>,
+    }
+    ///A URL the API checks as one.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct HttpUrl(::std::string::String);
+    impl HttpUrl {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HttpUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HttpUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for HttpUrl {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for HttpUrl {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<HttpUrl> for ::std::string::String {
+        fn from(value: HttpUrl) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for HttpUrl {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("HttpUrl: longer than 4096 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HttpUrl {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HttpUrl {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for HttpUrl {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
     }
     ///The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -11476,6 +12310,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ImageReleaseCommit(::std::string::String);
+    impl ImageReleaseCommit {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ImageReleaseCommit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ImageReleaseCommit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ImageReleaseCommit {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ImageReleaseCommit {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -11490,10 +12344,13 @@ pub mod types {
     impl ::std::str::FromStr for ImageReleaseCommit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ImageReleaseCommit: longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err("ImageReleaseCommit: doesn't match pattern \"^[0-9a-f]{40}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11524,6 +12381,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ImageReleaseImageReleaseVersion(::std::string::String);
+    impl ImageReleaseImageReleaseVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ImageReleaseImageReleaseVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ImageReleaseImageReleaseVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ImageReleaseImageReleaseVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ImageReleaseImageReleaseVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -11538,10 +12415,16 @@ pub mod types {
     impl ::std::str::FromStr for ImageReleaseImageReleaseVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ImageReleaseImageReleaseVersion: longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^images-v[0-9]+\\.[0-9]+\\.[0-9]+$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^images-v[0-9]+\\.[0-9]+\\.[0-9]+$\"".into());
+                return Err(
+                    "ImageReleaseImageReleaseVersion: doesn't match pattern \"^images-v[0-9]+\\.[0-9]+\\.[0-9]+$\""
+                        .into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
@@ -11699,15 +12582,13 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct InstallArchive {
         pub architecture: HostArchitecture,
-        ///The path of the harness binary in the unpacked archive, after stripComponents, such as
-        ///codex-x86_64-unknown-linux-musl; the build moves it to the binary name the guest runs.
         #[serde(rename = "binaryPath")]
         pub binary_path: InstallArchiveBinaryPath,
         pub sha256: Sha256Digest,
         ///The paths of the other executables in the unpacked archive that the harness spawns from beside
         ///its binary, such as codex-code-mode-host; the build moves each next to the binary under its file name.
         #[serde(rename = "siblingBinaryPaths")]
-        pub sibling_binary_paths: ::std::vec::Vec<::std::string::String>,
+        pub sibling_binary_paths: ::std::vec::Vec<ShortText>,
         pub url: InstallArchiveUrl,
     }
     ///The path of the harness binary in the unpacked archive, after stripComponents, such as
@@ -11715,6 +12596,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct InstallArchiveBinaryPath(::std::string::String);
+    impl InstallArchiveBinaryPath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for InstallArchiveBinaryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for InstallArchiveBinaryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for InstallArchiveBinaryPath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for InstallArchiveBinaryPath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -11729,8 +12630,11 @@ pub mod types {
     impl ::std::str::FromStr for InstallArchiveBinaryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("InstallArchiveBinaryPath: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("InstallArchiveBinaryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11761,6 +12665,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct InstallArchiveUrl(::std::string::String);
+    impl InstallArchiveUrl {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for InstallArchiveUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for InstallArchiveUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for InstallArchiveUrl {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for InstallArchiveUrl {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -11775,8 +12699,11 @@ pub mod types {
     impl ::std::str::FromStr for InstallArchiveUrl {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("InstallArchiveUrl: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("InstallArchiveUrl: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11847,6 +12774,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct InvitationAcceptToken(::std::string::String);
+    impl InvitationAcceptToken {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for InvitationAcceptToken {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for InvitationAcceptToken {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for InvitationAcceptToken {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for InvitationAcceptToken {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -11861,8 +12808,11 @@ pub mod types {
     impl ::std::str::FromStr for InvitationAcceptToken {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("InvitationAcceptToken: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("InvitationAcceptToken: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -11902,7 +12852,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct InvitationCreated {
         #[serde(rename = "acceptUrl")]
-        pub accept_url: ::std::string::String,
+        pub accept_url: HttpUrl,
         pub invitation: Invitation,
     }
     ///An RS256 public key of the stage's issuer, in the JWK form of RFC 7517.
@@ -11954,6 +12904,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct IssuerJwkE(::std::string::String);
+    impl IssuerJwkE {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for IssuerJwkE {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for IssuerJwkE {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for IssuerJwkE {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for IssuerJwkE {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -11968,8 +12938,11 @@ pub mod types {
     impl ::std::str::FromStr for IssuerJwkE {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("IssuerJwkE: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("IssuerJwkE: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12034,6 +13007,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct IssuerJwkN(::std::string::String);
+    impl IssuerJwkN {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for IssuerJwkN {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for IssuerJwkN {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for IssuerJwkN {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for IssuerJwkN {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -12048,8 +13041,11 @@ pub mod types {
     impl ::std::str::FromStr for IssuerJwkN {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("IssuerJwkN: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("IssuerJwkN: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12120,6 +13116,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct IssuerKeyId(::std::string::String);
+    impl IssuerKeyId {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for IssuerKeyId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for IssuerKeyId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for IssuerKeyId {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for IssuerKeyId {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -12134,10 +13150,13 @@ pub mod types {
     impl ::std::str::FromStr for IssuerKeyId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 43usize {
+                return Err("IssuerKeyId: longer than 43 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{43}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
+                return Err("IssuerKeyId: doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12168,6 +13187,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct LocalFilePath(::std::string::String);
+    impl LocalFilePath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for LocalFilePath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for LocalFilePath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for LocalFilePath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for LocalFilePath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -12183,10 +13222,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 1000usize {
-                return Err("longer than 1000 characters".into());
+                return Err("LocalFilePath: longer than 1000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("LocalFilePath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12204,6 +13243,73 @@ pub mod types {
         }
     }
     impl<'de> ::serde::Deserialize<'de> for LocalFilePath {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///A line of harness output or a document such as a script or a devcontainer.json. The guest
+    ///protocol carries frames up to 4 MiB, but a single line past 1 MiB is refused instead of stored.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct LongText(::std::string::String);
+    impl LongText {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for LongText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for LongText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for LongText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for LongText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<LongText> for ::std::string::String {
+        fn from(value: LongText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for LongText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 1048576usize {
+                return Err("LongText: longer than 1048576 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for LongText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for LongText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for LongText {
         fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
         where
             D: ::serde::Deserializer<'de>,
@@ -12286,6 +13392,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct MetricEntryDescription(::std::string::String);
+    impl MetricEntryDescription {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for MetricEntryDescription {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for MetricEntryDescription {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for MetricEntryDescription {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for MetricEntryDescription {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -12300,8 +13426,11 @@ pub mod types {
     impl ::std::str::FromStr for MetricEntryDescription {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("MetricEntryDescription: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("MetricEntryDescription: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12332,6 +13461,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct MetricEntryUnit(::std::string::String);
+    impl MetricEntryUnit {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for MetricEntryUnit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for MetricEntryUnit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for MetricEntryUnit {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for MetricEntryUnit {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -12346,8 +13495,11 @@ pub mod types {
     impl ::std::str::FromStr for MetricEntryUnit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("MetricEntryUnit: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("MetricEntryUnit: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12377,7 +13529,7 @@ pub mod types {
     ///One dimension of a metric's series in the window and the values it takes.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct MetricFacet {
-        pub dimension: ::std::string::String,
+        pub dimension: ShortText,
         pub values: ::std::vec::Vec<MetricFacetValue>,
     }
     ///`MetricFacetValue`
@@ -12385,7 +13537,7 @@ pub mod types {
     pub struct MetricFacetValue {
         #[serde(rename = "seriesCount")]
         pub series_count: i32,
-        pub value: ::std::string::String,
+        pub value: ShortText,
     }
     ///A metric's declaration: its unit as OpenTelemetry writes it (s, MiB, {token}), its kind and what it measures.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -12399,6 +13551,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct MetricInstrumentDescription(::std::string::String);
+    impl MetricInstrumentDescription {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for MetricInstrumentDescription {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for MetricInstrumentDescription {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for MetricInstrumentDescription {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for MetricInstrumentDescription {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -12413,8 +13585,11 @@ pub mod types {
     impl ::std::str::FromStr for MetricInstrumentDescription {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("MetricInstrumentDescription: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("MetricInstrumentDescription: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12445,6 +13620,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct MetricInstrumentUnit(::std::string::String);
+    impl MetricInstrumentUnit {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for MetricInstrumentUnit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for MetricInstrumentUnit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for MetricInstrumentUnit {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for MetricInstrumentUnit {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -12459,8 +13654,11 @@ pub mod types {
     impl ::std::str::FromStr for MetricInstrumentUnit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("MetricInstrumentUnit: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("MetricInstrumentUnit: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12527,6 +13725,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct MetricName(::std::string::String);
+    impl MetricName {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for MetricName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for MetricName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for MetricName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for MetricName {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -12542,12 +13760,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 64usize {
-                return Err("longer than 64 characters".into());
+                return Err("MetricName: longer than 64 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$\"".into());
+                return Err("MetricName: doesn't match pattern \"^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12590,7 +13808,7 @@ pub mod types {
     ///The buckets of one group, keyed by the values of its groupBy dimensions; a bucket with no points is left out.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct MetricSeries {
-        pub group: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub group: ::std::collections::HashMap<::std::string::String, ShortText>,
         pub points: ::std::vec::Vec<MetricPoint>,
     }
     ///A metric's buckets in the window, one series per group. Past 20 groups the rest fold into one
@@ -12600,13 +13818,13 @@ pub mod types {
         pub bucket: MetricBucket,
         pub metric: MetricName,
         pub series: ::std::vec::Vec<MetricSeries>,
-        pub unit: ::std::string::String,
+        pub unit: ShortText,
     }
     ///A page of the turn points behind a metric, oldest first. Pass `cursor` to read on; `finished`
     ///is true when no point in the window follows it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct MetricTurnPage {
-        pub cursor: ::std::string::String,
+        pub cursor: Summary,
         pub finished: bool,
         pub points: ::std::vec::Vec<MetricTurnPoint>,
     }
@@ -12614,7 +13832,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct MetricTurnPoint {
         pub at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub dimensions: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub dimensions: ::std::collections::HashMap<::std::string::String, ShortText>,
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
         #[serde(rename = "turnId")]
@@ -12628,13 +13846,33 @@ pub mod types {
         pub enrolment_token: EnrolmentToken,
         ///Downloads, installs and enrols the supervisor on a new host. It holds no token: it reads `token` from stdin.
         #[serde(rename = "installCommand")]
-        pub install_command: ::std::string::String,
-        pub token: ::std::string::String,
+        pub install_command: Detail,
+        pub token: Token,
     }
     ///`ModelName`
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ModelName(::std::string::String);
+    impl ModelName {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ModelName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ModelName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ModelName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ModelName {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -12650,10 +13888,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("ModelName: longer than 200 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ModelName: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -12819,243 +14057,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`NamespaceConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnected {
-        pub connection: NamespaceConnection,
-        pub state: NamespaceConnectedState,
-    }
-    ///`NamespaceConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum NamespaceConnectedState {
-        Connected,
-    }
-    impl ::std::fmt::Display for NamespaceConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Connected => f.write_str("Connected"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for NamespaceConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Connected" => Ok(Self::Connected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The tenant's Namespace build provider. Namespace trusts tokens of the stage's issuer whose sub
-    ///matches `subjectPattern` and whose aud is `audience`.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnection {
-        ///The Namespace workspace that bills the builds, as the tenant names it.
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        ///The aud Tumpel defines for Namespace: federation.namespaceapis.com.
-        pub audience: OidcAudience,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        ///The stage's OIDC issuer Namespace registers.
-        pub issuer: ::std::string::String,
-        #[serde(rename = "namespaceConnectionId")]
-        pub namespace_connection_id: EntityId,
-        ///The sub of a prebuild token: tenant:<tenantId>:persona:<personaName>:job:prebuild, with the prebuild's persona name.
-        #[serde(rename = "subjectPattern")]
-        pub subject_pattern: ::std::string::String,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-        ///The Namespace workspace the builds run in, such as tenant_123456789ab.
-        #[serde(rename = "workspaceId")]
-        pub workspace_id: NamespaceWorkspaceId,
-    }
-    ///The tenant's Namespace build provider connection.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnectionLink {
-        pub link: NamespaceLink,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`NamespaceConnectionStart`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnectionStart {
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        #[serde(rename = "workspaceId")]
-        pub workspace_id: NamespaceWorkspaceId,
-    }
-    ///`NamespaceLink`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum NamespaceLink {
-        Connected(NamespaceConnected),
-        NotConnected(NamespaceNotConnected),
-        NotConfigured(NamespaceNotConfigured),
-    }
-    impl ::std::convert::From<NamespaceConnected> for NamespaceLink {
-        fn from(value: NamespaceConnected) -> Self {
-            Self::Connected(value)
-        }
-    }
-    impl ::std::convert::From<NamespaceNotConnected> for NamespaceLink {
-        fn from(value: NamespaceNotConnected) -> Self {
-            Self::NotConnected(value)
-        }
-    }
-    impl ::std::convert::From<NamespaceNotConfigured> for NamespaceLink {
-        fn from(value: NamespaceNotConfigured) -> Self {
-            Self::NotConfigured(value)
-        }
-    }
-    ///The stage has no issuer hostname yet, so Namespace cannot trust its tokens; `fix` says how to deploy it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceNotConfigured {
-        pub detail: ::std::string::String,
-        pub fix: ::std::string::String,
-        pub state: NamespaceNotConfiguredState,
-    }
-    ///`NamespaceNotConfiguredState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum NamespaceNotConfiguredState {
-        NotConfigured,
-    }
-    impl ::std::fmt::Display for NamespaceNotConfiguredState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConfigured => f.write_str("NotConfigured"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for NamespaceNotConfiguredState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConfigured" => Ok(Self::NotConfigured),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceNotConfiguredState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceNotConfiguredState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The trust material to register at Namespace before connecting.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceNotConnected {
-        ///The aud Tumpel defines for Namespace: federation.namespaceapis.com.
-        pub audience: OidcAudience,
-        pub issuer: ::std::string::String,
-        pub state: NamespaceNotConnectedState,
-        #[serde(rename = "subjectPattern")]
-        pub subject_pattern: ::std::string::String,
-    }
-    ///`NamespaceNotConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum NamespaceNotConnectedState {
-        NotConnected,
-    }
-    impl ::std::fmt::Display for NamespaceNotConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConnected => f.write_str("NotConnected"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for NamespaceNotConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConnected" => Ok(Self::NotConnected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///A Namespace workspace id, such as tenant_123456789ab.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct NamespaceWorkspaceId(::std::string::String);
-    impl ::std::ops::Deref for NamespaceWorkspaceId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<NamespaceWorkspaceId> for ::std::string::String {
-        fn from(value: NamespaceWorkspaceId) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for NamespaceWorkspaceId {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 100usize {
-                return Err("longer than 100 characters".into());
-            }
-            static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
-                ::std::sync::LazyLock::new(|| ::regress::Regex::new("^tenant_[A-Za-z0-9]+$").unwrap());
-            if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^tenant_[A-Za-z0-9]+$\"".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceWorkspaceId {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceWorkspaceId {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for NamespaceWorkspaceId {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
     ///`NotConfiguredConnection`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct NotConfiguredConnection {
@@ -13179,6 +14180,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct NpmInstallRecipePackage(::std::string::String);
+    impl NpmInstallRecipePackage {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for NpmInstallRecipePackage {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for NpmInstallRecipePackage {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for NpmInstallRecipePackage {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for NpmInstallRecipePackage {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -13193,8 +14214,11 @@ pub mod types {
     impl ::std::str::FromStr for NpmInstallRecipePackage {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("NpmInstallRecipePackage: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("NpmInstallRecipePackage: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -13225,6 +14249,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct NpmInstallRecipePackageVersion(::std::string::String);
+    impl NpmInstallRecipePackageVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for NpmInstallRecipePackageVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for NpmInstallRecipePackageVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for NpmInstallRecipePackageVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for NpmInstallRecipePackageVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -13239,8 +14283,11 @@ pub mod types {
     impl ::std::str::FromStr for NpmInstallRecipePackageVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("NpmInstallRecipePackageVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("NpmInstallRecipePackageVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -13270,13 +14317,13 @@ pub mod types {
     ///An RFC 6749 authorization code redemption, with the PKCE verifier and the RFC 8707 resource.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthAuthorizationCodeRequest {
-        pub client_id: ::std::string::String,
-        pub code: ::std::string::String,
-        pub code_verifier: ::std::string::String,
+        pub client_id: ShortText,
+        pub code: Token,
+        pub code_verifier: Token,
         pub grant_type: OAuthAuthorizationCodeRequestGrantType,
-        pub redirect_uri: ::std::string::String,
+        pub redirect_uri: UrlText,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub resource: ::std::option::Option<::std::string::String>,
+        pub resource: ::std::option::Option<UrlText>,
     }
     ///`OAuthAuthorizationCodeRequestGrantType`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -13315,21 +14362,21 @@ pub mod types {
     ///`OAuthClient`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthClient {
-        pub client_id: ::std::string::String,
+        pub client_id: ShortText,
         pub client_id_issued_at: i64,
-        pub client_name: ::std::string::String,
-        pub grant_types: ::std::vec::Vec<::std::string::String>,
-        pub redirect_uris: ::std::vec::Vec<::std::string::String>,
-        pub response_types: ::std::vec::Vec<::std::string::String>,
-        pub scope: ::std::string::String,
+        pub client_name: Summary,
+        pub grant_types: ::std::vec::Vec<ShortText>,
+        pub redirect_uris: ::std::vec::Vec<HttpUrl>,
+        pub response_types: ::std::vec::Vec<ShortText>,
+        pub scope: Summary,
         pub token_endpoint_auth_method: OAuthClientTokenEndpointAuthMethod,
     }
     ///RFC 7591 dynamic client registration. Only the redirect addresses and the name are read.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthClientRegistration {
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub client_name: ::std::option::Option<::std::string::String>,
-        pub redirect_uris: ::std::vec::Vec<::std::string::String>,
+        pub client_name: ::std::option::Option<Summary>,
+        pub redirect_uris: ::std::vec::Vec<HttpUrl>,
     }
     ///`OAuthClientTokenEndpointAuthMethod`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -13428,7 +14475,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthError {
         pub error: OAuthErrorCode,
-        pub error_description: ::std::string::String,
+        pub error_description: Detail,
     }
     ///The OAuth error codes of RFC 6749, RFC 7591, RFC 8628 and RFC 8707 the control plane answers with.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -13513,10 +14560,10 @@ pub mod types {
     pub struct OAuthGrant {
         ///The client_id the client registered with, or tumpel-dashboard for the dashboard.
         #[serde(rename = "clientId")]
-        pub client_id: ::std::string::String,
+        pub client_id: ShortText,
         ///The name the client registered with, such as Claude.
         #[serde(rename = "clientName")]
-        pub client_name: ::std::string::String,
+        pub client_name: Summary,
         ///The grant the client's tokens belong to; revoking it signs the client out.
         #[serde(rename = "grantId")]
         pub grant_id: EntityId,
@@ -13525,16 +14572,16 @@ pub mod types {
         pub last_issued_at: i64,
         ///The origin of the client's registered callback, such as https://claude.ai.
         #[serde(rename = "redirectOrigin")]
-        pub redirect_origin: ::std::string::String,
+        pub redirect_origin: HttpUrl,
     }
     ///An RFC 6749 refresh, which spends the refresh token and issues a new pair.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthRefreshTokenRequest {
-        pub client_id: ::std::string::String,
+        pub client_id: ShortText,
         pub grant_type: OAuthRefreshTokenRequestGrantType,
-        pub refresh_token: ::std::string::String,
+        pub refresh_token: Token,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub resource: ::std::option::Option<::std::string::String>,
+        pub resource: ::std::option::Option<UrlText>,
     }
     ///`OAuthRefreshTokenRequestGrantType`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -13573,18 +14620,18 @@ pub mod types {
     ///An RFC 7009 revocation by a public client: the token and every token of its grant stop working. An unknown token is answered as revoked.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthRevocationRequest {
-        pub client_id: ::std::string::String,
-        pub token: ::std::string::String,
+        pub client_id: ShortText,
+        pub token: Token,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub token_type_hint: ::std::option::Option<::std::string::String>,
+        pub token_type_hint: ::std::option::Option<ShortText>,
     }
     ///`OAuthToken`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OAuthToken {
-        pub access_token: ::std::string::String,
+        pub access_token: Token,
         pub expires_in: i32,
-        pub refresh_token: ::std::string::String,
-        pub scope: ::std::string::String,
+        pub refresh_token: Token,
+        pub scope: Summary,
         pub token_type: OAuthTokenTokenType,
     }
     ///`OAuthTokenRequest`
@@ -13698,55 +14745,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///The aud claim a provider requires on Tumpel's tokens, such as federation.namespaceapis.com.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct OidcAudience(::std::string::String);
-    impl ::std::ops::Deref for OidcAudience {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<OidcAudience> for ::std::string::String {
-        fn from(value: OidcAudience) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for OidcAudience {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 500usize {
-                return Err("longer than 500 characters".into());
-            }
-            if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for OidcAudience {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for OidcAudience {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for OidcAudience {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
     ///The OpenID Connect discovery document of the stage's issuer, served at
     ///`/.well-known/openid-configuration` on the issuer hostname.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -13754,8 +14752,8 @@ pub mod types {
         pub claims_supported: ::std::vec::Vec<OpenIdConfigurationClaimsSupportedItem>,
         pub id_token_signing_alg_values_supported:
             ::std::vec::Vec<OpenIdConfigurationIdTokenSigningAlgValuesSupportedItem>,
-        pub issuer: ::std::string::String,
-        pub jwks_uri: ::std::string::String,
+        pub issuer: HttpUrl,
+        pub jwks_uri: HttpUrl,
         pub response_types_supported: ::std::vec::Vec<OpenIdConfigurationResponseTypesSupportedItem>,
         pub scopes_supported: ::std::vec::Vec<OpenIdConfigurationScopesSupportedItem>,
         pub subject_types_supported: ::std::vec::Vec<OpenIdConfigurationSubjectTypesSupportedItem>,
@@ -13980,7 +14978,7 @@ pub mod types {
     pub struct OpenRouterAuthorizationAwaitingCallback {
         ///OpenRouter's authorization page, with the control plane's callback_url, this authorization's PKCE S256 challenge and its signed state.
         #[serde(rename = "authorizeUrl")]
-        pub authorize_url: ::std::string::String,
+        pub authorize_url: HttpUrl,
         ///When the callback must arrive by, or the authorization fails AuthorizationTimedOut.
         #[serde(rename = "callbackDueAt")]
         pub callback_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
@@ -14107,7 +15105,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct OpenRouterAuthorizationFailed {
         ///What failed and what fixes it.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: OpenRouterAuthorizationFailureReason,
@@ -14266,6 +15264,77 @@ pub mod types {
     impl ::std::convert::From<OpenRouterAuthorizationFailed> for OpenRouterAuthorizationStatus {
         fn from(value: OpenRouterAuthorizationFailed) -> Self {
             Self::Failed(value)
+        }
+    }
+    ///A file system path, a socket or an object storage key; 4096 is the Linux PATH_MAX.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct PathText(::std::string::String);
+    impl PathText {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PathText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PathText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PathText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::convert::AsRef<::std::path::Path> for PathText {
+        fn as_ref(&self) -> &::std::path::Path {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for PathText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<PathText> for ::std::string::String {
+        fn from(value: PathText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for PathText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("PathText: longer than 4096 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for PathText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for PathText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for PathText {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
     ///`PausedSubscription`
@@ -14476,6 +15545,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PersonaFileContent(::std::string::String);
+    impl PersonaFileContent {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PersonaFileContent {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PersonaFileContent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PersonaFileContent {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for PersonaFileContent {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -14491,7 +15580,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 87384usize {
-                return Err("longer than 87384 characters".into());
+                return Err("PersonaFileContent: longer than 87384 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -14620,6 +15709,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PersonaFilePath(::std::string::String);
+    impl PersonaFilePath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PersonaFilePath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PersonaFilePath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PersonaFilePath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for PersonaFilePath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -14635,12 +15744,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("PersonaFilePath: longer than 200 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$\"".into());
+                return Err("PersonaFilePath: doesn't match pattern \"^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -14758,7 +15867,7 @@ pub mod types {
         #[serde(rename = "uploadExpiresAt")]
         pub upload_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "uploadUrl")]
-        pub upload_url: ::std::string::String,
+        pub upload_url: HttpUrl,
     }
     ///Asks for a presigned upload of one persona file larger than PersonaFileLimit.InlineFileBytes, named by the sha256 of its bytes.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -14782,6 +15891,26 @@ pub mod types {
     impl ::std::convert::From<StoredPersonaFile> for PersonaFileWrite {
         fn from(value: StoredPersonaFile) -> Self {
             Self::StoredPersonaFile(value)
+        }
+    }
+    ///The tenant's personas with file metadata and no file content, at most 10,000 entries.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct PersonaList(pub ::std::vec::Vec<TenantApiStoredPersona>);
+    impl ::std::ops::Deref for PersonaList {
+        type Target = ::std::vec::Vec<TenantApiStoredPersona>;
+        fn deref(&self) -> &::std::vec::Vec<TenantApiStoredPersona> {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<PersonaList> for ::std::vec::Vec<TenantApiStoredPersona> {
+        fn from(value: PersonaList) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::From<::std::vec::Vec<TenantApiStoredPersona>> for PersonaList {
+        fn from(value: ::std::vec::Vec<TenantApiStoredPersona>) -> Self {
+            Self(value)
         }
     }
     ///Changes the persona fields it names and leaves every other field, and every file, as it is. The harness is fixed at create, and files change through a file patch.
@@ -14840,10 +15969,11 @@ pub mod types {
         #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
         pub tumpel_mcp: ::std::option::Option<bool>,
     }
-    ///A repository's dependencies installed once by a build provider on the tenant's account, stored as
-    ///one layer. The repository, the input digest and the guest image digest are its key: every commit
+    ///A repository's dependencies installed once by a turn on one of the tenant's online Amd64 hosts,
+    ///as a turn of a session the session list leaves out, and stored as one layer: the host's snapshot
+    ///of the box. The repository, the input digest and the guest image digest are its key: every commit
     ///with the same devcontainer files and lockfiles, built on the same guest image, shares one
-    ///prebuild. A prebuild exists only once its provider accepted the job.
+    ///prebuild. A prebuild exists only once its turn is offered to a host.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct Prebuild {
         #[serde(rename = "configSource")]
@@ -14866,14 +15996,12 @@ pub mod types {
         pub input_digest: Sha256Digest,
         ///The transcript of the prebuild's turn: the output of the repository's setup step.
         #[serde(rename = "logUrl")]
-        pub log_url: ::std::string::String,
-        ///The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, whose harness version picks the guest image, and whose name the job's subject carries.
+        pub log_url: HttpUrl,
+        ///The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, and whose harness version picks the guest image.
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
         #[serde(rename = "prebuildId")]
         pub prebuild_id: EntityId,
-        ///The provider the start named. The prebuild runs on one of the tenant's online Amd64 hosts, as a turn of a session the session list leaves out.
-        pub provider: BuildProvider,
         ///The repository as https://github.com/<owner>/<name> in lower case, whatever form the start named it in.
         pub repository: RepositoryUrl,
         #[serde(rename = "startedAt")]
@@ -14961,7 +16089,7 @@ pub mod types {
     ///`PrebuildConverting`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildConverting {
-        ///The sha256 of the compressed OCI layer the job uploaded.
+        ///The sha256 of the compressed OCI layer the host stored.
         #[serde(rename = "layerDigest")]
         pub layer_digest: Sha256Digest,
         #[serde(rename = "layerSizeBytes")]
@@ -15046,7 +16174,7 @@ pub mod types {
     pub struct PrebuildDone {
         #[serde(rename = "finishedAt")]
         pub finished_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///The sha256 of the OCI layer the provider uploaded.
+        ///The sha256 of the OCI layer the host stored.
         #[serde(rename = "layerDigest")]
         pub layer_digest: Sha256Digest,
         #[serde(rename = "layerSizeBytes")]
@@ -15227,17 +16355,17 @@ pub mod types {
     pub struct PrebuildFailure {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
-        ///What failed, with what the provider reported.
-        pub detail: ::std::string::String,
+        ///What failed, with what the turn reported.
+        pub detail: Detail,
         ///What fixes it.
-        pub fix: ::std::string::String,
+        pub fix: Detail,
         pub phase: PrebuildFailurePhase,
         #[serde(rename = "prebuildId")]
         pub prebuild_id: EntityId,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
-    ///The phase a Failed prebuild stopped in. A provider that refuses the job refuses the start, and no prebuild exists.
+    ///The phase a Failed prebuild stopped in. A start the control plane refuses stores no prebuild.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildFailurePhase {
         Dispatch,
@@ -15283,10 +16411,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildFinding {
         pub code: PrebuildFindingCode,
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         ///The field or file the finding is about.
-        pub field: ::std::string::String,
-        pub fix: ::std::string::String,
+        pub field: ShortText,
+        pub fix: Detail,
     }
     ///What a preview finds wrong with a config.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -15329,21 +16457,6 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
-    }
-    ///What a GitHub Actions run of the caller workflow needs to build its prebuild. The start keeps the
-    ///rest of the job's inputs out of the caller workflow, so the workflow holds only the API origin.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct PrebuildJobInputs {
-        ///The digest of the guest image the layer is built on.
-        #[serde(rename = "imageDigest")]
-        pub image_digest: Sha256Digest,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        ///A presigned GET of the guest image's root filesystem tar, valid for the dispatch and build budgets from this answer.
-        #[serde(rename = "rootfsUrl")]
-        pub rootfs_url: ::std::string::String,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
     }
     ///Why a session's files start without a prebuild's layer.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -15444,7 +16557,7 @@ pub mod types {
         pub config_source: PrebuildPreviewSource,
         ///The containerEnv the commands run with, as the file writes it.
         #[serde(rename = "containerEnv")]
-        pub container_env: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub container_env: ::std::collections::HashMap<::std::string::String, Detail>,
         ///What a build would refuse or fail on; empty when the config is ready to build.
         pub findings: ::std::vec::Vec<PrebuildFinding>,
         ///The input digest a start would record now, over the default branch's files; a supplied config counts as .devcontainer/devcontainer.json.
@@ -15457,9 +16570,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildPreviewCommand {
         ///The program and its arguments; a string command runs as /bin/sh -c <command>.
-        pub argv: ::std::vec::Vec<::std::string::String>,
+        pub argv: ::std::vec::Vec<Detail>,
         ///The command's name in the file: the lifecycle field, or <field>.<key> for an entry of an object-form command.
-        pub label: ::std::string::String,
+        pub label: ShortText,
         pub lifecycle: PrebuildLifecycleCommand,
     }
     ///Previews the repository's own devcontainer.json.
@@ -15521,6 +16634,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PrebuildPreviewOfSuppliedDevcontainer(::std::string::String);
+    impl PrebuildPreviewOfSuppliedDevcontainer {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PrebuildPreviewOfSuppliedDevcontainer {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PrebuildPreviewOfSuppliedDevcontainer {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PrebuildPreviewOfSuppliedDevcontainer {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for PrebuildPreviewOfSuppliedDevcontainer {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -15536,7 +16669,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 65536usize {
-                return Err("longer than 65536 characters".into());
+                return Err("PrebuildPreviewOfSuppliedDevcontainer: longer than 65536 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -15655,8 +16788,6 @@ pub mod types {
         ///The persona whose secret set's GITHUB_TOKEN reads the repository when the tenant's GitHub App installation does not cover it, and whose harness version picks the guest image.
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
-        ///Recorded on the prebuild; the prebuild runs on one of the tenant's online Amd64 hosts, which builds no other prebuild.
-        pub provider: BuildProvider,
         ///Start a job even when a prebuild with the same key is stored or running; false when left out.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub rebuild: ::std::option::Option<bool>,
@@ -15755,6 +16886,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PrebuildTemplateId(::std::string::String);
+    impl PrebuildTemplateId {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PrebuildTemplateId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PrebuildTemplateId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PrebuildTemplateId {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for PrebuildTemplateId {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -15769,10 +16920,13 @@ pub mod types {
     impl ::std::str::FromStr for PrebuildTemplateId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 40usize {
+                return Err("PrebuildTemplateId: longer than 40 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z][a-z0-9-]{0,39}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[a-z][a-z0-9-]{0,39}$\"".into());
+                return Err("PrebuildTemplateId: doesn't match pattern \"^[a-z][a-z0-9-]{0,39}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -15803,7 +16957,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildTemplateManifest {
         ///What the template's commands install, one item each, such as the npm dependencies from package-lock.json.
-        pub installs: ::std::vec::Vec<::std::string::String>,
+        pub installs: ::std::vec::Vec<Summary>,
         pub summary: PrebuildTemplateSummary,
         ///The toolchains the version pins: the guest image it targets.
         pub toolchains: ::std::vec::Vec<PrebuildTemplateToolchain>,
@@ -15812,14 +16966,14 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildTemplatePullRequest {
         ///The branch the pull request merges from: tumpel/prebuild-template.
-        pub branch: ::std::string::String,
+        pub branch: ShortText,
         #[serde(rename = "pullRequestNumber")]
         pub pull_request_number: ::std::num::NonZeroU64,
         ///The repository as https://github.com/<owner>/<name> in lower case.
         pub repository: RepositoryUrl,
         pub state: PullRequestState,
         ///The pull request's page on GitHub.
-        pub url: ::std::string::String,
+        pub url: HttpUrl,
     }
     ///Opens a pull request that adds a template version's devcontainer.json to a repository.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -15837,6 +16991,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PrebuildTemplateSummary(::std::string::String);
+    impl PrebuildTemplateSummary {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PrebuildTemplateSummary {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PrebuildTemplateSummary {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PrebuildTemplateSummary {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for PrebuildTemplateSummary {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -15851,8 +17025,11 @@ pub mod types {
     impl ::std::str::FromStr for PrebuildTemplateSummary {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 500usize {
+                return Err("PrebuildTemplateSummary: longer than 500 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("PrebuildTemplateSummary: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -15883,7 +17060,6 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildTemplateToolchain {
         pub toolchain: Toolchain,
-        ///The toolchain's version, such as 26.13.1.
         #[serde(rename = "toolchainVersion")]
         pub toolchain_version: PrebuildTemplateToolchainToolchainVersion,
     }
@@ -15891,6 +17067,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PrebuildTemplateToolchainToolchainVersion(::std::string::String);
+    impl PrebuildTemplateToolchainToolchainVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PrebuildTemplateToolchainToolchainVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PrebuildTemplateToolchainToolchainVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PrebuildTemplateToolchainToolchainVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for PrebuildTemplateToolchainToolchainVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -15905,8 +17101,11 @@ pub mod types {
     impl ::std::str::FromStr for PrebuildTemplateToolchainToolchainVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("PrebuildTemplateToolchainToolchainVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("PrebuildTemplateToolchainToolchainVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -15937,11 +17136,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildTemplateVersion {
         ///The devcontainer.json text the version commits, byte for byte the file whose sha256 is digest.
-        pub devcontainer: ::std::string::String,
+        pub devcontainer: LongText,
         ///The sha256 of the version's devcontainer.json bytes.
         pub digest: Sha256Digest,
         ///What the template's commands install, one item each, such as the npm dependencies from package-lock.json.
-        pub installs: ::std::vec::Vec<::std::string::String>,
+        pub installs: ::std::vec::Vec<Summary>,
         #[serde(rename = "prebuildTemplateId")]
         pub prebuild_template_id: PrebuildTemplateId,
         #[serde(rename = "prebuildTemplateVersion")]
@@ -15999,46 +17198,12 @@ pub mod types {
         ///The sha256 of the version's devcontainer.json bytes.
         pub digest: Sha256Digest,
         ///What the template's commands install, one item each, such as the npm dependencies from package-lock.json.
-        pub installs: ::std::vec::Vec<::std::string::String>,
+        pub installs: ::std::vec::Vec<Summary>,
         #[serde(rename = "prebuildTemplateVersion")]
         pub prebuild_template_version: PrebuildTemplateVersionNumber,
         pub summary: PrebuildTemplateSummary,
         ///The toolchains the version pins: the guest image it targets.
         pub toolchains: ::std::vec::Vec<PrebuildTemplateToolchain>,
-    }
-    ///Tells the control plane the job uploaded the layer its start recorded.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct PrebuildUploadComplete {
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///Where to PUT the layer: one PUT to `url` carrying content-length of the layer size and
-    ///x-amz-checksum-sha256 of `sha256`, the two headers the URL signs,
-    ///before `uploadExpiresAt`, the prebuild upload budget after the exchange. /opt/tumpel/prebuild.mjs
-    ///upload in the guest image asks for it and makes the PUT.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct PrebuildUploadGrant {
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        ///The layer digest the PUT is signed for.
-        pub sha256: Sha256Digest,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "uploadExpiresAt")]
-        pub upload_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub url: ::std::string::String,
-    }
-    ///Asks for the presigned upload of a prebuild's layer: one OCI layer tar, named by its sha256 and size.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct PrebuildUploadStart {
-        #[serde(rename = "layerDigest")]
-        pub layer_digest: Sha256Digest,
-        ///At most 5 GiB, what one presigned PUT takes.
-        #[serde(rename = "layerSizeBytes")]
-        pub layer_size_bytes: ::std::num::NonZeroU64,
-        ///The tenant that started the prebuild; the dispatch hands it to the job with the prebuild id.
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
     }
     ///A person as a member of one tenant. One principal per email across every tenant it belongs
     ///to; `tenantId` and `role` are its membership of the tenant it is read in.
@@ -16095,9 +17260,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct Problem {
         pub code: ProblemCode,
-        pub detail: ::std::string::String,
-        pub fix: ::std::string::String,
-        pub title: ::std::string::String,
+        pub detail: Detail,
+        pub fix: Detail,
+        pub title: Summary,
     }
     ///`ProblemCode`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -16113,6 +17278,7 @@ pub mod types {
         HostRevoked,
         NoHostAvailable,
         PoolExhausted,
+        HostDegraded,
         HostOffline,
         HarnessNotInCatalog,
         NoCredential,
@@ -16135,28 +17301,9 @@ pub mod types {
         ReleaseUnreadable,
         TranscriptLineUnreadable,
         ImageNotReleased,
-        NoBuildProvider,
-        BuildProviderUnavailable,
-        DispatchRefused,
         GitHubAppPermissionMissing,
-        CallerWorkflowRefused,
         RepositoryUnreadable,
         GitHubInstallationUnreadable,
-        IssuerMissing,
-        JobTokenRefused,
-        JobTokenMismatch,
-        PrebuildNotUploading,
-        #[serde(rename = "CircleCITokenRefused")]
-        CircleCiTokenRefused,
-        #[serde(rename = "CircleCIProjectMissing")]
-        CircleCiProjectMissing,
-        #[serde(rename = "CircleCIDefinitionMismatch")]
-        CircleCiDefinitionMismatch,
-        #[serde(rename = "CircleCIRefused")]
-        CircleCiRefused,
-        #[serde(rename = "CircleCIAuthorizationNotWaiting")]
-        CircleCiAuthorizationNotWaiting,
-        LayerNotUploaded,
         OwnerRequired,
         LastOwner,
         InvitationExpired,
@@ -16185,6 +17332,10 @@ pub mod types {
         ConnectorTurnTokenRefused,
         ConnectorAuthRefused,
         ConnectorUnreachable,
+        BodyTooLarge,
+        RateLimited,
+        UsageLimitReached,
+        AboveFreeTier,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
     }
@@ -16202,6 +17353,7 @@ pub mod types {
                 Self::HostRevoked => f.write_str("HostRevoked"),
                 Self::NoHostAvailable => f.write_str("NoHostAvailable"),
                 Self::PoolExhausted => f.write_str("PoolExhausted"),
+                Self::HostDegraded => f.write_str("HostDegraded"),
                 Self::HostOffline => f.write_str("HostOffline"),
                 Self::HarnessNotInCatalog => f.write_str("HarnessNotInCatalog"),
                 Self::NoCredential => f.write_str("NoCredential"),
@@ -16224,23 +17376,9 @@ pub mod types {
                 Self::ReleaseUnreadable => f.write_str("ReleaseUnreadable"),
                 Self::TranscriptLineUnreadable => f.write_str("TranscriptLineUnreadable"),
                 Self::ImageNotReleased => f.write_str("ImageNotReleased"),
-                Self::NoBuildProvider => f.write_str("NoBuildProvider"),
-                Self::BuildProviderUnavailable => f.write_str("BuildProviderUnavailable"),
-                Self::DispatchRefused => f.write_str("DispatchRefused"),
                 Self::GitHubAppPermissionMissing => f.write_str("GitHubAppPermissionMissing"),
-                Self::CallerWorkflowRefused => f.write_str("CallerWorkflowRefused"),
                 Self::RepositoryUnreadable => f.write_str("RepositoryUnreadable"),
                 Self::GitHubInstallationUnreadable => f.write_str("GitHubInstallationUnreadable"),
-                Self::IssuerMissing => f.write_str("IssuerMissing"),
-                Self::JobTokenRefused => f.write_str("JobTokenRefused"),
-                Self::JobTokenMismatch => f.write_str("JobTokenMismatch"),
-                Self::PrebuildNotUploading => f.write_str("PrebuildNotUploading"),
-                Self::CircleCiTokenRefused => f.write_str("CircleCITokenRefused"),
-                Self::CircleCiProjectMissing => f.write_str("CircleCIProjectMissing"),
-                Self::CircleCiDefinitionMismatch => f.write_str("CircleCIDefinitionMismatch"),
-                Self::CircleCiRefused => f.write_str("CircleCIRefused"),
-                Self::CircleCiAuthorizationNotWaiting => f.write_str("CircleCIAuthorizationNotWaiting"),
-                Self::LayerNotUploaded => f.write_str("LayerNotUploaded"),
                 Self::OwnerRequired => f.write_str("OwnerRequired"),
                 Self::LastOwner => f.write_str("LastOwner"),
                 Self::InvitationExpired => f.write_str("InvitationExpired"),
@@ -16269,6 +17407,10 @@ pub mod types {
                 Self::ConnectorTurnTokenRefused => f.write_str("ConnectorTurnTokenRefused"),
                 Self::ConnectorAuthRefused => f.write_str("ConnectorAuthRefused"),
                 Self::ConnectorUnreachable => f.write_str("ConnectorUnreachable"),
+                Self::BodyTooLarge => f.write_str("BodyTooLarge"),
+                Self::RateLimited => f.write_str("RateLimited"),
+                Self::UsageLimitReached => f.write_str("UsageLimitReached"),
+                Self::AboveFreeTier => f.write_str("AboveFreeTier"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
         }
@@ -16288,6 +17430,7 @@ pub mod types {
                 "HostRevoked" => Ok(Self::HostRevoked),
                 "NoHostAvailable" => Ok(Self::NoHostAvailable),
                 "PoolExhausted" => Ok(Self::PoolExhausted),
+                "HostDegraded" => Ok(Self::HostDegraded),
                 "HostOffline" => Ok(Self::HostOffline),
                 "HarnessNotInCatalog" => Ok(Self::HarnessNotInCatalog),
                 "NoCredential" => Ok(Self::NoCredential),
@@ -16310,23 +17453,9 @@ pub mod types {
                 "ReleaseUnreadable" => Ok(Self::ReleaseUnreadable),
                 "TranscriptLineUnreadable" => Ok(Self::TranscriptLineUnreadable),
                 "ImageNotReleased" => Ok(Self::ImageNotReleased),
-                "NoBuildProvider" => Ok(Self::NoBuildProvider),
-                "BuildProviderUnavailable" => Ok(Self::BuildProviderUnavailable),
-                "DispatchRefused" => Ok(Self::DispatchRefused),
                 "GitHubAppPermissionMissing" => Ok(Self::GitHubAppPermissionMissing),
-                "CallerWorkflowRefused" => Ok(Self::CallerWorkflowRefused),
                 "RepositoryUnreadable" => Ok(Self::RepositoryUnreadable),
                 "GitHubInstallationUnreadable" => Ok(Self::GitHubInstallationUnreadable),
-                "IssuerMissing" => Ok(Self::IssuerMissing),
-                "JobTokenRefused" => Ok(Self::JobTokenRefused),
-                "JobTokenMismatch" => Ok(Self::JobTokenMismatch),
-                "PrebuildNotUploading" => Ok(Self::PrebuildNotUploading),
-                "CircleCITokenRefused" => Ok(Self::CircleCiTokenRefused),
-                "CircleCIProjectMissing" => Ok(Self::CircleCiProjectMissing),
-                "CircleCIDefinitionMismatch" => Ok(Self::CircleCiDefinitionMismatch),
-                "CircleCIRefused" => Ok(Self::CircleCiRefused),
-                "CircleCIAuthorizationNotWaiting" => Ok(Self::CircleCiAuthorizationNotWaiting),
-                "LayerNotUploaded" => Ok(Self::LayerNotUploaded),
                 "OwnerRequired" => Ok(Self::OwnerRequired),
                 "LastOwner" => Ok(Self::LastOwner),
                 "InvitationExpired" => Ok(Self::InvitationExpired),
@@ -16355,6 +17484,10 @@ pub mod types {
                 "ConnectorTurnTokenRefused" => Ok(Self::ConnectorTurnTokenRefused),
                 "ConnectorAuthRefused" => Ok(Self::ConnectorAuthRefused),
                 "ConnectorUnreachable" => Ok(Self::ConnectorUnreachable),
+                "BodyTooLarge" => Ok(Self::BodyTooLarge),
+                "RateLimited" => Ok(Self::RateLimited),
+                "UsageLimitReached" => Ok(Self::UsageLimitReached),
+                "AboveFreeTier" => Ok(Self::AboveFreeTier),
                 _ => Err("invalid value".into()),
             }
         }
@@ -16375,6 +17508,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct Prompt(::std::string::String);
+    impl Prompt {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Prompt {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Prompt {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for Prompt {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for Prompt {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -16390,10 +17543,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 100000usize {
-                return Err("longer than 100000 characters".into());
+                return Err("Prompt: longer than 100000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("Prompt: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16423,11 +17576,11 @@ pub mod types {
     ///RFC 9728 metadata for the hosted MCP endpoint.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ProtectedResourceMetadata {
-        pub authorization_servers: ::std::vec::Vec<::std::string::String>,
-        pub bearer_methods_supported: ::std::vec::Vec<::std::string::String>,
-        pub resource: ::std::string::String,
-        pub resource_name: ::std::string::String,
-        pub scopes_supported: ::std::vec::Vec<::std::string::String>,
+        pub authorization_servers: ::std::vec::Vec<HttpUrl>,
+        pub bearer_methods_supported: ::std::vec::Vec<ShortText>,
+        pub resource: HttpUrl,
+        pub resource_name: Summary,
+        pub scopes_supported: ::std::vec::Vec<ShortText>,
     }
     ///Where a pull request is on GitHub.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -16472,6 +17625,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PushEndpointUrl(::std::string::String);
+    impl PushEndpointUrl {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PushEndpointUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PushEndpointUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PushEndpointUrl {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for PushEndpointUrl {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -16487,12 +17660,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 2048usize {
-                return Err("longer than 2048 characters".into());
+                return Err("PushEndpointUrl: longer than 2048 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^https://[^/@?#\\s]+(/[^#\\s]*)?$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^https://[^/@?#\\s]+(/[^#\\s]*)?$\"".into());
+                return Err("PushEndpointUrl: doesn't match pattern \"^https://[^/@?#\\s]+(/[^#\\s]*)?$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16529,6 +17702,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PushKeyApplicationServerKey(::std::string::String);
+    impl PushKeyApplicationServerKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PushKeyApplicationServerKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PushKeyApplicationServerKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PushKeyApplicationServerKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for PushKeyApplicationServerKey {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -16543,10 +17736,13 @@ pub mod types {
     impl ::std::str::FromStr for PushKeyApplicationServerKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("PushKeyApplicationServerKey: longer than 16384 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{87}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{87}$\"".into());
+                return Err("PushKeyApplicationServerKey: doesn't match pattern \"^[A-Za-z0-9_-]{87}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16576,15 +17772,34 @@ pub mod types {
     ///The notification payload a service worker shows for a pushed tenant event.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PushNotification {
-        pub body: ::std::string::String,
-        ///The dashboard path a notification tap opens.
+        pub body: Detail,
         pub path: PushNotificationPath,
-        pub title: ::std::string::String,
+        pub title: Summary,
     }
     ///The dashboard path a notification tap opens.
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PushNotificationPath(::std::string::String);
+    impl PushNotificationPath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PushNotificationPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PushNotificationPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PushNotificationPath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for PushNotificationPath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -16599,10 +17814,13 @@ pub mod types {
     impl ::std::str::FromStr for PushNotificationPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("PushNotificationPath: longer than 4096 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^/").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^/\"".into());
+                return Err("PushNotificationPath: doesn't match pattern \"^/\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16655,15 +17873,33 @@ pub mod types {
     ///The keys a browser's push subscription carries, in base64url, as the Push API reports them.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PushSubscriptionKeys {
-        ///The 16-byte authentication secret.
         pub auth: PushSubscriptionKeysAuth,
-        ///The browser's P-256 public key, uncompressed.
         pub p256dh: PushSubscriptionKeysP256dh,
     }
     ///The 16-byte authentication secret.
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PushSubscriptionKeysAuth(::std::string::String);
+    impl PushSubscriptionKeysAuth {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PushSubscriptionKeysAuth {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PushSubscriptionKeysAuth {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PushSubscriptionKeysAuth {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for PushSubscriptionKeysAuth {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -16678,10 +17914,13 @@ pub mod types {
     impl ::std::str::FromStr for PushSubscriptionKeysAuth {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("PushSubscriptionKeysAuth: longer than 16384 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{22}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{22}$\"".into());
+                return Err("PushSubscriptionKeysAuth: doesn't match pattern \"^[A-Za-z0-9_-]{22}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16712,6 +17951,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct PushSubscriptionKeysP256dh(::std::string::String);
+    impl PushSubscriptionKeysP256dh {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for PushSubscriptionKeysP256dh {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for PushSubscriptionKeysP256dh {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for PushSubscriptionKeysP256dh {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for PushSubscriptionKeysP256dh {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -16726,10 +17985,13 @@ pub mod types {
     impl ::std::str::FromStr for PushSubscriptionKeysP256dh {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("PushSubscriptionKeysP256dh: longer than 16384 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{87}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{87}$\"".into());
+                return Err("PushSubscriptionKeysP256dh: doesn't match pattern \"^[A-Za-z0-9_-]{87}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16865,12 +18127,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ReleaseCli {
         pub architecture: HostArchitecture,
-        ///The version of the CLI release this binary comes from, the one `tumpel --version` prints.
         #[serde(rename = "cliVersion")]
         pub cli_version: ReleaseCliCliVersion,
         ///The URL of the release asset that holds this binary, written by the publisher; the binary there has `sha256` and `sizeBytes`.
         #[serde(rename = "downloadUrl")]
-        pub download_url: ::std::string::String,
+        pub download_url: HttpUrl,
         pub sha256: Sha256Digest,
         #[serde(rename = "sizeBytes")]
         pub size_bytes: ::std::num::NonZeroU64,
@@ -16879,6 +18140,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ReleaseCliCliVersion(::std::string::String);
+    impl ReleaseCliCliVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ReleaseCliCliVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ReleaseCliCliVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ReleaseCliCliVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ReleaseCliCliVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -16893,8 +18174,11 @@ pub mod types {
     impl ::std::str::FromStr for ReleaseCliCliVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ReleaseCliCliVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ReleaseCliCliVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -16996,6 +18280,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ReleaseManifestCommit(::std::string::String);
+    impl ReleaseManifestCommit {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ReleaseManifestCommit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ReleaseManifestCommit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ReleaseManifestCommit {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ReleaseManifestCommit {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -17010,10 +18314,13 @@ pub mod types {
     impl ::std::str::FromStr for ReleaseManifestCommit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ReleaseManifestCommit: longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err("ReleaseManifestCommit: doesn't match pattern \"^[0-9a-f]{40}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17044,6 +18351,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ReleaseManifestReleaseVersion(::std::string::String);
+    impl ReleaseManifestReleaseVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ReleaseManifestReleaseVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ReleaseManifestReleaseVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ReleaseManifestReleaseVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ReleaseManifestReleaseVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -17058,8 +18385,11 @@ pub mod types {
     impl ::std::str::FromStr for ReleaseManifestReleaseVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ReleaseManifestReleaseVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ReleaseManifestReleaseVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17102,6 +18432,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ReleaseRolloutDeployedCommit(::std::string::String);
+    impl ReleaseRolloutDeployedCommit {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ReleaseRolloutDeployedCommit {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ReleaseRolloutDeployedCommit {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ReleaseRolloutDeployedCommit {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ReleaseRolloutDeployedCommit {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -17116,10 +18466,13 @@ pub mod types {
     impl ::std::str::FromStr for ReleaseRolloutDeployedCommit {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ReleaseRolloutDeployedCommit: longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err("ReleaseRolloutDeployedCommit: doesn't match pattern \"^[0-9a-f]{40}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17154,14 +18507,13 @@ pub mod types {
         pub architecture: HostArchitecture,
         ///The URL of the release asset that holds this binary, written by the publisher; the binary there has `sha256` and `sizeBytes`.
         #[serde(rename = "downloadUrl")]
-        pub download_url: ::std::string::String,
+        pub download_url: HttpUrl,
         ///The GuestProtocol.Version the supervisor and the guest drive inside it speak; a release that keeps this supervisor refuses to publish from a commit whose GuestProtocol.Oldest to GuestProtocol.Version leaves it out.
         #[serde(rename = "guestProtocolVersion")]
         pub guest_protocol_version: ::std::num::NonZeroU32,
         pub sha256: Sha256Digest,
         #[serde(rename = "sizeBytes")]
         pub size_bytes: ::std::num::NonZeroU64,
-        ///The version of the supervisor release this binary comes from, the one it reports in Hello.
         #[serde(rename = "supervisorVersion")]
         pub supervisor_version: ReleaseSupervisorSupervisorVersion,
     }
@@ -17169,6 +18521,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct ReleaseSupervisorSupervisorVersion(::std::string::String);
+    impl ReleaseSupervisorSupervisorVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ReleaseSupervisorSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ReleaseSupervisorSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ReleaseSupervisorSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for ReleaseSupervisorSupervisorVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -17183,8 +18555,11 @@ pub mod types {
     impl ::std::str::FromStr for ReleaseSupervisorSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ReleaseSupervisorSupervisorVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("ReleaseSupervisorSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17373,6 +18748,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct RepositoryUrl(::std::string::String);
+    impl RepositoryUrl {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for RepositoryUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for RepositoryUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for RepositoryUrl {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for RepositoryUrl {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -17388,10 +18783,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 500usize {
-                return Err("longer than 500 characters".into());
+                return Err("RepositoryUrl: longer than 500 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("RepositoryUrl: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17502,7 +18897,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SamplePoint {
         pub at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub dimensions: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub dimensions: ::std::collections::HashMap<::std::string::String, ShortText>,
         pub metric: MetricName,
         pub value: f64,
     }
@@ -17613,6 +19008,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SecretName(::std::string::String);
+    impl SecretName {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SecretName {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SecretName {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SecretName {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SecretName {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -17628,12 +19043,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 100usize {
-                return Err("longer than 100 characters".into());
+                return Err("SecretName: longer than 100 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Z_][A-Z0-9_]*$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Z_][A-Z0-9_]*$\"".into());
+                return Err("SecretName: doesn't match pattern \"^[A-Z_][A-Z0-9_]*$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -17702,6 +19117,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SecretText(::std::string::String);
+    impl SecretText {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SecretText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SecretText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SecretText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SecretText {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -17717,10 +19152,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 10000usize {
-                return Err("longer than 10000 characters".into());
+                return Err("SecretText: longer than 10000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SecretText: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -18001,7 +19436,7 @@ pub mod types {
         pub created_at: i64,
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
-        pub harness_version: ::std::string::String,
+        pub harness_version: ShortText,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         ///The session's latest turn, with why it failed once it is Failed.
@@ -18190,25 +19625,25 @@ pub mod types {
     ///The GitHub issue of the session's repository that the session was started from, and the branch its first prompt asks for.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SessionIssue {
-        pub branch: ::std::string::String,
+        pub branch: ShortText,
         #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
+        pub html_url: HttpUrl,
         #[serde(rename = "issueNumber")]
         pub issue_number: GitHubIssueNumber,
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
-        pub title: ::std::string::String,
+        pub title: Summary,
     }
     ///The session started from a GitHub issue with Sessions_startFromIssue, with the branch its first prompt asks for.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SessionIssueOrigin {
-        pub branch: ::std::string::String,
+        pub branch: ShortText,
         #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
+        pub html_url: HttpUrl,
         #[serde(rename = "issueNumber")]
         pub issue_number: GitHubIssueNumber,
         pub kind: SessionIssueOriginKind,
-        pub title: ::std::string::String,
+        pub title: Summary,
     }
     ///`SessionIssueOriginKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -18280,7 +19715,7 @@ pub mod types {
     ///The session's files start without a prebuild's layer. `detail` states why and what fixes it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SessionPrebuildLayerAbsent {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub layer: SessionPrebuildLayerAbsentLayer,
         pub reason: PrebuildLayerAbsence,
     }
@@ -18555,6 +19990,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SessionTag(::std::string::String);
+    impl SessionTag {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SessionTag {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SessionTag {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SessionTag {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SessionTag {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -18569,10 +20024,13 @@ pub mod types {
     impl ::std::str::FromStr for SessionTag {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 63usize {
+                return Err("SessionTag: longer than 63 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[a-z0-9][a-z0-9:._-]{0,62}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[a-z0-9][a-z0-9:._-]{0,62}$\"".into());
+                return Err("SessionTag: doesn't match pattern \"^[a-z0-9][a-z0-9:._-]{0,62}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -18618,6 +20076,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct Sha256Digest(::std::string::String);
+    impl Sha256Digest {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Sha256Digest {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Sha256Digest {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for Sha256Digest {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for Sha256Digest {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -18632,10 +20110,13 @@ pub mod types {
     impl ::std::str::FromStr for Sha256Digest {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 64usize {
+                return Err("Sha256Digest: longer than 64 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{64}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{64}$\"".into());
+                return Err("Sha256Digest: doesn't match pattern \"^[0-9a-f]{64}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -18653,6 +20134,72 @@ pub mod types {
         }
     }
     impl<'de> ::serde::Deserialize<'de> for Sha256Digest {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///A short value: a name, a kind, a status, a version, a branch, a commit or an id another system issued.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct ShortText(::std::string::String);
+    impl ShortText {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for ShortText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for ShortText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for ShortText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for ShortText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<ShortText> for ::std::string::String {
+        fn from(value: ShortText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for ShortText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("ShortText: longer than 256 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ShortText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ShortText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for ShortText {
         fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
         where
             D: ::serde::Deserializer<'de>,
@@ -18745,6 +20292,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotDirectoryEntryPath(::std::string::String);
+    impl SnapshotDirectoryEntryPath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotDirectoryEntryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotDirectoryEntryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SnapshotDirectoryEntryPath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SnapshotDirectoryEntryPath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -18759,8 +20326,11 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotDirectoryEntryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("SnapshotDirectoryEntryPath: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotDirectoryEntryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -18840,6 +20410,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotEntryCommonPath(::std::string::String);
+    impl SnapshotEntryCommonPath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotEntryCommonPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotEntryCommonPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SnapshotEntryCommonPath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SnapshotEntryCommonPath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -18854,8 +20444,11 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotEntryCommonPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("SnapshotEntryCommonPath: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotEntryCommonPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -18885,7 +20478,7 @@ pub mod types {
     ///The snapshot was not stored. `detail` states what failed and what fixes it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SnapshotFailure {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: ChannelSnapshotFailureReason,
@@ -18977,6 +20570,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotFileEntryPath(::std::string::String);
+    impl SnapshotFileEntryPath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotFileEntryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotFileEntryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SnapshotFileEntryPath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SnapshotFileEntryPath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -18991,8 +20604,11 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotFileEntryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("SnapshotFileEntryPath: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotFileEntryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19078,6 +20694,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotOpaqueDirectoryEntryPath(::std::string::String);
+    impl SnapshotOpaqueDirectoryEntryPath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotOpaqueDirectoryEntryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotOpaqueDirectoryEntryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SnapshotOpaqueDirectoryEntryPath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SnapshotOpaqueDirectoryEntryPath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -19092,8 +20728,11 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotOpaqueDirectoryEntryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("SnapshotOpaqueDirectoryEntryPath: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotOpaqueDirectoryEntryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19236,6 +20875,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotSymlinkEntryPath(::std::string::String);
+    impl SnapshotSymlinkEntryPath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotSymlinkEntryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotSymlinkEntryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SnapshotSymlinkEntryPath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SnapshotSymlinkEntryPath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -19250,8 +20909,11 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotSymlinkEntryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("SnapshotSymlinkEntryPath: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotSymlinkEntryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19282,6 +20944,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotSymlinkEntryTarget(::std::string::String);
+    impl SnapshotSymlinkEntryTarget {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotSymlinkEntryTarget {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotSymlinkEntryTarget {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SnapshotSymlinkEntryTarget {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SnapshotSymlinkEntryTarget {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -19296,8 +20978,11 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotSymlinkEntryTarget {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("SnapshotSymlinkEntryTarget: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotSymlinkEntryTarget: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19374,6 +21059,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SnapshotWhiteoutEntryPath(::std::string::String);
+    impl SnapshotWhiteoutEntryPath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SnapshotWhiteoutEntryPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SnapshotWhiteoutEntryPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SnapshotWhiteoutEntryPath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SnapshotWhiteoutEntryPath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -19388,8 +21093,11 @@ pub mod types {
     impl ::std::str::FromStr for SnapshotWhiteoutEntryPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("SnapshotWhiteoutEntryPath: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SnapshotWhiteoutEntryPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19555,7 +21263,7 @@ pub mod types {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///What failed and what fixes it.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: StopFailureReason,
@@ -19606,6 +21314,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct StorageKey(::std::string::String);
+    impl StorageKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for StorageKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for StorageKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for StorageKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for StorageKey {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -19621,10 +21349,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 1000usize {
-                return Err("longer than 1000 characters".into());
+                return Err("StorageKey: longer than 1000 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("StorageKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -19711,7 +21439,7 @@ pub mod types {
         #[serde(rename = "downloadExpiresAt")]
         pub download_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "downloadUrl")]
-        pub download_url: ::std::string::String,
+        pub download_url: HttpUrl,
         pub path: PersonaFilePath,
         #[serde(rename = "sizeBytes")]
         pub size_bytes: PersonaFileSize,
@@ -20075,6 +21803,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SubscriptionPauseMessage(::std::string::String);
+    impl SubscriptionPauseMessage {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SubscriptionPauseMessage {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SubscriptionPauseMessage {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SubscriptionPauseMessage {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SubscriptionPauseMessage {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -20090,10 +21838,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 500usize {
-                return Err("longer than 500 characters".into());
+                return Err("SubscriptionPauseMessage: longer than 500 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SubscriptionPauseMessage: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -20127,6 +21875,7 @@ pub mod types {
         ByRequest(SubscriptionPausedByRequest),
         DeliveryFailed(SubscriptionPausedDeliveryFailed),
         CrewFailing(SubscriptionPausedCrewFailing),
+        CreditExhausted(SubscriptionPausedCreditExhausted),
     }
     impl ::std::convert::From<SubscriptionPausedByRequest> for SubscriptionPauseReason {
         fn from(value: SubscriptionPausedByRequest) -> Self {
@@ -20141,6 +21890,11 @@ pub mod types {
     impl ::std::convert::From<SubscriptionPausedCrewFailing> for SubscriptionPauseReason {
         fn from(value: SubscriptionPausedCrewFailing) -> Self {
             Self::CrewFailing(value)
+        }
+    }
+    impl ::std::convert::From<SubscriptionPausedCreditExhausted> for SubscriptionPauseReason {
+        fn from(value: SubscriptionPausedCreditExhausted) -> Self {
+            Self::CreditExhausted(value)
         }
     }
     ///Someone paused the subscription with Subscriptions_pause, leaving a message.
@@ -20177,6 +21931,46 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedByRequestKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A crew or delivery turn failed CreditExhausted; the turn is turnId, whose failure Turns_getFailure reads. Add credits to the provider account before resuming.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionPausedCreditExhausted {
+        pub kind: SubscriptionPausedCreditExhaustedKind,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+    }
+    ///`SubscriptionPausedCreditExhaustedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SubscriptionPausedCreditExhaustedKind {
+        CreditExhausted,
+    }
+    impl ::std::fmt::Display for SubscriptionPausedCreditExhaustedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::CreditExhausted => f.write_str("CreditExhausted"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionPausedCreditExhaustedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "CreditExhausted" => Ok(Self::CreditExhausted),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionPausedCreditExhaustedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedCreditExhaustedKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -20530,14 +22324,90 @@ pub mod types {
             value.parse()
         }
     }
+    ///One line a person reads: a title, a client name, a cursor or an OAuth scope list.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct Summary(::std::string::String);
+    impl Summary {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Summary {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Summary {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for Summary {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for Summary {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<Summary> for ::std::string::String {
+        fn from(value: Summary) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for Summary {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 1024usize {
+                return Err("Summary: longer than 1024 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for Summary {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for Summary {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for Summary {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///How many Welcomes the unacked host frame `seq` has been resent after without the control plane
+    ///acking it. The supervisor gives a frame up after 10.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SupervisorChannelReplay {
+        pub replays: ::std::num::NonZeroU32,
+        pub seq: Sequence,
+    }
     ///The host side of the channel's sequencing, channel.json in the supervisor directory, written
     ///before every frame the host sends. `received` is the highest control-plane `seq` accepted with no
     ///gap, `sent` the highest `seq` the host assigned, and `unacked` every host frame the control plane
-    ///has not acked yet, in `seq` order. A supervisor that finds this file missing exits with failure
-    ///ChannelStateLost.
+    ///has not acked yet, in `seq` order. `replays` counts, for each unacked frame resent after a
+    ///Welcome, how many Welcomes it has been resent after; a file written before the count existed
+    ///leaves it out. A supervisor that finds this file missing exits with failure ChannelStateLost.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorChannelState {
         pub received: Sequence,
+        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
+        pub replays: ::std::vec::Vec<SupervisorChannelReplay>,
         pub sent: Sequence,
         pub unacked: ::std::vec::Vec<ChannelStoredHostFrame>,
     }
@@ -20556,6 +22426,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorCheckReportSupervisorVersion(::std::string::String);
+    impl SupervisorCheckReportSupervisorVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorCheckReportSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorCheckReportSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SupervisorCheckReportSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SupervisorCheckReportSupervisorVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -20570,8 +22460,11 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorCheckReportSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("SupervisorCheckReportSupervisorVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorCheckReportSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -20604,7 +22497,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorConfig {
         ///The base URL of the control plane the host enrolled with, such as https://tumpel.example.com.
-        pub endpoint: ::std::string::String,
+        pub endpoint: HttpUrl,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "tenantId")]
@@ -20620,6 +22513,9 @@ pub mod types {
         UsageUnreadable,
         GuestDriveUnwritable,
         UpdateNotOnline,
+        ChannelUnreachable,
+        FrameUndelivered,
+        RateLimited,
     }
     impl ::std::fmt::Display for SupervisorFailure {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20631,6 +22527,9 @@ pub mod types {
                 Self::UsageUnreadable => f.write_str("UsageUnreadable"),
                 Self::GuestDriveUnwritable => f.write_str("GuestDriveUnwritable"),
                 Self::UpdateNotOnline => f.write_str("UpdateNotOnline"),
+                Self::ChannelUnreachable => f.write_str("ChannelUnreachable"),
+                Self::FrameUndelivered => f.write_str("FrameUndelivered"),
+                Self::RateLimited => f.write_str("RateLimited"),
             }
         }
     }
@@ -20645,6 +22544,9 @@ pub mod types {
                 "UsageUnreadable" => Ok(Self::UsageUnreadable),
                 "GuestDriveUnwritable" => Ok(Self::GuestDriveUnwritable),
                 "UpdateNotOnline" => Ok(Self::UpdateNotOnline),
+                "ChannelUnreachable" => Ok(Self::ChannelUnreachable),
+                "FrameUndelivered" => Ok(Self::FrameUndelivered),
+                "RateLimited" => Ok(Self::RateLimited),
                 _ => Err("invalid value".into()),
             }
         }
@@ -20683,9 +22585,15 @@ pub mod types {
     pub struct SupervisorHandoverBox {
         #[serde(rename = "boxId")]
         pub box_id: EntityId,
+        ///What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm or Auto one as BoxRetention defines.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
-        pub credential_file: ::std::option::Option<::std::string::String>,
+        pub credential_file: ::std::option::Option<CredentialText>,
         pub dirty: bool,
+        ///The idle time an Auto box has left at the handover, as BoxRetention defines, counting down from the offer's idleSeconds as turnMilliseconds does for the turn, so an update does not reset it.
+        #[serde(rename = "idleMilliseconds")]
+        pub idle_milliseconds: i64,
         pub image: SupervisorHandoverImage,
         pub machine: SupervisorHandoverMachine,
         pub queued: ::std::vec::Vec<SupervisorHandoverCommand>,
@@ -20836,7 +22744,7 @@ pub mod types {
         pub kind: SupervisorHandoverLayeredImageKind,
         pub layer: HarnessLayerManifest,
         #[serde(rename = "layerPath")]
-        pub layer_path: ::std::string::String,
+        pub layer_path: PathText,
     }
     ///`SupervisorHandoverLayeredImageKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -20878,11 +22786,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorHandoverMachine {
         #[serde(rename = "apiSocket")]
-        pub api_socket: ::std::string::String,
+        pub api_socket: PathText,
         #[serde(rename = "consoleTail")]
-        pub console_tail: ::std::string::String,
+        pub console_tail: Detail,
         #[serde(rename = "guestBuffer")]
-        pub guest_buffer: ::std::string::String,
+        pub guest_buffer: GuestBufferText,
         #[serde(rename = "guestFd")]
         pub guest_fd: i32,
         #[serde(rename = "processId")]
@@ -20891,7 +22799,7 @@ pub mod types {
         pub stderr_fd: i32,
         #[serde(rename = "stdoutFd")]
         pub stdout_fd: i32,
-        pub vsock: ::std::string::String,
+        pub vsock: PathText,
     }
     ///`SupervisorHandoverSnapshot`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -20904,7 +22812,7 @@ pub mod types {
         #[serde(rename = "uploadExpiresAt")]
         pub upload_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "uploadUrl")]
-        pub upload_url: ::std::string::String,
+        pub upload_url: UrlText,
     }
     ///`SupervisorHandoverSnapshotKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -21002,7 +22910,7 @@ pub mod types {
     ///`SupervisorHandoverTurnError`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorHandoverTurnError {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub reason: TurnFailureReason,
     }
     ///`SupervisorHandoverTurnKind`
@@ -21038,14 +22946,10 @@ pub mod types {
             value.parse()
         }
     }
-    ///A paused box. It stays paused until BoxTeardown or BoxDiscard names it. A supervisor writes
-    ///`warmMilliseconds` as 0 and `expired` as false and ignores both on read.
+    ///A paused box. It stays as BoxRetention defines; the idle time it has left is the box's idleMilliseconds.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorHandoverWarm {
-        pub expired: bool,
         pub kind: SupervisorHandoverWarmKind,
-        #[serde(rename = "warmMilliseconds")]
-        pub warm_milliseconds: i64,
     }
     ///`SupervisorHandoverWarmKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -21094,6 +22998,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorHostKeyPrivateKey(::std::string::String);
+    impl SupervisorHostKeyPrivateKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorHostKeyPrivateKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorHostKeyPrivateKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SupervisorHostKeyPrivateKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SupervisorHostKeyPrivateKey {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -21108,8 +23032,11 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorHostKeyPrivateKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("SupervisorHostKeyPrivateKey: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorHostKeyPrivateKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -21140,6 +23067,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorHostKeyPublicKey(::std::string::String);
+    impl SupervisorHostKeyPublicKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorHostKeyPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorHostKeyPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SupervisorHostKeyPublicKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SupervisorHostKeyPublicKey {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -21154,8 +23101,11 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorHostKeyPublicKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("SupervisorHostKeyPublicKey: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorHostKeyPublicKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -21215,6 +23165,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorReleaseSupervisorVersion(::std::string::String);
+    impl SupervisorReleaseSupervisorVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorReleaseSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorReleaseSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SupervisorReleaseSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SupervisorReleaseSupervisorVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -21229,11 +23199,17 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorReleaseSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("SupervisorReleaseSupervisorVersion: longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$").unwrap()
             });
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$\"".into());
+                return Err(
+                    "SupervisorReleaseSupervisorVersion: doesn't match pattern \"^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$\""
+                        .into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
@@ -21264,6 +23240,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorReleaseTumpelApiVersion(::std::string::String);
+    impl SupervisorReleaseTumpelApiVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorReleaseTumpelApiVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorReleaseTumpelApiVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SupervisorReleaseTumpelApiVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SupervisorReleaseTumpelApiVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -21278,11 +23274,17 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorReleaseTumpelApiVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("SupervisorReleaseTumpelApiVersion: longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$").unwrap()
             });
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$\"".into());
+                return Err(
+                    "SupervisorReleaseTumpelApiVersion: doesn't match pattern \"^[0-9]+\\.[0-9]+\\.[0-9]+(-rc\\.[0-9]+)?$\""
+                        .into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
@@ -21322,7 +23324,7 @@ pub mod types {
     ///`memoryMib` is the memory of a box whose TurnOffer names no boxMemoryMib, BoxMemoryLimit.DefaultMib by default.
     ///`overlayMib` is the disk of a box whose TurnOffer names no boxDiskMib, 32768 by default; the drive
     ///is a sparse file, so the host's disk holds only what the box wrote.
-    ///A paused box stays until BoxTeardown or BoxDiscard names it, and a box that does not fit is
+    ///A paused box stays as BoxRetention defines or until BoxTeardown or BoxDiscard names it, and a box that does not fit is
     ///refused PoolExhausted without touching another box.
     ///`heartbeatIntervalSeconds` is how often the supervisor sends a Heartbeat after Welcome, 10 by
     ///default; it matches heartbeatIntervalSeconds of the control plane, whose heartbeatDeadlineSeconds
@@ -21330,6 +23332,8 @@ pub mod types {
     ///`updateGraceSeconds` is how long a supervisor told of a new release waits while a box runs a turn,
     ///600 by default. It updates at once when no box runs a turn, and when the wait ends it hands its
     ///boxes to the new supervisor anyway.
+    ///`telemetryIntervalSeconds` is how often the supervisor sends the metric points it collected, 30
+    ///by default. It sends them at most once per interval, at turn end and shutdown included.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorRuntime {
         #[serde(rename = "boxCapacity")]
@@ -21349,6 +23353,8 @@ pub mod types {
         pub memory_mib: i32,
         #[serde(rename = "overlayMib")]
         pub overlay_mib: i32,
+        #[serde(rename = "telemetryIntervalSeconds")]
+        pub telemetry_interval_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "updateGraceSeconds")]
         pub update_grace_seconds: i32,
         #[serde(rename = "vcpuCount")]
@@ -21358,6 +23364,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorRuntimeDataDir(::std::string::String);
+    impl SupervisorRuntimeDataDir {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorRuntimeDataDir {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorRuntimeDataDir {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SupervisorRuntimeDataDir {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SupervisorRuntimeDataDir {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -21372,8 +23398,11 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorRuntimeDataDir {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("SupervisorRuntimeDataDir: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorRuntimeDataDir: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -21404,6 +23433,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorRuntimeFirecrackerPath(::std::string::String);
+    impl SupervisorRuntimeFirecrackerPath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorRuntimeFirecrackerPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorRuntimeFirecrackerPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SupervisorRuntimeFirecrackerPath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SupervisorRuntimeFirecrackerPath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -21418,8 +23467,11 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorRuntimeFirecrackerPath {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("SupervisorRuntimeFirecrackerPath: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorRuntimeFirecrackerPath: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -21450,6 +23502,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorRuntimeImageCacheDir(::std::string::String);
+    impl SupervisorRuntimeImageCacheDir {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorRuntimeImageCacheDir {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorRuntimeImageCacheDir {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SupervisorRuntimeImageCacheDir {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SupervisorRuntimeImageCacheDir {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -21464,8 +23536,11 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorRuntimeImageCacheDir {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("SupervisorRuntimeImageCacheDir: longer than 4096 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorRuntimeImageCacheDir: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -21548,13 +23623,13 @@ pub mod types {
     ///hidden, and is empty for every other reason.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorUpdateFailureReport {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(rename = "fromSha256")]
         pub from_sha256: Sha256Digest,
         #[serde(rename = "outputTail")]
-        pub output_tail: ::std::vec::Vec<::std::string::String>,
+        pub output_tail: ::std::vec::Vec<Detail>,
         pub reason: SupervisorUpdateFailureReason,
         #[serde(rename = "toSha256")]
         pub to_sha256: Sha256Digest,
@@ -21768,6 +23843,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct SupervisorUpdateStepReportReleaseVersion(::std::string::String);
+    impl SupervisorUpdateStepReportReleaseVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for SupervisorUpdateStepReportReleaseVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for SupervisorUpdateStepReportReleaseVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for SupervisorUpdateStepReportReleaseVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for SupervisorUpdateStepReportReleaseVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -21782,8 +23877,11 @@ pub mod types {
     impl ::std::str::FromStr for SupervisorUpdateStepReportReleaseVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("SupervisorUpdateStepReportReleaseVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("SupervisorUpdateStepReportReleaseVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -21857,63 +23955,10 @@ pub mod types {
         pub name: DisplayName,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
+        ///The limits the tenant runs under; a new tenant gets its deployment's default tier.
+        pub tier: TenantTier,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
-    }
-    ///`TenantApiAddCircleCiProjectInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiAddCircleCiProjectInput {
-        pub binding: TenantApiCircleCiBinding,
-        pub now: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiAddCircleCiProjectRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiAddCircleCiProjectRequest {
-        pub input: TenantApiAddCircleCiProjectInput,
-        pub operation: TenantApiAddCircleCiProjectRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiAddCircleCiProjectRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiAddCircleCiProjectRequestOperation {
-        #[serde(rename = "addCircleCIProject")]
-        AddCircleCiProject,
-    }
-    impl ::std::fmt::Display for TenantApiAddCircleCiProjectRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::AddCircleCiProject => f.write_str("addCircleCIProject"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiAddCircleCiProjectRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "addCircleCIProject" => Ok(Self::AddCircleCiProject),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiAddCircleCiProjectRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiAddCircleCiProjectRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiAddCircleCiProjectResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiAddCircleCiProjectResult {
-        pub project: CircleCiProject,
     }
     ///`TenantApiApplyConfigInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -22072,45 +24117,6 @@ pub mod types {
             Self::NotStopped(value)
         }
     }
-    ///`TenantApiAuthorizationInvalid`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiAuthorizationInvalid {
-        pub detail: ::std::string::String,
-        pub kind: TenantApiAuthorizationInvalidKind,
-    }
-    ///`TenantApiAuthorizationInvalidKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiAuthorizationInvalidKind {
-        Invalid,
-    }
-    impl ::std::fmt::Display for TenantApiAuthorizationInvalidKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Invalid => f.write_str("Invalid"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiAuthorizationInvalidKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Invalid" => Ok(Self::Invalid),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiAuthorizationInvalidKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiAuthorizationInvalidKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiAuthorizationNoSecretSet`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiAuthorizationNoSecretSet {
@@ -22190,7 +24196,7 @@ pub mod types {
     ///`TenantApiAuthorizationNotWaiting`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiAuthorizationNotWaiting {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiAuthorizationNotWaitingKind,
     }
     ///`TenantApiAuthorizationNotWaitingKind`
@@ -22230,7 +24236,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiAuthorizationOtherCredential {
         pub kind: TenantApiAuthorizationOtherCredentialKind,
-        pub name: ::std::string::String,
+        pub name: ShortText,
     }
     ///`TenantApiAuthorizationOtherCredentialKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -22265,256 +24271,17 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiBindCircleCiUploadJobInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindCircleCiUploadJobInput {
-        pub now: i64,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        pub upload: TenantApiCircleCiUploadJob,
-    }
-    ///`TenantApiBindCircleCiUploadJobRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindCircleCiUploadJobRequest {
-        pub input: TenantApiBindCircleCiUploadJobInput,
-        pub operation: TenantApiBindCircleCiUploadJobRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiBindCircleCiUploadJobRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiBindCircleCiUploadJobRequestOperation {
-        #[serde(rename = "bindCircleCIUploadJob")]
-        BindCircleCiUploadJob,
-    }
-    impl ::std::fmt::Display for TenantApiBindCircleCiUploadJobRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::BindCircleCiUploadJob => f.write_str("bindCircleCIUploadJob"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiBindCircleCiUploadJobRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "bindCircleCIUploadJob" => Ok(Self::BindCircleCiUploadJob),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiBindCircleCiUploadJobRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiBindCircleCiUploadJobRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiBindCircleCiUploadJobResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindCircleCiUploadJobResult {
-        pub bound: TenantApiBindCircleCiUploadJobResultBound,
-    }
-    ///`TenantApiBindCircleCiUploadJobResultBound`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiBindCircleCiUploadJobResultBound {
-        JobBoundOk(TenantApiCircleCiJobBoundOk),
-        JobOther(TenantApiCircleCiJobOther),
-        RevisionMoved(TenantApiCircleCiRevisionMoved),
-        JobRefused(TenantApiCircleCiJobRefused),
-    }
-    impl ::std::convert::From<TenantApiCircleCiJobBoundOk> for TenantApiBindCircleCiUploadJobResultBound {
-        fn from(value: TenantApiCircleCiJobBoundOk) -> Self {
-            Self::JobBoundOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiJobOther> for TenantApiBindCircleCiUploadJobResultBound {
-        fn from(value: TenantApiCircleCiJobOther) -> Self {
-            Self::JobOther(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiRevisionMoved> for TenantApiBindCircleCiUploadJobResultBound {
-        fn from(value: TenantApiCircleCiRevisionMoved) -> Self {
-            Self::RevisionMoved(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiJobRefused> for TenantApiBindCircleCiUploadJobResultBound {
-        fn from(value: TenantApiCircleCiJobRefused) -> Self {
-            Self::JobRefused(value)
-        }
-    }
-    ///`TenantApiBindJobRunInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindJobRunInput {
-        pub now: i64,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "runId")]
-        pub run_id: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiBindJobRunRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindJobRunRequest {
-        pub input: TenantApiBindJobRunInput,
-        pub operation: TenantApiBindJobRunRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiBindJobRunRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiBindJobRunRequestOperation {
-        #[serde(rename = "bindJobRun")]
-        BindJobRun,
-    }
-    impl ::std::fmt::Display for TenantApiBindJobRunRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::BindJobRun => f.write_str("bindJobRun"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiBindJobRunRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "bindJobRun" => Ok(Self::BindJobRun),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiBindJobRunRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiBindJobRunRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiBindJobRunResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindJobRunResult {
-        pub bound: TenantApiBindJobRunResultBound,
-    }
-    ///`TenantApiBindJobRunResultBound`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiBindJobRunResultBound {
-        BoundOk(TenantApiJobRunBoundOk),
-        Other(TenantApiJobRunOther),
-    }
-    impl ::std::convert::From<TenantApiJobRunBoundOk> for TenantApiBindJobRunResultBound {
-        fn from(value: TenantApiJobRunBoundOk) -> Self {
-            Self::BoundOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiJobRunOther> for TenantApiBindJobRunResultBound {
-        fn from(value: TenantApiJobRunOther) -> Self {
-            Self::Other(value)
-        }
-    }
     ///`TenantApiByteRange`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiByteRange {
         pub length: i64,
         pub offset: i64,
     }
-    ///`TenantApiCallerWorkflowConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCallerWorkflowConnected {
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: ::std::string::String,
-        pub kind: TenantApiCallerWorkflowConnectedKind,
-    }
-    ///`TenantApiCallerWorkflowConnectedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCallerWorkflowConnectedKind {
-        Connected,
-    }
-    impl ::std::fmt::Display for TenantApiCallerWorkflowConnectedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Connected => f.write_str("Connected"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCallerWorkflowConnectedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Connected" => Ok(Self::Connected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCallerWorkflowConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCallerWorkflowConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCallerWorkflowNotConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCallerWorkflowNotConnected {
-        pub kind: TenantApiCallerWorkflowNotConnectedKind,
-    }
-    ///`TenantApiCallerWorkflowNotConnectedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCallerWorkflowNotConnectedKind {
-        NotConnected,
-    }
-    impl ::std::fmt::Display for TenantApiCallerWorkflowNotConnectedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConnected => f.write_str("NotConnected"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCallerWorkflowNotConnectedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConnected" => Ok(Self::NotConnected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCallerWorkflowNotConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCallerWorkflowNotConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiCancelTurnInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCancelTurnInput {
         #[serde(rename = "cancelledBy")]
-        pub cancelled_by: ::std::string::String,
+        pub cancelled_by: ShortText,
         pub now: i64,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
@@ -22594,7 +24361,7 @@ pub mod types {
     ///`TenantApiCancelUnspoken`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCancelUnspoken {
-        pub host: ::std::string::String,
+        pub host: ShortText,
         pub kind: TenantApiCancelUnspokenKind,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
@@ -22630,1229 +24397,6 @@ pub mod types {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
-        }
-    }
-    ///`TenantApiChooseCircleCiOrganizationInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiChooseCircleCiOrganizationInput {
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-        pub now: i64,
-        #[serde(rename = "organizationId")]
-        pub organization_id: ::std::string::String,
-        #[serde(rename = "principalId")]
-        pub principal_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiChooseCircleCiOrganizationRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiChooseCircleCiOrganizationRequest {
-        pub input: TenantApiChooseCircleCiOrganizationInput,
-        pub operation: TenantApiChooseCircleCiOrganizationRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiChooseCircleCiOrganizationRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiChooseCircleCiOrganizationRequestOperation {
-        #[serde(rename = "chooseCircleCIOrganization")]
-        ChooseCircleCiOrganization,
-    }
-    impl ::std::fmt::Display for TenantApiChooseCircleCiOrganizationRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ChooseCircleCiOrganization => f.write_str("chooseCircleCIOrganization"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiChooseCircleCiOrganizationRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "chooseCircleCIOrganization" => Ok(Self::ChooseCircleCiOrganization),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiChooseCircleCiOrganizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiChooseCircleCiOrganizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiChooseCircleCiOrganizationResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiChooseCircleCiOrganizationResult {
-        pub stepped: TenantApiChooseCircleCiOrganizationResultStepped,
-    }
-    ///`TenantApiChooseCircleCiOrganizationResultStepped`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiChooseCircleCiOrganizationResultStepped {
-        CircleCiAuthorizationSteppedOk(TenantApiCircleCiAuthorizationSteppedOk),
-        AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        AuthorizationNotWaiting(TenantApiAuthorizationNotWaiting),
-        AuthorizationInvalid(TenantApiAuthorizationInvalid),
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationSteppedOk>
-        for TenantApiChooseCircleCiOrganizationResultStepped
-    {
-        fn from(value: TenantApiCircleCiAuthorizationSteppedOk) -> Self {
-            Self::CircleCiAuthorizationSteppedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotFound> for TenantApiChooseCircleCiOrganizationResultStepped {
-        fn from(value: TenantApiAuthorizationNotFound) -> Self {
-            Self::AuthorizationNotFound(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotWaiting> for TenantApiChooseCircleCiOrganizationResultStepped {
-        fn from(value: TenantApiAuthorizationNotWaiting) -> Self {
-            Self::AuthorizationNotWaiting(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationInvalid> for TenantApiChooseCircleCiOrganizationResultStepped {
-        fn from(value: TenantApiAuthorizationInvalid) -> Self {
-            Self::AuthorizationInvalid(value)
-        }
-    }
-    ///`TenantApiCircleCiAuthorizationDeadline`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationDeadline {
-        pub at: i64,
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-    }
-    ///`TenantApiCircleCiAuthorizationDeadlineReachedInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationDeadlineReachedInput {
-        pub deadline: TenantApiCircleCiAuthorizationDeadline,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiCircleCiAuthorizationDeadlineReachedRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationDeadlineReachedRequest {
-        pub input: TenantApiCircleCiAuthorizationDeadlineReachedInput,
-        pub operation: TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation {
-        #[serde(rename = "circleCIAuthorizationDeadlineReached")]
-        CircleCiAuthorizationDeadlineReached,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiAuthorizationDeadlineReached => f.write_str("circleCIAuthorizationDeadlineReached"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIAuthorizationDeadlineReached" => Ok(Self::CircleCiAuthorizationDeadlineReached),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiAuthorizationDeadlineReachedResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiCircleCiAuthorizationDeadlineReachedResult(
-        pub ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-    );
-    impl ::std::ops::Deref for TenantApiCircleCiAuthorizationDeadlineReachedResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationDeadlineReachedResult>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiCircleCiAuthorizationDeadlineReachedResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiCircleCiAuthorizationDeadlineReachedResult
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///`TenantApiCircleCiAuthorizationStartedOk`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationStartedOk {
-        pub authorization: CircleCiAuthorization,
-        pub kind: TenantApiCircleCiAuthorizationStartedOkKind,
-    }
-    ///`TenantApiCircleCiAuthorizationStartedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiAuthorizationStartedOkKind {
-        Started,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiAuthorizationStartedOkKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Started => f.write_str("Started"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiAuthorizationStartedOkKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Started" => Ok(Self::Started),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiAuthorizationStartedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiAuthorizationStartedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiAuthorizationStepped`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationStepped {
-        pub stepped: TenantApiCircleCiAuthorizationSteppedStepped,
-    }
-    ///`TenantApiCircleCiAuthorizationSteppedOk`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationSteppedOk {
-        pub authorization: CircleCiAuthorization,
-        pub kind: TenantApiCircleCiAuthorizationSteppedOkKind,
-    }
-    ///`TenantApiCircleCiAuthorizationSteppedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiAuthorizationSteppedOkKind {
-        Stepped,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiAuthorizationSteppedOkKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Stepped => f.write_str("Stepped"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiAuthorizationSteppedOkKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Stepped" => Ok(Self::Stepped),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiAuthorizationSteppedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiAuthorizationSteppedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiAuthorizationSteppedStepped`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiCircleCiAuthorizationSteppedStepped {
-        CircleCiAuthorizationSteppedOk(TenantApiCircleCiAuthorizationSteppedOk),
-        AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        AuthorizationNotWaiting(TenantApiAuthorizationNotWaiting),
-        AuthorizationInvalid(TenantApiAuthorizationInvalid),
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationSteppedOk> for TenantApiCircleCiAuthorizationSteppedStepped {
-        fn from(value: TenantApiCircleCiAuthorizationSteppedOk) -> Self {
-            Self::CircleCiAuthorizationSteppedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotFound> for TenantApiCircleCiAuthorizationSteppedStepped {
-        fn from(value: TenantApiAuthorizationNotFound) -> Self {
-            Self::AuthorizationNotFound(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotWaiting> for TenantApiCircleCiAuthorizationSteppedStepped {
-        fn from(value: TenantApiAuthorizationNotWaiting) -> Self {
-            Self::AuthorizationNotWaiting(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationInvalid> for TenantApiCircleCiAuthorizationSteppedStepped {
-        fn from(value: TenantApiAuthorizationInvalid) -> Self {
-            Self::AuthorizationInvalid(value)
-        }
-    }
-    ///`TenantApiCircleCiBinding`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiBinding {
-        #[serde(rename = "pipelineDefinitionId")]
-        pub pipeline_definition_id: ::std::string::String,
-        #[serde(rename = "projectId")]
-        pub project_id: ::std::string::String,
-        #[serde(rename = "projectSlug")]
-        pub project_slug: ::std::string::String,
-        pub repository: ::std::string::String,
-        #[serde(rename = "signingSecret")]
-        pub signing_secret: ::std::string::String,
-        #[serde(rename = "webhookId")]
-        pub webhook_id: ::std::string::String,
-    }
-    ///`TenantApiCircleCiConnectionInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiCircleCiConnectionInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiCircleCiConnectionInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiConnectionInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiCircleCiConnectionInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiCircleCiConnectionInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///The tenant's CircleCI connection as the tenant Durable Object stores it, without its secret.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiConnectionRecord {
-        #[serde(rename = "accountLabel")]
-        pub account_label: ::std::string::String,
-        #[serde(rename = "circleCIConnectionId")]
-        pub circle_ci_connection_id: EntityId,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        pub credential: TenantApiCircleCiConnectionRecordCredential,
-        #[serde(rename = "organizationId")]
-        pub organization_id: ::std::string::String,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-    }
-    ///`TenantApiCircleCiConnectionRecordCredential`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiCircleCiConnectionRecordCredential {
-        Authorized(TenantApiCircleCiCredentialAuthorized),
-        Pasted(TenantApiCircleCiCredentialPasted),
-    }
-    impl ::std::convert::From<TenantApiCircleCiCredentialAuthorized> for TenantApiCircleCiConnectionRecordCredential {
-        fn from(value: TenantApiCircleCiCredentialAuthorized) -> Self {
-            Self::Authorized(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiCredentialPasted> for TenantApiCircleCiConnectionRecordCredential {
-        fn from(value: TenantApiCircleCiCredentialPasted) -> Self {
-            Self::Pasted(value)
-        }
-    }
-    ///`TenantApiCircleCiConnectionRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiConnectionRequest {
-        pub input: TenantApiCircleCiConnectionInput,
-        pub operation: TenantApiCircleCiConnectionRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiConnectionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiConnectionRequestOperation {
-        #[serde(rename = "circleCIConnection")]
-        CircleCiConnection,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiConnectionRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiConnection => f.write_str("circleCIConnection"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiConnectionRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIConnection" => Ok(Self::CircleCiConnection),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiConnectionResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiConnectionResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub connection: ::std::option::Option<TenantApiCircleCiConnectionRecord>,
-    }
-    ///`TenantApiCircleCiCredentialAuthorized`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiCredentialAuthorized {
-        ///When the OAuth token expires, in epoch milliseconds.
-        #[serde(rename = "expiresAtMs")]
-        pub expires_at_ms: i64,
-        pub kind: TenantApiCircleCiCredentialAuthorizedKind,
-    }
-    ///`TenantApiCircleCiCredentialAuthorizedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiCredentialAuthorizedKind {
-        Authorized,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiCredentialAuthorizedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Authorized => f.write_str("Authorized"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiCredentialAuthorizedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Authorized" => Ok(Self::Authorized),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiCredentialAuthorizedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiCredentialAuthorizedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiCredentialPasted`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiCredentialPasted {
-        pub kind: TenantApiCircleCiCredentialPastedKind,
-    }
-    ///`TenantApiCircleCiCredentialPastedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiCredentialPastedKind {
-        Pasted,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiCredentialPastedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Pasted => f.write_str("Pasted"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiCredentialPastedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Pasted" => Ok(Self::Pasted),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiCredentialPastedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiCredentialPastedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiDispatchNotConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiDispatchNotConnected {
-        pub kind: TenantApiCircleCiDispatchNotConnectedKind,
-    }
-    ///`TenantApiCircleCiDispatchNotConnectedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiDispatchNotConnectedKind {
-        NotConnected,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiDispatchNotConnectedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConnected => f.write_str("NotConnected"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiDispatchNotConnectedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConnected" => Ok(Self::NotConnected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiDispatchNotConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiDispatchNotConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiDispatched`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiDispatched {
-        pub kind: TenantApiCircleCiDispatchedKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiCircleCiDispatchedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiDispatchedKind {
-        Dispatched,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiDispatchedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Dispatched => f.write_str("Dispatched"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiDispatchedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Dispatched" => Ok(Self::Dispatched),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiDispatchedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiDispatchedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiJobBoundOk`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiJobBoundOk {
-        pub kind: TenantApiCircleCiJobBoundOkKind,
-    }
-    ///`TenantApiCircleCiJobBoundOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiJobBoundOkKind {
-        Bound,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiJobBoundOkKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Bound => f.write_str("Bound"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiJobBoundOkKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Bound" => Ok(Self::Bound),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiJobBoundOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiJobBoundOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiJobOther`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiJobOther {
-        #[serde(rename = "jobId")]
-        pub job_id: ::std::string::String,
-        pub kind: TenantApiCircleCiJobOtherKind,
-    }
-    ///`TenantApiCircleCiJobOtherKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiJobOtherKind {
-        OtherJob,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiJobOtherKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::OtherJob => f.write_str("OtherJob"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiJobOtherKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "OtherJob" => Ok(Self::OtherJob),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiJobOtherKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiJobOtherKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiJobRefused`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiJobRefused {
-        pub detail: ::std::string::String,
-        pub kind: TenantApiCircleCiJobRefusedKind,
-        pub status: i32,
-    }
-    ///`TenantApiCircleCiJobRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiJobRefusedKind {
-        Refused,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiJobRefusedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Refused => f.write_str("Refused"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiJobRefusedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Refused" => Ok(Self::Refused),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiJobRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiJobRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiProjectBoundToInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectBoundToInput {
-        #[serde(rename = "projectId")]
-        pub project_id: ::std::string::String,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiCircleCiProjectBoundToRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectBoundToRequest {
-        pub input: TenantApiCircleCiProjectBoundToInput,
-        pub operation: TenantApiCircleCiProjectBoundToRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiProjectBoundToRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiProjectBoundToRequestOperation {
-        #[serde(rename = "circleCIProjectBoundTo")]
-        CircleCiProjectBoundTo,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiProjectBoundToRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiProjectBoundTo => f.write_str("circleCIProjectBoundTo"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiProjectBoundToRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIProjectBoundTo" => Ok(Self::CircleCiProjectBoundTo),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiProjectBoundToRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiProjectBoundToRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiProjectBoundToResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectBoundToResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub project: ::std::option::Option<CircleCiProject>,
-    }
-    ///`TenantApiCircleCiProjectOfInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectOfInput {
-        pub repository: ::std::string::String,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiCircleCiProjectOfRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectOfRequest {
-        pub input: TenantApiCircleCiProjectOfInput,
-        pub operation: TenantApiCircleCiProjectOfRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiProjectOfRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiProjectOfRequestOperation {
-        #[serde(rename = "circleCIProjectOf")]
-        CircleCiProjectOf,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiProjectOfRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiProjectOf => f.write_str("circleCIProjectOf"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiProjectOfRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIProjectOf" => Ok(Self::CircleCiProjectOf),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiProjectOfRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiProjectOfRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiProjectOfResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectOfResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub project: ::std::option::Option<CircleCiProject>,
-    }
-    ///`TenantApiCircleCiRegistrationRefused`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiRegistrationRefused {
-        pub detail: ::std::string::String,
-        pub kind: TenantApiCircleCiRegistrationRefusedKind,
-    }
-    ///`TenantApiCircleCiRegistrationRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiRegistrationRefusedKind {
-        RegistrationRefused,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiRegistrationRefusedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::RegistrationRefused => f.write_str("RegistrationRefused"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiRegistrationRefusedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "RegistrationRefused" => Ok(Self::RegistrationRefused),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiRegistrationRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiRegistrationRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiRevisionMoved`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiRevisionMoved {
-        pub kind: TenantApiCircleCiRevisionMovedKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiCircleCiRevisionMovedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiRevisionMovedKind {
-        RevisionMoved,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiRevisionMovedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::RevisionMoved => f.write_str("RevisionMoved"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiRevisionMovedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "RevisionMoved" => Ok(Self::RevisionMoved),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiRevisionMovedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiRevisionMovedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiTokenInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiCircleCiTokenInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiCircleCiTokenInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiTokenInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiCircleCiTokenInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiCircleCiTokenInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///`TenantApiCircleCiTokenRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiTokenRequest {
-        pub input: TenantApiCircleCiTokenInput,
-        pub operation: TenantApiCircleCiTokenRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiTokenRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiTokenRequestOperation {
-        #[serde(rename = "circleCIToken")]
-        CircleCiToken,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiTokenRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiToken => f.write_str("circleCIToken"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiTokenRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIToken" => Ok(Self::CircleCiToken),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiTokenRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiTokenRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiTokenResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiTokenResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub token: ::std::option::Option<::std::string::String>,
-    }
-    ///`TenantApiCircleCiUploadJob`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiUploadJob {
-        #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
-        #[serde(rename = "jobId")]
-        pub job_id: ::std::string::String,
-        #[serde(rename = "pipelineId")]
-        pub pipeline_id: ::std::string::String,
-    }
-    ///`TenantApiCircleCiUploadTarget`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiUploadTarget {
-        #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
-        #[serde(rename = "organizationId")]
-        pub organization_id: ::std::string::String,
-        pub pipeline: TenantApiRecordedPipeline,
-        pub prebuild: Prebuild,
-        pub provider: TenantApiCircleCiUploadTargetProvider,
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub upload: ::std::option::Option<TenantApiPrebuildLayerUpload>,
-    }
-    ///`TenantApiCircleCiUploadTargetProvider`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiUploadTargetProvider {
-        #[serde(rename = "CircleCI")]
-        CircleCi,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiUploadTargetProvider {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCi => f.write_str("CircleCI"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiUploadTargetProvider {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "CircleCI" => Ok(Self::CircleCi),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiUploadTargetProvider {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiUploadTargetProvider {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiWebhook`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhook {
-        #[serde(rename = "circleCIProjectId")]
-        pub circle_ci_project_id: EntityId,
-        #[serde(rename = "webhookId")]
-        pub webhook_id: ::std::string::String,
-    }
-    ///`TenantApiCircleCiWebhookSecretInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhookSecretInput {
-        #[serde(rename = "projectId")]
-        pub project_id: ::std::string::String,
-    }
-    ///`TenantApiCircleCiWebhookSecretRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhookSecretRequest {
-        pub input: TenantApiCircleCiWebhookSecretInput,
-        pub operation: TenantApiCircleCiWebhookSecretRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiWebhookSecretRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiWebhookSecretRequestOperation {
-        #[serde(rename = "circleCIWebhookSecret")]
-        CircleCiWebhookSecret,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiWebhookSecretRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiWebhookSecret => f.write_str("circleCIWebhookSecret"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiWebhookSecretRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIWebhookSecret" => Ok(Self::CircleCiWebhookSecret),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiWebhookSecretRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiWebhookSecretRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiWebhookSecretResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhookSecretResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub secret: ::std::option::Option<::std::string::String>,
-    }
-    ///`TenantApiCircleCiWebhooksInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiCircleCiWebhooksInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiCircleCiWebhooksInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiWebhooksInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiCircleCiWebhooksInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiCircleCiWebhooksInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///`TenantApiCircleCiWebhooksRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhooksRequest {
-        pub input: TenantApiCircleCiWebhooksInput,
-        pub operation: TenantApiCircleCiWebhooksRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiWebhooksRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiWebhooksRequestOperation {
-        #[serde(rename = "circleCIWebhooks")]
-        CircleCiWebhooks,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiWebhooksRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiWebhooks => f.write_str("circleCIWebhooks"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiWebhooksRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIWebhooks" => Ok(Self::CircleCiWebhooks),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiWebhooksRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiWebhooksRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiWebhooksResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhooksResult {
-        pub webhooks: ::std::vec::Vec<TenantApiCircleCiWebhook>,
-    }
-    ///`TenantApiCircleCiWorkflowCompletedEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWorkflowCompletedEvent {
-        #[serde(rename = "pipelineId")]
-        pub pipeline_id: ::std::string::String,
-        #[serde(rename = "projectId")]
-        pub project_id: ::std::string::String,
-        #[serde(rename = "type")]
-        pub type_: ::std::string::String,
-        pub workflow: TenantApiCircleCiWorkflowCompletedEventWorkflow,
-    }
-    ///`TenantApiCircleCiWorkflowCompletedEventWorkflow`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWorkflowCompletedEventWorkflow {
-        pub name: ::std::string::String,
-        pub status: ::std::string::String,
-        pub url: ::std::string::String,
-    }
-    ///`TenantApiCircleCiWorkflowCompletedInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWorkflowCompletedInput {
-        pub event: TenantApiCircleCiWorkflowCompletedEvent,
-        pub now: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiCircleCiWorkflowCompletedRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWorkflowCompletedRequest {
-        pub input: TenantApiCircleCiWorkflowCompletedInput,
-        pub operation: TenantApiCircleCiWorkflowCompletedRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiWorkflowCompletedRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiWorkflowCompletedRequestOperation {
-        #[serde(rename = "circleCIWorkflowCompleted")]
-        CircleCiWorkflowCompleted,
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiWorkflowCompletedRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiWorkflowCompleted => f.write_str("circleCIWorkflowCompleted"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiWorkflowCompletedRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIWorkflowCompleted" => Ok(Self::CircleCiWorkflowCompleted),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiWorkflowCompletedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiWorkflowCompletedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiWorkflowCompletedResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiCircleCiWorkflowCompletedResult(
-        pub ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-    );
-    impl ::std::ops::Deref for TenantApiCircleCiWorkflowCompletedResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiWorkflowCompletedResult>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiCircleCiWorkflowCompletedResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiCircleCiWorkflowCompletedResult
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
         }
     }
     ///`TenantApiClaudeSetupCodedOk`
@@ -23979,7 +24523,7 @@ pub mod types {
     ///`TenantApiClaudeSetupNotStored`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiClaudeSetupNotStored {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiClaudeSetupNotStoredKind,
     }
     ///`TenantApiClaudeSetupNotStoredKind`
@@ -24112,7 +24656,7 @@ pub mod types {
     ///`TenantApiClaudeSetupReleaseUnreadable`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiClaudeSetupReleaseUnreadable {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiClaudeSetupReleaseUnreadableKind,
     }
     ///`TenantApiClaudeSetupReleaseUnreadableKind`
@@ -24390,177 +24934,6 @@ pub mod types {
             Self::Changed(value)
         }
     }
-    ///`TenantApiCompleteCircleCiAuthorizationInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompleteCircleCiAuthorizationInput {
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-        pub now: i64,
-        #[serde(rename = "principalId")]
-        pub principal_id: EntityId,
-        #[serde(rename = "redirectedUrl")]
-        pub redirected_url: ::std::string::String,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiCompleteCircleCiAuthorizationRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompleteCircleCiAuthorizationRequest {
-        pub input: TenantApiCompleteCircleCiAuthorizationInput,
-        pub operation: TenantApiCompleteCircleCiAuthorizationRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCompleteCircleCiAuthorizationRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCompleteCircleCiAuthorizationRequestOperation {
-        #[serde(rename = "completeCircleCIAuthorization")]
-        CompleteCircleCiAuthorization,
-    }
-    impl ::std::fmt::Display for TenantApiCompleteCircleCiAuthorizationRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CompleteCircleCiAuthorization => f.write_str("completeCircleCIAuthorization"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCompleteCircleCiAuthorizationRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "completeCircleCIAuthorization" => Ok(Self::CompleteCircleCiAuthorization),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCompleteCircleCiAuthorizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCompleteCircleCiAuthorizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCompleteCircleCiAuthorizationResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompleteCircleCiAuthorizationResult {
-        pub stepped: TenantApiCompleteCircleCiAuthorizationResultStepped,
-    }
-    ///`TenantApiCompleteCircleCiAuthorizationResultStepped`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiCompleteCircleCiAuthorizationResultStepped {
-        CircleCiAuthorizationSteppedOk(TenantApiCircleCiAuthorizationSteppedOk),
-        AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        AuthorizationNotWaiting(TenantApiAuthorizationNotWaiting),
-        AuthorizationInvalid(TenantApiAuthorizationInvalid),
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationSteppedOk>
-        for TenantApiCompleteCircleCiAuthorizationResultStepped
-    {
-        fn from(value: TenantApiCircleCiAuthorizationSteppedOk) -> Self {
-            Self::CircleCiAuthorizationSteppedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotFound> for TenantApiCompleteCircleCiAuthorizationResultStepped {
-        fn from(value: TenantApiAuthorizationNotFound) -> Self {
-            Self::AuthorizationNotFound(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotWaiting> for TenantApiCompleteCircleCiAuthorizationResultStepped {
-        fn from(value: TenantApiAuthorizationNotWaiting) -> Self {
-            Self::AuthorizationNotWaiting(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationInvalid> for TenantApiCompleteCircleCiAuthorizationResultStepped {
-        fn from(value: TenantApiAuthorizationInvalid) -> Self {
-            Self::AuthorizationInvalid(value)
-        }
-    }
-    ///`TenantApiCompletePrebuildUploadInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompletePrebuildUploadInput {
-        pub now: i64,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        pub upload: TenantApiPrebuildLayerUpload,
-    }
-    ///`TenantApiCompletePrebuildUploadRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompletePrebuildUploadRequest {
-        pub input: TenantApiCompletePrebuildUploadInput,
-        pub operation: TenantApiCompletePrebuildUploadRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCompletePrebuildUploadRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCompletePrebuildUploadRequestOperation {
-        #[serde(rename = "completePrebuildUpload")]
-        CompletePrebuildUpload,
-    }
-    impl ::std::fmt::Display for TenantApiCompletePrebuildUploadRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CompletePrebuildUpload => f.write_str("completePrebuildUpload"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCompletePrebuildUploadRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "completePrebuildUpload" => Ok(Self::CompletePrebuildUpload),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCompletePrebuildUploadRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCompletePrebuildUploadRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCompletePrebuildUploadResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompletePrebuildUploadResult {
-        pub recorded: TenantApiCompletePrebuildUploadResultRecorded,
-    }
-    ///`TenantApiCompletePrebuildUploadResultRecorded`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiCompletePrebuildUploadResultRecorded {
-        RecordedOk(TenantApiUploadRecordedOk),
-        NotUploading(TenantApiUploadNotUploading),
-        OtherLayer(TenantApiUploadOtherLayer),
-    }
-    impl ::std::convert::From<TenantApiUploadRecordedOk> for TenantApiCompletePrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadRecordedOk) -> Self {
-            Self::RecordedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadNotUploading> for TenantApiCompletePrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadNotUploading) -> Self {
-            Self::NotUploading(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadOtherLayer> for TenantApiCompletePrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadOtherLayer) -> Self {
-            Self::OtherLayer(value)
-        }
-    }
     ///`TenantApiCompleteSubscriptionInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCompleteSubscriptionInput {
@@ -24681,7 +25054,7 @@ pub mod types {
     ///`TenantApiConfigConflict`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConfigConflict {
-        pub constraint: ::std::string::String,
+        pub constraint: ShortText,
         pub kind: TenantApiConfigConflictKind,
     }
     ///`TenantApiConfigConflictKind`
@@ -24721,7 +25094,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConfigResourceDeleted {
         pub kind: TenantApiConfigResourceDeletedKind,
-        pub resource: ::std::string::String,
+        pub resource: UrlText,
     }
     ///`TenantApiConfigResourceDeletedKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -24827,248 +25200,6 @@ pub mod types {
             Self::DeleteTriggerWrite(value)
         }
     }
-    ///`TenantApiConnectCircleCiInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectCircleCiInput {
-        pub now: i64,
-        pub start: CircleCiConnectionStart,
-    }
-    ///`TenantApiConnectCircleCiRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectCircleCiRequest {
-        pub input: TenantApiConnectCircleCiInput,
-        pub operation: TenantApiConnectCircleCiRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiConnectCircleCiRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiConnectCircleCiRequestOperation {
-        #[serde(rename = "connectCircleCI")]
-        ConnectCircleCi,
-    }
-    impl ::std::fmt::Display for TenantApiConnectCircleCiRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ConnectCircleCi => f.write_str("connectCircleCI"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiConnectCircleCiRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "connectCircleCI" => Ok(Self::ConnectCircleCi),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiConnectCircleCiRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiConnectCircleCiRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiConnectCircleCiResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectCircleCiResult {
-        pub connection: TenantApiCircleCiConnectionRecord,
-    }
-    ///`TenantApiConnectGitHubActionsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectGitHubActionsInput {
-        pub now: i64,
-        pub start: GitHubActionsConnectionStart,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiConnectGitHubActionsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectGitHubActionsRequest {
-        pub input: TenantApiConnectGitHubActionsInput,
-        pub operation: TenantApiConnectGitHubActionsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiConnectGitHubActionsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiConnectGitHubActionsRequestOperation {
-        #[serde(rename = "connectGitHubActions")]
-        ConnectGitHubActions,
-    }
-    impl ::std::fmt::Display for TenantApiConnectGitHubActionsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ConnectGitHubActions => f.write_str("connectGitHubActions"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiConnectGitHubActionsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "connectGitHubActions" => Ok(Self::ConnectGitHubActions),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiConnectGitHubActionsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiConnectGitHubActionsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiConnectGitHubActionsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectGitHubActionsResult {
-        pub connection: GitHubActionsConnection,
-    }
-    ///`TenantApiConnectNamespaceInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectNamespaceInput {
-        pub now: i64,
-        pub start: NamespaceConnectionStart,
-    }
-    ///`TenantApiConnectNamespaceRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectNamespaceRequest {
-        pub input: TenantApiConnectNamespaceInput,
-        pub operation: TenantApiConnectNamespaceRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiConnectNamespaceRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiConnectNamespaceRequestOperation {
-        #[serde(rename = "connectNamespace")]
-        ConnectNamespace,
-    }
-    impl ::std::fmt::Display for TenantApiConnectNamespaceRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ConnectNamespace => f.write_str("connectNamespace"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiConnectNamespaceRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "connectNamespace" => Ok(Self::ConnectNamespace),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiConnectNamespaceRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiConnectNamespaceRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiConnectNamespaceResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectNamespaceResult {
-        pub connection: TenantApiNamespaceConnectionRecord,
-    }
-    ///`TenantApiConnectedAccounts`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectedAccounts {
-        #[serde(rename = "CircleCI", deserialize_with = "::std::option::Option::deserialize")]
-        pub circle_ci: ::std::option::Option<::std::string::String>,
-        #[serde(rename = "GitHubActions", deserialize_with = "::std::option::Option::deserialize")]
-        pub git_hub_actions: ::std::option::Option<::std::string::String>,
-        #[serde(rename = "Namespace", deserialize_with = "::std::option::Option::deserialize")]
-        pub namespace: ::std::option::Option<::std::string::String>,
-    }
-    ///`TenantApiConnectedAccountsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiConnectedAccountsInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiConnectedAccountsInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiConnectedAccountsInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiConnectedAccountsInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiConnectedAccountsInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///`TenantApiConnectedAccountsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectedAccountsRequest {
-        pub input: TenantApiConnectedAccountsInput,
-        pub operation: TenantApiConnectedAccountsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiConnectedAccountsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiConnectedAccountsRequestOperation {
-        #[serde(rename = "connectedAccounts")]
-        ConnectedAccounts,
-    }
-    impl ::std::fmt::Display for TenantApiConnectedAccountsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ConnectedAccounts => f.write_str("connectedAccounts"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiConnectedAccountsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "connectedAccounts" => Ok(Self::ConnectedAccounts),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiConnectedAccountsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiConnectedAccountsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiConnectedAccountsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectedAccountsResult {
-        pub accounts: TenantApiConnectedAccounts,
-    }
     ///`TenantApiConnectorAuthorizeStartedOk`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorAuthorizeStartedOk {
@@ -25111,9 +25242,9 @@ pub mod types {
     ///`TenantApiConnectorCallbackCode`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorCallbackCode {
-        pub code: ::std::string::String,
+        pub code: Token,
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub issuer: ::std::option::Option<::std::string::String>,
+        pub issuer: ::std::option::Option<UrlText>,
         pub kind: TenantApiConnectorCallbackCodeKind,
     }
     ///`TenantApiConnectorCallbackCodeKind`
@@ -25153,7 +25284,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorCallbackConnected {
         pub kind: TenantApiConnectorCallbackConnectedKind,
-        pub name: ::std::string::String,
+        pub name: ShortText,
     }
     ///`TenantApiConnectorCallbackConnectedKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -25191,7 +25322,7 @@ pub mod types {
     ///`TenantApiConnectorCallbackError`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorCallbackError {
-        pub error: ::std::string::String,
+        pub error: ShortText,
         pub kind: TenantApiConnectorCallbackErrorKind,
     }
     ///`TenantApiConnectorCallbackErrorKind`
@@ -25236,7 +25367,7 @@ pub mod types {
         pub initiator_is_owner: bool,
         pub now: i64,
         #[serde(rename = "stateHash")]
-        pub state_hash: ::std::string::String,
+        pub state_hash: Token,
     }
     ///`TenantApiConnectorCallbackInputCallback`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -25258,7 +25389,7 @@ pub mod types {
     ///`TenantApiConnectorCallbackNotConnected`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorCallbackNotConnected {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiConnectorCallbackNotConnectedKind,
     }
     ///`TenantApiConnectorCallbackNotConnectedKind`
@@ -25437,7 +25568,7 @@ pub mod types {
     ///`TenantApiConnectorDiscoveryFailed`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorDiscoveryFailed {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiConnectorDiscoveryFailedKind,
     }
     ///`TenantApiConnectorDiscoveryFailedKind`
@@ -25476,7 +25607,7 @@ pub mod types {
     ///`TenantApiConnectorInUse`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorInUse {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiConnectorInUseKind,
     }
     ///`TenantApiConnectorInUseKind`
@@ -25554,7 +25685,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorNoCredential {
         pub kind: TenantApiConnectorNoCredentialKind,
-        pub name: ::std::string::String,
+        pub name: ShortText,
     }
     ///`TenantApiConnectorNoCredentialKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -25630,7 +25761,7 @@ pub mod types {
     ///`TenantApiConnectorRefreshFailed`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorRefreshFailed {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiConnectorRefreshFailedKind,
     }
     ///`TenantApiConnectorRefreshFailedKind`
@@ -25669,7 +25800,7 @@ pub mod types {
     ///`TenantApiConnectorRegistrationUnsupported`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorRegistrationUnsupported {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiConnectorRegistrationUnsupportedKind,
     }
     ///`TenantApiConnectorRegistrationUnsupportedKind`
@@ -25722,6 +25853,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiConnectorStateClaimsConnectorAuthorizationId(::std::string::String);
+    impl TenantApiConnectorStateClaimsConnectorAuthorizationId {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiConnectorStateClaimsConnectorAuthorizationId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiConnectorStateClaimsConnectorAuthorizationId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for TenantApiConnectorStateClaimsConnectorAuthorizationId {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for TenantApiConnectorStateClaimsConnectorAuthorizationId {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -25736,8 +25887,11 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiConnectorStateClaimsConnectorAuthorizationId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("TenantApiConnectorStateClaimsConnectorAuthorizationId: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiConnectorStateClaimsConnectorAuthorizationId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -25768,6 +25922,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiConnectorStateClaimsConnectorId(::std::string::String);
+    impl TenantApiConnectorStateClaimsConnectorId {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiConnectorStateClaimsConnectorId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiConnectorStateClaimsConnectorId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for TenantApiConnectorStateClaimsConnectorId {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for TenantApiConnectorStateClaimsConnectorId {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -25782,8 +25956,11 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiConnectorStateClaimsConnectorId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("TenantApiConnectorStateClaimsConnectorId: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiConnectorStateClaimsConnectorId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -25814,6 +25991,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiConnectorStateClaimsPrincipalId(::std::string::String);
+    impl TenantApiConnectorStateClaimsPrincipalId {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiConnectorStateClaimsPrincipalId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiConnectorStateClaimsPrincipalId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for TenantApiConnectorStateClaimsPrincipalId {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for TenantApiConnectorStateClaimsPrincipalId {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -25828,8 +26025,11 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiConnectorStateClaimsPrincipalId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("TenantApiConnectorStateClaimsPrincipalId: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiConnectorStateClaimsPrincipalId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -25893,6 +26093,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiConnectorStateClaimsTenantId(::std::string::String);
+    impl TenantApiConnectorStateClaimsTenantId {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiConnectorStateClaimsTenantId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiConnectorStateClaimsTenantId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for TenantApiConnectorStateClaimsTenantId {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for TenantApiConnectorStateClaimsTenantId {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -25907,8 +26127,11 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiConnectorStateClaimsTenantId {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("TenantApiConnectorStateClaimsTenantId: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiConnectorStateClaimsTenantId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -26127,11 +26350,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCreateConnectorInput {
         pub auth: ConnectorAuth,
-        pub name: ::std::string::String,
+        pub name: ShortText,
         pub now: i64,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
-        pub url: ::std::string::String,
+        pub url: UrlText,
     }
     ///`TenantApiCreateConnectorRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -26761,6 +26984,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiDeadlineReachedInput {
         pub due: TenantApiSessionDueDeadline,
+        pub retries: i32,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -26884,111 +27108,6 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiDeferredOffersResult {
         pub handoffs: ::std::vec::Vec<TenantApiTurnHandoff>,
-    }
-    ///`TenantApiDeleteBuildConnectionInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteBuildConnectionInput {
-        pub provider: BuildProvider,
-    }
-    ///`TenantApiDeleteBuildConnectionRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteBuildConnectionRequest {
-        pub input: TenantApiDeleteBuildConnectionInput,
-        pub operation: TenantApiDeleteBuildConnectionRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiDeleteBuildConnectionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiDeleteBuildConnectionRequestOperation {
-        #[serde(rename = "deleteBuildConnection")]
-        DeleteBuildConnection,
-    }
-    impl ::std::fmt::Display for TenantApiDeleteBuildConnectionRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::DeleteBuildConnection => f.write_str("deleteBuildConnection"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiDeleteBuildConnectionRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "deleteBuildConnection" => Ok(Self::DeleteBuildConnection),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiDeleteBuildConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiDeleteBuildConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiDeleteBuildConnectionResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteBuildConnectionResult {
-        pub deleted: bool,
-    }
-    ///`TenantApiDeleteCircleCiProjectInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteCircleCiProjectInput {
-        #[serde(rename = "circleCIProjectId")]
-        pub circle_ci_project_id: EntityId,
-    }
-    ///`TenantApiDeleteCircleCiProjectRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteCircleCiProjectRequest {
-        pub input: TenantApiDeleteCircleCiProjectInput,
-        pub operation: TenantApiDeleteCircleCiProjectRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiDeleteCircleCiProjectRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiDeleteCircleCiProjectRequestOperation {
-        #[serde(rename = "deleteCircleCIProject")]
-        DeleteCircleCiProject,
-    }
-    impl ::std::fmt::Display for TenantApiDeleteCircleCiProjectRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::DeleteCircleCiProject => f.write_str("deleteCircleCIProject"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiDeleteCircleCiProjectRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "deleteCircleCIProject" => Ok(Self::DeleteCircleCiProject),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiDeleteCircleCiProjectRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiDeleteCircleCiProjectRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiDeleteCircleCiProjectResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteCircleCiProjectResult {
-        pub deleted: bool,
     }
     ///`TenantApiDeleteConnectorInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -27654,86 +27773,6 @@ pub mod types {
         ///False when the tenant has no webhook endpoint with the id.
         pub deleted: bool,
     }
-    ///`TenantApiDispatchCircleCiPrebuildInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDispatchCircleCiPrebuildInput {
-        pub now: i64,
-        pub parameters: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
-        pub project: CircleCiProject,
-        pub start: TenantApiPrebuildStartRecord,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiDispatchCircleCiPrebuildRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDispatchCircleCiPrebuildRequest {
-        pub input: TenantApiDispatchCircleCiPrebuildInput,
-        pub operation: TenantApiDispatchCircleCiPrebuildRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiDispatchCircleCiPrebuildRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiDispatchCircleCiPrebuildRequestOperation {
-        #[serde(rename = "dispatchCircleCIPrebuild")]
-        DispatchCircleCiPrebuild,
-    }
-    impl ::std::fmt::Display for TenantApiDispatchCircleCiPrebuildRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::DispatchCircleCiPrebuild => f.write_str("dispatchCircleCIPrebuild"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiDispatchCircleCiPrebuildRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "dispatchCircleCIPrebuild" => Ok(Self::DispatchCircleCiPrebuild),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiDispatchCircleCiPrebuildRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiDispatchCircleCiPrebuildRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiDispatchCircleCiPrebuildResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDispatchCircleCiPrebuildResult {
-        pub dispatched: TenantApiDispatchCircleCiPrebuildResultDispatched,
-    }
-    ///`TenantApiDispatchCircleCiPrebuildResultDispatched`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiDispatchCircleCiPrebuildResultDispatched {
-        CircleCiDispatched(TenantApiCircleCiDispatched),
-        CircleCiDispatchNotConnected(TenantApiCircleCiDispatchNotConnected),
-        PrebuildRefused(TenantApiPrebuildRefused),
-    }
-    impl ::std::convert::From<TenantApiCircleCiDispatched> for TenantApiDispatchCircleCiPrebuildResultDispatched {
-        fn from(value: TenantApiCircleCiDispatched) -> Self {
-            Self::CircleCiDispatched(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiDispatchNotConnected> for TenantApiDispatchCircleCiPrebuildResultDispatched {
-        fn from(value: TenantApiCircleCiDispatchNotConnected) -> Self {
-            Self::CircleCiDispatchNotConnected(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildRefused> for TenantApiDispatchCircleCiPrebuildResultDispatched {
-        fn from(value: TenantApiPrebuildRefused) -> Self {
-            Self::PrebuildRefused(value)
-        }
-    }
     ///The afterEventId is older than the oldest event the log keeps.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiEventCursorExpired {
@@ -27817,9 +27856,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiExpiredCredentialRefusal {
         #[serde(rename = "expiresAt")]
-        pub expires_at: ::std::string::String,
+        pub expires_at: ShortText,
         pub kind: TenantApiExpiredCredentialRefusalKind,
-        pub name: ::std::string::String,
+        pub name: ShortText,
     }
     ///`TenantApiExpiredCredentialRefusalKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -28829,148 +28868,12 @@ pub mod types {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
         pub endpoint: ::std::option::Option<WebhookEndpoint>,
     }
-    ///`TenantApiGitHubActionsConnectionInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiGitHubActionsConnectionInput {
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiGitHubActionsConnectionRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiGitHubActionsConnectionRequest {
-        pub input: TenantApiGitHubActionsConnectionInput,
-        pub operation: TenantApiGitHubActionsConnectionRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiGitHubActionsConnectionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiGitHubActionsConnectionRequestOperation {
-        #[serde(rename = "gitHubActionsConnection")]
-        GitHubActionsConnection,
-    }
-    impl ::std::fmt::Display for TenantApiGitHubActionsConnectionRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::GitHubActionsConnection => f.write_str("gitHubActionsConnection"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiGitHubActionsConnectionRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "gitHubActionsConnection" => Ok(Self::GitHubActionsConnection),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiGitHubActionsConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiGitHubActionsConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiGitHubActionsConnectionResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiGitHubActionsConnectionResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub connection: ::std::option::Option<GitHubActionsConnection>,
-    }
-    ///`TenantApiGitHubActionsStart`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiGitHubActionsStart {
-        #[serde(rename = "apiOrigin")]
-        pub api_origin: ::std::string::String,
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: ::std::string::String,
-        #[serde(rename = "guestImageDigest")]
-        pub guest_image_digest: ::std::string::String,
-        #[serde(rename = "personaId")]
-        pub persona_id: EntityId,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        pub rebuild: bool,
-        pub repository: ::std::string::String,
-        #[serde(rename = "rootfsKey")]
-        pub rootfs_key: ::std::string::String,
-        pub target: TenantApiRepositoryRef,
-    }
-    ///`TenantApiGitHubActionsUploadTarget`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiGitHubActionsUploadTarget {
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: TenantApiGitHubActionsUploadTargetCallerWorkflow,
-        #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
-        pub prebuild: Prebuild,
-        pub provider: TenantApiGitHubActionsUploadTargetProvider,
-        pub run: TenantApiPrebuildRun,
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub upload: ::std::option::Option<TenantApiPrebuildLayerUpload>,
-    }
-    ///`TenantApiGitHubActionsUploadTargetCallerWorkflow`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiGitHubActionsUploadTargetCallerWorkflow {
-        Connected(TenantApiCallerWorkflowConnected),
-        NotConnected(TenantApiCallerWorkflowNotConnected),
-    }
-    impl ::std::convert::From<TenantApiCallerWorkflowConnected> for TenantApiGitHubActionsUploadTargetCallerWorkflow {
-        fn from(value: TenantApiCallerWorkflowConnected) -> Self {
-            Self::Connected(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCallerWorkflowNotConnected> for TenantApiGitHubActionsUploadTargetCallerWorkflow {
-        fn from(value: TenantApiCallerWorkflowNotConnected) -> Self {
-            Self::NotConnected(value)
-        }
-    }
-    ///`TenantApiGitHubActionsUploadTargetProvider`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiGitHubActionsUploadTargetProvider {
-        GitHubActions,
-    }
-    impl ::std::fmt::Display for TenantApiGitHubActionsUploadTargetProvider {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::GitHubActions => f.write_str("GitHubActions"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiGitHubActionsUploadTargetProvider {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "GitHubActions" => Ok(Self::GitHubActions),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiGitHubActionsUploadTargetProvider {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiGitHubActionsUploadTargetProvider {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///The GitHub account a repository token secret acts as, when the set holds one.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiGitHubUser {
         #[serde(rename = "githubUserId")]
         pub github_user_id: i64,
-        pub login: ::std::string::String,
+        pub login: ShortText,
     }
     ///`TenantApiHeldPrebuildInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -29030,7 +28933,7 @@ pub mod types {
     ///`TenantApiHostFrameRefused`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiHostFrameRefused {
-        pub reason: ::std::string::String,
+        pub reason: Detail,
         #[serde(rename = "type")]
         pub type_: TenantApiHostFrameRefusedType,
     }
@@ -29065,6 +28968,79 @@ pub mod types {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
+        }
+    }
+    ///`TenantApiHostHealthInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiHostHealthInput {
+        pub detail: Detail,
+        pub health: HostHealth,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        pub now: i64,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiHostHealthRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiHostHealthRequest {
+        pub input: TenantApiHostHealthInput,
+        pub operation: TenantApiHostHealthRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiHostHealthRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiHostHealthRequestOperation {
+        #[serde(rename = "hostHealth")]
+        HostHealth,
+    }
+    impl ::std::fmt::Display for TenantApiHostHealthRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::HostHealth => f.write_str("hostHealth"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiHostHealthRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "hostHealth" => Ok(Self::HostHealth),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiHostHealthRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHostHealthRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiHostHealthResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct TenantApiHostHealthResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
+    impl ::std::ops::Deref for TenantApiHostHealthResult {
+        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
+        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TenantApiHostHealthResult> for ::serde_json::Map<::std::string::String, ::serde_json::Value> {
+        fn from(value: TenantApiHostHealthResult) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>> for TenantApiHostHealthResult {
+        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
+            Self(value)
         }
     }
     ///`TenantApiHostHelloInput`
@@ -29481,15 +29457,19 @@ pub mod types {
         pub cpu_count: ::std::num::NonZeroU32,
         #[serde(rename = "createdAt")]
         pub created_at: i64,
+        ///The control plane's judgement of the host; it offers work to a Healthy host only.
+        pub health: HostHealth,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub labels: ::std::vec::Vec<HostLabel>,
         #[serde(rename = "memoryBytes")]
         pub memory_bytes: ::std::num::NonZeroU64,
         pub name: DisplayName,
-        ///The host's Ed25519 public key, base64. The private key never leaves the host.
         #[serde(rename = "publicKey")]
         pub public_key: TenantApiHostRecordPublicKey,
+        ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
+        #[serde(rename = "reportedHealth")]
+        pub reported_health: HostReportedHealth,
         pub state: HostState,
         #[serde(rename = "supervisorVersion")]
         pub supervisor_version: TenantApiHostRecordSupervisorVersion,
@@ -29502,6 +29482,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiHostRecordPublicKey(::std::string::String);
+    impl TenantApiHostRecordPublicKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiHostRecordPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiHostRecordPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for TenantApiHostRecordPublicKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for TenantApiHostRecordPublicKey {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -29516,8 +29516,11 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiHostRecordPublicKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("TenantApiHostRecordPublicKey: longer than 16384 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiHostRecordPublicKey: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -29548,6 +29551,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiHostRecordSupervisorVersion(::std::string::String);
+    impl TenantApiHostRecordSupervisorVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiHostRecordSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiHostRecordSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for TenantApiHostRecordSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for TenantApiHostRecordSupervisorVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -29562,8 +29585,11 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiHostRecordSupervisorVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("TenantApiHostRecordSupervisorVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiHostRecordSupervisorVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -29664,240 +29690,19 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiImageAvailability {
         pub architectures: ::std::vec::Vec<HostArchitecture>,
-        pub harness: ::std::string::String,
+        pub harness: ShortText,
         #[serde(rename = "harnessVersion")]
-        pub harness_version: ::std::string::String,
+        pub harness_version: ShortText,
     }
     ///`TenantApiIssueOfSession`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiIssueOfSession {
-        pub branch: ::std::string::String,
+        pub branch: ShortText,
         #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
+        pub html_url: HttpUrl,
         #[serde(rename = "issueNumber")]
         pub issue_number: GitHubIssueNumber,
-        pub title: ::std::string::String,
-    }
-    ///`TenantApiJobInputsTarget`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobInputsTarget {
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: TenantApiJobInputsTargetCallerWorkflow,
-        #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
-        #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
-        pub prebuild: Prebuild,
-        #[serde(rename = "rootfsKey")]
-        pub rootfs_key: ::std::string::String,
-    }
-    ///`TenantApiJobInputsTargetCallerWorkflow`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiJobInputsTargetCallerWorkflow {
-        Connected(TenantApiCallerWorkflowConnected),
-        NotConnected(TenantApiCallerWorkflowNotConnected),
-    }
-    impl ::std::convert::From<TenantApiCallerWorkflowConnected> for TenantApiJobInputsTargetCallerWorkflow {
-        fn from(value: TenantApiCallerWorkflowConnected) -> Self {
-            Self::Connected(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCallerWorkflowNotConnected> for TenantApiJobInputsTargetCallerWorkflow {
-        fn from(value: TenantApiCallerWorkflowNotConnected) -> Self {
-            Self::NotConnected(value)
-        }
-    }
-    ///`TenantApiJobInputsTargetInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobInputsTargetInput {
-        #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
-        pub repository: ::std::string::String,
-        #[serde(rename = "runId")]
-        pub run_id: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiJobInputsTargetRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobInputsTargetRequest {
-        pub input: TenantApiJobInputsTargetInput,
-        pub operation: TenantApiJobInputsTargetRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiJobInputsTargetRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiJobInputsTargetRequestOperation {
-        #[serde(rename = "jobInputsTarget")]
-        JobInputsTarget,
-    }
-    impl ::std::fmt::Display for TenantApiJobInputsTargetRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::JobInputsTarget => f.write_str("jobInputsTarget"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiJobInputsTargetRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "jobInputsTarget" => Ok(Self::JobInputsTarget),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiJobInputsTargetRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiJobInputsTargetRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiJobInputsTargetResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobInputsTargetResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub target: ::std::option::Option<TenantApiJobInputsTarget>,
-    }
-    ///`TenantApiJobRunBoundOk`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobRunBoundOk {
-        pub kind: TenantApiJobRunBoundOkKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiJobRunBoundOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiJobRunBoundOkKind {
-        Bound,
-    }
-    impl ::std::fmt::Display for TenantApiJobRunBoundOkKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Bound => f.write_str("Bound"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiJobRunBoundOkKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Bound" => Ok(Self::Bound),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiJobRunBoundOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiJobRunBoundOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiJobRunOther`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobRunOther {
-        pub kind: TenantApiJobRunOtherKind,
-        #[serde(rename = "runId")]
-        pub run_id: i64,
-    }
-    ///`TenantApiJobRunOtherKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiJobRunOtherKind {
-        OtherRun,
-    }
-    impl ::std::fmt::Display for TenantApiJobRunOtherKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::OtherRun => f.write_str("OtherRun"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiJobRunOtherKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "OtherRun" => Ok(Self::OtherRun),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiJobRunOtherKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiJobRunOtherKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiListCircleCiProjectsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiListCircleCiProjectsInput {
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiListCircleCiProjectsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiListCircleCiProjectsRequest {
-        pub input: TenantApiListCircleCiProjectsInput,
-        pub operation: TenantApiListCircleCiProjectsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiListCircleCiProjectsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiListCircleCiProjectsRequestOperation {
-        #[serde(rename = "listCircleCIProjects")]
-        ListCircleCiProjects,
-    }
-    impl ::std::fmt::Display for TenantApiListCircleCiProjectsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ListCircleCiProjects => f.write_str("listCircleCIProjects"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiListCircleCiProjectsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "listCircleCIProjects" => Ok(Self::ListCircleCiProjects),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiListCircleCiProjectsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiListCircleCiProjectsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiListCircleCiProjectsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiListCircleCiProjectsResult {
-        pub projects: ::std::vec::Vec<CircleCiProject>,
+        pub title: Summary,
     }
     ///`TenantApiListClaudeSetupsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -30081,8 +29886,6 @@ pub mod types {
         ///The trigger whose events to keep; null keeps every trigger's.
         #[serde(rename = "triggerId", deserialize_with = "::std::option::Option::deserialize")]
         pub trigger_id: ::std::option::Option<EntityId>,
-        #[serde(rename = "waitSeconds")]
-        pub wait_seconds: i32,
     }
     ///`TenantApiListEventsRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -30378,7 +30181,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiListPrebuildsInput {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub repository: ::std::option::Option<::std::string::String>,
+        pub repository: ::std::option::Option<ShortText>,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -30997,10 +30800,10 @@ pub mod types {
     pub struct TenantApiModelUnsupportedCredentialRefusal {
         pub allowed: ::std::vec::Vec<ModelName>,
         #[serde(rename = "credentialKind")]
-        pub credential_kind: ::std::string::String,
+        pub credential_kind: ShortText,
         pub kind: TenantApiModelUnsupportedCredentialRefusalKind,
         pub model: ModelName,
-        pub name: ::std::string::String,
+        pub name: ShortText,
     }
     ///`TenantApiModelUnsupportedCredentialRefusalKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -31035,99 +30838,13 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiNamespaceConnectionInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiNamespaceConnectionInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiNamespaceConnectionInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiNamespaceConnectionInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiNamespaceConnectionInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiNamespaceConnectionInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///The tenant's Namespace connection as the tenant Durable Object stores it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiNamespaceConnectionRecord {
-        #[serde(rename = "accountLabel")]
-        pub account_label: ::std::string::String,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        #[serde(rename = "namespaceConnectionId")]
-        pub namespace_connection_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-        #[serde(rename = "workspaceId")]
-        pub workspace_id: ::std::string::String,
-    }
-    ///`TenantApiNamespaceConnectionRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiNamespaceConnectionRequest {
-        pub input: TenantApiNamespaceConnectionInput,
-        pub operation: TenantApiNamespaceConnectionRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiNamespaceConnectionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiNamespaceConnectionRequestOperation {
-        #[serde(rename = "namespaceConnection")]
-        NamespaceConnection,
-    }
-    impl ::std::fmt::Display for TenantApiNamespaceConnectionRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NamespaceConnection => f.write_str("namespaceConnection"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiNamespaceConnectionRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "namespaceConnection" => Ok(Self::NamespaceConnection),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiNamespaceConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiNamespaceConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiNamespaceConnectionResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiNamespaceConnectionResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub connection: ::std::option::Option<TenantApiNamespaceConnectionRecord>,
-    }
     ///`TenantApiNewClaudeSetup`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiNewClaudeSetup {
-        pub endpoint: ::std::string::String,
+        pub endpoint: UrlText,
         pub harness: ClaudeSetupHarness,
         #[serde(rename = "harnessVersion")]
-        pub harness_version: ::std::string::String,
+        pub harness_version: ShortText,
         pub hosts: ::std::vec::Vec<TenantApiHostRecord>,
         #[serde(rename = "principalId")]
         pub principal_id: EntityId,
@@ -31138,17 +30855,17 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiNewOpenRouterAuthorization {
         #[serde(rename = "controlPlaneOrigin")]
-        pub control_plane_origin: ::std::string::String,
+        pub control_plane_origin: UrlText,
         #[serde(rename = "secretSetId")]
         pub secret_set_id: EntityId,
     }
     ///`TenantApiNewSession`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiNewSession {
-        pub endpoint: ::std::string::String,
+        pub endpoint: UrlText,
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
-        pub harness_version: ::std::string::String,
+        pub harness_version: ShortText,
         pub hosts: ::std::vec::Vec<TenantApiHostRecord>,
         #[serde(rename = "principalId")]
         pub principal_id: EntityId,
@@ -31200,7 +30917,7 @@ pub mod types {
     pub struct TenantApiNoModelCredentialRefusal {
         pub accepted: ::std::vec::Vec<HarnessCredential>,
         pub kind: TenantApiNoModelCredentialRefusalKind,
-        pub model: ::std::string::String,
+        pub model: ShortText,
         pub provider: ModelProvider,
     }
     ///`TenantApiNoModelCredentialRefusalKind`
@@ -31623,7 +31340,7 @@ pub mod types {
     ///`TenantApiOpenRouterCallbackCode`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiOpenRouterCallbackCode {
-        pub code: ::std::string::String,
+        pub code: Token,
         pub kind: TenantApiOpenRouterCallbackCodeKind,
     }
     ///`TenantApiOpenRouterCallbackCodeKind`
@@ -31897,7 +31614,7 @@ pub mod types {
     ///`TenantApiOpenRouterSecretSetsResult`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiOpenRouterSecretSetsResult {
-        pub names: ::std::vec::Vec<::std::string::String>,
+        pub names: ::std::vec::Vec<ShortText>,
     }
     ///A persona patch, which the tenant Durable Object reads, merges and writes in one transaction, so a concurrent write never loses a field neither names.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -32503,88 +32220,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiPrebuildActionsDisabled`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildActionsDisabled {
-        pub detail: ::std::string::String,
-        pub kind: TenantApiPrebuildActionsDisabledKind,
-    }
-    ///`TenantApiPrebuildActionsDisabledKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildActionsDisabledKind {
-        ActionsDisabled,
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildActionsDisabledKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ActionsDisabled => f.write_str("ActionsDisabled"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildActionsDisabledKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "ActionsDisabled" => Ok(Self::ActionsDisabled),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildActionsDisabledKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildActionsDisabledKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiPrebuildAppPermissionMissing`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildAppPermissionMissing {
-        #[serde(rename = "appOwner")]
-        pub app_owner: ::std::string::String,
-        #[serde(rename = "appSlug")]
-        pub app_slug: ::std::string::String,
-        pub kind: TenantApiPrebuildAppPermissionMissingKind,
-        pub permissions: ::std::vec::Vec<::std::string::String>,
-    }
-    ///`TenantApiPrebuildAppPermissionMissingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildAppPermissionMissingKind {
-        AppPermissionMissing,
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildAppPermissionMissingKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::AppPermissionMissing => f.write_str("AppPermissionMissing"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildAppPermissionMissingKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "AppPermissionMissing" => Ok(Self::AppPermissionMissing),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildAppPermissionMissingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildAppPermissionMissingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiPrebuildBuildDue`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildBuildDue {
@@ -32624,61 +32259,22 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiPrebuildCallerRefused`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildCallerRefused {
-        pub detail: ::std::string::String,
-        pub kind: TenantApiPrebuildCallerRefusedKind,
-    }
-    ///`TenantApiPrebuildCallerRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildCallerRefusedKind {
-        CallerRefused,
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildCallerRefusedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CallerRefused => f.write_str("CallerRefused"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildCallerRefusedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "CallerRefused" => Ok(Self::CallerRefused),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildCallerRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildCallerRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiPrebuildCommitStart`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildCommitStart {
         #[serde(rename = "configSource")]
         pub config_source: PrebuildConfigSource,
         #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
+        pub default_branch: ShortText,
         #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
+        pub head_sha: ShortText,
         pub key: TenantApiPrebuildKey,
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
         #[serde(rename = "prebuildId")]
         pub prebuild_id: EntityId,
         #[serde(rename = "rootfsKey")]
-        pub rootfs_key: ::std::string::String,
+        pub rootfs_key: PathText,
     }
     ///`TenantApiPrebuildDeadline`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -32691,6 +32287,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildDeadlineReachedInput {
         pub due: TenantApiPrebuildDeadlineReachedInputDue,
+        pub retries: i32,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -32822,102 +32419,15 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildKey {
         #[serde(rename = "guestImageDigest")]
-        pub guest_image_digest: ::std::string::String,
+        pub guest_image_digest: ShortText,
         #[serde(rename = "inputDigest")]
-        pub input_digest: ::std::string::String,
-        pub repository: ::std::string::String,
-    }
-    ///`TenantApiPrebuildLayerUpload`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildLayerUpload {
-        #[serde(rename = "layerDigest")]
-        pub layer_digest: ::std::string::String,
-        #[serde(rename = "layerSizeBytes")]
-        pub layer_size_bytes: i64,
-    }
-    ///`TenantApiPrebuildNoInstallation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildNoInstallation {
-        pub kind: TenantApiPrebuildNoInstallationKind,
-    }
-    ///`TenantApiPrebuildNoInstallationKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildNoInstallationKind {
-        NoInstallation,
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildNoInstallationKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NoInstallation => f.write_str("NoInstallation"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildNoInstallationKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NoInstallation" => Ok(Self::NoInstallation),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildNoInstallationKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildNoInstallationKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiPrebuildPermissionMissing`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildPermissionMissing {
-        #[serde(rename = "appSlug")]
-        pub app_slug: ::std::string::String,
-        pub kind: TenantApiPrebuildPermissionMissingKind,
-        pub permissions: ::std::vec::Vec<::std::string::String>,
-    }
-    ///`TenantApiPrebuildPermissionMissingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildPermissionMissingKind {
-        PermissionMissing,
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildPermissionMissingKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::PermissionMissing => f.write_str("PermissionMissing"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildPermissionMissingKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "PermissionMissing" => Ok(Self::PermissionMissing),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildPermissionMissingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildPermissionMissingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
+        pub input_digest: ShortText,
+        pub repository: ShortText,
     }
     ///`TenantApiPrebuildRefused`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildRefused {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiPrebuildRefusedKind,
     }
     ///`TenantApiPrebuildRefusedKind`
@@ -32948,149 +32458,6 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiPrebuildRun`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildRun {
-        #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
-        #[serde(rename = "runId")]
-        pub run_id: i64,
-    }
-    ///`TenantApiPrebuildStartRecord`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildStartRecord {
-        #[serde(rename = "configSource")]
-        pub config_source: PrebuildConfigSource,
-        #[serde(rename = "defaultBranch")]
-        pub default_branch: ::std::string::String,
-        #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
-        pub key: TenantApiPrebuildKey,
-        #[serde(rename = "personaId")]
-        pub persona_id: EntityId,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "rootfsKey")]
-        pub rootfs_key: ::std::string::String,
-        pub target: TenantApiRepositoryRef,
-    }
-    ///`TenantApiPrebuildStarted`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildStarted {
-        pub kind: TenantApiPrebuildStartedKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiPrebuildStartedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildStartedKind {
-        Started,
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildStartedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Started => f.write_str("Started"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildStartedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Started" => Ok(Self::Started),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildStartedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildStartedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiPrebuildTokenRefused`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildTokenRefused {
-        pub detail: ::std::string::String,
-        pub kind: TenantApiPrebuildTokenRefusedKind,
-    }
-    ///`TenantApiPrebuildTokenRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildTokenRefusedKind {
-        TokenRefused,
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildTokenRefusedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::TokenRefused => f.write_str("TokenRefused"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildTokenRefusedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "TokenRefused" => Ok(Self::TokenRefused),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildTokenRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildTokenRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiPrebuildUnreadable`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildUnreadable {
-        pub detail: ::std::string::String,
-        pub kind: TenantApiPrebuildUnreadableKind,
-    }
-    ///`TenantApiPrebuildUnreadableKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildUnreadableKind {
-        Unreadable,
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildUnreadableKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Unreadable => f.write_str("Unreadable"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildUnreadableKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Unreadable" => Ok(Self::Unreadable),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildUnreadableKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildUnreadableKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -33371,11 +32738,64 @@ pub mod types {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
         pub target: ::std::option::Option<TenantApiPushDeliveryTarget>,
     }
+    ///`TenantApiReadLimitsInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadLimitsInput {
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiReadLimitsRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadLimitsRequest {
+        pub input: TenantApiReadLimitsInput,
+        pub operation: TenantApiReadLimitsRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiReadLimitsRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiReadLimitsRequestOperation {
+        #[serde(rename = "readLimits")]
+        ReadLimits,
+    }
+    impl ::std::fmt::Display for TenantApiReadLimitsRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ReadLimits => f.write_str("readLimits"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiReadLimitsRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "readLimits" => Ok(Self::ReadLimits),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiReadLimitsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiReadLimitsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiReadLimitsResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadLimitsResult {
+        pub limits: TenantLimits,
+    }
     ///`TenantApiReadTokenOk`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiReadTokenOk {
         pub kind: TenantApiReadTokenOkKind,
-        pub token: ::std::string::String,
+        pub token: Token,
     }
     ///`TenantApiReadTokenOkKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -33410,9 +32830,64 @@ pub mod types {
             value.parse()
         }
     }
+    ///`TenantApiReadUsageInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadUsageInput {
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiReadUsageRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadUsageRequest {
+        pub input: TenantApiReadUsageInput,
+        pub operation: TenantApiReadUsageRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiReadUsageRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiReadUsageRequestOperation {
+        #[serde(rename = "readUsage")]
+        ReadUsage,
+    }
+    impl ::std::fmt::Display for TenantApiReadUsageRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ReadUsage => f.write_str("readUsage"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiReadUsageRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "readUsage" => Ok(Self::ReadUsage),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiReadUsageRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiReadUsageRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiReadUsageResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiReadUsageResult {
+        pub usage: TenantUsage,
+    }
     ///`TenantApiReconcileHeldBoxesInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiReconcileHeldBoxesInput {
+        #[serde(rename = "heldClaudeSetupIds")]
+        pub held_claude_setup_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "heldSessionIds")]
         pub held_session_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "hostId")]
@@ -33562,38 +33037,10 @@ pub mod types {
             Self(value)
         }
     }
-    ///`TenantApiRecordedPipeline`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiRecordedPipeline {
-        #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
-        pub job: TenantApiRecordedPipelineJob,
-        #[serde(rename = "pipelineId")]
-        pub pipeline_id: ::std::string::String,
-        #[serde(rename = "projectId")]
-        pub project_id: ::std::string::String,
-    }
-    ///`TenantApiRecordedPipelineJob`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiRecordedPipelineJob {
-        Recorded(TenantApiUploadJobRecorded),
-        Absent(TenantApiUploadJobAbsent),
-    }
-    impl ::std::convert::From<TenantApiUploadJobRecorded> for TenantApiRecordedPipelineJob {
-        fn from(value: TenantApiUploadJobRecorded) -> Self {
-            Self::Recorded(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadJobAbsent> for TenantApiRecordedPipelineJob {
-        fn from(value: TenantApiUploadJobAbsent) -> Self {
-            Self::Absent(value)
-        }
-    }
     ///`TenantApiRemoveSecretMemberInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiRemoveSecretMemberInput {
-        pub name: ::std::string::String,
+        pub name: ShortText,
         pub now: i64,
         #[serde(rename = "secretSetId")]
         pub secret_set_id: EntityId,
@@ -33681,7 +33128,7 @@ pub mod types {
     pub struct TenantApiRenameConnectorInput {
         #[serde(rename = "connectorId")]
         pub connector_id: EntityId,
-        pub name: ::std::string::String,
+        pub name: ShortText,
         pub now: i64,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
@@ -33881,8 +33328,8 @@ pub mod types {
     ///`TenantApiRepositoryRef`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiRepositoryRef {
-        pub name: ::std::string::String,
-        pub owner: ::std::string::String,
+        pub name: ShortText,
+        pub owner: ShortText,
     }
     ///`TenantApiResumeSubscriptionInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -34012,21 +33459,6 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
-    }
-    ///A GitHub Actions workflow run event, as the webhook reports it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiRunEvent {
-        pub action: ::std::string::String,
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub conclusion: ::std::option::Option<::std::string::String>,
-        #[serde(rename = "headSha")]
-        pub head_sha: ::std::string::String,
-        #[serde(rename = "htmlUrl")]
-        pub html_url: ::std::string::String,
-        pub path: ::std::string::String,
-        pub repository: ::std::string::String,
-        #[serde(rename = "runId")]
-        pub run_id: i64,
     }
     ///`TenantApiRunningTurns`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -34228,7 +33660,7 @@ pub mod types {
     ///`TenantApiSecretSetConflict`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSecretSetConflict {
-        pub constraint: ::std::string::String,
+        pub constraint: ShortText,
         pub kind: TenantApiSecretSetConflictKind,
     }
     ///`TenantApiSecretSetConflictKind`
@@ -34346,7 +33778,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSecretSetInUse {
         pub kind: TenantApiSecretSetInUseKind,
-        pub personas: ::std::vec::Vec<::std::string::String>,
+        pub personas: ::std::vec::Vec<ShortText>,
     }
     ///`TenantApiSecretSetInUseKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -34423,8 +33855,8 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSecretSetNoStoredValue {
         pub kind: TenantApiSecretSetNoStoredValueKind,
-        pub name: ::std::string::String,
-        pub source: ::std::string::String,
+        pub name: ShortText,
+        pub source: ShortText,
     }
     ///`TenantApiSecretSetNoStoredValueKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -34501,7 +33933,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSecretSetUncheckedToken {
         pub kind: TenantApiSecretSetUncheckedTokenKind,
-        pub source: ::std::string::String,
+        pub source: ShortText,
     }
     ///`TenantApiSecretSetUncheckedTokenKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -34539,10 +33971,10 @@ pub mod types {
     ///A stored member no longer matches its kind, so the set cannot be read.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSecretSetUnreadable {
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub kind: TenantApiSecretSetUnreadableKind,
-        pub member: ::std::string::String,
-        pub name: ::std::string::String,
+        pub member: ShortText,
+        pub name: ShortText,
         #[serde(rename = "secretSetId")]
         pub secret_set_id: EntityId,
     }
@@ -35421,6 +34853,61 @@ pub mod types {
             value.parse()
         }
     }
+    ///`TenantApiSetLimitsInput`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSetLimitsInput {
+        pub limits: TenantLimitsSet,
+        pub now: i64,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiSetLimitsRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSetLimitsRequest {
+        pub input: TenantApiSetLimitsInput,
+        pub operation: TenantApiSetLimitsRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiSetLimitsRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSetLimitsRequestOperation {
+        #[serde(rename = "setLimits")]
+        SetLimits,
+    }
+    impl ::std::fmt::Display for TenantApiSetLimitsRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SetLimits => f.write_str("setLimits"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSetLimitsRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "setLimits" => Ok(Self::SetLimits),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSetLimitsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSetLimitsRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiSetLimitsResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSetLimitsResult {
+        pub limits: TenantLimits,
+    }
     ///`TenantApiSetSecretMemberInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSetSecretMemberInput {
@@ -35593,7 +35080,7 @@ pub mod types {
         pub tenant_id: EntityId,
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
-        pub value: ::std::string::String,
+        pub value: Token,
     }
     ///`TenantApiSetStaticTokenRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -35748,81 +35235,6 @@ pub mod types {
             Self(value)
         }
     }
-    ///`TenantApiStartCircleCiAuthorizationInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartCircleCiAuthorizationInput {
-        pub now: i64,
-        #[serde(rename = "principalId")]
-        pub principal_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiStartCircleCiAuthorizationRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartCircleCiAuthorizationRequest {
-        pub input: TenantApiStartCircleCiAuthorizationInput,
-        pub operation: TenantApiStartCircleCiAuthorizationRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiStartCircleCiAuthorizationRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiStartCircleCiAuthorizationRequestOperation {
-        #[serde(rename = "startCircleCIAuthorization")]
-        StartCircleCiAuthorization,
-    }
-    impl ::std::fmt::Display for TenantApiStartCircleCiAuthorizationRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::StartCircleCiAuthorization => f.write_str("startCircleCIAuthorization"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiStartCircleCiAuthorizationRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "startCircleCIAuthorization" => Ok(Self::StartCircleCiAuthorization),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiStartCircleCiAuthorizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiStartCircleCiAuthorizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiStartCircleCiAuthorizationResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartCircleCiAuthorizationResult {
-        pub started: TenantApiStartCircleCiAuthorizationResultStarted,
-    }
-    ///`TenantApiStartCircleCiAuthorizationResultStarted`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiStartCircleCiAuthorizationResultStarted {
-        AuthorizationStartedOk(TenantApiCircleCiAuthorizationStartedOk),
-        RegistrationRefused(TenantApiCircleCiRegistrationRefused),
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationStartedOk>
-        for TenantApiStartCircleCiAuthorizationResultStarted
-    {
-        fn from(value: TenantApiCircleCiAuthorizationStartedOk) -> Self {
-            Self::AuthorizationStartedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiRegistrationRefused> for TenantApiStartCircleCiAuthorizationResultStarted {
-        fn from(value: TenantApiCircleCiRegistrationRefused) -> Self {
-            Self::RegistrationRefused(value)
-        }
-    }
     ///`TenantApiStartClaudeSetupInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiStartClaudeSetupInput {
@@ -35919,7 +35331,7 @@ pub mod types {
         #[serde(rename = "connectorId")]
         pub connector_id: EntityId,
         #[serde(rename = "controlPlaneOrigin")]
-        pub control_plane_origin: ::std::string::String,
+        pub control_plane_origin: UrlText,
         pub now: i64,
         #[serde(rename = "principalId")]
         pub principal_id: EntityId,
@@ -36016,7 +35428,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiStartConnectorDisconnected {
         pub kind: TenantApiStartConnectorDisconnectedKind,
-        pub names: ::std::vec::Vec<::std::string::String>,
+        pub names: ::std::vec::Vec<ShortText>,
     }
     ///`TenantApiStartConnectorDisconnectedKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -36089,129 +35501,14 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiStartGitHubActionsPrebuildInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartGitHubActionsPrebuildInput {
-        pub now: i64,
-        pub start: TenantApiGitHubActionsStart,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiStartGitHubActionsPrebuildRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartGitHubActionsPrebuildRequest {
-        pub input: TenantApiStartGitHubActionsPrebuildInput,
-        pub operation: TenantApiStartGitHubActionsPrebuildRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiStartGitHubActionsPrebuildRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiStartGitHubActionsPrebuildRequestOperation {
-        #[serde(rename = "startGitHubActionsPrebuild")]
-        StartGitHubActionsPrebuild,
-    }
-    impl ::std::fmt::Display for TenantApiStartGitHubActionsPrebuildRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::StartGitHubActionsPrebuild => f.write_str("startGitHubActionsPrebuild"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiStartGitHubActionsPrebuildRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "startGitHubActionsPrebuild" => Ok(Self::StartGitHubActionsPrebuild),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiStartGitHubActionsPrebuildRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiStartGitHubActionsPrebuildRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiStartGitHubActionsPrebuildResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartGitHubActionsPrebuildResult {
-        pub started: TenantApiStartGitHubActionsPrebuildResultStarted,
-    }
-    ///`TenantApiStartGitHubActionsPrebuildResultStarted`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiStartGitHubActionsPrebuildResultStarted {
-        Started(TenantApiPrebuildStarted),
-        NoInstallation(TenantApiPrebuildNoInstallation),
-        TokenRefused(TenantApiPrebuildTokenRefused),
-        Unreadable(TenantApiPrebuildUnreadable),
-        PermissionMissing(TenantApiPrebuildPermissionMissing),
-        AppPermissionMissing(TenantApiPrebuildAppPermissionMissing),
-        CallerRefused(TenantApiPrebuildCallerRefused),
-        ActionsDisabled(TenantApiPrebuildActionsDisabled),
-        Refused(TenantApiPrebuildRefused),
-    }
-    impl ::std::convert::From<TenantApiPrebuildStarted> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildStarted) -> Self {
-            Self::Started(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildNoInstallation> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildNoInstallation) -> Self {
-            Self::NoInstallation(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildTokenRefused> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildTokenRefused) -> Self {
-            Self::TokenRefused(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildUnreadable> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildUnreadable) -> Self {
-            Self::Unreadable(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildPermissionMissing> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildPermissionMissing) -> Self {
-            Self::PermissionMissing(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildAppPermissionMissing> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildAppPermissionMissing) -> Self {
-            Self::AppPermissionMissing(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildCallerRefused> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildCallerRefused) -> Self {
-            Self::CallerRefused(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildActionsDisabled> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildActionsDisabled) -> Self {
-            Self::ActionsDisabled(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildRefused> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildRefused) -> Self {
-            Self::Refused(value)
-        }
-    }
     ///`TenantApiStartHostPrebuildInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiStartHostPrebuildInput {
         #[serde(rename = "apiOrigin")]
-        pub api_origin: ::std::string::String,
+        pub api_origin: UrlText,
         pub commit: TenantApiPrebuildCommitStart,
         pub input: TenantApiNewSession,
         pub now: i64,
-        pub provider: BuildProvider,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -36379,86 +35676,6 @@ pub mod types {
     {
         fn from(value: TenantApiAuthorizationOtherCredential) -> Self {
             Self::AuthorizationOtherCredential(value)
-        }
-    }
-    ///`TenantApiStartPrebuildUploadInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartPrebuildUploadInput {
-        pub now: i64,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        pub upload: TenantApiPrebuildLayerUpload,
-    }
-    ///`TenantApiStartPrebuildUploadRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartPrebuildUploadRequest {
-        pub input: TenantApiStartPrebuildUploadInput,
-        pub operation: TenantApiStartPrebuildUploadRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiStartPrebuildUploadRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiStartPrebuildUploadRequestOperation {
-        #[serde(rename = "startPrebuildUpload")]
-        StartPrebuildUpload,
-    }
-    impl ::std::fmt::Display for TenantApiStartPrebuildUploadRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::StartPrebuildUpload => f.write_str("startPrebuildUpload"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiStartPrebuildUploadRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "startPrebuildUpload" => Ok(Self::StartPrebuildUpload),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiStartPrebuildUploadRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiStartPrebuildUploadRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiStartPrebuildUploadResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartPrebuildUploadResult {
-        pub recorded: TenantApiStartPrebuildUploadResultRecorded,
-    }
-    ///`TenantApiStartPrebuildUploadResultRecorded`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiStartPrebuildUploadResultRecorded {
-        RecordedOk(TenantApiUploadRecordedOk),
-        NotUploading(TenantApiUploadNotUploading),
-        OtherLayer(TenantApiUploadOtherLayer),
-    }
-    impl ::std::convert::From<TenantApiUploadRecordedOk> for TenantApiStartPrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadRecordedOk) -> Self {
-            Self::RecordedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadNotUploading> for TenantApiStartPrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadNotUploading) -> Self {
-            Self::NotUploading(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadOtherLayer> for TenantApiStartPrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadOtherLayer) -> Self {
-            Self::OtherLayer(value)
         }
     }
     ///`TenantApiStartSessionFromIssueInput`
@@ -36937,7 +36154,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiStopSessionInput {
         #[serde(rename = "cancelledBy", deserialize_with = "::std::option::Option::deserialize")]
-        pub cancelled_by: ::std::option::Option<::std::string::String>,
+        pub cancelled_by: ::std::option::Option<ShortText>,
         pub now: i64,
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
@@ -37175,15 +36392,16 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
+        ///What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: TenantApiStoredTurnOfferHarnessVersion,
+        ///The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy.
+        #[serde(rename = "idleSeconds")]
+        pub idle_seconds: ::std::num::NonZeroU32,
         pub model: ModelName,
-        ///Set when the turn builds a prebuild: the box clones the repository at this commit and runs the
-        ///repository's setup step, /opt/tumpel/prebuild.mjs run, in place of the harness, its output lines
-        ///being the turn's lines. The credential then holds only a GITHUB_TOKEN that reads the
-        ///repository's contents, and the snapshot the control plane asks for after the turn is the
-        ///prebuild's layer.
         #[serde(rename = "prebuildCommitSha", skip_serializing_if = "::std::option::Option::is_none")]
         pub prebuild_commit_sha: ::std::option::Option<TenantApiStoredTurnOfferPrebuildCommitSha>,
         pub prompt: Prompt,
@@ -37192,6 +36410,9 @@ pub mod types {
         pub session_id: EntityId,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
+        ///How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.
+        #[serde(rename = "turnSeconds")]
+        pub turn_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "type")]
         pub type_: TenantApiStoredTurnOfferType,
     }
@@ -37199,6 +36420,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiStoredTurnOfferHarnessVersion(::std::string::String);
+    impl TenantApiStoredTurnOfferHarnessVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiStoredTurnOfferHarnessVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiStoredTurnOfferHarnessVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for TenantApiStoredTurnOfferHarnessVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for TenantApiStoredTurnOfferHarnessVersion {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -37213,8 +36454,11 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiStoredTurnOfferHarnessVersion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("TenantApiStoredTurnOfferHarnessVersion: longer than 256 characters".into());
+            }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TenantApiStoredTurnOfferHarnessVersion: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -37249,6 +36493,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TenantApiStoredTurnOfferPrebuildCommitSha(::std::string::String);
+    impl TenantApiStoredTurnOfferPrebuildCommitSha {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TenantApiStoredTurnOfferPrebuildCommitSha {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TenantApiStoredTurnOfferPrebuildCommitSha {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for TenantApiStoredTurnOfferPrebuildCommitSha {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for TenantApiStoredTurnOfferPrebuildCommitSha {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -37263,10 +36527,15 @@ pub mod types {
     impl ::std::str::FromStr for TenantApiStoredTurnOfferPrebuildCommitSha {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("TenantApiStoredTurnOfferPrebuildCommitSha: longer than 256 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[0-9a-f]{40}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[0-9a-f]{40}$\"".into());
+                return Err(
+                    "TenantApiStoredTurnOfferPrebuildCommitSha: doesn't match pattern \"^[0-9a-f]{40}$\"".into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
@@ -37331,7 +36600,7 @@ pub mod types {
     pub struct TenantApiSubmitClaudeSetupCodeInput {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
-        pub code: ::std::string::String,
+        pub code: Token,
         pub now: i64,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
@@ -37876,10 +37145,55 @@ pub mod types {
             value.parse()
         }
     }
+    ///The tenant reached one of its limits and the instance served nothing. The caller answers 429 naming the limit, retryable after the window resets.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTenantLimitReached {
+        pub limit: i64,
+        pub measure: TenantUsageMeasure,
+        pub refusal: TenantApiTenantLimitReachedRefusal,
+        #[serde(rename = "resetsAt")]
+        pub resets_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        pub tier: TenantTier,
+        pub used: i64,
+        pub window: TenantUsageWindow,
+    }
+    ///`TenantApiTenantLimitReachedRefusal`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTenantLimitReachedRefusal {
+        TenantLimitReached,
+    }
+    impl ::std::fmt::Display for TenantApiTenantLimitReachedRefusal {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::TenantLimitReached => f.write_str("TenantLimitReached"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTenantLimitReachedRefusal {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "TenantLimitReached" => Ok(Self::TenantLimitReached),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTenantLimitReachedRefusal {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTenantLimitReachedRefusal {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///The instance does not know the operation: it runs older code. The caller answers a retryable failure.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTenantOperationUnknown {
-        pub operation: ::std::string::String,
+        pub operation: ShortText,
         pub refusal: TenantApiTenantOperationUnknownRefusal,
     }
     ///`TenantApiTenantOperationUnknownRefusal`
@@ -37922,6 +37236,7 @@ pub mod types {
         ApiVersionUnsupported(TenantApiTenantApiVersionUnsupported),
         OperationUnknown(TenantApiTenantOperationUnknown),
         RequestInvalid(TenantApiTenantRequestInvalid),
+        LimitReached(TenantApiTenantLimitReached),
     }
     impl ::std::convert::From<TenantApiTenantApiVersionUnsupported> for TenantApiTenantRefusal {
         fn from(value: TenantApiTenantApiVersionUnsupported) -> Self {
@@ -37936,6 +37251,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiTenantRequestInvalid> for TenantApiTenantRefusal {
         fn from(value: TenantApiTenantRequestInvalid) -> Self {
             Self::RequestInvalid(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTenantLimitReached> for TenantApiTenantRefusal {
+        fn from(value: TenantApiTenantLimitReached) -> Self {
+            Self::LimitReached(value)
         }
     }
     ///One request to the tenant Durable Object's single entry point. `operation` names the operation the way a path names a REST operation.
@@ -37979,10 +37299,6 @@ pub mod types {
         OpenRouterCallbackRequest(TenantApiOpenRouterCallbackRequest),
         OpenRouterAuthorizationDeadlineReachedRequest(TenantApiOpenRouterAuthorizationDeadlineReachedRequest),
         OpenRouterSecretSetsRequest(TenantApiOpenRouterSecretSetsRequest),
-        StartCircleCiAuthorizationRequest(TenantApiStartCircleCiAuthorizationRequest),
-        CompleteCircleCiAuthorizationRequest(TenantApiCompleteCircleCiAuthorizationRequest),
-        ChooseCircleCiOrganizationRequest(TenantApiChooseCircleCiOrganizationRequest),
-        CircleCiAuthorizationDeadlineReachedRequest(TenantApiCircleCiAuthorizationDeadlineReachedRequest),
         StartClaudeSetupRequest(TenantApiStartClaudeSetupRequest),
         GetClaudeSetupRequest(TenantApiGetClaudeSetupRequest),
         ListClaudeSetupsRequest(TenantApiListClaudeSetupsRequest),
@@ -37995,19 +37311,9 @@ pub mod types {
         GetPrebuildRequest(TenantApiGetPrebuildRequest),
         HeldPrebuildRequest(TenantApiHeldPrebuildRequest),
         RecordPrebuildBuildingRequest(TenantApiRecordPrebuildBuildingRequest),
-        JobInputsTargetRequest(TenantApiJobInputsTargetRequest),
-        BindJobRunRequest(TenantApiBindJobRunRequest),
-        WorkflowRunReportedRequest(TenantApiWorkflowRunReportedRequest),
         PrebuildDeadlineReachedRequest(TenantApiPrebuildDeadlineReachedRequest),
-        StartGitHubActionsPrebuildRequest(TenantApiStartGitHubActionsPrebuildRequest),
         StartHostPrebuildRequest(TenantApiStartHostPrebuildRequest),
-        UploadTargetRequest(TenantApiUploadTargetRequest),
-        BindCircleCiUploadJobRequest(TenantApiBindCircleCiUploadJobRequest),
-        StartPrebuildUploadRequest(TenantApiStartPrebuildUploadRequest),
-        CompletePrebuildUploadRequest(TenantApiCompletePrebuildUploadRequest),
         GetPrebuildFailureRequest(TenantApiGetPrebuildFailureRequest),
-        DispatchCircleCiPrebuildRequest(TenantApiDispatchCircleCiPrebuildRequest),
-        CircleCiWorkflowCompletedRequest(TenantApiCircleCiWorkflowCompletedRequest),
         RepositoryReadTokenRequest(TenantApiRepositoryReadTokenRequest),
         StartSessionRequest(TenantApiStartSessionRequest),
         StartSessionFromIssueRequest(TenantApiStartSessionFromIssueRequest),
@@ -38025,7 +37331,6 @@ pub mod types {
         SteerTurnRequest(TenantApiSteerTurnRequest),
         ListSteersRequest(TenantApiListSteersRequest),
         TakeSteersRequest(TenantApiTakeSteersRequest),
-        WaitTurnsRequest(TenantApiWaitTurnsRequest),
         ListEventsRequest(TenantApiListEventsRequest),
         ListWebhookEndpointsRequest(TenantApiListWebhookEndpointsRequest),
         CreateWebhookEndpointRequest(TenantApiCreateWebhookEndpointRequest),
@@ -38056,22 +37361,6 @@ pub mod types {
         ListCredentialHandoversRequest(TenantApiListCredentialHandoversRequest),
         GetSnapshotRequest(TenantApiGetSnapshotRequest),
         TranscriptCursorRequest(TenantApiTranscriptCursorRequest),
-        ConnectedAccountsRequest(TenantApiConnectedAccountsRequest),
-        DeleteBuildConnectionRequest(TenantApiDeleteBuildConnectionRequest),
-        CircleCiConnectionRequest(TenantApiCircleCiConnectionRequest),
-        CircleCiTokenRequest(TenantApiCircleCiTokenRequest),
-        ConnectCircleCiRequest(TenantApiConnectCircleCiRequest),
-        ListCircleCiProjectsRequest(TenantApiListCircleCiProjectsRequest),
-        CircleCiProjectBoundToRequest(TenantApiCircleCiProjectBoundToRequest),
-        CircleCiProjectOfRequest(TenantApiCircleCiProjectOfRequest),
-        AddCircleCiProjectRequest(TenantApiAddCircleCiProjectRequest),
-        CircleCiWebhooksRequest(TenantApiCircleCiWebhooksRequest),
-        CircleCiWebhookSecretRequest(TenantApiCircleCiWebhookSecretRequest),
-        DeleteCircleCiProjectRequest(TenantApiDeleteCircleCiProjectRequest),
-        GitHubActionsConnectionRequest(TenantApiGitHubActionsConnectionRequest),
-        ConnectGitHubActionsRequest(TenantApiConnectGitHubActionsRequest),
-        NamespaceConnectionRequest(TenantApiNamespaceConnectionRequest),
-        ConnectNamespaceRequest(TenantApiConnectNamespaceRequest),
         OfferSentRequest(TenantApiOfferSentRequest),
         HostHelloRequest(TenantApiHostHelloRequest),
         HostUsageRequest(TenantApiHostUsageRequest),
@@ -38079,10 +37368,14 @@ pub mod types {
         ForgetHostUsageRequest(TenantApiForgetHostUsageRequest),
         RunningTurnsByHostRequest(TenantApiRunningTurnsByHostRequest),
         ListHostUsageRequest(TenantApiListHostUsageRequest),
+        ReadUsageRequest(TenantApiReadUsageRequest),
+        ReadLimitsRequest(TenantApiReadLimitsRequest),
+        SetLimitsRequest(TenantApiSetLimitsRequest),
         DeferredOffersRequest(TenantApiDeferredOffersRequest),
         TurnMetricDimensionsRequest(TenantApiTurnMetricDimensionsRequest),
         PrepareOfferRequest(TenantApiPrepareOfferRequest),
         HostPresenceRequest(TenantApiHostPresenceRequest),
+        HostHealthRequest(TenantApiHostHealthRequest),
         HostMessageRequest(TenantApiHostMessageRequest),
         DeadlineReachedRequest(TenantApiDeadlineReachedRequest),
     }
@@ -38271,26 +37564,6 @@ pub mod types {
             Self::OpenRouterSecretSetsRequest(value)
         }
     }
-    impl ::std::convert::From<TenantApiStartCircleCiAuthorizationRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiStartCircleCiAuthorizationRequest) -> Self {
-            Self::StartCircleCiAuthorizationRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCompleteCircleCiAuthorizationRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCompleteCircleCiAuthorizationRequest) -> Self {
-            Self::CompleteCircleCiAuthorizationRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiChooseCircleCiOrganizationRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiChooseCircleCiOrganizationRequest) -> Self {
-            Self::ChooseCircleCiOrganizationRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationDeadlineReachedRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiAuthorizationDeadlineReachedRequest) -> Self {
-            Self::CircleCiAuthorizationDeadlineReachedRequest(value)
-        }
-    }
     impl ::std::convert::From<TenantApiStartClaudeSetupRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiStartClaudeSetupRequest) -> Self {
             Self::StartClaudeSetupRequest(value)
@@ -38351,29 +37624,9 @@ pub mod types {
             Self::RecordPrebuildBuildingRequest(value)
         }
     }
-    impl ::std::convert::From<TenantApiJobInputsTargetRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiJobInputsTargetRequest) -> Self {
-            Self::JobInputsTargetRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiBindJobRunRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiBindJobRunRequest) -> Self {
-            Self::BindJobRunRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiWorkflowRunReportedRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiWorkflowRunReportedRequest) -> Self {
-            Self::WorkflowRunReportedRequest(value)
-        }
-    }
     impl ::std::convert::From<TenantApiPrebuildDeadlineReachedRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiPrebuildDeadlineReachedRequest) -> Self {
             Self::PrebuildDeadlineReachedRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiStartGitHubActionsPrebuildRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiStartGitHubActionsPrebuildRequest) -> Self {
-            Self::StartGitHubActionsPrebuildRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiStartHostPrebuildRequest> for TenantApiTenantRequest {
@@ -38381,39 +37634,9 @@ pub mod types {
             Self::StartHostPrebuildRequest(value)
         }
     }
-    impl ::std::convert::From<TenantApiUploadTargetRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiUploadTargetRequest) -> Self {
-            Self::UploadTargetRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiBindCircleCiUploadJobRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiBindCircleCiUploadJobRequest) -> Self {
-            Self::BindCircleCiUploadJobRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiStartPrebuildUploadRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiStartPrebuildUploadRequest) -> Self {
-            Self::StartPrebuildUploadRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCompletePrebuildUploadRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCompletePrebuildUploadRequest) -> Self {
-            Self::CompletePrebuildUploadRequest(value)
-        }
-    }
     impl ::std::convert::From<TenantApiGetPrebuildFailureRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiGetPrebuildFailureRequest) -> Self {
             Self::GetPrebuildFailureRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiDispatchCircleCiPrebuildRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiDispatchCircleCiPrebuildRequest) -> Self {
-            Self::DispatchCircleCiPrebuildRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiWorkflowCompletedRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiWorkflowCompletedRequest) -> Self {
-            Self::CircleCiWorkflowCompletedRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiRepositoryReadTokenRequest> for TenantApiTenantRequest {
@@ -38499,11 +37722,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiTakeSteersRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiTakeSteersRequest) -> Self {
             Self::TakeSteersRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiWaitTurnsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiWaitTurnsRequest) -> Self {
-            Self::WaitTurnsRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiListEventsRequest> for TenantApiTenantRequest {
@@ -38656,86 +37874,6 @@ pub mod types {
             Self::TranscriptCursorRequest(value)
         }
     }
-    impl ::std::convert::From<TenantApiConnectedAccountsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiConnectedAccountsRequest) -> Self {
-            Self::ConnectedAccountsRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiDeleteBuildConnectionRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiDeleteBuildConnectionRequest) -> Self {
-            Self::DeleteBuildConnectionRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiConnectionRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiConnectionRequest) -> Self {
-            Self::CircleCiConnectionRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiTokenRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiTokenRequest) -> Self {
-            Self::CircleCiTokenRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiConnectCircleCiRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiConnectCircleCiRequest) -> Self {
-            Self::ConnectCircleCiRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiListCircleCiProjectsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiListCircleCiProjectsRequest) -> Self {
-            Self::ListCircleCiProjectsRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiProjectBoundToRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiProjectBoundToRequest) -> Self {
-            Self::CircleCiProjectBoundToRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiProjectOfRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiProjectOfRequest) -> Self {
-            Self::CircleCiProjectOfRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAddCircleCiProjectRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiAddCircleCiProjectRequest) -> Self {
-            Self::AddCircleCiProjectRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiWebhooksRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiWebhooksRequest) -> Self {
-            Self::CircleCiWebhooksRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiWebhookSecretRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiWebhookSecretRequest) -> Self {
-            Self::CircleCiWebhookSecretRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiDeleteCircleCiProjectRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiDeleteCircleCiProjectRequest) -> Self {
-            Self::DeleteCircleCiProjectRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiGitHubActionsConnectionRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiGitHubActionsConnectionRequest) -> Self {
-            Self::GitHubActionsConnectionRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiConnectGitHubActionsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiConnectGitHubActionsRequest) -> Self {
-            Self::ConnectGitHubActionsRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiNamespaceConnectionRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiNamespaceConnectionRequest) -> Self {
-            Self::NamespaceConnectionRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiConnectNamespaceRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiConnectNamespaceRequest) -> Self {
-            Self::ConnectNamespaceRequest(value)
-        }
-    }
     impl ::std::convert::From<TenantApiOfferSentRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiOfferSentRequest) -> Self {
             Self::OfferSentRequest(value)
@@ -38771,6 +37909,21 @@ pub mod types {
             Self::ListHostUsageRequest(value)
         }
     }
+    impl ::std::convert::From<TenantApiReadUsageRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiReadUsageRequest) -> Self {
+            Self::ReadUsageRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiReadLimitsRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiReadLimitsRequest) -> Self {
+            Self::ReadLimitsRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSetLimitsRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiSetLimitsRequest) -> Self {
+            Self::SetLimitsRequest(value)
+        }
+    }
     impl ::std::convert::From<TenantApiDeferredOffersRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiDeferredOffersRequest) -> Self {
             Self::DeferredOffersRequest(value)
@@ -38791,6 +37944,11 @@ pub mod types {
             Self::HostPresenceRequest(value)
         }
     }
+    impl ::std::convert::From<TenantApiHostHealthRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiHostHealthRequest) -> Self {
+            Self::HostHealthRequest(value)
+        }
+    }
     impl ::std::convert::From<TenantApiHostMessageRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiHostMessageRequest) -> Self {
             Self::HostMessageRequest(value)
@@ -38804,8 +37962,8 @@ pub mod types {
     ///The input fails the operation's schema: a caller bug, which the caller fails as a 500.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTenantRequestInvalid {
-        pub issues: ::std::vec::Vec<::std::string::String>,
-        pub operation: ::std::string::String,
+        pub issues: ::std::vec::Vec<Detail>,
+        pub operation: ShortText,
         pub refusal: TenantApiTenantRequestInvalidRefusal,
     }
     ///`TenantApiTenantRequestInvalidRefusal`
@@ -38854,7 +38012,7 @@ pub mod types {
         #[serde(rename = "sessionState")]
         pub session_state: SessionState,
         #[serde(rename = "storageKey")]
-        pub storage_key: ::std::string::String,
+        pub storage_key: StorageKey,
     }
     ///`TenantApiTranscriptChunkKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -39668,6 +38826,30 @@ pub mod types {
             value.parse()
         }
     }
+    ///The dimensions one turn reported, by name.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct TenantApiTurnMetricDimensions(pub ::std::collections::HashMap<::std::string::String, ShortText>);
+    impl ::std::ops::Deref for TenantApiTurnMetricDimensions {
+        type Target = ::std::collections::HashMap<::std::string::String, ShortText>;
+        fn deref(&self) -> &::std::collections::HashMap<::std::string::String, ShortText> {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TenantApiTurnMetricDimensions>
+        for ::std::collections::HashMap<::std::string::String, ShortText>
+    {
+        fn from(value: TenantApiTurnMetricDimensions) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::From<::std::collections::HashMap<::std::string::String, ShortText>>
+        for TenantApiTurnMetricDimensions
+    {
+        fn from(value: ::std::collections::HashMap<::std::string::String, ShortText>) -> Self {
+            Self(value)
+        }
+    }
     ///`TenantApiTurnMetricDimensionsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTurnMetricDimensionsInput {
@@ -39719,10 +38901,7 @@ pub mod types {
     ///`TenantApiTurnMetricDimensionsResult`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTurnMetricDimensionsResult {
-        pub dimensions: ::std::collections::HashMap<
-            ::std::string::String,
-            ::std::collections::HashMap<::std::string::String, ::std::string::String>,
-        >,
+        pub dimensions: ::std::collections::HashMap<::std::string::String, TenantApiTurnMetricDimensions>,
     }
     ///`TenantApiTurnNotFound`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -39919,45 +39098,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiTurnsRead`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiTurnsRead {
-        pub kind: TenantApiTurnsReadKind,
-        pub turns: ::std::vec::Vec<Turn>,
-    }
-    ///`TenantApiTurnsReadKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiTurnsReadKind {
-        Read,
-    }
-    impl ::std::fmt::Display for TenantApiTurnsReadKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Read => f.write_str("Read"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiTurnsReadKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Read" => Ok(Self::Read),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiTurnsReadKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTurnsReadKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiUnknownConnectorsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnknownConnectorsInput {
@@ -40015,7 +39155,7 @@ pub mod types {
     ///`TenantApiUnpinInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnpinInput {
-        pub harness: ::std::string::String,
+        pub harness: ShortText,
     }
     ///`TenantApiUnpinRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -40067,7 +39207,7 @@ pub mod types {
     ///`TenantApiUnpinWrite`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnpinWrite {
-        pub harness: ::std::string::String,
+        pub harness: ShortText,
         pub kind: TenantApiUnpinWriteKind,
     }
     ///`TenantApiUnpinWriteKind`
@@ -40108,6 +39248,8 @@ pub mod types {
     #[serde(untagged)]
     pub enum TenantApiUnplaceable {
         NotOnline(TenantApiUnplaceableNotOnline),
+        NotHealthy(TenantApiUnplaceableNotHealthy),
+        NotHeard(TenantApiUnplaceableNotHeard),
         NoImage(TenantApiUnplaceableNoImage),
         Full(TenantApiUnplaceableFull),
         MemoryFull(TenantApiUnplaceableMemoryFull),
@@ -40118,6 +39260,16 @@ pub mod types {
     impl ::std::convert::From<TenantApiUnplaceableNotOnline> for TenantApiUnplaceable {
         fn from(value: TenantApiUnplaceableNotOnline) -> Self {
             Self::NotOnline(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiUnplaceableNotHealthy> for TenantApiUnplaceable {
+        fn from(value: TenantApiUnplaceableNotHealthy) -> Self {
+            Self::NotHealthy(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiUnplaceableNotHeard> for TenantApiUnplaceable {
+        fn from(value: TenantApiUnplaceableNotHeard) -> Self {
+            Self::NotHeard(value)
         }
     }
     impl ::std::convert::From<TenantApiUnplaceableNoImage> for TenantApiUnplaceable {
@@ -40600,6 +39752,152 @@ pub mod types {
             value.parse()
         }
     }
+    ///The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiUnplaceableNotHealthy {
+        pub host: TenantApiHostRecord,
+        pub kind: TenantApiUnplaceableNotHealthyKind,
+        pub reason: TenantApiUnplaceableNotHealthyReason,
+    }
+    ///`TenantApiUnplaceableNotHealthyKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUnplaceableNotHealthyKind {
+        Unplaceable,
+    }
+    impl ::std::fmt::Display for TenantApiUnplaceableNotHealthyKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Unplaceable => f.write_str("Unplaceable"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUnplaceableNotHealthyKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Unplaceable" => Ok(Self::Unplaceable),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHealthyKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHealthyKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiUnplaceableNotHealthyReason`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUnplaceableNotHealthyReason {
+        NotHealthy,
+    }
+    impl ::std::fmt::Display for TenantApiUnplaceableNotHealthyReason {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::NotHealthy => f.write_str("NotHealthy"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUnplaceableNotHealthyReason {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "NotHealthy" => Ok(Self::NotHealthy),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHealthyReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHealthyReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The host is Online, but it has not sent a Hello since its tenant restarted, so the tenant does not know its usage yet.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiUnplaceableNotHeard {
+        pub host: TenantApiHostRecord,
+        pub kind: TenantApiUnplaceableNotHeardKind,
+        pub reason: TenantApiUnplaceableNotHeardReason,
+    }
+    ///`TenantApiUnplaceableNotHeardKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUnplaceableNotHeardKind {
+        Unplaceable,
+    }
+    impl ::std::fmt::Display for TenantApiUnplaceableNotHeardKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Unplaceable => f.write_str("Unplaceable"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUnplaceableNotHeardKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Unplaceable" => Ok(Self::Unplaceable),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHeardKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHeardKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiUnplaceableNotHeardReason`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUnplaceableNotHeardReason {
+        NotHeard,
+    }
+    impl ::std::fmt::Display for TenantApiUnplaceableNotHeardReason {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::NotHeard => f.write_str("NotHeard"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUnplaceableNotHeardReason {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "NotHeard" => Ok(Self::NotHeard),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHeardReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHeardReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`TenantApiUnplaceableNotOnline`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnplaceableNotOnline {
@@ -40677,10 +39975,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnsupportedCredentialRefusal {
         #[serde(rename = "credentialKind")]
-        pub credential_kind: ::std::string::String,
+        pub credential_kind: ShortText,
         pub kind: TenantApiUnsupportedCredentialRefusalKind,
-        pub name: ::std::string::String,
-        pub supported: ::std::vec::Vec<::std::string::String>,
+        pub name: ShortText,
+        pub supported: ::std::vec::Vec<ShortText>,
     }
     ///`TenantApiUnsupportedCredentialRefusalKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -41056,493 +40354,18 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiUploadJobAbsent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadJobAbsent {
-        pub kind: TenantApiUploadJobAbsentKind,
-    }
-    ///`TenantApiUploadJobAbsentKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadJobAbsentKind {
-        NoJob,
-    }
-    impl ::std::fmt::Display for TenantApiUploadJobAbsentKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NoJob => f.write_str("NoJob"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadJobAbsentKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NoJob" => Ok(Self::NoJob),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadJobAbsentKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadJobAbsentKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadJobRecorded`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadJobRecorded {
-        #[serde(rename = "jobId")]
-        pub job_id: ::std::string::String,
-        pub kind: TenantApiUploadJobRecordedKind,
-    }
-    ///`TenantApiUploadJobRecordedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadJobRecordedKind {
-        Job,
-    }
-    impl ::std::fmt::Display for TenantApiUploadJobRecordedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Job => f.write_str("Job"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadJobRecordedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Job" => Ok(Self::Job),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadJobRecordedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadJobRecordedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadNotUploading`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadNotUploading {
-        pub kind: TenantApiUploadNotUploadingKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiUploadNotUploadingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadNotUploadingKind {
-        NotUploading,
-    }
-    impl ::std::fmt::Display for TenantApiUploadNotUploadingKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotUploading => f.write_str("NotUploading"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadNotUploadingKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotUploading" => Ok(Self::NotUploading),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadNotUploadingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadNotUploadingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadOtherLayer`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadOtherLayer {
-        pub kind: TenantApiUploadOtherLayerKind,
-        pub prebuild: Prebuild,
-        pub recorded: TenantApiPrebuildLayerUpload,
-    }
-    ///`TenantApiUploadOtherLayerKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadOtherLayerKind {
-        OtherLayer,
-    }
-    impl ::std::fmt::Display for TenantApiUploadOtherLayerKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::OtherLayer => f.write_str("OtherLayer"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadOtherLayerKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "OtherLayer" => Ok(Self::OtherLayer),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadOtherLayerKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadOtherLayerKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadRecorded`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadRecorded {
-        pub recorded: TenantApiUploadRecordedRecorded,
-    }
-    ///`TenantApiUploadRecordedOk`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadRecordedOk {
-        pub kind: TenantApiUploadRecordedOkKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiUploadRecordedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadRecordedOkKind {
-        Recorded,
-    }
-    impl ::std::fmt::Display for TenantApiUploadRecordedOkKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Recorded => f.write_str("Recorded"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadRecordedOkKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Recorded" => Ok(Self::Recorded),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadRecordedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadRecordedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadRecordedRecorded`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiUploadRecordedRecorded {
-        RecordedOk(TenantApiUploadRecordedOk),
-        NotUploading(TenantApiUploadNotUploading),
-        OtherLayer(TenantApiUploadOtherLayer),
-    }
-    impl ::std::convert::From<TenantApiUploadRecordedOk> for TenantApiUploadRecordedRecorded {
-        fn from(value: TenantApiUploadRecordedOk) -> Self {
-            Self::RecordedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadNotUploading> for TenantApiUploadRecordedRecorded {
-        fn from(value: TenantApiUploadNotUploading) -> Self {
-            Self::NotUploading(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadOtherLayer> for TenantApiUploadRecordedRecorded {
-        fn from(value: TenantApiUploadOtherLayer) -> Self {
-            Self::OtherLayer(value)
-        }
-    }
-    ///`TenantApiUploadTargetInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadTargetInput {
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiUploadTargetRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadTargetRequest {
-        pub input: TenantApiUploadTargetInput,
-        pub operation: TenantApiUploadTargetRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiUploadTargetRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadTargetRequestOperation {
-        #[serde(rename = "uploadTarget")]
-        UploadTarget,
-    }
-    impl ::std::fmt::Display for TenantApiUploadTargetRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::UploadTarget => f.write_str("uploadTarget"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadTargetRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "uploadTarget" => Ok(Self::UploadTarget),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadTargetRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadTargetRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadTargetResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadTargetResult {
-        pub target: TenantApiUploadTargetResultTarget,
-    }
-    ///`TenantApiUploadTargetResultTarget`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
-    pub struct TenantApiUploadTargetResultTarget {
-        #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_0: ::std::option::Option<TenantApiGitHubActionsUploadTarget>,
-        #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_1: ::std::option::Option<TenantApiCircleCiUploadTarget>,
-    }
-    ///`TenantApiWaitTurnsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsInput {
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "timeoutSeconds")]
-        pub timeout_seconds: i32,
-        #[serde(rename = "turnIds")]
-        pub turn_ids: ::std::vec::Vec<EntityId>,
-    }
-    ///`TenantApiWaitTurnsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsRequest {
-        pub input: TenantApiWaitTurnsInput,
-        pub operation: TenantApiWaitTurnsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiWaitTurnsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiWaitTurnsRequestOperation {
-        #[serde(rename = "waitTurns")]
-        WaitTurns,
-    }
-    impl ::std::fmt::Display for TenantApiWaitTurnsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::WaitTurns => f.write_str("waitTurns"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiWaitTurnsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "waitTurns" => Ok(Self::WaitTurns),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiWaitTurnsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiWaitTurnsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiWaitTurnsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsResult {
-        pub waited: TenantApiWaitTurnsResultWaited,
-    }
-    ///`TenantApiWaitTurnsResultWaited`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiWaitTurnsResultWaited {
-        TurnsRead(TenantApiTurnsRead),
-        WaitedTurnNotFound(TenantApiWaitedTurnNotFound),
-    }
-    impl ::std::convert::From<TenantApiTurnsRead> for TenantApiWaitTurnsResultWaited {
-        fn from(value: TenantApiTurnsRead) -> Self {
-            Self::TurnsRead(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiWaitedTurnNotFound> for TenantApiWaitTurnsResultWaited {
-        fn from(value: TenantApiWaitedTurnNotFound) -> Self {
-            Self::WaitedTurnNotFound(value)
-        }
-    }
-    ///`TenantApiWaitedTurnNotFound`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitedTurnNotFound {
-        pub kind: TenantApiWaitedTurnNotFoundKind,
-        #[serde(rename = "turnId")]
-        pub turn_id: EntityId,
-    }
-    ///`TenantApiWaitedTurnNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiWaitedTurnNotFoundKind {
-        NotFound,
-    }
-    impl ::std::fmt::Display for TenantApiWaitedTurnNotFoundKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotFound => f.write_str("NotFound"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiWaitedTurnNotFoundKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotFound" => Ok(Self::NotFound),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiWaitedTurnNotFoundKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiWaitedTurnNotFoundKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiWorkflowRunReportedInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWorkflowRunReportedInput {
-        pub event: TenantApiRunEvent,
-        pub now: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiWorkflowRunReportedRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWorkflowRunReportedRequest {
-        pub input: TenantApiWorkflowRunReportedInput,
-        pub operation: TenantApiWorkflowRunReportedRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiWorkflowRunReportedRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiWorkflowRunReportedRequestOperation {
-        #[serde(rename = "workflowRunReported")]
-        WorkflowRunReported,
-    }
-    impl ::std::fmt::Display for TenantApiWorkflowRunReportedRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::WorkflowRunReported => f.write_str("workflowRunReported"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiWorkflowRunReportedRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "workflowRunReported" => Ok(Self::WorkflowRunReported),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiWorkflowRunReportedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiWorkflowRunReportedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiWorkflowRunReportedResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiWorkflowRunReportedResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiWorkflowRunReportedResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiWorkflowRunReportedResult>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiWorkflowRunReportedResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiWorkflowRunReportedResult
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
     ///`TenantApiWriteClaudeSetupTokenInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiWriteClaudeSetupTokenInput {
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
-        pub credential: ::std::string::String,
+        pub credential: Token,
         pub now: i64,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
-        pub token: ::std::string::String,
+        pub token: Token,
         #[serde(rename = "tokenExpiresAt", skip_serializing_if = "::std::option::Option::is_none")]
-        pub token_expires_at: ::std::option::Option<::std::string::String>,
+        pub token_expires_at: ::std::option::Option<ShortText>,
     }
     ///`TenantApiWriteClaudeSetupTokenRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -41629,7 +40452,7 @@ pub mod types {
     ///A unique constraint refused the write.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiWriteConflict {
-        pub constraint: ::std::string::String,
+        pub constraint: ShortText,
         pub ok: bool,
     }
     ///A tenant's whole configuration, kept in one JSON file under version control. `tumpel config
@@ -41644,7 +40467,7 @@ pub mod types {
         pub personas: ::std::vec::Vec<ConfigPersona>,
         ///The address of a copy of this schema, so an editor validates the file.
         #[serde(rename = "$schema", skip_serializing_if = "::std::option::Option::is_none")]
-        pub schema: ::std::option::Option<::std::string::String>,
+        pub schema: ::std::option::Option<HttpUrl>,
         #[serde(rename = "secretSets")]
         pub secret_sets: ::std::vec::Vec<ConfigSecretSet>,
         ///The tenant's triggers, matched by name; a trigger the list leaves out is deleted. Left out,
@@ -41695,11 +40518,14 @@ pub mod types {
         SessionArchivedEvent(SessionArchivedEvent),
         HostOnlineEvent(HostOnlineEvent),
         HostOfflineEvent(HostOfflineEvent),
+        HostHealthChangedEvent(HostHealthChangedEvent),
         PrebuildDoneEvent(PrebuildDoneEvent),
         PrebuildFailedEvent(PrebuildFailedEvent),
         SubscriptionPausedEvent(SubscriptionPausedEvent),
         SubscriptionEndedEvent(SubscriptionEndedEvent),
         TriggerStartRefusedEvent(TriggerStartRefusedEvent),
+        UsageNearLimitEvent(UsageNearLimitEvent),
+        UsageLimitReachedEvent(UsageLimitReachedEvent),
     }
     impl ::std::convert::From<TurnStartedEvent> for TenantEvent {
         fn from(value: TurnStartedEvent) -> Self {
@@ -41746,6 +40572,11 @@ pub mod types {
             Self::HostOfflineEvent(value)
         }
     }
+    impl ::std::convert::From<HostHealthChangedEvent> for TenantEvent {
+        fn from(value: HostHealthChangedEvent) -> Self {
+            Self::HostHealthChangedEvent(value)
+        }
+    }
     impl ::std::convert::From<PrebuildDoneEvent> for TenantEvent {
         fn from(value: PrebuildDoneEvent) -> Self {
             Self::PrebuildDoneEvent(value)
@@ -41771,6 +40602,16 @@ pub mod types {
             Self::TriggerStartRefusedEvent(value)
         }
     }
+    impl ::std::convert::From<UsageNearLimitEvent> for TenantEvent {
+        fn from(value: UsageNearLimitEvent) -> Self {
+            Self::UsageNearLimitEvent(value)
+        }
+    }
+    impl ::std::convert::From<UsageLimitReachedEvent> for TenantEvent {
+        fn from(value: UsageLimitReachedEvent) -> Self {
+            Self::UsageLimitReachedEvent(value)
+        }
+    }
     ///What every tenant event carries. `eventId` orders the tenant's events: each is greater than every
     ///event before it, so a reader resumes after the last id it saw.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -41794,11 +40635,14 @@ pub mod types {
         SessionArchived,
         HostOnline,
         HostOffline,
+        HostHealthChanged,
         PrebuildDone,
         PrebuildFailed,
         SubscriptionPaused,
         SubscriptionEnded,
         TriggerStartRefused,
+        UsageNearLimit,
+        UsageLimitReached,
     }
     impl ::std::fmt::Display for TenantEventType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41812,11 +40656,14 @@ pub mod types {
                 Self::SessionArchived => f.write_str("SessionArchived"),
                 Self::HostOnline => f.write_str("HostOnline"),
                 Self::HostOffline => f.write_str("HostOffline"),
+                Self::HostHealthChanged => f.write_str("HostHealthChanged"),
                 Self::PrebuildDone => f.write_str("PrebuildDone"),
                 Self::PrebuildFailed => f.write_str("PrebuildFailed"),
                 Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
                 Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
                 Self::TriggerStartRefused => f.write_str("TriggerStartRefused"),
+                Self::UsageNearLimit => f.write_str("UsageNearLimit"),
+                Self::UsageLimitReached => f.write_str("UsageLimitReached"),
             }
         }
     }
@@ -41833,11 +40680,14 @@ pub mod types {
                 "SessionArchived" => Ok(Self::SessionArchived),
                 "HostOnline" => Ok(Self::HostOnline),
                 "HostOffline" => Ok(Self::HostOffline),
+                "HostHealthChanged" => Ok(Self::HostHealthChanged),
                 "PrebuildDone" => Ok(Self::PrebuildDone),
                 "PrebuildFailed" => Ok(Self::PrebuildFailed),
                 "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
                 "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
                 "TriggerStartRefused" => Ok(Self::TriggerStartRefused),
+                "UsageNearLimit" => Ok(Self::UsageNearLimit),
+                "UsageLimitReached" => Ok(Self::UsageLimitReached),
                 _ => Err("invalid value".into()),
             }
         }
@@ -41852,6 +40702,302 @@ pub mod types {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
+        }
+    }
+    ///One usage budget of a tenant: at most `limit` of `measure` in each `window`.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantLimit {
+        pub limit: ::std::num::NonZeroU64,
+        pub measure: TenantUsageMeasure,
+        pub window: TenantUsageWindow,
+    }
+    ///The limits profile a tenant runs under and where it comes from.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantLimits {
+        pub profile: TenantLimitsProfile,
+        pub source: TenantLimitsSource,
+    }
+    ///Every limit one tenant runs under. The tenant Durable Object counts the writing requests and the
+    ///usage budgets, and the host channel counts the frames of each host. A request rate is a usage
+    ///budget of Requests per Minute.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantLimitsProfile {
+        ///Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.
+        #[serde(rename = "hostFramesPerMinute")]
+        pub host_frames_per_minute: ::std::num::NonZeroU32,
+        ///The usage budgets of the tenant.
+        pub usage: ::std::vec::Vec<TenantLimit>,
+        ///Requests a minute the tenant may send that change its state.
+        #[serde(rename = "writesPerMinute")]
+        pub writes_per_minute: ::std::num::NonZeroU32,
+    }
+    ///Drops the profile set for the tenant, so it runs under the preset of the tier it has. It never changes the tier.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantLimitsReset {
+        pub reset: bool,
+    }
+    ///What a limits change sets: a reset to the preset of the tenant's tier, or a profile of the tenant's own.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantLimitsSet {
+        Reset(TenantLimitsReset),
+        Profile(TenantLimitsProfile),
+    }
+    impl ::std::convert::From<TenantLimitsReset> for TenantLimitsSet {
+        fn from(value: TenantLimitsReset) -> Self {
+            Self::Reset(value)
+        }
+    }
+    impl ::std::convert::From<TenantLimitsProfile> for TenantLimitsSet {
+        fn from(value: TenantLimitsProfile) -> Self {
+            Self::Profile(value)
+        }
+    }
+    ///Where the profile a tenant runs under comes from.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantLimitsSource {
+        Free,
+        Configured,
+        Custom,
+    }
+    impl ::std::fmt::Display for TenantLimitsSource {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Free => f.write_str("Free"),
+                Self::Configured => f.write_str("Configured"),
+                Self::Custom => f.write_str("Custom"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantLimitsSource {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Free" => Ok(Self::Free),
+                "Configured" => Ok(Self::Configured),
+                "Custom" => Ok(Self::Custom),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantLimitsSource {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantLimitsSource {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The metric catalog of a window, with the tenant's usage against its limits in the current windows.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantMetricCatalog {
+        pub metrics: ::std::vec::Vec<MetricEntry>,
+        pub usage: TenantUsage,
+    }
+    ///The limits a tenant runs under. Free keeps the tenant inside the allowances the hosting plan
+    ///includes at no charge and refuses traffic past them; Configured runs under the limits its
+    ///deployment configures.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantTier {
+        Free,
+        Configured,
+    }
+    impl ::std::fmt::Display for TenantTier {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Free => f.write_str("Free"),
+                Self::Configured => f.write_str("Configured"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantTier {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Free" => Ok(Self::Free),
+                "Configured" => Ok(Self::Configured),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantTier {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantTier {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The tenant's tier and its usage against each of its limits, as of the current windows.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantUsage {
+        pub counters: ::std::vec::Vec<TenantUsageCounter>,
+        pub tier: TenantTier,
+    }
+    ///One limit of a tenant and how much of it the current window has used. A request past `limit`
+    ///is refused 429 until the window ends at `resetsAt`.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantUsageCounter {
+        pub limit: i64,
+        pub measure: TenantUsageMeasure,
+        #[serde(rename = "resetsAt")]
+        pub resets_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        pub used: i64,
+        pub window: TenantUsageWindow,
+    }
+    ///What a tenant limit counts.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantUsageMeasure {
+        Requests,
+        Writes,
+        RowsWritten,
+        RowsRead,
+    }
+    impl ::std::fmt::Display for TenantUsageMeasure {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Requests => f.write_str("Requests"),
+                Self::Writes => f.write_str("Writes"),
+                Self::RowsWritten => f.write_str("RowsWritten"),
+                Self::RowsRead => f.write_str("RowsRead"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantUsageMeasure {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Requests" => Ok(Self::Requests),
+                "Writes" => Ok(Self::Writes),
+                "RowsWritten" => Ok(Self::RowsWritten),
+                "RowsRead" => Ok(Self::RowsRead),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantUsageMeasure {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantUsageMeasure {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The fixed window a tenant limit counts over.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantUsageWindow {
+        Minute,
+        Hour,
+        Day,
+    }
+    impl ::std::fmt::Display for TenantUsageWindow {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Minute => f.write_str("Minute"),
+                Self::Hour => f.write_str("Hour"),
+                Self::Day => f.write_str("Day"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantUsageWindow {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Minute" => Ok(Self::Minute),
+                "Hour" => Ok(Self::Hour),
+                "Day" => Ok(Self::Day),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantUsageWindow {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantUsageWindow {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A token, a key, a code, a nonce or a signature, as its issuer encodes it.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct Token(::std::string::String);
+    impl Token {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for Token {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for Token {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for Token {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for Token {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<Token> for ::std::string::String {
+        fn from(value: Token) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for Token {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("Token: longer than 16384 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for Token {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for Token {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for Token {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
     ///The kind of tokens a turn.tokens point counts, as its tokenKind dimension.
@@ -41947,7 +41093,7 @@ pub mod types {
         pub session_id: EntityId,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
-        pub text: ::std::string::String,
+        pub text: LongText,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
     }
@@ -42013,6 +41159,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TriggerConditionValue(::std::string::String);
+    impl TriggerConditionValue {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TriggerConditionValue {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TriggerConditionValue {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for TriggerConditionValue {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for TriggerConditionValue {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -42028,7 +41194,7 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 500usize {
-                return Err("longer than 500 characters".into());
+                return Err("TriggerConditionValue: longer than 500 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -42059,7 +41225,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TriggerConditionVerdict {
         ///The JSON text of each value the payload holds at the field: one for a scalar, one per element when the path crosses an array, none when the path leads nowhere.
-        pub actual: ::std::vec::Vec<::std::string::String>,
+        pub actual: ::std::vec::Vec<Detail>,
         pub field: TriggerFieldPath,
         pub holds: bool,
         pub values: ::std::vec::Vec<TriggerConditionValue>,
@@ -42088,6 +41254,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TriggerDeliveryId(::std::string::String);
+    impl TriggerDeliveryId {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TriggerDeliveryId {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TriggerDeliveryId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for TriggerDeliveryId {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for TriggerDeliveryId {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -42103,10 +41289,10 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("TriggerDeliveryId: longer than 200 characters".into());
             }
             if value.chars().count() < 1usize {
-                return Err("shorter than 1 characters".into());
+                return Err("TriggerDeliveryId: shorter than 1 characters".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -42138,6 +41324,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct TriggerFieldPath(::std::string::String);
+    impl TriggerFieldPath {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for TriggerFieldPath {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for TriggerFieldPath {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for TriggerFieldPath {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for TriggerFieldPath {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -42153,13 +41359,15 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
+                return Err("TriggerFieldPath: longer than 200 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
                 ::regress::Regex::new("^[A-Za-z0-9_\\-]+(\\.[A-Za-z0-9_\\-]+)*$").unwrap()
             });
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_\\-]+(\\.[A-Za-z0-9_\\-]+)*$\"".into());
+                return Err(
+                    "TriggerFieldPath: doesn't match pattern \"^[A-Za-z0-9_\\-]+(\\.[A-Za-z0-9_\\-]+)*$\"".into(),
+                );
             }
             Ok(Self(value.to_string()))
         }
@@ -42294,7 +41502,7 @@ pub mod types {
         ///The code Sessions_start answers for the same refusal, or TriggerFieldMissing when the prompt names a field the event lacks.
         pub code: ProblemCode,
         ///What failed and the fix, in plain words.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
     }
     ///`TriggerStartRefusedEvent`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -42372,7 +41580,7 @@ pub mod types {
         #[serde(rename = "missingFields")]
         pub missing_fields: ::std::vec::Vec<TriggerFieldPath>,
         ///The prompt the session would get. A placeholder the payload lacks stays as written.
-        pub prompt: ::std::string::String,
+        pub prompt: Prompt,
     }
     ///One prompt and the harness's completion of it, run on a session's box.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -42484,7 +41692,7 @@ pub mod types {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///What failed and what fixes it, as the turn's failure reads.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         pub event: TurnFailedEventEvent,
         #[serde(rename = "eventId")]
         pub event_id: Sequence,
@@ -42535,7 +41743,7 @@ pub mod types {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///What failed and what fixes it, with the tail of the harness's standard error when there is one.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failedAt")]
         pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
         pub reason: TurnFailureReason,
@@ -42558,6 +41766,7 @@ pub mod types {
         CredentialExpired,
         BoxBootFailed,
         PoolExhausted,
+        HostDegraded,
         SnapshotUnreadable,
         HarnessExited,
         HarnessOutOfMemory,
@@ -42578,6 +41787,7 @@ pub mod types {
         Cancelled,
         ConnectorDisconnected,
         SnapshotNotStored,
+        RateLimited,
     }
     impl ::std::fmt::Display for TurnFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42591,6 +41801,7 @@ pub mod types {
                 Self::CredentialExpired => f.write_str("CredentialExpired"),
                 Self::BoxBootFailed => f.write_str("BoxBootFailed"),
                 Self::PoolExhausted => f.write_str("PoolExhausted"),
+                Self::HostDegraded => f.write_str("HostDegraded"),
                 Self::SnapshotUnreadable => f.write_str("SnapshotUnreadable"),
                 Self::HarnessExited => f.write_str("HarnessExited"),
                 Self::HarnessOutOfMemory => f.write_str("HarnessOutOfMemory"),
@@ -42611,6 +41822,7 @@ pub mod types {
                 Self::Cancelled => f.write_str("Cancelled"),
                 Self::ConnectorDisconnected => f.write_str("ConnectorDisconnected"),
                 Self::SnapshotNotStored => f.write_str("SnapshotNotStored"),
+                Self::RateLimited => f.write_str("RateLimited"),
             }
         }
     }
@@ -42627,6 +41839,7 @@ pub mod types {
                 "CredentialExpired" => Ok(Self::CredentialExpired),
                 "BoxBootFailed" => Ok(Self::BoxBootFailed),
                 "PoolExhausted" => Ok(Self::PoolExhausted),
+                "HostDegraded" => Ok(Self::HostDegraded),
                 "SnapshotUnreadable" => Ok(Self::SnapshotUnreadable),
                 "HarnessExited" => Ok(Self::HarnessExited),
                 "HarnessOutOfMemory" => Ok(Self::HarnessOutOfMemory),
@@ -42647,6 +41860,7 @@ pub mod types {
                 "Cancelled" => Ok(Self::Cancelled),
                 "ConnectorDisconnected" => Ok(Self::ConnectorDisconnected),
                 "SnapshotNotStored" => Ok(Self::SnapshotNotStored),
+                "RateLimited" => Ok(Self::RateLimited),
                 _ => Err("invalid value".into()),
             }
         }
@@ -42808,7 +42022,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TurnPoint {
         pub at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub dimensions: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+        pub dimensions: ::std::collections::HashMap<::std::string::String, ShortText>,
         pub metric: MetricName,
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
@@ -42909,6 +42123,174 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A URL held as text: an origin, an endpoint, a redirect or a presigned upload URL.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct UrlText(::std::string::String);
+    impl UrlText {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for UrlText {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for UrlText {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for UrlText {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for UrlText {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<UrlText> for ::std::string::String {
+        fn from(value: UrlText) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for UrlText {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 4096usize {
+                return Err("UrlText: longer than 4096 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for UrlText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for UrlText {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for UrlText {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///`UsageLimitReachedEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct UsageLimitReachedEvent {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub event: UsageLimitReachedEventEvent,
+        #[serde(rename = "eventId")]
+        pub event_id: Sequence,
+        pub limit: i64,
+        pub measure: TenantUsageMeasure,
+        #[serde(rename = "resetsAt")]
+        pub resets_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        pub tier: TenantTier,
+        pub used: i64,
+        pub window: TenantUsageWindow,
+    }
+    ///`UsageLimitReachedEventEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum UsageLimitReachedEventEvent {
+        UsageLimitReached,
+    }
+    impl ::std::fmt::Display for UsageLimitReachedEventEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::UsageLimitReached => f.write_str("UsageLimitReached"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for UsageLimitReachedEventEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "UsageLimitReached" => Ok(Self::UsageLimitReached),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for UsageLimitReachedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for UsageLimitReachedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`UsageNearLimitEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct UsageNearLimitEvent {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub event: UsageNearLimitEventEvent,
+        #[serde(rename = "eventId")]
+        pub event_id: Sequence,
+        pub limit: i64,
+        pub measure: TenantUsageMeasure,
+        #[serde(rename = "resetsAt")]
+        pub resets_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        pub tier: TenantTier,
+        pub used: i64,
+        pub window: TenantUsageWindow,
+    }
+    ///`UsageNearLimitEventEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum UsageNearLimitEventEvent {
+        UsageNearLimit,
+    }
+    impl ::std::fmt::Display for UsageNearLimitEventEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::UsageNearLimit => f.write_str("UsageNearLimit"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for UsageNearLimitEventEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "UsageNearLimit" => Ok(Self::UsageNearLimit),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for UsageNearLimitEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for UsageNearLimitEventEvent {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -43037,7 +42419,7 @@ pub mod types {
     pub struct WebhookFailing {
         pub delivery: WebhookFailingDelivery,
         ///How the last request failed: the status the endpoint answered, or that it did not answer within 10 seconds.
-        pub detail: ::std::string::String,
+        pub detail: Detail,
         #[serde(rename = "failingSince")]
         pub failing_since: ::chrono::DateTime<::chrono::FixedOffset>,
     }
@@ -43118,6 +42500,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct WebhookSigningKeyPublicKey(::std::string::String);
+    impl WebhookSigningKeyPublicKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for WebhookSigningKeyPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for WebhookSigningKeyPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for WebhookSigningKeyPublicKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for WebhookSigningKeyPublicKey {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -43132,10 +42534,13 @@ pub mod types {
     impl ::std::str::FromStr for WebhookSigningKeyPublicKey {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("WebhookSigningKeyPublicKey: longer than 16384 characters".into());
+            }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^[A-Za-z0-9_-]{43}$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
+                return Err("WebhookSigningKeyPublicKey: doesn't match pattern \"^[A-Za-z0-9_-]{43}$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -43167,6 +42572,26 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     #[serde(transparent)]
     pub struct WebhookUrl(::std::string::String);
+    impl WebhookUrl {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for WebhookUrl {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for WebhookUrl {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for WebhookUrl {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
     impl ::std::ops::Deref for WebhookUrl {
         type Target = ::std::string::String;
         fn deref(&self) -> &::std::string::String {
@@ -43182,12 +42607,12 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 2048usize {
-                return Err("longer than 2048 characters".into());
+                return Err("WebhookUrl: longer than 2048 characters".into());
             }
             static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
                 ::std::sync::LazyLock::new(|| ::regress::Regex::new("^https://[^/@?#\\s]+(/[^#\\s]*)?$").unwrap());
             if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^https://[^/@?#\\s]+(/[^#\\s]*)?$\"".into());
+                return Err("WebhookUrl: doesn't match pattern \"^https://[^/@?#\\s]+(/[^#\\s]*)?$\"".into());
             }
             Ok(Self(value.to_string()))
         }
@@ -43223,61 +42648,9 @@ pub mod types {
     ///The tenant and principal the caller acts as, and the origin of the API that answered, which every path of the API is relative to.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct WhoamiWithEndpoint {
-        pub endpoint: ::std::string::String,
+        pub endpoint: HttpUrl,
         pub principal: Principal,
         pub tenant: Tenant,
-    }
-    ///A workflow file of the tenant's repositories, such as .github/workflows/tumpel-prebuild.yml.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct WorkflowPath(::std::string::String);
-    impl ::std::ops::Deref for WorkflowPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<WorkflowPath> for ::std::string::String {
-        fn from(value: WorkflowPath) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for WorkflowPath {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 200usize {
-                return Err("longer than 200 characters".into());
-            }
-            static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
-                ::regress::Regex::new("^\\.github/workflows/[A-Za-z0-9._-]+\\.ya?ml$").unwrap()
-            });
-            if PATTERN.find(value).is_none() {
-                return Err("doesn't match pattern \"^\\.github/workflows/[A-Za-z0-9._-]+\\.ya?ml$\"".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for WorkflowPath {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for WorkflowPath {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for WorkflowPath {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
     }
     /// Error types.
     pub mod error {
@@ -43598,13 +42971,13 @@ impl Client {
     ///
     pub async fn o_auth_authorize<'a>(
         &'a self,
-        client_id: &'a str,
-        code_challenge: &'a str,
-        code_challenge_method: &'a str,
-        redirect_uri: Option<&'a str>,
-        resource: Option<&'a str>,
-        response_type: &'a str,
-        state: Option<&'a str>,
+        client_id: &'a types::ShortText,
+        code_challenge: &'a types::Token,
+        code_challenge_method: &'a types::ShortText,
+        redirect_uri: Option<&'a types::UrlText>,
+        resource: Option<&'a types::UrlText>,
+        response_type: &'a types::ShortText,
+        state: Option<&'a types::ShortText>,
     ) -> Result<ResponseValue<ByteStream>, Error<types::Problem>> {
         let url = format!("{}/oauth/authorize", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
@@ -43643,6 +43016,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -43763,487 +43137,6 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Reads the tenant's CircleCI build provider connection, the orb and the config to commit; the API token is never answered.
-    ///
-    ///Sends a `GET` request to `/v1/circleci-connection`
-    ///
-    pub async fn circle_ci_connections_get<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<types::CircleCiConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_get",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Disconnects the tenant's CircleCI organization and deletes its project bindings and their webhooks; prebuilds already stored stay.
-    ///
-    ///Sends a `DELETE` request to `/v1/circleci-connection`
-    ///
-    pub async fn circle_ci_connections_delete<'a>(&'a self) -> Result<ResponseValue<()>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .delete(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_delete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Starts an authorization that connects the tenant's CircleCI organization through CircleCI's
-    ///OAuth consent page, registering the tenant's CircleCI client first when it has none. Answers it
-    ///AwaitingRedirect with the consent URL. Refused CircleCIRefused when CircleCI refuses the client
-    ///registration.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-connection/authorize`
-    ///
-    pub async fn circle_ci_connections_authorize<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<types::CircleCiAuthorization>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection/authorize", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_authorize",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Connects the organization a ChoosingOrganization authorization lists, with the token it holds,
-    ///replacing an earlier CircleCI connection; project bindings stay. Refused NotFound for another
-    ///principal's authorization, InvalidRequest when the organization is not listed, and
-    ///CircleCIAuthorizationNotWaiting unless the authorization is ChoosingOrganization.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-connection/choose`
-    ///
-    pub async fn circle_ci_connections_choose<'a>(
-        &'a self,
-        body: &'a types::CircleCiAuthorizationChoose,
-    ) -> Result<ResponseValue<types::CircleCiAuthorization>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection/choose", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_choose",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Takes the address the browser landed on, spends its code with the authorization's verifier at
-    ///CircleCI's token endpoint and reads the organizations the token reads. The connection takes
-    ///the token at once when it already names one of them, or when there is one; otherwise the
-    ///authorization is ChoosingOrganization. A denied consent, a refused code or no organization
-    ///ends it Failed. Refused NotFound for another principal's authorization, InvalidRequest when
-    ///the address is not the redirect address with a code or an error or carries another state,
-    ///leaving the authorization AwaitingRedirect, and CircleCIAuthorizationNotWaiting unless the
-    ///authorization is AwaitingRedirect.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-connection/complete`
-    ///
-    pub async fn circle_ci_connections_complete<'a>(
-        &'a self,
-        body: &'a types::CircleCiAuthorizationComplete,
-    ) -> Result<ResponseValue<types::CircleCiAuthorization>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection/complete", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_complete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Connects the tenant's CircleCI organization with a pasted personal API token, the fallback to
-    ///authorize, replacing an earlier CircleCI connection; project bindings stay. Refused
-    ///CircleCITokenRefused when GET /api/v2/me refuses the token.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-connection/start`
-    ///
-    pub async fn circle_ci_connections_start<'a>(
-        &'a self,
-        body: &'a types::CircleCiConnectionStart,
-    ) -> Result<ResponseValue<types::CircleCiConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection/start", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_start",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Takes one workflow-completed event. Refused NotFound for an unknown tenant or project and Forbidden when the signature does not match.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-events/{tenantId}`
-    ///
-    pub async fn circle_ci_events_receive<'a>(
-        &'a self,
-        tenant_id: &'a types::EntityId,
-        circleci_signature: &'a str,
-        body: &'a ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-    ) -> Result<ResponseValue<()>, Error<types::Problem>> {
-        let url = format!(
-            "{}/v1/circleci-events/{}",
-            self.baseurl,
-            encode_path(&tenant_id.to_string()),
-        );
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(2usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        header_map.append("circleci-signature", circleci_signature.to_string().try_into()?);
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_events_receive",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Lists the repositories bound to a CircleCI project, by repository.
-    ///
-    ///Sends a `GET` request to `/v1/circleci-projects`
-    ///
-    pub async fn circle_ci_projects_list<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<::std::vec::Vec<types::CircleCiProject>>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-projects", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_projects_list",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Binds a repository to its CircleCI project and pipeline definition, once per repository, and
-    ///registers a workflow-completed webhook on the project with a signing secret the control plane
-    ///generates and seals.
-    ///Refused NoBuildProvider while CircleCI is not connected, CircleCIProjectMissing when the slug
-    ///names no project of the connected organization, CircleCIDefinitionMismatch when the pipeline
-    ///definition is missing or checks out another repository, and Conflict when the repository is
-    ///already bound. CircleCITokenRefused or CircleCIRefused when CircleCI refuses the webhook.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-projects`
-    ///
-    pub async fn circle_ci_projects_add<'a>(
-        &'a self,
-        body: &'a types::CircleCiProjectAdd,
-    ) -> Result<ResponseValue<types::CircleCiProject>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-projects", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_projects_add",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Deletes a repository's CircleCI project binding and its webhook at CircleCI.
-    ///
-    ///Sends a `DELETE` request to `/v1/circleci-projects/{circleCIProjectId}`
-    ///
-    pub async fn circle_ci_projects_delete<'a>(
-        &'a self,
-        circle_ci_project_id: &'a types::EntityId,
-    ) -> Result<ResponseValue<()>, Error<types::Problem>> {
-        let url = format!(
-            "{}/v1/circleci-projects/{}",
-            self.baseurl,
-            encode_path(&circle_ci_project_id.to_string()),
-        );
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .delete(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_projects_delete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
     ///Lists the running Claude setups of one secret set, each read as get reads it: at most one, still Starting, AwaitingCode or Minting, for a client to resume.
     ///
     ///Sends a `GET` request to `/v1/claude-setups`
@@ -44284,6 +43177,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -44342,6 +43236,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -44391,6 +43286,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -44444,6 +43340,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -44499,13 +43396,14 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Lists one row per connection kind, the GitHub App and each build provider, with its state and, once Connected, the account it bills.
+    ///Lists one row per connection kind, the GitHub App and OpenRouter, with its state and, once Connected, the account.
     ///
     ///Sends a `GET` request to `/v1/connections`
     ///
@@ -44543,6 +43441,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -44587,6 +43486,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -44636,6 +43536,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -44689,6 +43590,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -44742,6 +43644,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -44797,6 +43700,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -44843,6 +43747,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -44927,6 +43832,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45009,6 +43915,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45054,6 +43961,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45098,6 +44006,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45145,6 +44054,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45194,13 +44104,14 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Reads the tenant's events after afterEventId, waiting up to waitSeconds for one to match.
+    ///Reads the tenant's events after afterEventId and answers at once.
     ///With Accept: text/event-stream it answers a stream instead: one message per event, whose id
     ///is its eventId, resumed after the Last-Event-ID a reconnect sends.
     ///
@@ -45212,14 +44123,12 @@ impl Client {
     ///- `event`: Keep events of this type; repeat it for several types. Leave it out to keep every type.
     ///- `session_id`: Keep events of this session.
     ///- `trigger_id`: Keep events of this trigger.
-    ///- `wait_seconds`: The most seconds to wait when no event matches yet.
     pub async fn events_list<'a>(
         &'a self,
         after_event_id: Option<&'a types::Sequence>,
         event: Option<&'a ::std::vec::Vec<types::TenantEventType>>,
         session_id: Option<&'a types::EntityId>,
         trigger_id: Option<&'a types::EntityId>,
-        wait_seconds: i32,
     ) -> Result<ResponseValue<types::EventPage>, Error<types::EventProblem>> {
         let url = format!("{}/v1/events", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
@@ -45239,7 +44148,6 @@ impl Client {
             .query(&progenitor_client::QueryParam::new("event", &event))
             .query(&progenitor_client::QueryParam::new("sessionId", &session_id))
             .query(&progenitor_client::QueryParam::new("triggerId", &trigger_id))
-            .query(&progenitor_client::QueryParam::new("waitSeconds", &wait_seconds))
             .headers(header_map)
             .build()?;
         let info = OperationInfo {
@@ -45257,138 +44165,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Reads the tenant's GitHub Actions build provider connection: Connected with its caller workflow, or NotConnected.
-    ///
-    ///Sends a `GET` request to `/v1/github-actions-connection`
-    ///
-    pub async fn git_hub_actions_connections_get<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<types::GitHubActionsConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/github-actions-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "git_hub_actions_connections_get",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Disconnects the tenant's GitHub Actions account; prebuilds already stored stay.
-    ///
-    ///Sends a `DELETE` request to `/v1/github-actions-connection`
-    ///
-    pub async fn git_hub_actions_connections_delete<'a>(&'a self) -> Result<ResponseValue<()>, Error<types::Problem>> {
-        let url = format!("{}/v1/github-actions-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .delete(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "git_hub_actions_connections_delete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Connects the tenant's own GitHub Actions account, replacing an earlier GitHub Actions connection.
-    ///
-    ///Sends a `POST` request to `/v1/github-actions-connection/start`
-    ///
-    pub async fn git_hub_actions_connections_start<'a>(
-        &'a self,
-        body: &'a types::GitHubActionsConnectionStart,
-    ) -> Result<ResponseValue<types::GitHubActionsConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/github-actions-connection/start", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "git_hub_actions_connections_start",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45433,6 +44210,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45477,6 +44255,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45526,6 +44305,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45570,6 +44350,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45621,6 +44402,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45646,7 +44428,7 @@ impl Client {
     pub async fn git_hub_connections_start<'a>(
         &'a self,
         git_hub_account_id: Option<&'a types::GitHubId>,
-        return_url: Option<&'a str>,
+        return_url: Option<&'a types::HttpUrl>,
     ) -> Result<ResponseValue<types::GitHubInstallStart>, Error<types::Problem>> {
         let url = format!("{}/v1/github-connection/start", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
@@ -45684,6 +44466,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45728,6 +44511,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45772,6 +44556,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45818,6 +44603,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45867,6 +44653,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45911,6 +44698,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -45957,6 +44745,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46001,6 +44790,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46046,6 +44836,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46093,6 +44884,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46140,6 +44932,57 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Restores an Unhealthy or RateLimited host to Healthy, so it gets offers again.
+    ///
+    ///Sends a `POST` request to `/v1/hosts/{hostId}/restore-health`
+    ///
+    pub async fn hosts_restore_health<'a>(
+        &'a self,
+        host_id: &'a types::EntityId,
+    ) -> Result<ResponseValue<types::Host>, Error<types::Problem>> {
+        let url = format!(
+            "{}/v1/hosts/{}/restore-health",
+            self.baseurl,
+            encode_path(&host_id.to_string()),
+        );
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .post(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "hosts_restore_health",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46185,6 +45028,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46229,6 +45073,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46276,6 +45121,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46323,6 +45169,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46372,6 +45219,102 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Reads the limits profile the tenant runs under and where it comes from.
+    ///
+    ///Sends a `GET` request to `/v1/limits`
+    ///
+    pub async fn limits_get<'a>(&'a self) -> Result<ResponseValue<types::TenantLimits>, Error<types::Problem>> {
+        let url = format!("{}/v1/limits", self.baseurl,);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .get(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "limits_get",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Sets the limits the tenant runs under: a profile of its own, or a reset, which drops the
+    ///profile it had so it runs under the preset of its tier. Owner only. Refused InvalidRequest for
+    ///a value past the deployment's ceiling. A Free tenant may set values at or below the Free
+    ///preset only; a higher value is refused AboveFreeTier. This operation never changes the tier:
+    ///moving a tenant between tiers is a deployment operator action. A host channel takes the new
+    ///frame limit when it next connects.
+    ///
+    ///Sends a `PUT` request to `/v1/limits`
+    ///
+    pub async fn limits_set<'a>(
+        &'a self,
+        body: &'a types::TenantLimitsSet,
+    ) -> Result<ResponseValue<types::TenantLimits>, Error<types::Problem>> {
+        let url = format!("{}/v1/limits", self.baseurl,);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .put(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .json(&body)
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "limits_set",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46416,6 +45359,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46462,13 +45406,14 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Lists every metric with series seen in the window, with its dimensions and their values; filter narrows the series counted.
+    ///Lists every metric with series seen in the window, with its dimensions and their values; filter narrows the series counted. It also reads the tenant's tier and its usage against each of its limits in the current windows.
     ///
     ///Sends a `GET` request to `/v1/metrics`
     ///
@@ -46478,10 +45423,10 @@ impl Client {
     ///- `to`: The end of the window, after `from`.
     pub async fn metrics_catalog<'a>(
         &'a self,
-        filter: Option<&'a ::std::vec::Vec<::std::string::String>>,
+        filter: Option<&'a ::std::vec::Vec<types::Summary>>,
         from: &'a ::chrono::DateTime<::chrono::FixedOffset>,
         to: &'a ::chrono::DateTime<::chrono::FixedOffset>,
-    ) -> Result<ResponseValue<types::MetricCatalog>, Error<types::Problem>> {
+    ) -> Result<ResponseValue<types::TenantMetricCatalog>, Error<types::Problem>> {
         let url = format!("{}/v1/metrics", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
         header_map.append(
@@ -46516,6 +45461,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46539,9 +45485,9 @@ impl Client {
         &'a self,
         metric: &'a types::MetricName,
         bucket: types::MetricBucket,
-        filter: Option<&'a ::std::vec::Vec<::std::string::String>>,
+        filter: Option<&'a ::std::vec::Vec<types::Summary>>,
         from: &'a ::chrono::DateTime<::chrono::FixedOffset>,
-        group_by: Option<&'a ::std::vec::Vec<::std::string::String>>,
+        group_by: Option<&'a ::std::vec::Vec<types::ShortText>>,
         to: &'a ::chrono::DateTime<::chrono::FixedOffset>,
     ) -> Result<ResponseValue<types::MetricSeriesSet>, Error<types::Problem>> {
         let url = format!(
@@ -46584,6 +45530,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46604,8 +45551,8 @@ impl Client {
     pub async fn metrics_turns<'a>(
         &'a self,
         metric: &'a types::MetricName,
-        cursor: Option<&'a str>,
-        filter: Option<&'a ::std::vec::Vec<::std::string::String>>,
+        cursor: Option<&'a types::Summary>,
+        filter: Option<&'a ::std::vec::Vec<types::Summary>>,
         from: &'a ::chrono::DateTime<::chrono::FixedOffset>,
         session_id: Option<&'a types::EntityId>,
         to: &'a ::chrono::DateTime<::chrono::FixedOffset>,
@@ -46646,138 +45593,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Reads the tenant's Namespace build provider connection: the issuer, the subject pattern and the audience Tumpel defines for Namespace, to register there, or NotConfigured while the stage has no issuer; start is refused IssuerMissing then.
-    ///
-    ///Sends a `GET` request to `/v1/namespace-connection`
-    ///
-    pub async fn namespace_connections_get<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<types::NamespaceConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/namespace-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "namespace_connections_get",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Disconnects the tenant's Namespace workspace; prebuilds already stored stay.
-    ///
-    ///Sends a `DELETE` request to `/v1/namespace-connection`
-    ///
-    pub async fn namespace_connections_delete<'a>(&'a self) -> Result<ResponseValue<()>, Error<types::Problem>> {
-        let url = format!("{}/v1/namespace-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .delete(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "namespace_connections_delete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Connects the tenant's own Namespace workspace, replacing an earlier Namespace connection.
-    ///
-    ///Sends a `POST` request to `/v1/namespace-connection/start`
-    ///
-    pub async fn namespace_connections_start<'a>(
-        &'a self,
-        body: &'a types::NamespaceConnectionStart,
-    ) -> Result<ResponseValue<types::NamespaceConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/namespace-connection/start", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "namespace_connections_start",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46824,6 +45640,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46879,6 +45696,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46923,6 +45741,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -46972,6 +45791,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47021,6 +45841,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47073,6 +45894,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47083,9 +45905,7 @@ impl Client {
     ///
     ///Sends a `GET` request to `/v1/personas`
     ///
-    pub async fn personas_list<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<::std::vec::Vec<types::TenantApiStoredPersona>>, Error<types::Problem>> {
+    pub async fn personas_list<'a>(&'a self) -> Result<ResponseValue<types::PersonaList>, Error<types::Problem>> {
         let url = format!("{}/v1/personas", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
         header_map.append(
@@ -47117,6 +45937,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47163,6 +45984,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47209,6 +46031,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47254,6 +46077,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47301,6 +46125,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47346,6 +46171,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47393,6 +46219,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47448,58 +46275,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Answers the inputs of the prebuild that waits for this run: the newest Dispatched GitHub
-    ///Actions prebuild of the token's repository whose start read the token's sha, or the prebuild
-    ///this run already took. The token must name the connection's caller workflow, the default
-    ///branch as ref, push or workflow_dispatch as event_name, and a job of
-    ///tumpel/workflows/.github/workflows/prebuild.yml at tag v2 or v2.x.y. The first call records
-    ///the token's run_id as the prebuild's run and moves it to Building. Refused JobTokenRefused
-    ///(401) naming the failed check, NotFound when no prebuild waits for a run at that commit,
-    ///JobTokenMismatch (403) naming the failed claim, and PrebuildNotUploading when the prebuild
-    ///is past Building.
-    ///
-    ///Sends a `POST` request to `/v1/prebuild-inputs`
-    ///
-    pub async fn prebuild_inputs_read<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<types::PrebuildJobInputs>, Error<types::Problem>> {
-        let url = format!("{}/v1/prebuild-inputs", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "prebuild_inputs_read",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47544,6 +46320,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47595,6 +46372,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47651,6 +46429,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47702,6 +46481,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47750,36 +46530,20 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Starts a prebuild of a repository's default branch on the named build provider. Answers the
+    ///Starts a prebuild of a repository's default branch. Answers the
     ///stored or running prebuild with the same key and starts no job, unless rebuild is true. Refused
-    ///before anything is stored: NoBuildProvider when the named provider is not connected,
-    ///HarnessNotInCatalog when the persona's harness has no version the tenant can run, NoRelease or
-    ///ImageNotReleased when the current release carries no Amd64 guest image of that version,
-    ///RepositoryUnreadable when GitHub refuses to show the inputs or no token reads them,
-    ///GitHubNotConnected when a GitHub Actions start finds no installation of the tenant on the
-    ///repository's owner, GitHubAppPermissionMissing when that installation cannot write Actions, or
-    ///Contents and Workflows while the caller workflow needs adding, CallerWorkflowRefused when
-    ///GitHub refuses that commit, CircleCIProjectMissing when a CircleCI start finds no project
-    ///binding for the repository, DispatchRefused when GitHub refuses the installation token, Actions
-    ///are disabled in the repository, the provider refuses the job or a CircleCI pipeline parameter
-    ///would pass 512 characters, and BuildProviderUnavailable while this control plane cannot
-    ///dispatch to the named provider. A GitHub Actions start reads the caller workflow on the
-    ///default branch with the installation token, each GitHub call within 10 s. When it is missing
-    ///or differs from the current example, the start commits the example, whose push trigger on its
-    ///own path starts the run, and reads the inputs at that commit; otherwise it reads them at the
-    ///branch's head and dispatches the caller workflow there with no inputs. The prebuild records
-    ///the commit it read; the run is picked up by that commit, from its workflow_run events or from
-    ///its call to prebuildInputs.read. Refused DevcontainerMissing, after the provider check, when the
-    ///default branch holds neither .devcontainer/devcontainer.json nor .devcontainer.json. A CircleCI start runs the binding's pipeline
-    ///definition with config and checkout on the default branch and the parameters
-    ///tumpel_prebuild_id, tumpel_tenant_id, tumpel_api_origin, tumpel_rootfs_url and
-    ///tumpel_image_digest, records the pipeline and answers it Building.
+    ///before anything is stored: HarnessNotInCatalog when the persona's harness has no version the
+    ///tenant can run, NoRelease or ImageNotReleased when the current release carries no Amd64 guest
+    ///image of that version, RepositoryUnreadable when GitHub refuses to show the inputs or no token
+    ///reads them, and DevcontainerMissing when the default branch holds neither
+    ///.devcontainer/devcontainer.json nor .devcontainer.json.
     ///
     ///Sends a `POST` request to `/v1/prebuilds`
     ///
@@ -47819,6 +46583,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47863,6 +46628,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47917,6 +46683,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -47966,6 +46733,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48015,114 +46783,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Records the layer's digest and size and exchanges the job token for one presigned PUT of the
-    ///layer to <tenantId>/prebuilds/<prebuildId>/layers/<digest> in the snapshot bucket, bound to
-    ///its sha256 and its size. Refused JobTokenRefused (401) naming the failed check, NotFound,
-    ///JobTokenMismatch (403) naming the failed claim, PrebuildNotUploading unless the prebuild
-    ///is Building, and Conflict when an earlier start of the same prebuild recorded another digest
-    ///or size; a repeat with the same digest and size answers a fresh grant.
-    ///
-    ///Sends a `POST` request to `/v1/prebuilds/{prebuildId}/uploads`
-    ///
-    pub async fn prebuild_uploads_start<'a>(
-        &'a self,
-        prebuild_id: &'a types::EntityId,
-        body: &'a types::PrebuildUploadStart,
-    ) -> Result<ResponseValue<types::PrebuildUploadGrant>, Error<types::Problem>> {
-        let url = format!(
-            "{}/v1/prebuilds/{}/uploads",
-            self.baseurl,
-            encode_path(&prebuild_id.to_string()),
-        );
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "prebuild_uploads_start",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Moves the prebuild to Converting once the bucket holds the layer its start recorded. Refused
-    ///as start is, and LayerNotUploaded when the bucket lacks it.
-    ///
-    ///Sends a `POST` request to `/v1/prebuilds/{prebuildId}/uploads/complete`
-    ///
-    pub async fn prebuild_uploads_complete<'a>(
-        &'a self,
-        prebuild_id: &'a types::EntityId,
-        body: &'a types::PrebuildUploadComplete,
-    ) -> Result<ResponseValue<types::Prebuild>, Error<types::Problem>> {
-        let url = format!(
-            "{}/v1/prebuilds/{}/uploads/complete",
-            self.baseurl,
-            encode_path(&prebuild_id.to_string()),
-        );
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "prebuild_uploads_complete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48165,6 +46826,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48209,6 +46871,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48255,6 +46918,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48304,6 +46968,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48345,6 +47010,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48389,6 +47055,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48423,6 +47090,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48467,6 +47135,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48508,6 +47177,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48552,6 +47222,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48598,6 +47269,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48647,6 +47319,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48698,6 +47371,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48747,6 +47421,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48798,6 +47473,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48849,6 +47525,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48900,6 +47577,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -48960,6 +47638,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49006,6 +47685,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49056,6 +47736,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49101,6 +47782,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49148,6 +47830,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49200,6 +47883,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49249,6 +47933,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49298,6 +47983,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49357,6 +48043,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49406,6 +48093,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49457,6 +48145,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49508,6 +48197,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49575,6 +48265,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49624,6 +48315,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49675,6 +48367,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49724,6 +48417,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49770,6 +48464,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49823,6 +48518,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49871,6 +48567,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49920,6 +48617,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -49969,6 +48667,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50018,6 +48717,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50068,6 +48768,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50122,6 +48823,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50174,6 +48876,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50230,6 +48933,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50282,6 +48986,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50330,6 +49035,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50374,6 +49080,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50423,6 +49130,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50471,6 +49179,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50516,6 +49225,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50561,6 +49271,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50609,59 +49320,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Waits until one of the turns is Completed or Failed, or until timeoutSeconds pass, then reads
-    ///every turn in the order asked; answers at once when one has already ended. Refused NotFound,
-    ///naming the turn, when a turnId names no turn of the tenant.
-    ///
-    ///Sends a `GET` request to `/v1/turns/wait`
-    ///
-    ///Arguments:
-    ///- `timeout_seconds`: The most seconds to wait for one of the turns to end.
-    ///- `turn_id`: A turn to wait on; repeat it to wait on several turns of any of the tenant's sessions.
-    pub async fn turns_wait<'a>(
-        &'a self,
-        timeout_seconds: i32,
-        turn_id: &'a ::std::vec::Vec<types::EntityId>,
-    ) -> Result<ResponseValue<::std::vec::Vec<types::Turn>>, Error<types::Problem>> {
-        let url = format!("{}/v1/turns/wait", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .query(&progenitor_client::QueryParam::new("timeoutSeconds", &timeout_seconds))
-            .query(&progenitor_client::QueryParam::new("turnId", &turn_id))
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "turns_wait",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50707,6 +49366,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50755,6 +49415,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50811,6 +49472,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50860,6 +49522,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50905,6 +49568,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50955,6 +49619,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -50999,6 +49664,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -51045,6 +49711,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -51094,6 +49761,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -51143,6 +49811,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -51187,6 +49856,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -51231,6 +49901,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -51276,6 +49947,7 @@ impl Client {
             404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
             503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
@@ -51309,8 +49981,8 @@ impl types::ChannelCloseCode {
     pub const UNSUPPORTED_VERSION: u16 = 4426;
 }
 impl types::ChannelProtocol {
-    pub const OLDEST: u16 = 18;
-    pub const VERSION: u16 = 30;
+    pub const OLDEST: u16 = 34;
+    pub const VERSION: u16 = 34;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
@@ -51325,5 +49997,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 8;
+    pub const VERSION: u16 = 19;
 }

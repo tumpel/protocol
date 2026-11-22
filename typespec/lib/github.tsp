@@ -8,6 +8,7 @@ scalar GitHubId extends safeint;
 
 @doc("A GitHub user or organization login.")
 @pattern("^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")
+@maxLength(39)
 scalar GitHubLogin extends string;
 
 @doc("Where the GITHUB_TOKEN of a turn offer came from.")
@@ -70,13 +71,13 @@ model GitHubInstallation {
 @doc("The stage has a GitHub App; a tenant installs it on each account or organization it connects.")
 model GitHubAppReady {
   state: "Ready";
-  appSlug: string;
+  appSlug: ShortText;
 }
 
 @doc("The stage has no GitHub App yet; a person creates it once at `setupUrl`.")
 model GitHubAppMissing {
   state: "AppMissing";
-  setupUrl: url;
+  setupUrl: HttpUrl;
 }
 
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
@@ -98,12 +99,13 @@ model GitHubConnection {
   tenant's installations once GitHub confirms the person who installed it owns the account.
   """)
 model GitHubInstallStart {
-  installUrl: url;
+  installUrl: HttpUrl;
   expiresAt: offsetDateTime;
 }
 
 @doc("The name of a GitHub repository, without its owner.")
 @pattern("^[A-Za-z0-9._-]{1,100}$")
+@maxLength(100)
 scalar GitHubRepositoryName extends string;
 
 @doc("The number of an issue in its repository.")
@@ -114,19 +116,19 @@ scalar GitHubIssueNumber extends safeint;
 model GitHubRepository {
   owner: GitHubLogin;
   name: GitHubRepositoryName;
-  defaultBranch: string;
+  defaultBranch: ShortText;
   `private`: boolean;
-  htmlUrl: url;
+  htmlUrl: HttpUrl;
 }
 
 @doc("An open issue of a repository. Pull requests are left out.")
 model GitHubIssue {
   issueNumber: GitHubIssueNumber;
-  title: string;
-  htmlUrl: url;
+  title: Summary;
+  htmlUrl: HttpUrl;
 
   @doc("The names of the issue's labels.")
-  labels: string[];
+  @maxItems(100) labels: ShortText[];
 
   @doc("When the issue last changed on GitHub.")
   updatedAt: offsetDateTime;

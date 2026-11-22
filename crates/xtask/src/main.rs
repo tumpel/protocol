@@ -234,16 +234,138 @@ fn open_enum(items: &mut [syn::Item], name: &str) -> Result<(), String> {
     ))
 }
 
-fn open_enums(file: &mut syn::File) -> Result<(), String> {
-    let types = file
-        .items
+fn types_module(file: &mut syn::File) -> Result<&mut Vec<syn::Item>, String> {
+    file.items
         .iter_mut()
         .find_map(|item| match item {
             syn::Item::Mod(module) if module.ident == "types" => module.content.as_mut().map(|(_, items)| items),
             _ => None,
         })
-        .ok_or("progenitor emitted no types module.")?;
+        .ok_or_else(|| "progenitor emitted no types module.".to_string())
+}
+
+fn open_enums(file: &mut syn::File) -> Result<(), String> {
+    let types = types_module(file)?;
     OPEN_ENUMS.iter().try_for_each(|name| open_enum(types, name))
+}
+
+const PATH_NEWTYPES: [&str; 1] = ["PathText"];
+const REFUSALS: [&str; 3] = ["longer than", "shorter than", "doesn't match pattern"];
+
+fn string_newtype(item: &syn::Item) -> Option<syn::Ident> {
+    let syn::Item::Struct(declared) = item else {
+        return None;
+    };
+    let syn::Fields::Unnamed(fields) = &declared.fields else {
+        return None;
+    };
+    let mut fields = fields.unnamed.iter();
+    let (Some(field), None) = (fields.next(), fields.next()) else {
+        return None;
+    };
+    let field_type = &field.ty;
+    let string = quote!(::std::string::String).to_string();
+    (quote!(#field_type).to_string() == string).then(|| declared.ident.clone())
+}
+
+fn named_refusals(tokens: TokenStream, name: &str) -> TokenStream {
+    tokens
+        .into_iter()
+        .map(|tree| match tree {
+            TokenTree::Group(group) => {
+                let mut named = Group::new(group.delimiter(), named_refusals(group.stream(), name));
+                named.set_span(group.span());
+                TokenTree::Group(named)
+            }
+            TokenTree::Literal(literal) => match syn::parse_str::<syn::LitStr>(&literal.to_string()) {
+                Ok(text) if REFUSALS.iter().any(|refusal| text.value().starts_with(refusal)) => {
+                    TokenTree::Literal(proc_macro2::Literal::string(&format!("{name}: {}", text.value())))
+                }
+                _ => TokenTree::Literal(literal),
+            },
+            other => other,
+        })
+        .collect()
+}
+
+fn string_access(name: &syn::Ident) -> Vec<syn::Item> {
+    let mut items: Vec<syn::Item> = vec![
+        syn::parse_quote! {
+            impl #name {
+                pub fn as_str(&self) -> &str {
+                    &self.0
+                }
+            }
+        },
+        syn::parse_quote! {
+            impl ::std::convert::AsRef<str> for #name {
+                fn as_ref(&self) -> &str {
+                    &self.0
+                }
+            }
+        },
+        syn::parse_quote! {
+            impl ::std::fmt::Display for #name {
+                fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                    f.write_str(&self.0)
+                }
+            }
+        },
+    ];
+    items.push(syn::parse_quote! {
+        impl ::std::convert::AsRef<::std::ffi::OsStr> for #name {
+            fn as_ref(&self) -> &::std::ffi::OsStr {
+                self.0.as_ref()
+            }
+        }
+    });
+    if PATH_NEWTYPES.iter().any(|path| name == path) {
+        items.push(syn::parse_quote! {
+            impl ::std::convert::AsRef<::std::path::Path> for #name {
+                fn as_ref(&self) -> &::std::path::Path {
+                    self.0.as_ref()
+                }
+            }
+        });
+    }
+    items
+}
+
+fn string_newtypes(types: &mut Vec<syn::Item>) -> Result<(), String> {
+    let names: Vec<syn::Ident> = types.iter().filter_map(string_newtype).collect();
+    let newtype_of = |implemented: &syn::ItemImpl| {
+        names
+            .iter()
+            .find(|name| matches!(&*implemented.self_ty, syn::Type::Path(path) if path.path.is_ident(*name)))
+            .cloned()
+    };
+    let mut kept = Vec::with_capacity(types.len());
+    for item in types.drain(..) {
+        let syn::Item::Impl(implemented) = &item else {
+            kept.push(item);
+            continue;
+        };
+        let Some(name) = newtype_of(implemented) else {
+            kept.push(item);
+            continue;
+        };
+        let name = name.to_string();
+        if implements(implemented, &name, "FromStr") {
+            let renamed = named_refusals(quote!(#implemented), &name);
+            kept.push(syn::parse2(renamed).map_err(|e| format!("renaming the {name} refusals: {e}."))?);
+            continue;
+        }
+        kept.push(item);
+    }
+    for name in &names {
+        let at = kept
+            .iter()
+            .position(|item| string_newtype(item).as_ref() == Some(name))
+            .ok_or_else(|| format!("the {name} newtype went missing while adding its string access."))?;
+        kept.splice((at + 1)..=at, string_access(name));
+    }
+    *types = kept;
+    Ok(())
 }
 
 fn read_spec(root: &Path) -> Result<openapiv3::OpenAPI, String> {
@@ -337,6 +459,7 @@ fn generate_api(root: &Path) -> Result<(), String> {
     let spec = read_spec(root)?;
     let mut file = generate_file(&spec)?;
     open_enums(&mut file)?;
+    string_newtypes(types_module(&mut file)?)?;
     let output = root.join(OUTPUT);
     fs::create_dir_all(&output).map_err(|e| format!("creating {}: {e}.", output.display()))?;
     write_file(&output.join("generated.rs"), &file)?;
@@ -367,6 +490,7 @@ fn types_only(mut file: syn::File) -> Result<syn::File, String> {
             open_enum(types, name)?;
         }
     }
+    string_newtypes(types)?;
     Ok(file)
 }
 

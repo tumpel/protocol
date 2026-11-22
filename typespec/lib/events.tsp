@@ -37,6 +37,9 @@ enum TenantEventType {
   @doc("A host's last open channel closed.")
   HostOffline: "HostOffline",
 
+  @doc("The control plane changed a host's health.")
+  HostHealthChanged: "HostHealthChanged",
+
   @doc("A prebuild entered Done: its layer is stored.")
   PrebuildDone: "PrebuildDone",
 
@@ -51,6 +54,12 @@ enum TenantEventType {
 
   @doc("A trigger matched a delivery and started no session.")
   TriggerStartRefused: "TriggerStartRefused",
+
+  @doc("The tenant used 80% of one of its limits in the current window.")
+  UsageNearLimit: "UsageNearLimit",
+
+  @doc("The tenant reached one of its limits; requests it counts are refused until the window ends.")
+  UsageLimitReached: "UsageLimitReached",
 }
 
 @doc("""
@@ -85,7 +94,7 @@ model TurnFailedEvent {
   reason: TurnFailureReason;
 
   @doc("What failed and what fixes it, as the turn's failure reads.")
-  detail: string;
+  detail: Detail;
 }
 
 model SessionIdleEvent {
@@ -125,6 +134,14 @@ model HostOfflineEvent {
   event: "HostOffline";
   ...TenantEventEnvelope;
   hostId: EntityId;
+}
+
+model HostHealthChangedEvent {
+  event: "HostHealthChanged";
+  ...TenantEventEnvelope;
+  hostId: EntityId;
+  health: HostHealth;
+  detail: Detail;
 }
 
 model PrebuildDoneEvent {
@@ -172,6 +189,20 @@ model TriggerStartRefusedEvent {
   refusal: TriggerStartRefusal;
 }
 
+model UsageNearLimitEvent {
+  event: "UsageNearLimit";
+  ...TenantEventEnvelope;
+  tier: TenantTier;
+  ...TenantUsageCounter;
+}
+
+model UsageLimitReachedEvent {
+  event: "UsageLimitReached";
+  ...TenantEventEnvelope;
+  tier: TenantTier;
+  ...TenantUsageCounter;
+}
+
 @doc("""
   A record that something happened in a tenant. The control plane appends it in the same
   transaction as the state change it reports. It holds ids and the fact that changed; read the
@@ -188,11 +219,14 @@ union TenantEvent {
   SessionArchived: SessionArchivedEvent,
   HostOnline: HostOnlineEvent,
   HostOffline: HostOfflineEvent,
+  HostHealthChanged: HostHealthChangedEvent,
   PrebuildDone: PrebuildDoneEvent,
   PrebuildFailed: PrebuildFailedEvent,
   SubscriptionPaused: SubscriptionPausedEvent,
   SubscriptionEnded: SubscriptionEndedEvent,
   TriggerStartRefused: TriggerStartRefusedEvent,
+  UsageNearLimit: UsageNearLimitEvent,
+  UsageLimitReached: UsageLimitReachedEvent,
 }
 
 @doc("""
@@ -220,7 +254,7 @@ union EventProblem {
 
 @error
 model EventProblemResponse {
-  @statusCode statusCode: 400 | 401 | 403 | 404 | 409 | 410 | 422 | 429 | 503;
+  @statusCode statusCode: 400 | 401 | 403 | 404 | 409 | 410 | 413 | 422 | 429 | 503;
   @body body: EventProblem;
 }
 
@@ -234,7 +268,7 @@ model EventQuery {
 
   @doc("Keep events of this type; repeat it for several types. Leave it out to keep every type.")
   @query(#{ explode: true })
-  event?: TenantEventType[];
+  @maxItems(1000) event?: TenantEventType[];
 
   @doc("Keep events of this session.")
   @query
@@ -243,19 +277,13 @@ model EventQuery {
   @doc("Keep events of this trigger.")
   @query
   triggerId?: EntityId;
-
-  @doc("The most seconds to wait when no event matches yet.")
-  @query
-  @minValue(0)
-  @maxValue(50)
-  waitSeconds: int32;
 }
 
 namespace V1 {
   @route("/events")
   interface Events {
     @doc("""
-      Reads the tenant's events after afterEventId, waiting up to waitSeconds for one to match.
+      Reads the tenant's events after afterEventId and answers at once.
       With Accept: text/event-stream it answers a stream instead: one message per event, whose id
       is its eventId, resumed after the Last-Event-ID a reconnect sends.
       """)

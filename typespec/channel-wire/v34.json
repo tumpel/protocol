@@ -1,6 +1,15 @@
 {
-  "channelProtocolVersion": 28,
+  "channelProtocolVersion": 34,
   "schemas": {
+    "BoxRetention": {
+      "type": "string",
+      "enum": [
+        "Off",
+        "Warm",
+        "Auto"
+      ],
+      "description": "What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode."
+    },
     "Channel.BaseImageDownload": {
       "type": "object",
       "required": [
@@ -22,16 +31,13 @@
           "$ref": "#/components/schemas/Sha256Digest"
         },
         "imageUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "kernelUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "manifestUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         }
       },
       "description": "The base image of a layered boot, the current release's ReleaseBaseImage for the host's\narchitecture. `imageUrl`, `kernelUrl` and `manifestUrl` are presigned GETs of the ext4 image, the\nkernel and the BaseImageManifest document stored under `imageDigest`, `kernelDigest` and\n`manifestDigest` in the release bucket."
@@ -99,7 +105,7 @@
           "$ref": "#/components/schemas/EntityId"
         }
       },
-      "description": "The host runs no box of the session any more and returned its TAP device to the pool."
+      "description": "The host runs no box of the session any more and returned its TAP device to the pool. It answers BoxTeardown or BoxDiscard, or comes unsolicited after the host tore down an Auto box idle for the offer's idleSeconds."
     },
     "Channel.BoxTeardown": {
       "type": "object",
@@ -122,7 +128,7 @@
           "$ref": "#/components/schemas/EntityId"
         }
       },
-      "description": "Asks the host to tear down the box of a session once a snapshot holds its last completed turn:\nwhen a person stops or archives the session, after each turn of an Off session, and when placement\nevicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it. The host\nanswers BoxGone, also when it runs no box of the session with that boxId, or BoxTeardownFailed."
+      "description": "Asks the host to tear down the box of a session once a snapshot holds its last completed turn:\nwhen a person stops or archives the session, after each turn of an Off session, and when placement\nevicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it, except that it\ntears down an Auto box idle for the offer's idleSeconds itself and reports it with an unsolicited BoxGone. The host\nanswers BoxGone, also when it runs no box of the session with that boxId, or BoxTeardownFailed."
     },
     "Channel.BoxTeardownFailed": {
       "type": "object",
@@ -151,7 +157,7 @@
           "$ref": "#/components/schemas/Channel.BoxTeardownFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "failedAt": {
           "type": "string",
@@ -181,7 +187,11 @@
           ]
         },
         "nonce": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
           "minLength": 43
         }
       },
@@ -295,7 +305,7 @@
           "$ref": "#/components/schemas/ClaudeSetupFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "failedAt": {
           "type": "string",
@@ -315,7 +325,9 @@
         "image",
         "tokenUrl",
         "tokenCredential",
-        "expiresAt"
+        "expiresAt",
+        "urlSeconds",
+        "codeSeconds"
       ],
       "properties": {
         "type": {
@@ -333,6 +345,9 @@
         "boxId": {
           "$ref": "#/components/schemas/EntityId"
         },
+        "harness": {
+          "$ref": "#/components/schemas/ClaudeSetupHarness"
+        },
         "harnessVersion": {
           "$ref": "#/components/schemas/HarnessVersion"
         },
@@ -340,19 +355,36 @@
           "$ref": "#/components/schemas/Channel.BootImage"
         },
         "tokenUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "tokenCredential": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
           "minLength": 43
         },
         "expiresAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "urlSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 3600,
+          "description": "How long the box may take from this offer to printing the sign-in URL before the host fails the setup SetupUrlMissing."
+        },
+        "codeSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 3600,
+          "description": "How long the person may take from the sign-in URL to submitting the code before the host fails the setup SetupTimedOut."
         }
       },
-      "description": "Asks the host to boot box `boxId` from `image` with no repository, no persona files and no\ncredential, and run `claude setup-token` in it for Claude setup `claudeSetupId`. The host answers\nClaudeSetupBoxUrl once the command prints its sign-in URL, hands the code of a ClaudeSetupBoxCode\nto the command's standard input, and answers ClaudeSetupBoxFailed when the box stops without\nstoring the token. Only the box writes the token: it POSTs it to `tokenUrl` with `tokenCredential`\nas its bearer token, and the host never sees it. `tokenCredential` is bound to this setup and\nwrites its token once, while the setup is Minting. The host stops the box at `expiresAt`, when it stores the token, or on\nClaudeSetupBoxDiscard, and deletes its drive."
+      "description": "Asks the host to boot box `boxId` from `image` with no repository, no persona files and no\ncredential, and run `claude setup-token` in it for Claude setup `claudeSetupId`. The host answers\nClaudeSetupBoxUrl once the command prints its sign-in URL, hands the code of a ClaudeSetupBoxCode\nto the command's standard input, and answers ClaudeSetupBoxFailed when the box stops without\nstoring the token. `harness` names the harness at `harnessVersion` that `image` boots, and an offer\nwithout it names ClaudeCode. Only the box writes the token: it POSTs it to `tokenUrl` with `tokenCredential`\nas its bearer token, and the host never sees it. `tokenCredential` is bound to this setup and\nwrites its token once, while the setup is Minting. The host stops the box at `expiresAt`, when it stores the token, or on\nClaudeSetupBoxDiscard, and deletes its drive."
     },
     "Channel.ClaudeSetupBoxUrl": {
       "type": "object",
@@ -372,8 +404,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "signInUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "userCode": {
           "type": "string",
@@ -422,6 +453,9 @@
           "$ref": "#/components/schemas/Channel.FrameRefused"
         },
         {
+          "$ref": "#/components/schemas/Channel.FrameRateLimited"
+        },
+        {
           "$ref": "#/components/schemas/Channel.ControlFrame"
         }
       ],
@@ -433,10 +467,11 @@
           "Heartbeat": "#/components/schemas/Channel.Heartbeat",
           "ReleasePublished": "#/components/schemas/Channel.ReleasePublished",
           "FrameRefused": "#/components/schemas/Channel.FrameRefused",
+          "FrameRateLimited": "#/components/schemas/Channel.FrameRateLimited",
           "Frame": "#/components/schemas/Channel.ControlFrame"
         }
       },
-      "description": "Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, or a sequenced frame."
+      "description": "Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, or a sequenced frame."
     },
     "Channel.ControlFrame": {
       "type": "object",
@@ -543,15 +578,17 @@
           "$ref": "#/components/schemas/DisplayName"
         },
         "url": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "tokenUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "tokenCredential": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
           "minLength": 43
         }
       },
@@ -577,24 +614,34 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Channel.DispatchVariable"
-          }
+          },
+          "maxItems": 1000
         },
         "arguments": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/components/schemas/Summary"
           },
+          "maxItems": 64,
           "description": "The harness arguments the catalog maps the credential to; they hold no secret. A grant without them gives the guest none."
         },
         "credentialFile": {
           "type": "object",
           "properties": {
             "path": {
-              "type": "string",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/PathText"
+                }
+              ],
               "minLength": 1
             },
             "value": {
-              "type": "string",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/CredentialText"
+                }
+              ],
               "minLength": 1
             }
           },
@@ -609,6 +656,7 @@
           "items": {
             "$ref": "#/components/schemas/Channel.DispatchConnector"
           },
+          "maxItems": 1000,
           "description": "The session's connectors, none when its persona lists none. The guest forwarder serves each at its loopback route and fetches its access token from tokenUrl with tokenCredential. Neither reaches the harness."
         }
       },
@@ -622,15 +670,62 @@
       ],
       "properties": {
         "name": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "value": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CredentialText"
+            }
+          ],
           "minLength": 1
         }
       },
       "description": "One environment variable for one turn: a secret set member's value. It lives in box memory only and is never written to the host's disk."
+    },
+    "Channel.FrameRateLimited": {
+      "type": "object",
+      "required": [
+        "type",
+        "seq",
+        "reason",
+        "framesPerMinute",
+        "retryAfter"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "FrameRateLimited"
+          ]
+        },
+        "seq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "reason": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
+          "minLength": 1
+        },
+        "framesPerMinute": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "retryAfter": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The control plane's answer to a host frame past the tenant's per-host frame limit. It travels\noutside frames, as Heartbeat does. The control plane counts that `seq` as received and records\nnothing for it, so the host drops the frame from its unacked frames and never resends it.\n`framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs\noff its sends until then and reports RateLimited in its Heartbeat. The control plane sends it\nonly on a connection that speaks a protocol version of 32 or above, and FrameRefused below that."
     },
     "Channel.FrameRefused": {
       "type": "object",
@@ -650,7 +745,11 @@
           "$ref": "#/components/schemas/Sequence"
         },
         "reason": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "minLength": 1
         }
       },
@@ -686,16 +785,13 @@
           "$ref": "#/components/schemas/Sha256Digest"
         },
         "imageUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "kernelUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "manifestUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "downloadExpiresAt": {
           "type": "string",
@@ -721,12 +817,10 @@
           "$ref": "#/components/schemas/ReleaseHarnessLayer"
         },
         "layerUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "manifestUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         }
       },
       "description": "The harness layer of a layered boot, the current release's ReleaseHarnessLayer for the session's\nharness version and the host's architecture. `layerUrl` and `manifestUrl` are presigned GETs of\nthe squashfs file and the HarnessLayerManifest document stored under `layer.layerDigest` and\n`layer.manifestDigest` in the release bucket."
@@ -777,12 +871,25 @@
           "format": "int32",
           "minimum": 1
         },
+        "channelProtocolOldest": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
         "supervisorVersion": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "signature": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
           "minLength": 1
         },
         "boxCapacity": {
@@ -793,9 +900,12 @@
         },
         "usage": {
           "$ref": "#/components/schemas/HostUsage"
+        },
+        "guestProtocol": {
+          "$ref": "#/components/schemas/GuestProtocolRange"
         }
       },
-      "description": "The host's answer to Challenge. `signature` is the base64 Ed25519 signature, by the host key\nmade at enrolment, over these bytes in order: the ASCII string `tumpel-channel-hello-v1`, one\n0x00 byte, the ASCII bytes of the Challenge `nonce`, one 0x00 byte, and the UTF-8 bytes of\n`hostId`. The control plane rebuilds those bytes from the nonce it sent and verifies the\nsignature against the host's stored public key. It answers Welcome, and closes the connection\nwith BadSignature on a bad signature, Revoked for a revoked host, and UnsupportedVersion for a\nprotocol version outside ChannelProtocol.Oldest to ChannelProtocol.Version. `boxCapacity` is the host's box slots from\nits runtime config and `usage` what it holds as it connects; the control plane keeps both for\nthe host's tenant before it reads the host Online."
+      "description": "The host's answer to Challenge. `signature` is the base64 Ed25519 signature, by the host key\nmade at enrolment, over these bytes in order: the ASCII string `tumpel-channel-hello-v1`, one\n0x00 byte, the ASCII bytes of the Challenge `nonce`, one 0x00 byte, and the UTF-8 bytes of\n`hostId`. The control plane rebuilds those bytes from the nonce it sent and verifies the\nsignature against the host's stored public key. It answers Welcome, and closes the connection\nwith BadSignature on a bad signature, Revoked for a revoked host, and UnsupportedVersion for a\nprotocol version outside ChannelProtocol.Oldest to ChannelProtocol.Version. `boxCapacity` is the host's box slots from\nits runtime config and `usage` what it holds as it connects; the control plane keeps both for\nthe host's tenant before it reads the host Online. `channelProtocolOldest` is the oldest\nchannel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves\nit out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host\naccepts from a box. The control plane records both ranges and shows them on the host."
     },
     "Channel.HostEnvelope": {
       "type": "object",
@@ -853,7 +963,8 @@
         "type",
         "sentAt",
         "usage",
-        "heldSessionIds"
+        "heldSessionIds",
+        "heldClaudeSetupIds"
       ],
       "properties": {
         "type": {
@@ -873,7 +984,24 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
-          }
+          },
+          "maxItems": 1000
+        },
+        "heldClaudeSetupIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          },
+          "maxItems": 1000,
+          "description": "The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name."
+        },
+        "health": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/HostReportedHealth"
+            }
+          ],
+          "description": "The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy."
         }
       },
       "description": "The host sends one every 10 seconds after Welcome, whatever else it sends, with its usage. The\ncontrol plane keeps the last one per host for the host's tenant, which places a new session on\nthe Online host with the most free box slots, then the most memory available.\n`heldSessionIds` names every session the host holds a box for, whether the box runs a turn, waits\nwarm or still boots, and is empty when it holds none. The host sends every frame queued before it\nread the list ahead of the Heartbeat, so the first Heartbeat after Welcome follows the resent\nframes. On that Heartbeat the control plane fails each Running turn on the host whose session the\nlist does not name with BoxLost."
@@ -1033,8 +1161,7 @@
           "minimum": 1
         },
         "url": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         }
       },
       "description": "One pack object stored under `<tenantId>/packs/<packDigest>`, `sizeBytes` long, and `url` a\npresigned URL of that object alone."
@@ -1059,8 +1186,7 @@
           "$ref": "#/components/schemas/PersonaFileSize"
         },
         "downloadUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "downloadExpiresAt": {
           "type": "string",
@@ -1083,7 +1209,11 @@
           ]
         },
         "releaseVersion": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         }
       },
@@ -1174,7 +1304,7 @@
           "$ref": "#/components/schemas/Sequence"
         }
       },
-      "description": "Each direction of a host's channel numbers its frames from 1 in `seq`, and the count survives\nreconnects and restarts. `ack` is the highest `seq` the sender has received from the other side\nwith no gap before it, 0 before the first one; it advances only with the sender's next frame. A\nreceiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as\na protocol error that closes the connection. After Welcome each side resends, in order, every\nframe the other side has not acked, and the receiver drops the duplicates. The control plane\nkeeps both counters and its unacked frames in durable storage. The supervisor writes its\ncounters and unacked frames to disk before it sends a frame; when it starts without that state\nit does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.\nChallenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,\nwith no `seq` or `ack`. Each side ignores fields it does not know."
+      "description": "Each direction of a host's channel numbers its frames from 1 in `seq`, and the count survives\nreconnects and restarts. `ack` is the highest `seq` the sender has received from the other side\nwith no gap before it, 0 before the first one; it advances only with the sender's next frame. A\nreceiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as\na protocol error that closes the connection. After Welcome each side resends, in order, every\nframe the other side has not acked, and the receiver drops the duplicates. The control plane\nkeeps both counters and its unacked frames in durable storage. The supervisor writes its\ncounters and unacked frames to disk before it sends a frame; when it starts without that state\nit does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.\nChallenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,\nwith no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know."
     },
     "Channel.SnapshotChunks": {
       "type": "object",
@@ -1287,8 +1417,7 @@
           "$ref": "#/components/schemas/StorageKey"
         },
         "downloadUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "downloadExpiresAt": {
           "type": "string",
@@ -1320,7 +1449,7 @@
           "$ref": "#/components/schemas/Channel.SnapshotFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "failedAt": {
           "type": "string",
@@ -1337,7 +1466,8 @@
         "UploadExpired",
         "UploadRejected",
         "SnapshotTimedOut",
-        "NotAnswered"
+        "NotAnswered",
+        "RateLimited"
       ],
       "description": "Why the host could not store a snapshot."
     },
@@ -1459,8 +1589,7 @@
           "$ref": "#/components/schemas/StorageKey"
         },
         "uploadUrl": {
-          "type": "string",
-          "format": "uri"
+          "$ref": "#/components/schemas/HttpUrl"
         },
         "uploadExpiresAt": {
           "type": "string",
@@ -1522,12 +1651,12 @@
           "$ref": "#/components/schemas/SupervisorUpdateFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "outputTail": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/components/schemas/Detail"
           },
           "maxItems": 20
         },
@@ -1563,7 +1692,11 @@
           "$ref": "#/components/schemas/Sha256Digest"
         },
         "releaseVersion": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "boxesRunning": {
@@ -1600,7 +1733,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/MetricInstrument"
-          }
+          },
+          "maxItems": 1000
         },
         "samples": {
           "type": "array",
@@ -1706,17 +1840,25 @@
           "format": "date-time"
         },
         "credentialFile": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CredentialText"
+            }
+          ],
           "minLength": 1,
           "description": "The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member."
         },
         "warning": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "minLength": 1,
           "description": "The guest's warning for a turn the harness completed, such as a box disk with less than a hundredth of it free; the control plane shows it on the turn read."
         }
       },
-      "description": "The harness finished the turn. `lastLineSeq` is the turn's final line; the control plane holds every line up to it before the turn reads Completed."
+      "description": "The harness finished the turn. `lastLineSeq` is the turn's final line; the control plane holds every line up to it and stores the snapshot after it before the turn reads Completed, and fails the turn SnapshotNotStored when that snapshot is not stored."
     },
     "Channel.TurnFailed": {
       "type": "object",
@@ -1741,14 +1883,18 @@
           "$ref": "#/components/schemas/TurnFailureReason"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "failedAt": {
           "type": "string",
           "format": "date-time"
         },
         "credentialFile": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CredentialText"
+            }
+          ],
           "minLength": 1,
           "description": "The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member."
         }
@@ -1799,7 +1945,7 @@
           "$ref": "#/components/schemas/Sequence"
         },
         "text": {
-          "type": "string"
+          "$ref": "#/components/schemas/LongText"
         }
       },
       "description": "One harness-native JSONL line. `lineSeq` continues the session's line count, so lines of a turn arrive in `lineSeq` order with no gap."
@@ -1822,7 +1968,10 @@
         "personaFiles",
         "image",
         "gitAuthorName",
-        "gitAuthorEmail"
+        "gitAuthorEmail",
+        "boxRetention",
+        "turnSeconds",
+        "idleSeconds"
       ],
       "properties": {
         "type": {
@@ -1847,7 +1996,11 @@
           "$ref": "#/components/schemas/Harness"
         },
         "harnessVersion": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "model": {
@@ -1873,7 +2026,8 @@
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/Channel.PersonaFileDownload"
-          }
+          },
+          "maxItems": 100
         },
         "image": {
           "$ref": "#/components/schemas/Channel.BootImage"
@@ -1883,6 +2037,26 @@
         },
         "gitAuthorEmail": {
           "$ref": "#/components/schemas/EmailAddress"
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays."
+        },
+        "turnSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds."
+        },
+        "idleSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy."
         },
         "boxMemoryMib": {
           "type": "integer",
@@ -1899,7 +2073,11 @@
           "description": "The disk in MiB the box boots with: the persona's boxDiskMib, or BoxDiskLimit.DefaultMib. A box that\nis already warm keeps the disk it booted with. A supervisor given an offer without it boots the\nbox with overlayMib of its runtime config, and refuses the turn PoolExhausted when the disk does\nnot fit its disk budget."
         },
         "prebuildCommitSha": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "pattern": "^[0-9a-f]{40}$",
           "description": "Set when the turn builds a prebuild: the box clones the repository at this commit and runs the\nrepository's setup step, /opt/tumpel/prebuild.mjs run, in place of the harness, its output lines\nbeing the turn's lines. The credential then holds only a GITHUB_TOKEN that reads the\nrepository's contents, and the snapshot the control plane asks for after the turn is the\nprebuild's layer."
         }
@@ -1929,7 +2107,7 @@
           "$ref": "#/components/schemas/RepositoryCloneFailureCause"
         },
         "detail": {
-          "type": "string"
+          "$ref": "#/components/schemas/Detail"
         },
         "failedAt": {
           "type": "string",
@@ -1997,9 +2175,12 @@
           "type": "integer",
           "format": "int32",
           "minimum": 1
+        },
+        "ack": {
+          "$ref": "#/components/schemas/Sequence"
         }
       },
-      "description": "The control plane accepts the host. Both sides then resend their unacked frames."
+      "description": "The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the\nhighest host `seq` the control plane has received with no gap before it. The host drops its\nunacked frames at or below it before it resends, so a frame the control plane took on an earlier\nconnection is never counted as undelivered. A control plane that leaves it out acks only with its\nnext frame."
     },
     "ClaudeSetupCodeText": {
       "type": "string",
@@ -2016,9 +2197,28 @@
         "SetupTimedOut",
         "TokenNotStored",
         "NoHostOnline",
-        "Superseded"
+        "Superseded",
+        "RateLimited"
       ],
       "description": "Why a Claude setup ended Failed. Each reason names the phase it stopped in."
+    },
+    "ClaudeSetupHarness": {
+      "type": "string",
+      "enum": [
+        "ClaudeCode",
+        "Codex"
+      ],
+      "description": "The harness a Claude setup signs in to: Claude Code with claude setup-token, or Codex with codex login --device-auth."
+    },
+    "CredentialText": {
+      "type": "string",
+      "maxLength": 65536,
+      "description": "A credential file or a variable value a harness reads, such as an OAuth credentials JSON."
+    },
+    "Detail": {
+      "type": "string",
+      "maxLength": 16384,
+      "description": "What failed and what fixes it, a warning, or a description. It may carry the tail of a\nharness's output, which the harness caps well below this."
     },
     "DisplayName": {
       "type": "string",
@@ -2035,6 +2235,26 @@
       "minLength": 1,
       "maxLength": 64
     },
+    "GuestProtocolRange": {
+      "type": "object",
+      "required": [
+        "guestProtocolOldest",
+        "guestProtocolVersion"
+      ],
+      "properties": {
+        "guestProtocolOldest": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "guestProtocolVersion": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        }
+      },
+      "description": "The guest protocol versions a host accepts from a box, from `guestProtocolOldest` to `guestProtocolVersion`."
+    },
     "Harness": {
       "type": "string",
       "enum": [
@@ -2047,7 +2267,8 @@
     },
     "HarnessVersion": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "maxLength": 100
     },
     "HostArchitecture": {
       "type": "string",
@@ -2055,6 +2276,14 @@
         "Amd64",
         "Arm64"
       ]
+    },
+    "HostReportedHealth": {
+      "type": "string",
+      "enum": [
+        "Healthy",
+        "RateLimited"
+      ],
+      "description": "The health a host reports of itself in its Heartbeat."
     },
     "HostUsage": {
       "type": "object",
@@ -2102,6 +2331,12 @@
       },
       "description": "What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts\nthe paused boxes it holds, `loadAverage` is the one-minute load average of the host,\nand `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the\nhost gives box disks: the free disk under its dataDir and what its boxes already wrote, less the\nheadroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host\nadmits a box only while its disk fits the budget beside the held ones; a supervisor older than\nthe box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal\nless the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it\nholds. A host admits a box only while its memory fits the budget beside the held ones, whatever\ntheir count; a supervisor older than the memory budget sends neither."
     },
+    "HttpUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 4096,
+      "description": "A URL the API checks as one."
+    },
     "ImageHarness": {
       "type": "string",
       "enum": [
@@ -2113,6 +2348,11 @@
         "Shell"
       ],
       "description": "The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot."
+    },
+    "LongText": {
+      "type": "string",
+      "maxLength": 1048576,
+      "description": "A line of harness output or a document such as a script or a devcontainer.json. The guest\nprotocol carries frames up to 4 MiB, but a single line past 1 MiB is refused instead of stored."
     },
     "MetricInstrument": {
       "type": "object",
@@ -2127,14 +2367,22 @@
           "$ref": "#/components/schemas/MetricName"
         },
         "unit": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
           "minLength": 1
         },
         "kind": {
           "$ref": "#/components/schemas/MetricKind"
         },
         "description": {
-          "type": "string",
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
           "minLength": 1
         }
       },
@@ -2157,6 +2405,11 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 200
+    },
+    "PathText": {
+      "type": "string",
+      "maxLength": 4096,
+      "description": "A file system path, a socket or an object storage key; 4096 is the Linux PATH_MAX."
     },
     "PersonaFilePath": {
       "type": "string",
@@ -2248,8 +2501,9 @@
         "dimensions": {
           "type": "object",
           "additionalProperties": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/ShortText"
+          },
+          "maxProperties": 32
         }
       },
       "description": "One value of a Sample metric at a moment, with its dimensions."
@@ -2261,13 +2515,24 @@
     },
     "Sha256Digest": {
       "type": "string",
+      "maxLength": 64,
       "pattern": "^[0-9a-f]{64}$",
       "description": "A lower-case hex SHA-256 digest: the name of a file in the image cache, or of a persona file blob."
+    },
+    "ShortText": {
+      "type": "string",
+      "maxLength": 256,
+      "description": "A short value: a name, a kind, a status, a version, a branch, a commit or an id another system issued."
     },
     "StorageKey": {
       "type": "string",
       "minLength": 1,
       "maxLength": 1000
+    },
+    "Summary": {
+      "type": "string",
+      "maxLength": 1024,
+      "description": "One line a person reads: a title, a client name, a cursor or an OAuth scope list."
     },
     "SupervisorUpdateFailureReason": {
       "type": "string",
@@ -2294,6 +2559,11 @@
       ],
       "description": "The phase a supervisor update entered. Fetching downloads and verifies the candidate binary,\nDryRunning runs it with `check` beside the running binary and keeps it once it passes, Staged\nis what supervisors before the box handover send while a candidate waits for the host to run no\nbox, Restarting swaps the binaries, parks every running turn and execs the new one, which takes\nover the running boxes, and Online is the new binary reaching Welcome. WaitingForIdle is what supervisors before the idle claim send between DryRunning and\nRestarting; the control plane accepts it and records nothing."
     },
+    "Token": {
+      "type": "string",
+      "maxLength": 16384,
+      "description": "A token, a key, a code, a nonce or a signature, as its issuer encodes it."
+    },
     "TurnFailureReason": {
       "type": "string",
       "enum": [
@@ -2306,6 +2576,7 @@
         "CredentialExpired",
         "BoxBootFailed",
         "PoolExhausted",
+        "HostDegraded",
         "SnapshotUnreadable",
         "HarnessExited",
         "HarnessOutOfMemory",
@@ -2316,6 +2587,7 @@
         "PersonaFileUnreadable",
         "RepositoryCloneFailed",
         "HarnessReportedError",
+        "CreditExhausted",
         "RepositoryTokenRefused",
         "ImageNotReleased",
         "ImageFetchFailed",
@@ -2323,7 +2595,9 @@
         "HostUpdating",
         "BoxLost",
         "Cancelled",
-        "ConnectorDisconnected"
+        "ConnectorDisconnected",
+        "SnapshotNotStored",
+        "RateLimited"
       ],
       "description": "Why a turn ended Failed. Each reason names the phase the turn stopped in."
     },
@@ -2352,8 +2626,9 @@
         "dimensions": {
           "type": "object",
           "additionalProperties": {
-            "type": "string"
-          }
+            "$ref": "#/components/schemas/ShortText"
+          },
+          "maxProperties": 32
         },
         "turnId": {
           "$ref": "#/components/schemas/EntityId"
