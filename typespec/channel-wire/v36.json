@@ -1,0 +1,2662 @@
+{
+  "channelProtocolVersion": 36,
+  "schemas": {
+    "BoxRetention": {
+      "type": "string",
+      "enum": [
+        "Off",
+        "Warm",
+        "Auto"
+      ],
+      "description": "What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode."
+    },
+    "Channel.BaseImageDownload": {
+      "type": "object",
+      "required": [
+        "imageDigest",
+        "kernelDigest",
+        "manifestDigest",
+        "imageUrl",
+        "kernelUrl",
+        "manifestUrl"
+      ],
+      "properties": {
+        "imageDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "kernelDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "manifestDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "imageUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "kernelUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "manifestUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        }
+      },
+      "description": "The base image of a layered boot, the current release's ReleaseBaseImage for the host's\narchitecture. `imageUrl`, `kernelUrl` and `manifestUrl` are presigned GETs of the ext4 image, the\nkernel and the BaseImageManifest document stored under `imageDigest`, `kernelDigest` and\n`manifestDigest` in the release bucket."
+    },
+    "Channel.BootImage": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/Channel.GuestImageDownload"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.LayeredImageDownload"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Full": "#/components/schemas/Channel.GuestImageDownload",
+          "Layered": "#/components/schemas/Channel.LayeredImageDownload"
+        }
+      },
+      "description": "What a box boots from: a full guest image, or a base image with a harness layer."
+    },
+    "Channel.BoxDiscard": {
+      "type": "object",
+      "required": [
+        "type",
+        "sessionId",
+        "boxId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "BoxDiscard"
+          ]
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "Asks the host to drop a box of a session that moved to another host, even when the box holds a\ncompleted turn no snapshot holds, or of a session whose repository the box could not clone. The host answers BoxGone, also when it runs no such box."
+    },
+    "Channel.BoxGone": {
+      "type": "object",
+      "required": [
+        "type",
+        "sessionId",
+        "boxId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "BoxGone"
+          ]
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "The host runs no box of the session any more and returned its TAP device to the pool. It answers BoxTeardown or BoxDiscard, or comes unsolicited after the host tore down an Auto box idle for the offer's idleSeconds."
+    },
+    "Channel.BoxTeardown": {
+      "type": "object",
+      "required": [
+        "type",
+        "sessionId",
+        "boxId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "BoxTeardown"
+          ]
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "Asks the host to tear down the box of a session once a snapshot holds its last completed turn:\nwhen a person stops or archives the session, after each turn of an Off session, and when placement\nevicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it, except that it\ntears down an Auto box idle for the offer's idleSeconds itself and reports it with an unsolicited BoxGone. The host\nanswers BoxGone, also when it runs no box of the session with that boxId, or BoxTeardownFailed."
+    },
+    "Channel.BoxTeardownFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "sessionId",
+        "boxId",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "BoxTeardownFailed"
+          ]
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/Channel.BoxTeardownFailureReason"
+        },
+        "detail": {
+          "$ref": "#/components/schemas/Detail"
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The host kept the box. `detail` states what failed and what fixes it."
+    },
+    "Channel.BoxTeardownFailureReason": {
+      "type": "string",
+      "enum": [
+        "BoxDirty"
+      ],
+      "description": "Why the host kept a box it was asked to tear down."
+    },
+    "Channel.Challenge": {
+      "type": "object",
+      "required": [
+        "type",
+        "nonce"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Challenge"
+          ]
+        },
+        "nonce": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
+          "minLength": 43
+        }
+      },
+      "description": "The first message on every connection, from the control plane: a fresh nonce, the unpadded\nbase64url encoding of 32 random bytes, that the host must sign. A connection that sends anything\nbut Hello next is closed."
+    },
+    "Channel.ChunkPlacement": {
+      "type": "object",
+      "required": [
+        "digest",
+        "packDigest",
+        "offset",
+        "length"
+      ],
+      "properties": {
+        "digest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "packDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "length": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        }
+      },
+      "description": "Where one chunk is stored: the chunk whose bytes have the lower-case hex SHA-256 `digest` lies\n`length` bytes long at byte `offset` of the pack `packDigest`. A pack is chunks concatenated, about\n8 MiB of them, stored under `<tenantId>/packs/<packDigest>`, where `packDigest` is the SHA-256 of\nthe whole pack."
+    },
+    "Channel.ClaudeSetupBoxCode": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "boxId",
+        "code",
+        "mintBudgetSeconds"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxCode"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "code": {
+          "$ref": "#/components/schemas/ClaudeSetupCodeText"
+        },
+        "mintBudgetSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 3600
+        }
+      },
+      "description": "The code the person submitted, for the standard input of the setup's `claude setup-token`; the\nhost forwards it to the box once and keeps no copy. The box fails the setup MintTimedOut when\nClaude Code prints no token within `mintBudgetSeconds` of the code."
+    },
+    "Channel.ClaudeSetupBoxDiscard": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "boxId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxDiscard"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "Asks the host to stop the setup's box and delete its drive, also in place of an unacked offer or\ncode of a setup that ended. The host answers nothing, and does nothing when it runs no such box."
+    },
+    "Channel.ClaudeSetupBoxFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxFailed"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/ClaudeSetupFailureReason"
+        },
+        "detail": {
+          "$ref": "#/components/schemas/Detail"
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The setup's box stopped without storing the token and is gone. `detail` states what failed and\nwhat fixes it, and never holds the token."
+    },
+    "Channel.ClaudeSetupBoxOffer": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "tenantId",
+        "boxId",
+        "harnessVersion",
+        "image",
+        "tokenUrl",
+        "tokenCredential",
+        "expiresAt",
+        "urlSeconds",
+        "codeSeconds"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxOffer"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "harness": {
+          "$ref": "#/components/schemas/ClaudeSetupHarness"
+        },
+        "harnessVersion": {
+          "$ref": "#/components/schemas/HarnessVersion"
+        },
+        "image": {
+          "$ref": "#/components/schemas/Channel.BootImage"
+        },
+        "tokenUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "tokenCredential": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
+          "minLength": 43
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "urlSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 3600,
+          "description": "How long the box may take from this offer to printing the sign-in URL before the host fails the setup SetupUrlMissing."
+        },
+        "codeSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 3600,
+          "description": "How long the person may take from the sign-in URL to submitting the code before the host fails the setup SetupTimedOut."
+        }
+      },
+      "description": "Asks the host to boot box `boxId` from `image` with no repository, no persona files and no\ncredential, and run `claude setup-token` in it for Claude setup `claudeSetupId`. The host answers\nClaudeSetupBoxUrl once the command prints its sign-in URL, hands the code of a ClaudeSetupBoxCode\nto the command's standard input, and answers ClaudeSetupBoxFailed when the box stops without\nstoring the token. `harness` names the harness at `harnessVersion` that `image` boots, and an offer\nwithout it names ClaudeCode. Only the box writes the token: it POSTs it to `tokenUrl` with `tokenCredential`\nas its bearer token, and the host never sees it. `tokenCredential` is bound to this setup and\nwrites its token once, while the setup is Minting. The host stops the box at `expiresAt`, when it stores the token, or on\nClaudeSetupBoxDiscard, and deletes its drive."
+    },
+    "Channel.ClaudeSetupBoxUrl": {
+      "type": "object",
+      "required": [
+        "type",
+        "claudeSetupId",
+        "signInUrl"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ClaudeSetupBoxUrl"
+          ]
+        },
+        "claudeSetupId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "signInUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "userCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      },
+      "description": "The setup's `claude setup-token` printed the URL where the person signs in."
+    },
+    "Channel.CloseCode": {
+      "type": "integer",
+      "enum": [
+        4400,
+        4401,
+        4403,
+        4408,
+        4409,
+        4426
+      ],
+      "description": "The WebSocket close code each side closes a connection with. Revoked tells the host the tenant\nrevoked it: the host stops its boxes, deletes its key and does not reconnect. On every other\ncode but BadSignature and UnsupportedVersion the host reconnects.",
+      "x-enum-varnames": [
+        "ProtocolError",
+        "BadSignature",
+        "Revoked",
+        "HeartbeatDeadline",
+        "Replaced",
+        "UnsupportedVersion"
+      ]
+    },
+    "Channel.ControlEnvelope": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/Channel.Challenge"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.Welcome"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.Heartbeat"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.ReleasePublished"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.FrameRefused"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.FrameRateLimited"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.ControlFrame"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "Challenge": "#/components/schemas/Channel.Challenge",
+          "Welcome": "#/components/schemas/Channel.Welcome",
+          "Heartbeat": "#/components/schemas/Channel.Heartbeat",
+          "ReleasePublished": "#/components/schemas/Channel.ReleasePublished",
+          "FrameRefused": "#/components/schemas/Channel.FrameRefused",
+          "FrameRateLimited": "#/components/schemas/Channel.FrameRateLimited",
+          "Frame": "#/components/schemas/Channel.ControlFrame"
+        }
+      },
+      "description": "Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, or a sequenced frame."
+    },
+    "Channel.ControlFrame": {
+      "type": "object",
+      "required": [
+        "type",
+        "seq",
+        "ack",
+        "message"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Frame"
+          ]
+        },
+        "seq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "ack": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "message": {
+          "$ref": "#/components/schemas/Channel.ControlMessage"
+        }
+      },
+      "description": "One message from the control plane to the host, sequenced per Sequenced."
+    },
+    "Channel.ControlMessage": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/Channel.TurnOffer"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.TurnWithdrawn"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.TurnClaimed"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.TurnCancel"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.SnapshotRequest"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.SnapshotChunksHeld"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.SnapshotPackUploads"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.RestoreDownloads"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.BoxTeardown"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.BoxDiscard"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.ClaudeSetupBoxOffer"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.ClaudeSetupBoxCode"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.ClaudeSetupBoxDiscard"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "TurnOffer": "#/components/schemas/Channel.TurnOffer",
+          "TurnWithdrawn": "#/components/schemas/Channel.TurnWithdrawn",
+          "TurnClaimed": "#/components/schemas/Channel.TurnClaimed",
+          "TurnCancel": "#/components/schemas/Channel.TurnCancel",
+          "SnapshotRequest": "#/components/schemas/Channel.SnapshotRequest",
+          "SnapshotChunksHeld": "#/components/schemas/Channel.SnapshotChunksHeld",
+          "SnapshotPackUploads": "#/components/schemas/Channel.SnapshotPackUploads",
+          "RestoreDownloads": "#/components/schemas/Channel.RestoreDownloads",
+          "BoxTeardown": "#/components/schemas/Channel.BoxTeardown",
+          "BoxDiscard": "#/components/schemas/Channel.BoxDiscard",
+          "ClaudeSetupBoxOffer": "#/components/schemas/Channel.ClaudeSetupBoxOffer",
+          "ClaudeSetupBoxCode": "#/components/schemas/Channel.ClaudeSetupBoxCode",
+          "ClaudeSetupBoxDiscard": "#/components/schemas/Channel.ClaudeSetupBoxDiscard"
+        }
+      }
+    },
+    "Channel.DispatchConnector": {
+      "type": "object",
+      "required": [
+        "connectorId",
+        "url",
+        "tokenUrl",
+        "tokenCredential"
+      ],
+      "properties": {
+        "connectorId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "name": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "url": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "tokenUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "tokenCredential": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
+          "minLength": 43
+        }
+      },
+      "description": "One connector of a turn. `url` is the upstream MCP server. `tokenUrl` is the control plane's\nConnectorTokens_fetch for this turn and connector, and `tokenCredential` its ConnectorTurnToken,\nvalid while the turn is Running. The guest keeps both in forwarder memory only: never in the\nharness environment, a file, a log or a snapshot, and a new tokenCredential never restarts the\nharness. `name` is the connector's name; the guest derives each harness's MCP server name from it,\nand from `connectorId` when a control plane leaves it out."
+    },
+    "Channel.DispatchGrant": {
+      "type": "object",
+      "required": [
+        "credentialHandoverId",
+        "expiresAt",
+        "variables",
+        "connectors"
+      ],
+      "properties": {
+        "credentialHandoverId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.DispatchVariable"
+          },
+          "maxItems": 1000
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Summary"
+          },
+          "maxItems": 64,
+          "description": "The harness arguments the catalog maps the credential to; they hold no secret. A grant without them gives the guest none."
+        },
+        "credentialFile": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/PathText"
+                }
+              ],
+              "minLength": 1
+            },
+            "value": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/CredentialText"
+                }
+              ],
+              "minLength": 1
+            }
+          },
+          "required": [
+            "path",
+            "value"
+          ],
+          "description": "A CredentialFile credential: the guest writes `value` to `path` under the harness home, mode 0600, before the harness starts, and deletes it at the end of the turn."
+        },
+        "connectors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.DispatchConnector"
+          },
+          "maxItems": 1000,
+          "description": "The session's connectors, none when its persona lists none. The guest forwarder serves each at its loopback route and fetches its access token from tokenUrl with tokenCredential. Neither reaches the harness."
+        }
+      },
+      "description": "The dispatch variables for one offer: every member of the persona's secret set, the credential for\nthe harness's provider under the variable its kind maps to and every other member under its own\nname. The control plane decrypts them from the secret set each time it sends or resends a\nTurnOffer, keeps no plaintext copy and records the variable names in an append-only handover log;\n`credentialHandoverId` names this handover in the supervisor's errors. `expiresAt`, the end of\nthe turn's credential span (the longer of dispatchGrantTtlSeconds and turnOfferTtlSeconds plus\nturnImageFetchBudgetSeconds, from when the offer was sent), is when the supervisor stops handing\nthe variables to a box and fails the turn DispatchCredentialExpired instead."
+    },
+    "Channel.DispatchVariable": {
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "minLength": 1
+        },
+        "value": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CredentialText"
+            }
+          ],
+          "minLength": 1
+        }
+      },
+      "description": "One environment variable for one turn: a secret set member's value. It lives in box memory only and is never written to the host's disk."
+    },
+    "Channel.FrameRateLimited": {
+      "type": "object",
+      "required": [
+        "type",
+        "seq",
+        "reason",
+        "framesPerMinute",
+        "retryAfter"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "FrameRateLimited"
+          ]
+        },
+        "seq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "reason": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
+          "minLength": 1
+        },
+        "framesPerMinute": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "retryAfter": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The control plane's answer to a host frame past the tenant's per-host frame limit. It travels\noutside frames, as Heartbeat does. The control plane counts that `seq` as received and records\nnothing for it, so the host drops the frame from its unacked frames and never resends it.\n`framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs\noff its sends until then and reports RateLimited in its Heartbeat. The control plane sends it\nonly on a connection that speaks a protocol version of 32 or above, and FrameRefused below that."
+    },
+    "Channel.FrameRefused": {
+      "type": "object",
+      "required": [
+        "type",
+        "seq",
+        "reason"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "FrameRefused"
+          ]
+        },
+        "seq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "reason": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
+          "minLength": 1
+        }
+      },
+      "description": "The control plane's answer to a host frame whose message matches no HostMessage. It travels\noutside frames, as Heartbeat does. The control plane counts that `seq` as received, so the next\nframe follows it without a gap, records nothing for it, and names the mismatch in `reason`. The\nhost drops the frame from its unacked frames and logs FrameRefused with the reason, so one frame\nno control plane reads never holds up the channel. A supervisor that predates this message closes\nthe connection with ProtocolError on it, and its reconnect resends the frame, which the control\nplane drops as a duplicate."
+    },
+    "Channel.GuestImageDownload": {
+      "type": "object",
+      "required": [
+        "kind",
+        "imageDigest",
+        "kernelDigest",
+        "manifestDigest",
+        "imageUrl",
+        "kernelUrl",
+        "manifestUrl",
+        "downloadExpiresAt",
+        "fetchSeconds"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Full"
+          ]
+        },
+        "imageDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "kernelDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "manifestDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "imageUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "kernelUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "manifestUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "downloadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fetchSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        }
+      },
+      "description": "The full guest image of the turn, from the current ReleaseManifest, for the session's harness version\nand the architecture the host enrolled with, offered while the release lacks a base image or a\nharness layer for them. `imageUrl`, `kernelUrl` and `manifestUrl` are presigned\nGETs of the ext4 image, the kernel and the GuestImageManifest document stored under\n`imageDigest`, `kernelDigest` and `manifestDigest` in the release bucket, valid until\n`downloadExpiresAt`, turnOfferTtlSeconds plus `fetchSeconds` after the send of the offer. A supervisor whose\nimage cache lacks `imageDigest` sends TurnImageFetching and downloads the three within `fetchSeconds` of\nsending it, counting the wait for another image the host is fetching; it fetches one image at a time,\nchecks each against its digest and only then moves them into the cache, replacing the cached image\nof the same harness version; it skips the kernel when the cache holds `kernelDigest`. A download\nthat fails, misses its digest or names another image in its manifest fails the turn ImageFetchFailed,\none that outlasts `fetchSeconds` fails it ImageFetchTimedOut."
+    },
+    "Channel.HarnessLayerDownload": {
+      "type": "object",
+      "required": [
+        "layer",
+        "layerUrl",
+        "manifestUrl"
+      ],
+      "properties": {
+        "layer": {
+          "$ref": "#/components/schemas/ReleaseHarnessLayer"
+        },
+        "layerUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "manifestUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        }
+      },
+      "description": "The harness layer of a layered boot, the current release's ReleaseHarnessLayer for the session's\nharness version and the host's architecture. `layerUrl` and `manifestUrl` are presigned GETs of\nthe squashfs file and the HarnessLayerManifest document stored under `layer.layerDigest` and\n`layer.manifestDigest` in the release bucket."
+    },
+    "Channel.Heartbeat": {
+      "type": "object",
+      "required": [
+        "type",
+        "sentAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Heartbeat"
+          ]
+        },
+        "sentAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The control plane sends one when it has sent nothing else for its heartbeat interval of 10\nseconds. A side that has received nothing for 30 seconds treats the connection as dead and closes\nit; the control plane then reads the host Offline."
+    },
+    "Channel.Hello": {
+      "type": "object",
+      "required": [
+        "type",
+        "hostId",
+        "protocolVersion",
+        "supervisorVersion",
+        "signature",
+        "boxCapacity",
+        "usage",
+        "heldTurnIds"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Hello"
+          ]
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "protocolVersion": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "channelProtocolOldest": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "supervisorVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "minLength": 1
+        },
+        "signature": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Token"
+            }
+          ],
+          "minLength": 1
+        },
+        "boxCapacity": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 256
+        },
+        "usage": {
+          "$ref": "#/components/schemas/HostUsage"
+        },
+        "guestProtocol": {
+          "$ref": "#/components/schemas/GuestProtocolRange"
+        },
+        "heldTurnIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          },
+          "maxItems": 1000
+        }
+      },
+      "description": "The host's answer to Challenge. `signature` is the base64 Ed25519 signature, by the host key\nmade at enrolment, over these bytes in order: the ASCII string `tumpel-channel-hello-v1`, one\n0x00 byte, the ASCII bytes of the Challenge `nonce`, one 0x00 byte, and the UTF-8 bytes of\n`hostId`. The control plane rebuilds those bytes from the nonce it sent and verifies the\nsignature against the host's stored public key. It answers Welcome, and closes the connection\nwith BadSignature on a bad signature, Revoked for a revoked host, and UnsupportedVersion for a\nprotocol version outside ChannelProtocol.Oldest to ChannelProtocol.Version. `boxCapacity` is the host's box slots from\nits runtime config and `usage` what it holds as it connects; the control plane keeps both for\nthe host's tenant before it reads the host Online. `channelProtocolOldest` is the oldest\nchannel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves\nit out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host\naccepts from a box. The control plane records both ranges and shows them on the host.\n`heldTurnIds` names the turns the host holds as it connects, as Heartbeat does; the control plane\nfails each Running turn on the host that it does not name with HostDropped. A version 34 Hello and\nHeartbeat carry no `heldTurnIds`: the control plane decodes a 34 host with the version 34 types and\njudges no turn of it against a held list. A host on 35 or later that settles on 34 sends the\nversion 34 shape, without `heldTurnIds`."
+    },
+    "Channel.HostEnvelope": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/Channel.Hello"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.HostHeartbeat"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.HostFrame"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "Hello": "#/components/schemas/Channel.Hello",
+          "Heartbeat": "#/components/schemas/Channel.HostHeartbeat",
+          "Frame": "#/components/schemas/Channel.HostFrame"
+        }
+      },
+      "description": "Everything the host sends on a connection: Hello, Heartbeat, or a sequenced frame. The host opens\nevery connection itself, as a WebSocket to /v1/hosts/{hostId}/channel on the control plane's\nendpoint (wss for https, ws for http), and the control plane holds at most one per host: a new\nconnection that reaches Welcome closes the one before it. Each message is one JSON text message."
+    },
+    "Channel.HostFrame": {
+      "type": "object",
+      "required": [
+        "type",
+        "seq",
+        "ack",
+        "message"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Frame"
+          ]
+        },
+        "seq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "ack": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "message": {
+          "$ref": "#/components/schemas/Channel.HostMessage"
+        }
+      },
+      "description": "One message from the host to the control plane, sequenced per Sequenced."
+    },
+    "Channel.HostHeartbeat": {
+      "type": "object",
+      "required": [
+        "type",
+        "sentAt",
+        "usage",
+        "heldSessionIds",
+        "heldTurnIds",
+        "heldClaudeSetupIds"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Heartbeat"
+          ]
+        },
+        "sentAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "usage": {
+          "$ref": "#/components/schemas/HostUsage"
+        },
+        "heldSessionIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          },
+          "maxItems": 1000
+        },
+        "heldTurnIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          },
+          "maxItems": 1000,
+          "description": "The turnId of every turn the host holds: each offer it took and has not ended, queued or\nrunning, and each turn named by a frame the control plane has not acked yet. On each Heartbeat\nthe control plane fails with HostDropped every Running turn on the host the list does not name,\nand every Offered turn whose offer it sent before the previous Heartbeat that this list and the\nprevious one both leave out."
+        },
+        "heldClaudeSetupIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          },
+          "maxItems": 1000,
+          "description": "The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name."
+        },
+        "health": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/HostReportedHealth"
+            }
+          ],
+          "description": "The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy."
+        }
+      },
+      "description": "The host sends one every 10 seconds after Welcome, whatever else it sends, with its usage. The\ncontrol plane keeps the last one per host for the host's tenant, which places a new session on\nthe Online host with the most free box slots, then the most memory available.\n`heldSessionIds` names every session the host holds a box for, whether the box runs a turn, waits\nwarm or still boots, and is empty when it holds none. The host sends every frame queued before it\nread the list ahead of the Heartbeat, so the first Heartbeat after Welcome follows the resent\nframes. On that Heartbeat the control plane fails each Running turn on the host whose session the\nlist does not name with BoxLost."
+    },
+    "Channel.HostMessage": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/Channel.TurnImageFetching"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.TurnClaim"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.TurnRepositoryReady"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.TurnLine"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.TurnComplete"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.TurnRepositoryCloneFailed"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.TurnFailed"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.SnapshotChunks"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.SnapshotPacks"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.RestoreChunks"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.SnapshotDone"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.SnapshotFailed"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.BoxGone"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.BoxTeardownFailed"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.ClaudeSetupBoxUrl"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.ClaudeSetupBoxFailed"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.SupervisorUpdateStep"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.SupervisorUpdateFailed"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.TelemetryBatch"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "TurnImageFetching": "#/components/schemas/Channel.TurnImageFetching",
+          "TurnClaim": "#/components/schemas/Channel.TurnClaim",
+          "TurnRepositoryReady": "#/components/schemas/Channel.TurnRepositoryReady",
+          "TurnLine": "#/components/schemas/Channel.TurnLine",
+          "TurnComplete": "#/components/schemas/Channel.TurnComplete",
+          "TurnRepositoryCloneFailed": "#/components/schemas/Channel.TurnRepositoryCloneFailed",
+          "TurnFailed": "#/components/schemas/Channel.TurnFailed",
+          "SnapshotChunks": "#/components/schemas/Channel.SnapshotChunks",
+          "SnapshotPacks": "#/components/schemas/Channel.SnapshotPacks",
+          "RestoreChunks": "#/components/schemas/Channel.RestoreChunks",
+          "SnapshotDone": "#/components/schemas/Channel.SnapshotDone",
+          "SnapshotFailed": "#/components/schemas/Channel.SnapshotFailed",
+          "BoxGone": "#/components/schemas/Channel.BoxGone",
+          "BoxTeardownFailed": "#/components/schemas/Channel.BoxTeardownFailed",
+          "ClaudeSetupBoxUrl": "#/components/schemas/Channel.ClaudeSetupBoxUrl",
+          "ClaudeSetupBoxFailed": "#/components/schemas/Channel.ClaudeSetupBoxFailed",
+          "SupervisorUpdateStep": "#/components/schemas/Channel.SupervisorUpdateStep",
+          "SupervisorUpdateFailed": "#/components/schemas/Channel.SupervisorUpdateFailed",
+          "TelemetryBatch": "#/components/schemas/Channel.TelemetryBatch"
+        }
+      }
+    },
+    "Channel.LayeredImageDownload": {
+      "type": "object",
+      "required": [
+        "kind",
+        "base",
+        "layer",
+        "downloadExpiresAt",
+        "fetchSeconds"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Layered"
+          ]
+        },
+        "base": {
+          "$ref": "#/components/schemas/Channel.BaseImageDownload"
+        },
+        "layer": {
+          "$ref": "#/components/schemas/Channel.HarnessLayerDownload"
+        },
+        "downloadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fetchSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        }
+      },
+      "description": "The layered boot of the turn, offered when the current release carries a base image for the\nhost's architecture and a harness layer for the session's harness version on it. The box boots\nfrom the base, the guest drive of the host's supervisor and the layer. The URLs are valid until\n`downloadExpiresAt`, turnOfferTtlSeconds plus `fetchSeconds` after the send of the offer. A supervisor whose\ncache lacks the base or the layer sends TurnImageFetching naming the first part it lacks, then\nfetches base, kernel and layer within one `fetchSeconds` of sending it, counting the wait for\nanother fetch on the host, and checks each against its digest before it moves it into the cache. A\ndownload that fails, misses its digest or names another part in its manifest fails the turn\nImageFetchFailed, one that outlasts `fetchSeconds` fails it ImageFetchTimedOut. The host keeps the\nbase and the layer in its cache while a box runs on them."
+    },
+    "Channel.Pack": {
+      "type": "object",
+      "required": [
+        "packDigest",
+        "sizeBytes"
+      ],
+      "properties": {
+        "packDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
+      },
+      "description": "One pack: `packDigest` is the SHA-256 of its `sizeBytes` bytes."
+    },
+    "Channel.PackUrl": {
+      "type": "object",
+      "required": [
+        "packDigest",
+        "sizeBytes",
+        "url"
+      ],
+      "properties": {
+        "packDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "url": {
+          "$ref": "#/components/schemas/HttpUrl"
+        }
+      },
+      "description": "One pack object stored under `<tenantId>/packs/<packDigest>`, `sizeBytes` long, and `url` a\npresigned URL of that object alone."
+    },
+    "Channel.PersonaFileDownload": {
+      "type": "object",
+      "required": [
+        "path",
+        "digest",
+        "sizeBytes",
+        "downloadUrl",
+        "downloadExpiresAt"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/components/schemas/PersonaFilePath"
+        },
+        "digest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "sizeBytes": {
+          "$ref": "#/components/schemas/PersonaFileSize"
+        },
+        "downloadUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "downloadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "One file of the session's persona. `downloadUrl` is a presigned GET of the blob stored under\n`digest`, valid until `downloadExpiresAt`, the DispatchGrant's expiresAt. The supervisor\nchecks the bytes against `digest` and keeps them in its cache, so a digest it already holds is\nnot fetched again."
+    },
+    "Channel.ReleasePublished": {
+      "type": "object",
+      "required": [
+        "type",
+        "releaseVersion"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "ReleasePublished"
+          ]
+        },
+        "releaseVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "minLength": 1
+        }
+      },
+      "description": "The control plane sends one to every Online host when the release bucket stores a new current\nrelease, `releaseVersion` naming it. It travels outside frames, as Heartbeat does, so it is never\nresent: a host that misses it reads the release at its next Welcome. The host reads\nGET /v1/releases/current and updates its supervisor when the release names another binary. A\nsupervisor that predates this message closes the connection with ProtocolError on it, and the\nWelcome of its reconnect reads the release."
+    },
+    "Channel.RestoreChunks": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "part",
+        "chunks"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "RestoreChunks"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "chunks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.ChunkPlacement"
+          },
+          "maxItems": 500
+        }
+      },
+      "description": "Part `part` of the chunks a box that boots cold needs for turn `turnId` and lacks in the host's\nchunk cache, each at the placement its manifest or root names, at most\nChunkExchange.DigestsPerPart of them, grouped by pack. The host sends each next part once the\nanswer to the one before arrived, and starts the downloads of each part as its answer arrives.\nThe control plane answers RestoreDownloads."
+    },
+    "Channel.RestoreDownloads": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "part",
+        "packs",
+        "downloadExpiresAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "RestoreDownloads"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "packs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.PackUrl"
+          },
+          "maxItems": 500
+        },
+        "downloadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The answer to RestoreChunks part `part`: a presigned GET for each pack that holds chunks of that\npart, valid until `downloadExpiresAt`, the DispatchGrant's expiresAt. A pack is left out when\nany chunk asked in it is no chunk of the session at that placement, and the host fails the turn\nSnapshotUnreadable."
+    },
+    "Channel.Sequenced": {
+      "type": "object",
+      "required": [
+        "seq",
+        "ack"
+      ],
+      "properties": {
+        "seq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "ack": {
+          "$ref": "#/components/schemas/Sequence"
+        }
+      },
+      "description": "Each direction of a host's channel numbers its frames from 1 in `seq`, and the count survives\nreconnects and restarts. `ack` is the highest `seq` the sender has received from the other side\nwith no gap before it, 0 before the first one; it advances only with the sender's next frame. A\nreceiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as\na protocol error that closes the connection. After Welcome each side resends, in order, every\nframe the other side has not acked, and the receiver drops the duplicates. The control plane\nkeeps both counters and its unacked frames in durable storage. The supervisor writes its\ncounters and unacked frames to disk before it sends a frame; when it starts without that state\nit does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.\nChallenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,\nwith no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know."
+    },
+    "Channel.SnapshotChunks": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "part",
+        "digests"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotChunks"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "digests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Sha256Digest"
+          },
+          "maxItems": 500
+        }
+      },
+      "description": "Part `part` of the chunk digests the files of a snapshot hold that the box's previous snapshot\ndid not, at most ChunkExchange.DigestsPerPart of them. The host sends part 1 once its files are\ncut, and each next part once the answer to the one before arrived. The control plane answers\nSnapshotChunksHeld and counts each digest as referenced by the session."
+    },
+    "Channel.SnapshotChunksHeld": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "part",
+        "held"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotChunksHeld"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "held": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.ChunkPlacement"
+          },
+          "maxItems": 500
+        }
+      },
+      "description": "The answer to SnapshotChunks part `part`: where the tenant stores each digest of that part it\nholds already. A digest left out is stored in no pack, and the host packs and uploads it."
+    },
+    "Channel.SnapshotDone": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "uploadedBytes"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotDone"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "uploadedBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        }
+      },
+      "description": "The host stored the snapshot's packs and root. `uploadedBytes` counts the bytes it uploaded: the packs the tenant lacked, plus the root."
+    },
+    "Channel.SnapshotDownload": {
+      "type": "object",
+      "required": [
+        "snapshotId",
+        "snapshotSeq",
+        "storageKey",
+        "downloadUrl",
+        "downloadExpiresAt"
+      ],
+      "properties": {
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "snapshotSeq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "storageKey": {
+          "$ref": "#/components/schemas/StorageKey"
+        },
+        "downloadUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "downloadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "One stored snapshot of a session, for a box that boots cold. `downloadUrl` is a presigned GET of\nthe SnapshotRoot under `storageKey` alone, valid until `downloadExpiresAt`, the end of the turn's\ncredential span, the DispatchGrant's expiresAt."
+    },
+    "Channel.SnapshotFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotFailed"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/Channel.SnapshotFailureReason"
+        },
+        "detail": {
+          "$ref": "#/components/schemas/Detail"
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The host could not store the snapshot. `detail` states what failed and what fixes it."
+    },
+    "Channel.SnapshotFailureReason": {
+      "type": "string",
+      "enum": [
+        "BoxNotFound",
+        "UpperDirectoryUnreadable",
+        "UploadExpired",
+        "UploadRejected",
+        "SnapshotTimedOut",
+        "NotAnswered",
+        "RateLimited"
+      ],
+      "description": "Why the host could not store a snapshot."
+    },
+    "Channel.SnapshotPacks": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "part",
+        "packs",
+        "chunks"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotPacks"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "packs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.Pack"
+          },
+          "maxItems": 500
+        },
+        "chunks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.ChunkPlacement"
+          },
+          "maxItems": 500
+        }
+      },
+      "description": "Part `part` of the chunks a snapshot packed: where each chunk lies, at most\nChunkExchange.DigestsPerPart of them, and the size of each pack they lie in. A pack whose chunks\nrun past one part is listed again in the next. The host sends part 1 once its packs are written,\nand each next part once the answer to the one before arrived. The control plane keeps the\nplacements until SnapshotDone, counts each digest as referenced by the session, and answers\nSnapshotPackUploads."
+    },
+    "Channel.SnapshotPackUploads": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "part",
+        "uploads",
+        "uploadExpiresAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotPackUploads"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "part": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "uploads": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.PackUrl"
+          },
+          "maxItems": 500
+        },
+        "uploadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The answer to SnapshotPacks part `part`: a presigned PUT for each pack of that part the tenant\nholds no object for, valid until `uploadExpiresAt`. Each URL signs the pack's SHA-256 as the\nx-amz-checksum-sha256 header, so the host sends that header and object storage refuses bytes that\ndo not hash to the key. A pack left out is stored already."
+    },
+    "Channel.SnapshotRequest": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "sessionId",
+        "boxId",
+        "turnId",
+        "snapshotSeq",
+        "storageKey",
+        "uploadUrl",
+        "uploadExpiresAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotRequest"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "snapshotSeq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "storageKey": {
+          "$ref": "#/components/schemas/StorageKey"
+        },
+        "uploadUrl": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "uploadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Asks the host to store the upper directory of a box as a SnapshotRoot under `storageKey`. The\nhost sends the chunk digests its files hold that the box's previous snapshot did not in\nSnapshotChunks parts, packs the ones the tenant lacks together with the chunks of its encoded\nSnapshotManifest, sends their placements in SnapshotPacks parts, uploads the packs each\nSnapshotPackUploads names, then PUTs the root to `uploadUrl`, a presigned PUT of `storageKey`\nalone, and answers SnapshotDone. Every URL expires at `uploadExpiresAt`, the snapshot deadline,\nafter which the control plane records the snapshot failed NotAnswered."
+    },
+    "Channel.StoredHostFrame": {
+      "type": "object",
+      "required": [
+        "type",
+        "seq",
+        "ack",
+        "message"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Frame"
+          ]
+        },
+        "seq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "ack": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "message": {}
+      },
+      "description": "A HostFrame as channel.json keeps it until the control plane acks it. The message stays as the\nsupervisor wrote it, so a supervisor of another version loads it whatever message kinds it reads\nand resends it unchanged; a message no control plane reads is answered with FrameRefused."
+    },
+    "Channel.SupervisorUpdateFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "fromSha256",
+        "toSha256",
+        "reason",
+        "detail",
+        "outputTail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SupervisorUpdateFailed"
+          ]
+        },
+        "fromSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "toSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/SupervisorUpdateFailureReason"
+        },
+        "detail": {
+          "$ref": "#/components/schemas/Detail"
+        },
+        "outputTail": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Detail"
+          },
+          "maxItems": 20
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The host's supervisor update stopped. `detail` states what failed and what fixes it.\n`outputTail` holds the last lines the candidate printed in its dry run, token-shaped runs\nhidden, and is empty for every other reason."
+    },
+    "Channel.SupervisorUpdateStep": {
+      "type": "object",
+      "required": [
+        "type",
+        "fromSha256",
+        "toSha256",
+        "releaseVersion",
+        "boxesRunning",
+        "phase",
+        "at"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SupervisorUpdateStep"
+          ]
+        },
+        "fromSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "toSha256": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "releaseVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "minLength": 1
+        },
+        "boxesRunning": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0
+        },
+        "phase": {
+          "$ref": "#/components/schemas/SupervisorUpdatePhase"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The host's supervisor update from the binary `fromSha256` to `toSha256` entered `phase`. The new\nbinary sends Online once it reaches Welcome after the swap."
+    },
+    "Channel.TelemetryBatch": {
+      "type": "object",
+      "required": [
+        "type",
+        "instruments",
+        "samples",
+        "turns"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TelemetryBatch"
+          ]
+        },
+        "instruments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/MetricInstrument"
+          },
+          "maxItems": 1000
+        },
+        "samples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SamplePoint"
+          },
+          "maxItems": 500
+        },
+        "turns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TurnPoint"
+          },
+          "maxItems": 500
+        }
+      },
+      "description": "Metric points the supervisor collected at its lifecycle edges and from its host sampler, sent\nwhile the channel is Welcomed. The control plane overwrites each point's `hostId` dimension with\nthe host that signed the connection, stamps each turn.cost and turn.tokens point with the\npersonaId, secretSetId, provider and costBasis of the turn as it offered it, drops a turn.cost\npoint whose costBasis is NotReported, and writes the batch to the tenant's metrics store. A batch\nthe store refuses is logged as TelemetryRejected and still acked. The control plane refuses this\nmessage on a connection that speaks a protocol version below 19."
+    },
+    "Channel.TurnCancel": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnCancel"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "Asks the host to end turn `turnId` at once, which the control plane already failed Cancelled. The\nhost ends the harness and answers TurnFailed Cancelled with the turn's credential file, and the\ncontrol plane keeps the reason and detail it recorded. The box is then a box after any turn, and the\nSnapshotRequest and BoxTeardown that follow snapshot and free it. A host that runs no such turn\ndoes nothing."
+    },
+    "Channel.TurnClaim": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "boxId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnClaim"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "The host accepts the offered turn. It sends this at once, before it fetches the image, restores the\nsnapshot or boots the box; those keep their own budgets and failures. The control plane answers TurnClaimed\nand the turn reads Running, or answers TurnWithdrawn when the turn already left Offered. The host\nhands the prompt to the harness only once TurnClaimed arrived and the box is ready. A host that\ngives up waiting for the answer hands nothing and fails the turn NotClaimed, and the control plane\noffers the turn again. So a turn is either claimed and its result reaches the control plane, or\nrefused before the harness starts."
+    },
+    "Channel.TurnClaimed": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnClaimed"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "The control plane's answer to a TurnClaim for a turn that was still Offered; the turn now reads Running, and the host hands its prompt to the harness once the box is ready."
+    },
+    "Channel.TurnComplete": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "lastLineSeq",
+        "completedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnComplete"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "lastLineSeq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "credentialFile": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CredentialText"
+            }
+          ],
+          "minLength": 1,
+          "description": "The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member."
+        },
+        "warning": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
+          "minLength": 1,
+          "description": "The guest's warning for a turn the harness completed, such as a box disk with less than a hundredth of it free; the control plane shows it on the turn read."
+        }
+      },
+      "description": "The harness finished the turn. `lastLineSeq` is the turn's final line; the control plane holds every line up to it and stores the snapshot after it before the turn reads Completed, and fails the turn SnapshotNotStored when that snapshot is not stored."
+    },
+    "Channel.TurnFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "reason",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnFailed"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "reason": {
+          "$ref": "#/components/schemas/TurnFailureReason"
+        },
+        "detail": {
+          "$ref": "#/components/schemas/Detail"
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "credentialFile": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/CredentialText"
+            }
+          ],
+          "minLength": 1,
+          "description": "The turn's credential file as the harness rewrote it; the control plane stores it in place of the secret set's CredentialFile member."
+        }
+      }
+    },
+    "Channel.TurnImageFetching": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "imageDigest"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnImageFetching"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "imageDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        }
+      },
+      "description": "The host's cache lacks part of the offer's image and the host has started to download it: `imageDigest` names\nthe full image, or the base image or harness layer of a layered boot, whichever it lacks first.\nIt follows the TurnClaim; the host fails the turn ImageFetchTimedOut when the fetch outlasts the\noffer's `image.fetchSeconds`."
+    },
+    "Channel.TurnLine": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "lineSeq",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnLine"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "lineSeq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "text": {
+          "$ref": "#/components/schemas/LongText"
+        }
+      },
+      "description": "One harness-native JSONL line. `lineSeq` continues the session's line count, so lines of a turn arrive in `lineSeq` order with no gap."
+    },
+    "Channel.TurnOffer": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "sessionId",
+        "boxId",
+        "repository",
+        "harness",
+        "harnessVersion",
+        "model",
+        "prompt",
+        "credential",
+        "lastLineSeq",
+        "snapshots",
+        "personaFiles",
+        "image",
+        "gitAuthorName",
+        "gitAuthorEmail",
+        "boxRetention",
+        "turnSeconds",
+        "idleSeconds"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnOffer"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "boxId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "$ref": "#/components/schemas/RepositoryUrl"
+        },
+        "harness": {
+          "$ref": "#/components/schemas/Harness"
+        },
+        "harnessVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "minLength": 1
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "prompt": {
+          "$ref": "#/components/schemas/Prompt"
+        },
+        "credential": {
+          "$ref": "#/components/schemas/Channel.DispatchGrant"
+        },
+        "lastLineSeq": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "snapshots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.SnapshotDownload"
+          },
+          "maxItems": 1
+        },
+        "personaFiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.PersonaFileDownload"
+          },
+          "maxItems": 100
+        },
+        "image": {
+          "$ref": "#/components/schemas/Channel.BootImage"
+        },
+        "gitAuthorName": {
+          "$ref": "#/components/schemas/DisplayName"
+        },
+        "gitAuthorEmail": {
+          "$ref": "#/components/schemas/EmailAddress"
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays."
+        },
+        "turnSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds."
+        },
+        "idleSeconds": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "description": "The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy."
+        },
+        "boxMemoryMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 128,
+          "maximum": 65536,
+          "description": "The memory in MiB the box boots with: the persona's boxMemoryMib, or BoxMemoryLimit.DefaultMib. A box\nthat is already warm keeps the memory it booted with. A supervisor given an offer without it boots\nthe box with memoryMib of its runtime config."
+        },
+        "boxDiskMib": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 64,
+          "maximum": 262144,
+          "description": "The disk in MiB the box boots with: the persona's boxDiskMib, or BoxDiskLimit.DefaultMib. A box that\nis already warm keeps the disk it booted with. A supervisor given an offer without it boots the\nbox with overlayMib of its runtime config, and refuses the turn PoolExhausted when the disk does\nnot fit its disk budget."
+        },
+        "prebuildCommitSha": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "pattern": "^[0-9a-f]{40}$",
+          "description": "Set when the turn builds a prebuild: the box clones the repository at this commit and runs the\nrepository's setup step, /opt/tumpel/prebuild.mjs run, in place of the harness, its output lines\nbeing the turn's lines. The credential then holds only a GITHUB_TOKEN that reads the\nrepository's contents, and the snapshot the control plane asks for after the turn is the\nprebuild's layer."
+        }
+      },
+      "description": "The control plane offers a turn to the host. The host answers TurnClaim, or TurnFailed when it\ncannot run it. `lastLineSeq` is the session's last transcript line, so the box numbers the turn's\nfirst line `lastLineSeq` + 1. `snapshots` holds the session's latest stored snapshot, which a box\nthat boots cold restores from; it is empty for a session with none. `personaFiles` is the persona's file set as it stands when the offer is sent. `gitAuthorName` and\n`gitAuthorEmail` are the git identity the box commits as: the bot of the stage's GitHub App when the tenant\ninstalled it, else the GitHub user of the secret set's GITHUB_TOKEN, with its noreply address. `image` is the guest image\nthe box boots. A resend of the offer keeps its `seq` and carries a new `credential`, `lastLineSeq`,\n`snapshots`, `personaFiles`, `image` and git identity."
+    },
+    "Channel.TurnRepositoryCloneFailed": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId",
+        "cause",
+        "detail",
+        "failedAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnRepositoryCloneFailed"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "cause": {
+          "$ref": "#/components/schemas/RepositoryCloneFailureCause"
+        },
+        "detail": {
+          "$ref": "#/components/schemas/Detail"
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The box could not clone the session's repository; the turn fails RepositoryCloneFailed. `detail` carries what git reported."
+    },
+    "Channel.TurnRepositoryReady": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnRepositoryReady"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "The box holds the session's repository and the harness is about to get the prompt; the first-line budget starts here."
+    },
+    "Channel.TurnWithdrawn": {
+      "type": "object",
+      "required": [
+        "type",
+        "turnId"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TurnWithdrawn"
+          ]
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "Takes the place of an unacked TurnOffer when the control plane resends it after its turn left\nOffered, so the resend keeps every `seq` and no key reaches a turn that already ended. It is also\nthe answer to a TurnClaim for a turn that left Offered before the claim arrived: the host then\nhands the turn no prompt, keeps the box warm and reports nothing for the turn."
+    },
+    "Channel.Welcome": {
+      "type": "object",
+      "required": [
+        "type",
+        "hostId",
+        "protocolVersion"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Welcome"
+          ]
+        },
+        "hostId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "protocolVersion": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "ack": {
+          "$ref": "#/components/schemas/Sequence"
+        }
+      },
+      "description": "The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the\nhighest host `seq` the control plane has received with no gap before it. The host drops its\nunacked frames at or below it before it resends, so a frame the control plane took on an earlier\nconnection is never counted as undelivered. A control plane that leaves it out acks only with its\nnext frame."
+    },
+    "ClaudeSetupCodeText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "The sign-in code a person pastes after signing in at a Claude setup's signInUrl."
+    },
+    "ClaudeSetupFailureReason": {
+      "type": "string",
+      "enum": [
+        "SetupUrlMissing",
+        "CodeRejected",
+        "ClaudeCodeExited",
+        "SetupTimedOut",
+        "TokenNotStored",
+        "NoHostOnline",
+        "Superseded",
+        "RateLimited"
+      ],
+      "description": "Why a Claude setup ended Failed. Each reason names the phase it stopped in."
+    },
+    "ClaudeSetupHarness": {
+      "type": "string",
+      "enum": [
+        "ClaudeCode",
+        "Codex"
+      ],
+      "description": "The harness a Claude setup signs in to: Claude Code with claude setup-token, or Codex with codex login --device-auth."
+    },
+    "CredentialText": {
+      "type": "string",
+      "maxLength": 65536,
+      "description": "A credential file or a variable value a harness reads, such as an OAuth credentials JSON."
+    },
+    "Detail": {
+      "type": "string",
+      "maxLength": 16384,
+      "description": "What failed and what fixes it, a warning, or a description. It may carry the tail of a\nharness's output, which the harness caps well below this."
+    },
+    "DisplayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "EmailAddress": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 320
+    },
+    "EntityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "GuestProtocolRange": {
+      "type": "object",
+      "required": [
+        "guestProtocolOldest",
+        "guestProtocolVersion"
+      ],
+      "properties": {
+        "guestProtocolOldest": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "guestProtocolVersion": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        }
+      },
+      "description": "The guest protocol versions a host accepts from a box, from `guestProtocolOldest` to `guestProtocolVersion`."
+    },
+    "Harness": {
+      "type": "string",
+      "enum": [
+        "ClaudeCode",
+        "Codex",
+        "OpenCode",
+        "PiDev",
+        "MistralAgent"
+      ]
+    },
+    "HarnessVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "HostArchitecture": {
+      "type": "string",
+      "enum": [
+        "Amd64",
+        "Arm64"
+      ]
+    },
+    "HostReportedHealth": {
+      "type": "string",
+      "enum": [
+        "Healthy",
+        "RateLimited"
+      ],
+      "description": "The health a host reports of itself in its Heartbeat."
+    },
+    "HostUsage": {
+      "type": "object",
+      "required": [
+        "boxesWarm",
+        "loadAverage",
+        "memoryAvailableMib"
+      ],
+      "properties": {
+        "boxesWarm": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0
+        },
+        "loadAverage": {
+          "type": "number",
+          "format": "double",
+          "minimum": 0
+        },
+        "memoryAvailableMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "diskBudgetMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "diskHeldMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "memoryBudgetMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "memoryHeldMib": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        }
+      },
+      "description": "What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts\nthe paused boxes it holds, `loadAverage` is the one-minute load average of the host,\nand `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the\nhost gives box disks: the free disk under its dataDir and what its boxes already wrote, less the\nheadroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host\nadmits a box only while its disk fits the budget beside the held ones; a supervisor older than\nthe box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal\nless the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it\nholds. A host admits a box only while its memory fits the budget beside the held ones, whatever\ntheir count; a supervisor older than the memory budget sends neither."
+    },
+    "HttpUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 4096,
+      "description": "A URL the API checks as one."
+    },
+    "ImageHarness": {
+      "type": "string",
+      "enum": [
+        "ClaudeCode",
+        "Codex",
+        "OpenCode",
+        "PiDev",
+        "MistralAgent",
+        "Shell"
+      ],
+      "description": "The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot."
+    },
+    "LongText": {
+      "type": "string",
+      "maxLength": 1048576,
+      "description": "A line of harness output or a document such as a script or a devcontainer.json. The guest\nprotocol carries frames up to 4 MiB, but a single line past 1 MiB is refused instead of stored."
+    },
+    "MetricInstrument": {
+      "type": "object",
+      "required": [
+        "metric",
+        "unit",
+        "kind",
+        "description"
+      ],
+      "properties": {
+        "metric": {
+          "$ref": "#/components/schemas/MetricName"
+        },
+        "unit": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "minLength": 1
+        },
+        "kind": {
+          "$ref": "#/components/schemas/MetricKind"
+        },
+        "description": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Detail"
+            }
+          ],
+          "minLength": 1
+        }
+      },
+      "description": "A metric's declaration: its unit as OpenTelemetry writes it (s, MiB, {token}), its kind and what it measures."
+    },
+    "MetricKind": {
+      "type": "string",
+      "enum": [
+        "Turn",
+        "Sample"
+      ]
+    },
+    "MetricName": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$",
+      "description": "A metric name in the OpenTelemetry style: dotted lower-case segments, at most 64 characters."
+    },
+    "ModelName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "PathText": {
+      "type": "string",
+      "maxLength": 4096,
+      "description": "A file system path, a socket or an object storage key; 4096 is the Linux PATH_MAX."
+    },
+    "PersonaFilePath": {
+      "type": "string",
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$",
+      "description": "A path relative to the harness home in the box, such as .claude/settings.json. The harness catalog lists the paths each harness accepts."
+    },
+    "PersonaFileSize": {
+      "type": "integer",
+      "format": "int64",
+      "minimum": 0,
+      "maximum": 262144,
+      "description": "The size of a persona file in bytes, at most PersonaFileLimit.PersonaBytes."
+    },
+    "Prompt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100000
+    },
+    "ReleaseHarnessLayer": {
+      "type": "object",
+      "required": [
+        "harness",
+        "harnessVersion",
+        "architecture",
+        "layerDigest",
+        "manifestDigest",
+        "sizeBytes"
+      ],
+      "properties": {
+        "harness": {
+          "$ref": "#/components/schemas/ImageHarness"
+        },
+        "harnessVersion": {
+          "$ref": "#/components/schemas/HarnessVersion"
+        },
+        "architecture": {
+          "$ref": "#/components/schemas/HostArchitecture"
+        },
+        "layerDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "manifestDigest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
+      },
+      "description": "One harness layer of a release, for one harness version and architecture: a read-only squashfs\nimage compressed with zstd whose root is `/opt/harness/<harness>/<harnessVersion>` in the box.\nThe squashfs file and its HarnessLayerManifest document are stored under\n`layers/<harness>/<harnessVersion>/<arch>/<digest>` by `layerDigest` and `manifestDigest`.\n`sizeBytes` is the size of the squashfs file. A host attaches a layer only once its sha256\nmatches `layerDigest`."
+    },
+    "RepositoryCloneFailureCause": {
+      "type": "string",
+      "enum": [
+        "Refused",
+        "TimedOut",
+        "DirectoryNotEmpty",
+        "Other"
+      ],
+      "description": "Why the box could not clone the session's repository."
+    },
+    "RepositoryUrl": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "SamplePoint": {
+      "type": "object",
+      "required": [
+        "metric",
+        "at",
+        "value",
+        "dimensions"
+      ],
+      "properties": {
+        "metric": {
+          "$ref": "#/components/schemas/MetricName"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "value": {
+          "type": "number",
+          "format": "double"
+        },
+        "dimensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/components/schemas/ShortText"
+          },
+          "maxProperties": 32
+        }
+      },
+      "description": "One value of a Sample metric at a moment, with its dimensions."
+    },
+    "Sequence": {
+      "type": "integer",
+      "format": "int64",
+      "minimum": 0
+    },
+    "Sha256Digest": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "A lower-case hex SHA-256 digest: the name of a file in the image cache, or of a persona file blob."
+    },
+    "ShortText": {
+      "type": "string",
+      "maxLength": 256,
+      "description": "A short value: a name, a kind, a status, a version, a branch, a commit or an id another system issued."
+    },
+    "StorageKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "Summary": {
+      "type": "string",
+      "maxLength": 1024,
+      "description": "One line a person reads: a title, a client name, a cursor or an OAuth scope list."
+    },
+    "SupervisorUpdateFailureReason": {
+      "type": "string",
+      "enum": [
+        "SupervisorUpdateFetchFailed",
+        "SupervisorUpdateChecksumMismatch",
+        "SupervisorUpdateDryRunFailed",
+        "SupervisorUpdateStateUnreadable",
+        "SupervisorUpdateIdleTimedOut",
+        "SupervisorUpdateSwapFailed",
+        "SupervisorUpdateRolledBack"
+      ],
+      "description": "Why a supervisor update stopped. Every one but SupervisorUpdateRolledBack leaves the running binary in place."
+    },
+    "SupervisorUpdatePhase": {
+      "type": "string",
+      "enum": [
+        "Fetching",
+        "DryRunning",
+        "Staged",
+        "WaitingForIdle",
+        "Restarting",
+        "Online"
+      ],
+      "description": "The phase a supervisor update entered. Fetching downloads and verifies the candidate binary,\nDryRunning runs it with `check` beside the running binary and keeps it once it passes, Staged\nis what supervisors before the box handover send while a candidate waits for the host to run no\nbox, Restarting swaps the binaries, parks every running turn and execs the new one, which takes\nover the running boxes, and Online is the new binary reaching Welcome. WaitingForIdle is what supervisors before the idle claim send between DryRunning and\nRestarting; the control plane accepts it and records nothing."
+    },
+    "Token": {
+      "type": "string",
+      "maxLength": 16384,
+      "description": "A token, a key, a code, a nonce or a signature, as its issuer encodes it."
+    },
+    "TurnFailureReason": {
+      "type": "string",
+      "enum": [
+        "NotClaimed",
+        "Undelivered",
+        "NoFirstOutput",
+        "HostOffline",
+        "CredentialRefused",
+        "DispatchCredentialExpired",
+        "CredentialExpired",
+        "BoxBootFailed",
+        "PoolExhausted",
+        "HostDegraded",
+        "SnapshotUnreadable",
+        "HarnessExited",
+        "HarnessOutOfMemory",
+        "BoxDiskFull",
+        "HarnessExitedWithoutResult",
+        "TurnTimedOut",
+        "TranscriptGap",
+        "PersonaFileUnreadable",
+        "RepositoryCloneFailed",
+        "HarnessReportedError",
+        "CreditExhausted",
+        "RepositoryTokenRefused",
+        "ImageNotReleased",
+        "ImageFetchFailed",
+        "ImageFetchTimedOut",
+        "HostUpdating",
+        "BoxLost",
+        "HostDropped",
+        "HostRevoked",
+        "Cancelled",
+        "ConnectorDisconnected",
+        "SnapshotNotStored",
+        "RateLimited"
+      ],
+      "description": "Why a turn ended Failed. Each reason names the phase the turn stopped in."
+    },
+    "TurnPoint": {
+      "type": "object",
+      "required": [
+        "metric",
+        "at",
+        "value",
+        "dimensions",
+        "turnId",
+        "sessionId"
+      ],
+      "properties": {
+        "metric": {
+          "$ref": "#/components/schemas/MetricName"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "value": {
+          "type": "number",
+          "format": "double"
+        },
+        "dimensions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/components/schemas/ShortText"
+          },
+          "maxProperties": 32
+        },
+        "turnId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        }
+      },
+      "description": "One value of a Turn metric, with the turn and session it belongs to."
+    }
+  }
+}

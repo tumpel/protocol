@@ -59,7 +59,10 @@ model Challenge {
   it out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host
   accepts from a box. The control plane records both ranges and shows them on the host.
   `heldTurnIds` names the turns the host holds as it connects, as Heartbeat does; the control plane
-  fails each Running turn on the host that it does not name with HostDropped.
+  fails each Running turn on the host that it does not name with HostDropped. A version 34 Hello and
+  Heartbeat carry no `heldTurnIds`: the control plane decodes a 34 host with the version 34 types and
+  judges no turn of it against a held list. A host on 35 or later that settles on 34 sends the
+  version 34 shape, without `heldTurnIds`.
   """)
 model Hello {
   type: "Hello";

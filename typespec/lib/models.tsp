@@ -60,15 +60,19 @@ scalar Sha256Digest extends string;
 @doc("""
   A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
   the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-  connection that speaks another with UnsupportedVersion.
+  connection that speaks another with UnsupportedVersion. Version 34 lacks `heldTurnIds` on Hello
+  and Heartbeat and the TurnFailureReason members HostDropped and HostRevoked; version 35 lacks
+  HostRevoked. A speaker of 36 downgrades to 34 or 35 by sending that version's shape: it leaves
+  out the fields the version lacks and never sends a member it lacks. No host sends HostDropped or
+  HostRevoked, since the control plane records both, so the reason needs no mapping on the wire.
   """)
 @minValue(ChannelProtocolOldest)
 @maxValue(ChannelProtocolVersion)
 @TypeSpec.OpenAPI.extension("x-bound-names", #["Oldest", "Version"])
 scalar ChannelProtocol extends int32;
 
-const ChannelProtocolOldest = 35;
-const ChannelProtocolVersion = 35;
+const ChannelProtocolOldest = 34;
+const ChannelProtocolVersion = 36;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -197,9 +201,18 @@ enum HostHealth {
 
   @doc("The host went RateLimited three times within an hour. It gets no offers until a person restores it or the host reconnects with a new Hello.")
   Unhealthy: "Unhealthy",
+}
 
-  @doc("The host missed its heartbeat plus the grace period. It gets no offers until a heartbeat or a reconnect shows it is alive.")
+@doc("Whether the control plane has heard from a host lately, derived when read from the time of the host's latest Hello or Heartbeat. Nothing is written when it changes.")
+enum HostPresence {
+  @doc("The host sent a Hello or Heartbeat within the last 90 seconds and is not revoked. Only an Online host is placeable.")
+  Online: "Online",
+
+  @doc("The host sent a Hello once, but nothing in the last 90 seconds. It gets no offers, and its Offered and Running turns and its Starting, Running, Idle and Stopping sessions read Unknown until it reports again.")
   Degraded: "Degraded",
+
+  @doc("The host never sent a Hello, or it is revoked. It gets no offers.")
+  Offline: "Offline",
 }
 
 @doc("The health a host reports of itself in its Heartbeat.")
@@ -419,6 +432,9 @@ enum SessionState {
 
   @doc("The box could not clone the session's repository, and the failure of its last turn says why. The session takes no more turns; archive it and start a new session.")
   Failed: "Failed",
+
+  @doc("The host is Degraded; the last stored state is unknown until it reports again. A read-only projection of a Starting, Running, Idle or Stopping session, never stored; heardAt says when the host last reported.")
+  Unknown: "Unknown",
 }
 
 enum TurnState {
@@ -426,6 +442,9 @@ enum TurnState {
   Running: "Running",
   Completed: "Completed",
   Failed: "Failed",
+
+  @doc("The host is Degraded; the last stored state is unknown until it reports again. A read-only projection of an Offered or Running turn, never stored: on the host's next Hello or Heartbeat a turn the host still holds carries on, and one it no longer holds fails HostDropped.")
+  Unknown: "Unknown",
 }
 
 @doc("Why a turn ended Failed. Each reason names the phase the turn stopped in.")
@@ -503,6 +522,9 @@ enum TurnFailureReason {
 
   @doc("The host's Hello or Heartbeat did not name the turn among the turns it holds: a Running turn the host no longer runs, or an offer the host never took by the second Heartbeat after it was sent; the detail names the host. The control plane records it, so no host sends it.")
   HostDropped: "HostDropped",
+
+  @doc("A person revoked the turn's host while the turn was Offered or Running; the detail names the host. The control plane records it, so no host sends it.")
+  HostRevoked: "HostRevoked",
 
   @doc("A person stopped the session with cancelTurn while the turn was in flight or waiting, or cancelled the turn while it waited; the detail names who.")
   Cancelled: "Cancelled",
@@ -768,8 +790,8 @@ model OAuthGrant {
   lastIssuedAt: int64;
 }
 
-@doc("A machine the tenant owns, running the supervisor and enrolled to exactly one tenant.")
-model Host {
+@doc("The fields every host carries, whatever its presence.")
+model HostBase {
   @key @visibility(Lifecycle.Read) hostId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
   name: DisplayName;
@@ -814,6 +836,40 @@ model Host {
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
 
+@doc("A host that sent a Hello or Heartbeat within the last 90 seconds and is not revoked.")
+model OnlineHost {
+  ...HostBase;
+  @visibility(Lifecycle.Read) presence: HostPresence.Online;
+
+  @doc("When the host last sent a Hello or Heartbeat.")
+  @visibility(Lifecycle.Read)
+  heardAt: offsetDateTime;
+}
+
+@doc("A host that sent a Hello once, but nothing in the last 90 seconds.")
+model DegradedHost {
+  ...HostBase;
+  @visibility(Lifecycle.Read) presence: HostPresence.Degraded;
+
+  @doc("When the host last sent a Hello or Heartbeat.")
+  @visibility(Lifecycle.Read)
+  heardAt: offsetDateTime;
+}
+
+@doc("A host that never sent a Hello, or is revoked.")
+model OfflineHost {
+  ...HostBase;
+  @visibility(Lifecycle.Read) presence: HostPresence.Offline;
+}
+
+@doc("A machine the tenant owns, running the supervisor and enrolled to exactly one tenant, with its presence.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "presence" })
+union Host {
+  Online: OnlineHost,
+  Degraded: DegradedHost,
+  Offline: OfflineHost,
+}
+
 @doc("A one-time, tenant-scoped token that enrols one host before it expires.")
 model EnrolmentToken {
   @key @visibility(Lifecycle.Read) enrolmentTokenId: EntityId;
@@ -825,8 +881,8 @@ model EnrolmentToken {
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
 
-@doc("A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins.")
-model Session {
+@doc("The fields every session carries, whatever its state.")
+model SessionBase {
   @key @visibility(Lifecycle.Read) sessionId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
   @visibility(Lifecycle.Read) principalId: EntityId;
@@ -853,8 +909,6 @@ model Session {
   @visibility(Lifecycle.Read) harness: Harness;
   @visibility(Lifecycle.Read) harnessVersion: ShortText;
   `model`: ModelName;
-  @visibility(Lifecycle.Read) state: SessionState;
-
   @doc("The session's latest turn. A start offers the first turn together with the session, so every session has one.")
   @visibility(Lifecycle.Read)
   lastTurnId: EntityId;
@@ -888,6 +942,64 @@ model Session {
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
+}
+
+model StartingSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Starting;
+}
+
+model IdleSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Idle;
+}
+
+model RunningSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Running;
+}
+
+model StoppingSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Stopping;
+}
+
+model StoppedSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Stopped;
+}
+
+model ArchivedSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Archived;
+}
+
+model FailedSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Failed;
+}
+
+@doc("A Starting, Running, Idle or Stopping session whose host is Degraded, read in place of its stored state until the host reports again.")
+model UnknownSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Unknown;
+
+  @doc("When the session's host last sent a Hello or Heartbeat.")
+  @visibility(Lifecycle.Read)
+  heardAt: offsetDateTime;
+}
+
+@doc("A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
+union Session {
+  Starting: StartingSession,
+  Idle: IdleSession,
+  Running: RunningSession,
+  Stopping: StoppingSession,
+  Stopped: StoppedSession,
+  Archived: ArchivedSession,
+  Failed: FailedSession,
+  Unknown: UnknownSession,
 }
 
 @doc("The GitHub issue of the session's repository that the session was started from, and the branch its first prompt asks for.")
@@ -1025,6 +1137,18 @@ model FailedTurn {
   failedAt: offsetDateTime;
 }
 
+@doc("An Offered or Running turn whose host is Degraded, read in place of its stored state until the host reports again.")
+model UnknownTurn {
+  ...TurnBase;
+  state: TurnState.Unknown;
+
+  @doc("When the turn's host last sent a Hello or Heartbeat.")
+  heardAt: offsetDateTime;
+
+  @doc("Which host went silent and since when.")
+  detail: Detail;
+}
+
 @doc("One prompt and the harness's completion of it, run on a session's box.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
 union Turn {
@@ -1032,6 +1156,7 @@ union Turn {
   Running: RunningTurn,
   Completed: CompletedTurn,
   Failed: FailedTurn,
+  Unknown: UnknownTurn,
 }
 
 enum SteerState {
