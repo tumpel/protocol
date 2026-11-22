@@ -49895,7 +49895,7 @@ impl types::ChannelCloseCode {
     pub const UNSUPPORTED_VERSION: u16 = 4426;
 }
 impl types::ChannelProtocol {
-    pub const OLDEST: u16 = 18;
+    pub const OLDEST: u16 = 34;
     pub const VERSION: u16 = 34;
 }
 impl types::ChunkExchange {

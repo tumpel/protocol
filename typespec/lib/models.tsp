@@ -67,7 +67,7 @@ scalar Sha256Digest extends string;
 @TypeSpec.OpenAPI.extension("x-bound-names", #["Oldest", "Version"])
 scalar ChannelProtocol extends int32;
 
-const ChannelProtocolOldest = 18;
+const ChannelProtocolOldest = 34;
 const ChannelProtocolVersion = 34;
 
 @doc("""
