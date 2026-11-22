@@ -9670,6 +9670,7 @@
     "TenantApi.HostHelloInput": {
       "type": "object",
       "required": [
+        "tenantId",
         "hostId",
         "boxCapacity",
         "usage",
@@ -9678,6 +9679,9 @@
         "heldTurnIds"
       ],
       "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
         "hostId": {
           "$ref": "#/components/schemas/EntityId"
         },

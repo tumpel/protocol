@@ -29046,6 +29046,8 @@ pub mod types {
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub now: i64,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
         pub usage: HostUsage,
     }
     ///`TenantApiHostHelloRequest`

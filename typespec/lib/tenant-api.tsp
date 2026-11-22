@@ -932,6 +932,7 @@ model OfferSentInput {
 }
 
 model HostHelloInput {
+  tenantId: EntityId;
   hostId: EntityId;
   boxCapacity: int32;
   usage: HostUsage;
