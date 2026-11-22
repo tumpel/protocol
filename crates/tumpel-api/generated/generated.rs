@@ -372,9 +372,6 @@ pub mod types {
         ///Reading the paused box's drive until its files are cut into chunks in the chunk cache; SnapshotTimedOut. The chunk exchanges, the packing and the uploads run until the request's uploadExpiresAt; UploadExpired.
         #[serde(rename = "snapshotSeconds")]
         pub snapshot_seconds: ::std::num::NonZeroU32,
-        ///TurnStart until TurnEnd; TurnTimedOut.
-        #[serde(rename = "turnSeconds")]
-        pub turn_seconds: ::std::num::NonZeroU32,
     }
     ///The disk of a box in MiB, a sparse drive that costs the host only what the box writes. A persona
     ///that names no boxDiskMib runs its boxes with DefaultMib; one that names it may ask for up to MaxMib.
@@ -1050,6 +1047,9 @@ pub mod types {
         pub box_id: EntityId,
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
+        ///How long the person may take from the sign-in URL to submitting the code before the host fails the setup SetupTimedOut.
+        #[serde(rename = "codeSeconds")]
+        pub code_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1065,6 +1065,9 @@ pub mod types {
         pub token_url: HttpUrl,
         #[serde(rename = "type")]
         pub type_: ChannelClaudeSetupBoxOfferType,
+        ///How long the box may take from this offer to printing the sign-in URL before the host fails the setup SetupUrlMissing.
+        #[serde(rename = "urlSeconds")]
+        pub url_seconds: ::std::num::NonZeroU32,
     }
     ///`ChannelClaudeSetupBoxOfferTokenCredential`
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -2529,6 +2532,9 @@ pub mod types {
         ///The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub health: ::std::option::Option<HostReportedHealth>,
+        ///The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name.
+        #[serde(rename = "heldClaudeSetupIds")]
+        pub held_claude_setup_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "heldSessionIds")]
         pub held_session_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "sentAt")]
@@ -4262,6 +4268,9 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
+        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         pub credential: ChannelDispatchGrant,
         #[serde(rename = "gitAuthorEmail")]
         pub git_author_email: EmailAddress,
@@ -4285,6 +4294,9 @@ pub mod types {
         pub snapshots: ::std::vec::Vec<ChannelSnapshotDownload>,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
+        ///How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.
+        #[serde(rename = "turnSeconds")]
+        pub turn_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "type")]
         pub type_: ChannelTurnOfferType,
     }
@@ -12019,7 +12031,7 @@ pub mod types {
         pub repository: RepositoryUrl,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
-        ///The host's turn budget, budgets.turnSeconds of its runtime config, which the guest names to the harness beside the box's memory, disk and CPUs.
+        ///The turn budget, the TurnOffer's turnSeconds, which the guest names to the harness beside the box's memory, disk and CPUs.
         #[serde(rename = "turnSeconds", skip_serializing_if = "::std::option::Option::is_none")]
         pub turn_seconds: ::std::option::Option<::std::num::NonZeroU32>,
         #[serde(rename = "type")]
@@ -12783,6 +12795,7 @@ pub mod types {
         Healthy,
         RateLimited,
         Unhealthy,
+        Degraded,
     }
     impl ::std::fmt::Display for HostHealth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12790,6 +12803,7 @@ pub mod types {
                 Self::Healthy => f.write_str("Healthy"),
                 Self::RateLimited => f.write_str("RateLimited"),
                 Self::Unhealthy => f.write_str("Unhealthy"),
+                Self::Degraded => f.write_str("Degraded"),
             }
         }
     }
@@ -12800,6 +12814,7 @@ pub mod types {
                 "Healthy" => Ok(Self::Healthy),
                 "RateLimited" => Ok(Self::RateLimited),
                 "Unhealthy" => Ok(Self::Unhealthy),
+                "Degraded" => Ok(Self::Degraded),
                 _ => Err("invalid value".into()),
             }
         }
@@ -18787,6 +18802,7 @@ pub mod types {
         HostRevoked,
         NoHostAvailable,
         PoolExhausted,
+        HostDegraded,
         HostOffline,
         HarnessNotInCatalog,
         NoCredential,
@@ -18880,6 +18896,7 @@ pub mod types {
                 Self::HostRevoked => f.write_str("HostRevoked"),
                 Self::NoHostAvailable => f.write_str("NoHostAvailable"),
                 Self::PoolExhausted => f.write_str("PoolExhausted"),
+                Self::HostDegraded => f.write_str("HostDegraded"),
                 Self::HostOffline => f.write_str("HostOffline"),
                 Self::HarnessNotInCatalog => f.write_str("HarnessNotInCatalog"),
                 Self::NoCredential => f.write_str("NoCredential"),
@@ -18970,6 +18987,7 @@ pub mod types {
                 "HostRevoked" => Ok(Self::HostRevoked),
                 "NoHostAvailable" => Ok(Self::NoHostAvailable),
                 "PoolExhausted" => Ok(Self::PoolExhausted),
+                "HostDegraded" => Ok(Self::HostDegraded),
                 "HostOffline" => Ok(Self::HostOffline),
                 "HarnessNotInCatalog" => Ok(Self::HarnessNotInCatalog),
                 "NoCredential" => Ok(Self::NoCredential),
@@ -24138,6 +24156,9 @@ pub mod types {
     pub struct SupervisorHandoverBox {
         #[serde(rename = "boxId")]
         pub box_id: EntityId,
+        ///What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm one until the session stops.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<CredentialText>,
         pub dirty: bool,
@@ -41202,6 +41223,9 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
+        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: TenantApiStoredTurnOfferHarnessVersion,
@@ -41214,6 +41238,9 @@ pub mod types {
         pub session_id: EntityId,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
+        ///How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.
+        #[serde(rename = "turnSeconds")]
+        pub turn_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "type")]
         pub type_: TenantApiStoredTurnOfferType,
     }
@@ -42146,7 +42173,6 @@ pub mod types {
         SteerTurnRequest(TenantApiSteerTurnRequest),
         ListSteersRequest(TenantApiListSteersRequest),
         TakeSteersRequest(TenantApiTakeSteersRequest),
-        WaitTurnsRequest(TenantApiWaitTurnsRequest),
         ListEventsRequest(TenantApiListEventsRequest),
         ListWebhookEndpointsRequest(TenantApiListWebhookEndpointsRequest),
         CreateWebhookEndpointRequest(TenantApiCreateWebhookEndpointRequest),
@@ -42624,11 +42650,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiTakeSteersRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiTakeSteersRequest) -> Self {
             Self::TakeSteersRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiWaitTurnsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiWaitTurnsRequest) -> Self {
-            Self::WaitTurnsRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiListEventsRequest> for TenantApiTenantRequest {
@@ -44080,45 +44101,6 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiTurnStrandedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiTurnsRead`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiTurnsRead {
-        pub kind: TenantApiTurnsReadKind,
-        pub turns: ::std::vec::Vec<Turn>,
-    }
-    ///`TenantApiTurnsReadKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiTurnsReadKind {
-        Read,
-    }
-    impl ::std::fmt::Display for TenantApiTurnsReadKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Read => f.write_str("Read"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiTurnsReadKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Read" => Ok(Self::Read),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiTurnsReadKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTurnsReadKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -45587,120 +45569,6 @@ pub mod types {
         pub subtype_0: ::std::option::Option<TenantApiGitHubActionsUploadTarget>,
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
         pub subtype_1: ::std::option::Option<TenantApiCircleCiUploadTarget>,
-    }
-    ///`TenantApiWaitTurnsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsInput {
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "timeoutSeconds")]
-        pub timeout_seconds: i32,
-        #[serde(rename = "turnIds")]
-        pub turn_ids: ::std::vec::Vec<EntityId>,
-    }
-    ///`TenantApiWaitTurnsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsRequest {
-        pub input: TenantApiWaitTurnsInput,
-        pub operation: TenantApiWaitTurnsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiWaitTurnsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiWaitTurnsRequestOperation {
-        #[serde(rename = "waitTurns")]
-        WaitTurns,
-    }
-    impl ::std::fmt::Display for TenantApiWaitTurnsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::WaitTurns => f.write_str("waitTurns"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiWaitTurnsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "waitTurns" => Ok(Self::WaitTurns),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiWaitTurnsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiWaitTurnsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiWaitTurnsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsResult {
-        pub waited: TenantApiWaitTurnsResultWaited,
-    }
-    ///`TenantApiWaitTurnsResultWaited`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiWaitTurnsResultWaited {
-        TurnsRead(TenantApiTurnsRead),
-        WaitedTurnNotFound(TenantApiWaitedTurnNotFound),
-    }
-    impl ::std::convert::From<TenantApiTurnsRead> for TenantApiWaitTurnsResultWaited {
-        fn from(value: TenantApiTurnsRead) -> Self {
-            Self::TurnsRead(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiWaitedTurnNotFound> for TenantApiWaitTurnsResultWaited {
-        fn from(value: TenantApiWaitedTurnNotFound) -> Self {
-            Self::WaitedTurnNotFound(value)
-        }
-    }
-    ///`TenantApiWaitedTurnNotFound`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitedTurnNotFound {
-        pub kind: TenantApiWaitedTurnNotFoundKind,
-        #[serde(rename = "turnId")]
-        pub turn_id: EntityId,
-    }
-    ///`TenantApiWaitedTurnNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiWaitedTurnNotFoundKind {
-        NotFound,
-    }
-    impl ::std::fmt::Display for TenantApiWaitedTurnNotFoundKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotFound => f.write_str("NotFound"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiWaitedTurnNotFoundKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotFound" => Ok(Self::NotFound),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiWaitedTurnNotFoundKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiWaitedTurnNotFoundKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
     }
     ///`TenantApiWorkflowRunReportedInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -47188,6 +47056,7 @@ pub mod types {
         CredentialExpired,
         BoxBootFailed,
         PoolExhausted,
+        HostDegraded,
         SnapshotUnreadable,
         HarnessExited,
         HarnessOutOfMemory,
@@ -47222,6 +47091,7 @@ pub mod types {
                 Self::CredentialExpired => f.write_str("CredentialExpired"),
                 Self::BoxBootFailed => f.write_str("BoxBootFailed"),
                 Self::PoolExhausted => f.write_str("PoolExhausted"),
+                Self::HostDegraded => f.write_str("HostDegraded"),
                 Self::SnapshotUnreadable => f.write_str("SnapshotUnreadable"),
                 Self::HarnessExited => f.write_str("HarnessExited"),
                 Self::HarnessOutOfMemory => f.write_str("HarnessOutOfMemory"),
@@ -47259,6 +47129,7 @@ pub mod types {
                 "CredentialExpired" => Ok(Self::CredentialExpired),
                 "BoxBootFailed" => Ok(Self::BoxBootFailed),
                 "PoolExhausted" => Ok(Self::PoolExhausted),
+                "HostDegraded" => Ok(Self::HostDegraded),
                 "SnapshotUnreadable" => Ok(Self::SnapshotUnreadable),
                 "HarnessExited" => Ok(Self::HarnessExited),
                 "HarnessOutOfMemory" => Ok(Self::HarnessOutOfMemory),
@@ -55763,60 +55634,6 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Waits until one of the turns is Completed or Failed, or until timeoutSeconds pass, then reads
-    ///every turn in the order asked; answers at once when one has already ended. Refused NotFound,
-    ///naming the turn, when a turnId names no turn of the tenant.
-    ///
-    ///Sends a `GET` request to `/v1/turns/wait`
-    ///
-    ///Arguments:
-    ///- `timeout_seconds`: The most seconds to wait for one of the turns to end.
-    ///- `turn_id`: A turn to wait on; repeat it to wait on several turns of any of the tenant's sessions.
-    pub async fn turns_wait<'a>(
-        &'a self,
-        timeout_seconds: i32,
-        turn_id: &'a ::std::vec::Vec<types::EntityId>,
-    ) -> Result<ResponseValue<::std::vec::Vec<types::Turn>>, Error<types::Problem>> {
-        let url = format!("{}/v1/turns/wait", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .query(&progenitor_client::QueryParam::new("timeoutSeconds", &timeout_seconds))
-            .query(&progenitor_client::QueryParam::new("turnId", &turn_id))
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "turns_wait",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
     ///Reads one turn; its state is Offered, Running, Completed or Failed.
     ///
     ///Sends a `GET` request to `/v1/turns/{turnId}`
@@ -56472,7 +56289,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 18;
-    pub const VERSION: u16 = 32;
+    pub const VERSION: u16 = 33;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
@@ -56487,5 +56304,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 15;
+    pub const VERSION: u16 = 16;
 }

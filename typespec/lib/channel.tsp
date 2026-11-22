@@ -166,6 +166,10 @@ model HostHeartbeat {
   usage: HostUsage;
   @maxItems(1000) heldSessionIds: EntityId[];
 
+  @doc("The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name.")
+  @maxItems(1000)
+  heldClaudeSetupIds: EntityId[];
+
   @doc("The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.")
   health?: HostReportedHealth;
 }
@@ -354,6 +358,13 @@ model TurnOffer {
   image: BootImage;
   gitAuthorName: DisplayName;
   gitAuthorEmail: EmailAddress;
+
+  @doc("What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout.")
+  boxRetention: BoxRetention;
+
+  @doc("How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.")
+  @minValue(1)
+  turnSeconds: int32;
 
   @doc("""
     The memory in MiB the box boots with: the persona's boxMemoryMib, or BoxMemoryLimit.DefaultMib. A box
@@ -722,6 +733,16 @@ model ClaudeSetupBoxOffer {
   tokenUrl: HttpUrl;
   @minLength(43) tokenCredential: Token;
   expiresAt: offsetDateTime;
+
+  @doc("How long the box may take from this offer to printing the sign-in URL before the host fails the setup SetupUrlMissing.")
+  @minValue(1)
+  @maxValue(3600)
+  urlSeconds: int32;
+
+  @doc("How long the person may take from the sign-in URL to submitting the code before the host fails the setup SetupTimedOut.")
+  @minValue(1)
+  @maxValue(3600)
+  codeSeconds: int32;
 }
 
 @doc("""

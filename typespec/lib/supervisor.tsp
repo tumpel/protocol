@@ -133,6 +133,10 @@ model SupervisorHandoverBox {
   image: SupervisorHandoverImage;
   dirty: boolean;
   credentialFile?: CredentialText;
+
+  @doc("What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm one until the session stops.")
+  boxRetention: BoxRetention;
+
   state: SupervisorHandoverBoxState;
   @maxItems(1000) queued: SupervisorHandoverCommand[];
 }
@@ -372,10 +376,6 @@ model BoxBudgets {
   @minValue(1)
   firstLineSeconds: int32;
 
-  @doc("TurnStart until TurnEnd; TurnTimedOut.")
-  @minValue(1)
-  turnSeconds: int32;
-
   @doc("Reading the paused box's drive until its files are cut into chunks in the chunk cache; SnapshotTimedOut. The chunk exchanges, the packing and the uploads run until the request's uploadExpiresAt; UploadExpired.")
   @minValue(1)
   snapshotSeconds: int32;
@@ -480,7 +480,7 @@ model GuestTurnStart {
   @pattern("^[0-9a-f]{40}$")
   prebuildCommitSha?: ShortText;
 
-  @doc("The host's turn budget, budgets.turnSeconds of its runtime config, which the guest names to the harness beside the box's memory, disk and CPUs.")
+  @doc("The turn budget, the TurnOffer's turnSeconds, which the guest names to the harness beside the box's memory, disk and CPUs.")
   @minValue(1)
   turnSeconds?: int32;
 }
