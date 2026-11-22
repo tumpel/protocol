@@ -44395,26 +44395,25 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Starting") => match ::serde_json::from_value::<ClaudeSetupStarting>(value.clone()) {
-                    Ok(known) => Self::Starting(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("AwaitingCode") => match ::serde_json::from_value::<ClaudeSetupAwaitingCode>(value.clone()) {
-                    Ok(known) => Self::AwaitingCode(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Minting") => match ::serde_json::from_value::<ClaudeSetupMinting>(value.clone()) {
-                    Ok(known) => Self::Minting(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Completed") => match ::serde_json::from_value::<ClaudeSetupCompleted>(value.clone()) {
-                    Ok(known) => Self::Completed(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Failed") => match ::serde_json::from_value::<ClaudeSetupFailed>(value.clone()) {
-                    Ok(known) => Self::Failed(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Starting") => Self::Starting(
+                    ::serde_json::from_value::<ClaudeSetupStarting>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("AwaitingCode") => Self::AwaitingCode(
+                    ::serde_json::from_value::<ClaudeSetupAwaitingCode>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Minting") => Self::Minting(
+                    ::serde_json::from_value::<ClaudeSetupMinting>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Completed") => Self::Completed(
+                    ::serde_json::from_value::<ClaudeSetupCompleted>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Failed") => Self::Failed(
+                    ::serde_json::from_value::<ClaudeSetupFailed>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44426,14 +44425,12 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("source").and_then(::serde_json::Value::as_str) {
-                Some("Inline") => match ::serde_json::from_value::<InlineConfigFile>(value.clone()) {
-                    Ok(known) => Self::InlineConfigFile(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Stored") => match ::serde_json::from_value::<StoredConfigFile>(value.clone()) {
-                    Ok(known) => Self::StoredConfigFile(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Inline") => Self::InlineConfigFile(
+                    ::serde_json::from_value::<InlineConfigFile>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Stored") => Self::StoredConfigFile(
+                    ::serde_json::from_value::<StoredConfigFile>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44445,18 +44442,17 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Variable") => match ::serde_json::from_value::<ConfigSecretVariable>(value.clone()) {
-                    Ok(known) => Self::SecretVariable(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("ApiKey") => match ::serde_json::from_value::<ConfigApiKey>(value.clone()) {
-                    Ok(known) => Self::ApiKey(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("SubscriptionToken") => match ::serde_json::from_value::<ConfigSubscriptionToken>(value.clone()) {
-                    Ok(known) => Self::SubscriptionToken(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Variable") => Self::SecretVariable(
+                    ::serde_json::from_value::<ConfigSecretVariable>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("ApiKey") => Self::ApiKey(
+                    ::serde_json::from_value::<ConfigApiKey>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SubscriptionToken") => Self::SubscriptionToken(
+                    ::serde_json::from_value::<ConfigSubscriptionToken>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44468,18 +44464,18 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Connected") => match ::serde_json::from_value::<ConnectedConnection>(value.clone()) {
-                    Ok(known) => Self::ConnectedConnection(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("NotConnected") => match ::serde_json::from_value::<NotConnectedConnection>(value.clone()) {
-                    Ok(known) => Self::NotConnectedConnection(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("NotConfigured") => match ::serde_json::from_value::<NotConfiguredConnection>(value.clone()) {
-                    Ok(known) => Self::NotConfiguredConnection(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Connected") => Self::ConnectedConnection(
+                    ::serde_json::from_value::<ConnectedConnection>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("NotConnected") => Self::NotConnectedConnection(
+                    ::serde_json::from_value::<NotConnectedConnection>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("NotConfigured") => Self::NotConfiguredConnection(
+                    ::serde_json::from_value::<NotConfiguredConnection>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44491,14 +44487,12 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("auth").and_then(::serde_json::Value::as_str) {
-                Some("Static") => match ::serde_json::from_value::<StaticConnector>(value.clone()) {
-                    Ok(known) => Self::StaticConnector(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("OAuth") => match ::serde_json::from_value::<OAuthConnector>(value.clone()) {
-                    Ok(known) => Self::OAuthConnector(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Static") => Self::StaticConnector(
+                    ::serde_json::from_value::<StaticConnector>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("OAuth") => Self::OAuthConnector(
+                    ::serde_json::from_value::<OAuthConnector>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44510,24 +44504,22 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("NotConnected") => match ::serde_json::from_value::<ConnectorNotConnected>(value.clone()) {
-                    Ok(known) => Self::NotConnected(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Connected") => match ::serde_json::from_value::<ConnectorConnected>(value.clone()) {
-                    Ok(known) => Self::Connected(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Disconnected") => match ::serde_json::from_value::<ConnectorDisconnected>(value.clone()) {
-                    Ok(known) => Self::Disconnected(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("AuthorizationFailed") => {
-                    match ::serde_json::from_value::<ConnectorAuthorizationFailed>(value.clone()) {
-                        Ok(known) => Self::AuthorizationFailed(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
+                Some("NotConnected") => Self::NotConnected(
+                    ::serde_json::from_value::<ConnectorNotConnected>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Connected") => Self::Connected(
+                    ::serde_json::from_value::<ConnectorConnected>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Disconnected") => Self::Disconnected(
+                    ::serde_json::from_value::<ConnectorDisconnected>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("AuthorizationFailed") => Self::AuthorizationFailed(
+                    ::serde_json::from_value::<ConnectorAuthorizationFailed>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44539,14 +44531,12 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Ready") => match ::serde_json::from_value::<GitHubAppReady>(value.clone()) {
-                    Ok(known) => Self::Ready(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("AppMissing") => match ::serde_json::from_value::<GitHubAppMissing>(value.clone()) {
-                    Ok(known) => Self::Missing(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Ready") => Self::Ready(
+                    ::serde_json::from_value::<GitHubAppReady>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("AppMissing") => Self::Missing(
+                    ::serde_json::from_value::<GitHubAppMissing>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44558,22 +44548,20 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("type").and_then(::serde_json::Value::as_str) {
-                Some("TurnStart") => match ::serde_json::from_value::<GuestTurnStart>(value.clone()) {
-                    Ok(known) => Self::TurnStart(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("TurnCancel") => match ::serde_json::from_value::<GuestTurnCancel>(value.clone()) {
-                    Ok(known) => Self::TurnCancel(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("ClaudeSetupStart") => match ::serde_json::from_value::<GuestClaudeSetupStart>(value.clone()) {
-                    Ok(known) => Self::ClaudeSetupStart(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("ClaudeSetupCode") => match ::serde_json::from_value::<GuestClaudeSetupCode>(value.clone()) {
-                    Ok(known) => Self::ClaudeSetupCode(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("TurnStart") => Self::TurnStart(
+                    ::serde_json::from_value::<GuestTurnStart>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("TurnCancel") => Self::TurnCancel(
+                    ::serde_json::from_value::<GuestTurnCancel>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("ClaudeSetupStart") => Self::ClaudeSetupStart(
+                    ::serde_json::from_value::<GuestClaudeSetupStart>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("ClaudeSetupCode") => Self::ClaudeSetupCode(
+                    ::serde_json::from_value::<GuestClaudeSetupCode>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44585,42 +44573,35 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("type").and_then(::serde_json::Value::as_str) {
-                Some("GuestHello") => match ::serde_json::from_value::<GuestHello>(value.clone()) {
-                    Ok(known) => Self::Hello(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("TurnRepositoryReady") => {
-                    match ::serde_json::from_value::<GuestTurnRepositoryReady>(value.clone()) {
-                        Ok(known) => Self::TurnRepositoryReady(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
-                Some("TurnLine") => match ::serde_json::from_value::<GuestTurnLine>(value.clone()) {
-                    Ok(known) => Self::TurnLine(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("TurnRepositoryCloneFailed") => {
-                    match ::serde_json::from_value::<GuestTurnRepositoryCloneFailed>(value.clone()) {
-                        Ok(known) => Self::TurnRepositoryCloneFailed(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
-                Some("TurnEnd") => match ::serde_json::from_value::<GuestTurnEnd>(value.clone()) {
-                    Ok(known) => Self::TurnEnd(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("ClaudeSetupUrl") => match ::serde_json::from_value::<GuestClaudeSetupUrl>(value.clone()) {
-                    Ok(known) => Self::ClaudeSetupUrl(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("ClaudeSetupStored") => match ::serde_json::from_value::<GuestClaudeSetupStored>(value.clone()) {
-                    Ok(known) => Self::ClaudeSetupStored(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("ClaudeSetupFailed") => match ::serde_json::from_value::<GuestClaudeSetupFailed>(value.clone()) {
-                    Ok(known) => Self::ClaudeSetupFailed(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("GuestHello") => Self::Hello(
+                    ::serde_json::from_value::<GuestHello>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("TurnRepositoryReady") => Self::TurnRepositoryReady(
+                    ::serde_json::from_value::<GuestTurnRepositoryReady>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("TurnLine") => Self::TurnLine(
+                    ::serde_json::from_value::<GuestTurnLine>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("TurnRepositoryCloneFailed") => Self::TurnRepositoryCloneFailed(
+                    ::serde_json::from_value::<GuestTurnRepositoryCloneFailed>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("TurnEnd") => Self::TurnEnd(
+                    ::serde_json::from_value::<GuestTurnEnd>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("ClaudeSetupUrl") => Self::ClaudeSetupUrl(
+                    ::serde_json::from_value::<GuestClaudeSetupUrl>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("ClaudeSetupStored") => Self::ClaudeSetupStored(
+                    ::serde_json::from_value::<GuestClaudeSetupStored>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("ClaudeSetupFailed") => Self::ClaudeSetupFailed(
+                    ::serde_json::from_value::<GuestClaudeSetupFailed>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44632,14 +44613,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("NotReported") => match ::serde_json::from_value::<HostProtocolNotReported>(value.clone()) {
-                    Ok(known) => Self::ProtocolNotReported(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Reported") => match ::serde_json::from_value::<HostChannelProtocolReported>(value.clone()) {
-                    Ok(known) => Self::ChannelProtocolReported(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("NotReported") => Self::ProtocolNotReported(
+                    ::serde_json::from_value::<HostProtocolNotReported>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Reported") => Self::ChannelProtocolReported(
+                    ::serde_json::from_value::<HostChannelProtocolReported>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44651,14 +44632,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("NotReported") => match ::serde_json::from_value::<HostProtocolNotReported>(value.clone()) {
-                    Ok(known) => Self::ProtocolNotReported(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Reported") => match ::serde_json::from_value::<HostGuestProtocolReported>(value.clone()) {
-                    Ok(known) => Self::GuestProtocolReported(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("NotReported") => Self::ProtocolNotReported(
+                    ::serde_json::from_value::<HostProtocolNotReported>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Reported") => Self::GuestProtocolReported(
+                    ::serde_json::from_value::<HostGuestProtocolReported>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44670,14 +44651,13 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Npm") => match ::serde_json::from_value::<NpmInstallRecipe>(value.clone()) {
-                    Ok(known) => Self::NpmInstallRecipe(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Archive") => match ::serde_json::from_value::<ArchiveInstallRecipe>(value.clone()) {
-                    Ok(known) => Self::ArchiveInstallRecipe(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Npm") => Self::NpmInstallRecipe(
+                    ::serde_json::from_value::<NpmInstallRecipe>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Archive") => Self::ArchiveInstallRecipe(
+                    ::serde_json::from_value::<ArchiveInstallRecipe>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44689,16 +44669,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Listed") => match ::serde_json::from_value::<ModelSupportListed>(value.clone()) {
-                    Ok(known) => Self::Listed(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("ProviderChecked") => {
-                    match ::serde_json::from_value::<ModelSupportProviderChecked>(value.clone()) {
-                        Ok(known) => Self::ProviderChecked(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
+                Some("Listed") => Self::Listed(
+                    ::serde_json::from_value::<ModelSupportListed>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("ProviderChecked") => Self::ProviderChecked(
+                    ::serde_json::from_value::<ModelSupportProviderChecked>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44710,16 +44688,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("grant_type").and_then(::serde_json::Value::as_str) {
-                Some("authorization_code") => {
-                    match ::serde_json::from_value::<OAuthAuthorizationCodeRequest>(value.clone()) {
-                        Ok(known) => Self::AuthorizationCodeRequest(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
-                Some("refresh_token") => match ::serde_json::from_value::<OAuthRefreshTokenRequest>(value.clone()) {
-                    Ok(known) => Self::RefreshTokenRequest(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("authorization_code") => Self::AuthorizationCodeRequest(
+                    ::serde_json::from_value::<OAuthAuthorizationCodeRequest>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("refresh_token") => Self::RefreshTokenRequest(
+                    ::serde_json::from_value::<OAuthRefreshTokenRequest>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44731,28 +44707,22 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("AwaitingCallback") => {
-                    match ::serde_json::from_value::<OpenRouterAuthorizationAwaitingCallback>(value.clone()) {
-                        Ok(known) => Self::AwaitingCallback(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
-                Some("Exchanging") => {
-                    match ::serde_json::from_value::<OpenRouterAuthorizationExchanging>(value.clone()) {
-                        Ok(known) => Self::Exchanging(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
-                Some("Completed") => {
-                    match ::serde_json::from_value::<OpenRouterAuthorizationCompleted>(value.clone()) {
-                        Ok(known) => Self::Completed(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
-                Some("Failed") => match ::serde_json::from_value::<OpenRouterAuthorizationFailed>(value.clone()) {
-                    Ok(known) => Self::Failed(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("AwaitingCallback") => Self::AwaitingCallback(
+                    ::serde_json::from_value::<OpenRouterAuthorizationAwaitingCallback>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Exchanging") => Self::Exchanging(
+                    ::serde_json::from_value::<OpenRouterAuthorizationExchanging>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Completed") => Self::Completed(
+                    ::serde_json::from_value::<OpenRouterAuthorizationCompleted>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Failed") => Self::Failed(
+                    ::serde_json::from_value::<OpenRouterAuthorizationFailed>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44764,14 +44734,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("source").and_then(::serde_json::Value::as_str) {
-                Some("Inline") => match ::serde_json::from_value::<InlinePersonaFileRead>(value.clone()) {
-                    Ok(known) => Self::InlinePersonaFileRead(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Stored") => match ::serde_json::from_value::<StoredPersonaFileRead>(value.clone()) {
-                    Ok(known) => Self::StoredPersonaFileRead(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Inline") => Self::InlinePersonaFileRead(
+                    ::serde_json::from_value::<InlinePersonaFileRead>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Stored") => Self::StoredPersonaFileRead(
+                    ::serde_json::from_value::<StoredPersonaFileRead>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44783,18 +44753,18 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Put") => match ::serde_json::from_value::<PutPersonaFilePatch>(value.clone()) {
-                    Ok(known) => Self::PutPersonaFilePatch(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Remove") => match ::serde_json::from_value::<RemovePersonaFilePatch>(value.clone()) {
-                    Ok(known) => Self::RemovePersonaFilePatch(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Edit") => match ::serde_json::from_value::<EditPersonaFilePatch>(value.clone()) {
-                    Ok(known) => Self::EditPersonaFilePatch(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Put") => Self::PutPersonaFilePatch(
+                    ::serde_json::from_value::<PutPersonaFilePatch>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Remove") => Self::RemovePersonaFilePatch(
+                    ::serde_json::from_value::<RemovePersonaFilePatch>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Edit") => Self::EditPersonaFilePatch(
+                    ::serde_json::from_value::<EditPersonaFilePatch>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44806,14 +44776,12 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("source").and_then(::serde_json::Value::as_str) {
-                Some("Inline") => match ::serde_json::from_value::<InlinePersonaFile>(value.clone()) {
-                    Ok(known) => Self::InlinePersonaFile(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Stored") => match ::serde_json::from_value::<StoredPersonaFile>(value.clone()) {
-                    Ok(known) => Self::StoredPersonaFile(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Inline") => Self::InlinePersonaFile(
+                    ::serde_json::from_value::<InlinePersonaFile>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Stored") => Self::StoredPersonaFile(
+                    ::serde_json::from_value::<StoredPersonaFile>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44825,16 +44793,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("source").and_then(::serde_json::Value::as_str) {
-                Some("RepositoryFile") => {
-                    match ::serde_json::from_value::<PrebuildPreviewOfRepository>(value.clone()) {
-                        Ok(known) => Self::Repository(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
-                Some("Supplied") => match ::serde_json::from_value::<PrebuildPreviewOfSupplied>(value.clone()) {
-                    Ok(known) => Self::Supplied(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("RepositoryFile") => Self::Repository(
+                    ::serde_json::from_value::<PrebuildPreviewOfRepository>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Supplied") => Self::Supplied(
+                    ::serde_json::from_value::<PrebuildPreviewOfSupplied>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44846,26 +44812,23 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Dispatched") => match ::serde_json::from_value::<PrebuildDispatched>(value.clone()) {
-                    Ok(known) => Self::Dispatched(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Building") => match ::serde_json::from_value::<PrebuildBuilding>(value.clone()) {
-                    Ok(known) => Self::Building(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Converting") => match ::serde_json::from_value::<PrebuildConverting>(value.clone()) {
-                    Ok(known) => Self::Converting(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Done") => match ::serde_json::from_value::<PrebuildDone>(value.clone()) {
-                    Ok(known) => Self::Done(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Failed") => match ::serde_json::from_value::<PrebuildFailed>(value.clone()) {
-                    Ok(known) => Self::Failed(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Dispatched") => Self::Dispatched(
+                    ::serde_json::from_value::<PrebuildDispatched>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Building") => Self::Building(
+                    ::serde_json::from_value::<PrebuildBuilding>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Converting") => Self::Converting(
+                    ::serde_json::from_value::<PrebuildConverting>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Done") => Self::Done(
+                    ::serde_json::from_value::<PrebuildDone>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Failed") => Self::Failed(
+                    ::serde_json::from_value::<PrebuildFailed>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44877,22 +44840,19 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Variable") => match ::serde_json::from_value::<SecretVariableKey>(value.clone()) {
-                    Ok(known) => Self::SecretVariableKey(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("ApiKey") => match ::serde_json::from_value::<ApiKeyKey>(value.clone()) {
-                    Ok(known) => Self::ApiKeyKey(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("SubscriptionToken") => match ::serde_json::from_value::<SubscriptionTokenKey>(value.clone()) {
-                    Ok(known) => Self::SubscriptionTokenKey(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("CredentialFile") => match ::serde_json::from_value::<CredentialFileKey>(value.clone()) {
-                    Ok(known) => Self::CredentialFileKey(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Variable") => Self::SecretVariableKey(
+                    ::serde_json::from_value::<SecretVariableKey>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("ApiKey") => Self::ApiKeyKey(
+                    ::serde_json::from_value::<ApiKeyKey>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SubscriptionToken") => Self::SubscriptionTokenKey(
+                    ::serde_json::from_value::<SubscriptionTokenKey>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("CredentialFile") => Self::CredentialFileKey(
+                    ::serde_json::from_value::<CredentialFileKey>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44904,22 +44864,21 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Variable") => match ::serde_json::from_value::<SecretVariableUpdate>(value.clone()) {
-                    Ok(known) => Self::SecretVariableUpdate(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("ApiKey") => match ::serde_json::from_value::<ApiKeyUpdate>(value.clone()) {
-                    Ok(known) => Self::ApiKeyUpdate(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("SubscriptionToken") => match ::serde_json::from_value::<SubscriptionTokenUpdate>(value.clone()) {
-                    Ok(known) => Self::SubscriptionTokenUpdate(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("CredentialFile") => match ::serde_json::from_value::<CredentialFileUpdate>(value.clone()) {
-                    Ok(known) => Self::CredentialFileUpdate(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Variable") => Self::SecretVariableUpdate(
+                    ::serde_json::from_value::<SecretVariableUpdate>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("ApiKey") => Self::ApiKeyUpdate(
+                    ::serde_json::from_value::<ApiKeyUpdate>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SubscriptionToken") => Self::SubscriptionTokenUpdate(
+                    ::serde_json::from_value::<SubscriptionTokenUpdate>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("CredentialFile") => Self::CredentialFileUpdate(
+                    ::serde_json::from_value::<CredentialFileUpdate>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44931,22 +44890,21 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Variable") => match ::serde_json::from_value::<SecretVariableValue>(value.clone()) {
-                    Ok(known) => Self::SecretVariableValue(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("ApiKey") => match ::serde_json::from_value::<ApiKeyValue>(value.clone()) {
-                    Ok(known) => Self::ApiKeyValue(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("SubscriptionToken") => match ::serde_json::from_value::<SubscriptionTokenValue>(value.clone()) {
-                    Ok(known) => Self::SubscriptionTokenValue(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("CredentialFile") => match ::serde_json::from_value::<CredentialFileValue>(value.clone()) {
-                    Ok(known) => Self::CredentialFileValue(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Variable") => Self::SecretVariableValue(
+                    ::serde_json::from_value::<SecretVariableValue>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("ApiKey") => Self::ApiKeyValue(
+                    ::serde_json::from_value::<ApiKeyValue>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SubscriptionToken") => Self::SubscriptionTokenValue(
+                    ::serde_json::from_value::<SubscriptionTokenValue>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("CredentialFile") => Self::CredentialFileValue(
+                    ::serde_json::from_value::<CredentialFileValue>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44958,14 +44916,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Prompt") => match ::serde_json::from_value::<SessionPromptOrigin>(value.clone()) {
-                    Ok(known) => Self::PromptOrigin(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Issue") => match ::serde_json::from_value::<SessionIssueOrigin>(value.clone()) {
-                    Ok(known) => Self::IssueOrigin(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Prompt") => Self::PromptOrigin(
+                    ::serde_json::from_value::<SessionPromptOrigin>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Issue") => Self::IssueOrigin(
+                    ::serde_json::from_value::<SessionIssueOrigin>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44977,14 +44935,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("layer").and_then(::serde_json::Value::as_str) {
-                Some("Prebuild") => match ::serde_json::from_value::<SessionPrebuildLayerStored>(value.clone()) {
-                    Ok(known) => Self::Stored(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("None") => match ::serde_json::from_value::<SessionPrebuildLayerAbsent>(value.clone()) {
-                    Ok(known) => Self::Absent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Prebuild") => Self::Stored(
+                    ::serde_json::from_value::<SessionPrebuildLayerStored>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("None") => Self::Absent(
+                    ::serde_json::from_value::<SessionPrebuildLayerAbsent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -44996,18 +44954,15 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Person") => match ::serde_json::from_value::<PersonOrigin>(value.clone()) {
-                    Ok(known) => Self::PersonOrigin(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Turn") => match ::serde_json::from_value::<TurnOrigin>(value.clone()) {
-                    Ok(known) => Self::TurnOrigin(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Trigger") => match ::serde_json::from_value::<TriggerOrigin>(value.clone()) {
-                    Ok(known) => Self::TriggerOrigin(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Person") => Self::PersonOrigin(
+                    ::serde_json::from_value::<PersonOrigin>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Turn") => Self::TurnOrigin(
+                    ::serde_json::from_value::<TurnOrigin>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Trigger") => Self::TriggerOrigin(
+                    ::serde_json::from_value::<TriggerOrigin>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45019,28 +44974,25 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("File") => match ::serde_json::from_value::<SnapshotFileEntry>(value.clone()) {
-                    Ok(known) => Self::FileEntry(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Directory") => match ::serde_json::from_value::<SnapshotDirectoryEntry>(value.clone()) {
-                    Ok(known) => Self::DirectoryEntry(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("OpaqueDirectory") => {
-                    match ::serde_json::from_value::<SnapshotOpaqueDirectoryEntry>(value.clone()) {
-                        Ok(known) => Self::OpaqueDirectoryEntry(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
-                Some("Symlink") => match ::serde_json::from_value::<SnapshotSymlinkEntry>(value.clone()) {
-                    Ok(known) => Self::SymlinkEntry(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Whiteout") => match ::serde_json::from_value::<SnapshotWhiteoutEntry>(value.clone()) {
-                    Ok(known) => Self::WhiteoutEntry(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("File") => Self::FileEntry(
+                    ::serde_json::from_value::<SnapshotFileEntry>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Directory") => Self::DirectoryEntry(
+                    ::serde_json::from_value::<SnapshotDirectoryEntry>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("OpaqueDirectory") => Self::OpaqueDirectoryEntry(
+                    ::serde_json::from_value::<SnapshotOpaqueDirectoryEntry>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Symlink") => Self::SymlinkEntry(
+                    ::serde_json::from_value::<SnapshotSymlinkEntry>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Whiteout") => Self::WhiteoutEntry(
+                    ::serde_json::from_value::<SnapshotWhiteoutEntry>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45052,14 +45004,12 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Stored") => match ::serde_json::from_value::<SnapshotStored>(value.clone()) {
-                    Ok(known) => Self::Stored(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Failed") => match ::serde_json::from_value::<SnapshotFailure>(value.clone()) {
-                    Ok(known) => Self::Failure(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Stored") => Self::Stored(
+                    ::serde_json::from_value::<SnapshotStored>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Failed") => Self::Failure(
+                    ::serde_json::from_value::<SnapshotFailure>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45071,18 +45021,17 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Active") => match ::serde_json::from_value::<ActiveSubscription>(value.clone()) {
-                    Ok(known) => Self::ActiveSubscription(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Paused") => match ::serde_json::from_value::<PausedSubscription>(value.clone()) {
-                    Ok(known) => Self::PausedSubscription(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Ended") => match ::serde_json::from_value::<EndedSubscription>(value.clone()) {
-                    Ok(known) => Self::EndedSubscription(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Active") => Self::ActiveSubscription(
+                    ::serde_json::from_value::<ActiveSubscription>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Paused") => Self::PausedSubscription(
+                    ::serde_json::from_value::<PausedSubscription>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Ended") => Self::EndedSubscription(
+                    ::serde_json::from_value::<EndedSubscription>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45094,26 +45043,22 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("ByRequest") => match ::serde_json::from_value::<SubscriptionPausedByRequest>(value.clone()) {
-                    Ok(known) => Self::ByRequest(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("DeliveryFailed") => {
-                    match ::serde_json::from_value::<SubscriptionPausedDeliveryFailed>(value.clone()) {
-                        Ok(known) => Self::DeliveryFailed(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
-                Some("CrewFailing") => match ::serde_json::from_value::<SubscriptionPausedCrewFailing>(value.clone()) {
-                    Ok(known) => Self::CrewFailing(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("CreditExhausted") => {
-                    match ::serde_json::from_value::<SubscriptionPausedCreditExhausted>(value.clone()) {
-                        Ok(known) => Self::CreditExhausted(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
+                Some("ByRequest") => Self::ByRequest(
+                    ::serde_json::from_value::<SubscriptionPausedByRequest>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("DeliveryFailed") => Self::DeliveryFailed(
+                    ::serde_json::from_value::<SubscriptionPausedDeliveryFailed>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("CrewFailing") => Self::CrewFailing(
+                    ::serde_json::from_value::<SubscriptionPausedCrewFailing>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("CreditExhausted") => Self::CreditExhausted(
+                    ::serde_json::from_value::<SubscriptionPausedCreditExhausted>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45125,14 +45070,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Warm") => match ::serde_json::from_value::<SupervisorHandoverWarm>(value.clone()) {
-                    Ok(known) => Self::Warm(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Turn") => match ::serde_json::from_value::<SupervisorHandoverTurn>(value.clone()) {
-                    Ok(known) => Self::Turn(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Warm") => Self::Warm(
+                    ::serde_json::from_value::<SupervisorHandoverWarm>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Turn") => Self::Turn(
+                    ::serde_json::from_value::<SupervisorHandoverTurn>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45144,18 +45089,18 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Snapshot") => match ::serde_json::from_value::<SupervisorHandoverSnapshot>(value.clone()) {
-                    Ok(known) => Self::Snapshot(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Teardown") => match ::serde_json::from_value::<SupervisorHandoverTeardown>(value.clone()) {
-                    Ok(known) => Self::Teardown(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Discard") => match ::serde_json::from_value::<SupervisorHandoverDiscard>(value.clone()) {
-                    Ok(known) => Self::Discard(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Snapshot") => Self::Snapshot(
+                    ::serde_json::from_value::<SupervisorHandoverSnapshot>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Teardown") => Self::Teardown(
+                    ::serde_json::from_value::<SupervisorHandoverTeardown>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Discard") => Self::Discard(
+                    ::serde_json::from_value::<SupervisorHandoverDiscard>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45167,14 +45112,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Full") => match ::serde_json::from_value::<SupervisorHandoverFullImage>(value.clone()) {
-                    Ok(known) => Self::FullImage(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Layered") => match ::serde_json::from_value::<SupervisorHandoverLayeredImage>(value.clone()) {
-                    Ok(known) => Self::LayeredImage(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Full") => Self::FullImage(
+                    ::serde_json::from_value::<SupervisorHandoverFullImage>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Layered") => Self::LayeredImage(
+                    ::serde_json::from_value::<SupervisorHandoverLayeredImage>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45186,14 +45131,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("NotReported") => match ::serde_json::from_value::<SupervisorUpdateNotReported>(value.clone()) {
-                    Ok(known) => Self::NotReported(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Reported") => match ::serde_json::from_value::<SupervisorUpdateFailureReported>(value.clone()) {
-                    Ok(known) => Self::FailureReported(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("NotReported") => Self::NotReported(
+                    ::serde_json::from_value::<SupervisorUpdateNotReported>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Reported") => Self::FailureReported(
+                    ::serde_json::from_value::<SupervisorUpdateFailureReported>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45205,14 +45150,14 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("NotReported") => match ::serde_json::from_value::<SupervisorUpdateNotReported>(value.clone()) {
-                    Ok(known) => Self::NotReported(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Reported") => match ::serde_json::from_value::<SupervisorUpdateStepReported>(value.clone()) {
-                    Ok(known) => Self::StepReported(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("NotReported") => Self::NotReported(
+                    ::serde_json::from_value::<SupervisorUpdateNotReported>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Reported") => Self::StepReported(
+                    ::serde_json::from_value::<SupervisorUpdateStepReported>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45224,78 +45169,68 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("event").and_then(::serde_json::Value::as_str) {
-                Some("TurnStarted") => match ::serde_json::from_value::<TurnStartedEvent>(value.clone()) {
-                    Ok(known) => Self::TurnStartedEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("TurnCompleted") => match ::serde_json::from_value::<TurnCompletedEvent>(value.clone()) {
-                    Ok(known) => Self::TurnCompletedEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("TurnFailed") => match ::serde_json::from_value::<TurnFailedEvent>(value.clone()) {
-                    Ok(known) => Self::TurnFailedEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("SessionIdle") => match ::serde_json::from_value::<SessionIdleEvent>(value.clone()) {
-                    Ok(known) => Self::SessionIdleEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("SessionStopped") => match ::serde_json::from_value::<SessionStoppedEvent>(value.clone()) {
-                    Ok(known) => Self::SessionStoppedEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("SessionFailed") => match ::serde_json::from_value::<SessionFailedEvent>(value.clone()) {
-                    Ok(known) => Self::SessionFailedEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("SessionArchived") => match ::serde_json::from_value::<SessionArchivedEvent>(value.clone()) {
-                    Ok(known) => Self::SessionArchivedEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("HostOnline") => match ::serde_json::from_value::<HostOnlineEvent>(value.clone()) {
-                    Ok(known) => Self::HostOnlineEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("HostOffline") => match ::serde_json::from_value::<HostOfflineEvent>(value.clone()) {
-                    Ok(known) => Self::HostOfflineEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("HostHealthChanged") => match ::serde_json::from_value::<HostHealthChangedEvent>(value.clone()) {
-                    Ok(known) => Self::HostHealthChangedEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("PrebuildDone") => match ::serde_json::from_value::<PrebuildDoneEvent>(value.clone()) {
-                    Ok(known) => Self::PrebuildDoneEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("PrebuildFailed") => match ::serde_json::from_value::<PrebuildFailedEvent>(value.clone()) {
-                    Ok(known) => Self::PrebuildFailedEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("SubscriptionPaused") => {
-                    match ::serde_json::from_value::<SubscriptionPausedEvent>(value.clone()) {
-                        Ok(known) => Self::SubscriptionPausedEvent(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
-                Some("SubscriptionEnded") => match ::serde_json::from_value::<SubscriptionEndedEvent>(value.clone()) {
-                    Ok(known) => Self::SubscriptionEndedEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("TriggerStartRefused") => {
-                    match ::serde_json::from_value::<TriggerStartRefusedEvent>(value.clone()) {
-                        Ok(known) => Self::TriggerStartRefusedEvent(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
-                }
-                Some("UsageNearLimit") => match ::serde_json::from_value::<UsageNearLimitEvent>(value.clone()) {
-                    Ok(known) => Self::UsageNearLimitEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("UsageLimitReached") => match ::serde_json::from_value::<UsageLimitReachedEvent>(value.clone()) {
-                    Ok(known) => Self::UsageLimitReachedEvent(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("TurnStarted") => Self::TurnStartedEvent(
+                    ::serde_json::from_value::<TurnStartedEvent>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("TurnCompleted") => Self::TurnCompletedEvent(
+                    ::serde_json::from_value::<TurnCompletedEvent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("TurnFailed") => Self::TurnFailedEvent(
+                    ::serde_json::from_value::<TurnFailedEvent>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SessionIdle") => Self::SessionIdleEvent(
+                    ::serde_json::from_value::<SessionIdleEvent>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SessionStopped") => Self::SessionStoppedEvent(
+                    ::serde_json::from_value::<SessionStoppedEvent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SessionFailed") => Self::SessionFailedEvent(
+                    ::serde_json::from_value::<SessionFailedEvent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SessionArchived") => Self::SessionArchivedEvent(
+                    ::serde_json::from_value::<SessionArchivedEvent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("HostOnline") => Self::HostOnlineEvent(
+                    ::serde_json::from_value::<HostOnlineEvent>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("HostOffline") => Self::HostOfflineEvent(
+                    ::serde_json::from_value::<HostOfflineEvent>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("HostHealthChanged") => Self::HostHealthChangedEvent(
+                    ::serde_json::from_value::<HostHealthChangedEvent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("PrebuildDone") => Self::PrebuildDoneEvent(
+                    ::serde_json::from_value::<PrebuildDoneEvent>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("PrebuildFailed") => Self::PrebuildFailedEvent(
+                    ::serde_json::from_value::<PrebuildFailedEvent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SubscriptionPaused") => Self::SubscriptionPausedEvent(
+                    ::serde_json::from_value::<SubscriptionPausedEvent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SubscriptionEnded") => Self::SubscriptionEndedEvent(
+                    ::serde_json::from_value::<SubscriptionEndedEvent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("TriggerStartRefused") => Self::TriggerStartRefusedEvent(
+                    ::serde_json::from_value::<TriggerStartRefusedEvent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("UsageNearLimit") => Self::UsageNearLimitEvent(
+                    ::serde_json::from_value::<UsageNearLimitEvent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("UsageLimitReached") => Self::UsageLimitReachedEvent(
+                    ::serde_json::from_value::<UsageLimitReachedEvent>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45307,14 +45242,13 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("form").and_then(::serde_json::Value::as_str) {
-                Some("Raw") => match ::serde_json::from_value::<RawTranscriptPage>(value.clone()) {
-                    Ok(known) => Self::RawTranscriptPage(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Compact") => match ::serde_json::from_value::<CompactTranscriptPage>(value.clone()) {
-                    Ok(known) => Self::CompactTranscriptPage(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Raw") => Self::RawTranscriptPage(
+                    ::serde_json::from_value::<RawTranscriptPage>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Compact") => Self::CompactTranscriptPage(
+                    ::serde_json::from_value::<CompactTranscriptPage>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45326,14 +45260,12 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Stored") => match ::serde_json::from_value::<StoredTriggerTest>(value.clone()) {
-                    Ok(known) => Self::StoredTriggerTest(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Draft") => match ::serde_json::from_value::<DraftTriggerTest>(value.clone()) {
-                    Ok(known) => Self::DraftTriggerTest(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Stored") => Self::StoredTriggerTest(
+                    ::serde_json::from_value::<StoredTriggerTest>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Draft") => Self::DraftTriggerTest(
+                    ::serde_json::from_value::<DraftTriggerTest>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45345,22 +45277,18 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Offered") => match ::serde_json::from_value::<OfferedTurn>(value.clone()) {
-                    Ok(known) => Self::OfferedTurn(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Running") => match ::serde_json::from_value::<RunningTurn>(value.clone()) {
-                    Ok(known) => Self::RunningTurn(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Completed") => match ::serde_json::from_value::<CompletedTurn>(value.clone()) {
-                    Ok(known) => Self::CompletedTurn(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Failed") => match ::serde_json::from_value::<FailedTurn>(value.clone()) {
-                    Ok(known) => Self::FailedTurn(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Offered") => Self::OfferedTurn(
+                    ::serde_json::from_value::<OfferedTurn>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Running") => Self::RunningTurn(
+                    ::serde_json::from_value::<RunningTurn>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Completed") => Self::CompletedTurn(
+                    ::serde_json::from_value::<CompletedTurn>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Failed") => Self::FailedTurn(
+                    ::serde_json::from_value::<FailedTurn>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45372,14 +45300,12 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Full") => match ::serde_json::from_value::<TurnFullImage>(value.clone()) {
-                    Ok(known) => Self::FullImage(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Layered") => match ::serde_json::from_value::<TurnLayeredImage>(value.clone()) {
-                    Ok(known) => Self::LayeredImage(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Full") => Self::FullImage(
+                    ::serde_json::from_value::<TurnFullImage>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Layered") => Self::LayeredImage(
+                    ::serde_json::from_value::<TurnLayeredImage>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -45391,14 +45317,12 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("delivery").and_then(::serde_json::Value::as_str) {
-                Some("Delivering") => match ::serde_json::from_value::<WebhookDelivering>(value.clone()) {
-                    Ok(known) => Self::Delivering(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
-                Some("Failing") => match ::serde_json::from_value::<WebhookFailing>(value.clone()) {
-                    Ok(known) => Self::Failing(known),
-                    Err(_) => Self::Unrecognised(value),
-                },
+                Some("Delivering") => Self::Delivering(
+                    ::serde_json::from_value::<WebhookDelivering>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Failing") => Self::Failing(
+                    ::serde_json::from_value::<WebhookFailing>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }

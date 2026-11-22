@@ -303,10 +303,10 @@ fn discriminate_enums(file: &mut syn::File, spec: &openapiv3::OpenAPI) -> Result
                 }
                 let payload = &field.ty;
                 arms.push(quote! {
-                    Some(#value) => match ::serde_json::from_value::<#payload>(value.clone()) {
-                        Ok(known) => Self::#member(known),
-                        Err(_) => Self::Unrecognised(value),
-                    }
+                    Some(#value) => Self::#member(
+                        ::serde_json::from_value::<#payload>(value.clone())
+                            .map_err(::serde::de::Error::custom)?
+                    )
                 });
             }
         }

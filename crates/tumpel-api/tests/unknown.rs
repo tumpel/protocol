@@ -27,8 +27,15 @@ fn known_discriminators_still_choose_the_correct_variant() {
 }
 
 #[test]
-fn an_unrecognised_shape_of_a_known_variant_decodes_as_unknown() {
-    let value = serde_json::json!({"kind": "DeliveryFailed", "turnId": {"future": true}});
-    let reason: SubscriptionPauseReason = serde_json::from_value(value.clone()).unwrap();
-    assert_eq!(reason, SubscriptionPauseReason::Unrecognised(value));
+fn a_known_discriminator_with_a_malformed_payload_is_an_error() {
+    for (value, message) in [
+        (serde_json::json!({"kind": "DeliveryFailed"}), "missing field `turnId`"),
+        (
+            serde_json::json!({"kind": "DeliveryFailed", "turnId": {"future": true}}),
+            "invalid type",
+        ),
+    ] {
+        let error = serde_json::from_value::<SubscriptionPauseReason>(value).unwrap_err();
+        assert!(error.to_string().contains(message), "{error}");
+    }
 }
