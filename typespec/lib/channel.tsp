@@ -673,7 +673,8 @@ model SnapshotFailed {
 @doc("""
   Asks the host to tear down the box of a session once a snapshot holds its last completed turn:
   when a person stops or archives the session, after each turn of an Off session, and when placement
-  evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it. The host
+  evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it, except that it
+  tears down an Auto box idle for the offer's idleSeconds itself and reports it with an unsolicited BoxGone. The host
   answers BoxGone, also when it runs no box of the session with that boxId, or BoxTeardownFailed.
   """)
 model BoxTeardown {
@@ -692,7 +693,7 @@ model BoxDiscard {
   boxId: EntityId;
 }
 
-@doc("The host runs no box of the session any more and returned its TAP device to the pool.")
+@doc("The host runs no box of the session any more and returned its TAP device to the pool. It answers BoxTeardown or BoxDiscard, or comes unsolicited after the host tore down an Auto box idle for the offer's idleSeconds.")
 model BoxGone {
   type: "BoxGone";
   sessionId: EntityId;

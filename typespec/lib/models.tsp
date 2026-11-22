@@ -139,7 +139,7 @@ enum BoxRetention {
   @doc("The box stays paused until a person stops or archives the session. Idleness never tears it down and placement never evicts it.")
   Warm: "Warm",
 
-  @doc("The box stays paused until it has been idle for the turn offer's idleSeconds, or until placement evicts it sooner to free room for another session's turn; either way the control plane snapshots the box when needed, tears it down and leaves the session Stopped.")
+  @doc("The box stays paused until it has been idle for the turn offer's idleSeconds, when the host tears it down and reports BoxGone, or until placement evicts it sooner to free room for another session's turn, when the eviction snapshots the box when needed and tears it down; either way the session reads Stopped.")
   Auto: "Auto",
 }
 

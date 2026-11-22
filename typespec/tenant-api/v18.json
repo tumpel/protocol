@@ -318,7 +318,7 @@
           "$ref": "#/components/schemas/EntityId"
         }
       },
-      "description": "The host runs no box of the session any more and returned its TAP device to the pool."
+      "description": "The host runs no box of the session any more and returned its TAP device to the pool. It answers BoxTeardown or BoxDiscard, or comes unsolicited after the host tore down an Auto box idle for the offer's idleSeconds."
     },
     "Channel.BoxTeardownFailed": {
       "type": "object",

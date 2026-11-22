@@ -562,7 +562,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///The host runs no box of the session any more and returned its TAP device to the pool.
+    ///The host runs no box of the session any more and returned its TAP device to the pool. It answers BoxTeardown or BoxDiscard, or comes unsolicited after the host tore down an Auto box idle for the offer's idleSeconds.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelBoxGone {
         #[serde(rename = "boxId")]
@@ -607,7 +607,8 @@ pub mod types {
     }
     ///Asks the host to tear down the box of a session once a snapshot holds its last completed turn:
     ///when a person stops or archives the session, after each turn of an Off session, and when placement
-    ///evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it. The host
+    ///evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it, except that it
+    ///tears down an Auto box idle for the offer's idleSeconds itself and reports it with an unsolicited BoxGone. The host
     ///answers BoxGone, also when it runs no box of the session with that boxId, or BoxTeardownFailed.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelBoxTeardown {
