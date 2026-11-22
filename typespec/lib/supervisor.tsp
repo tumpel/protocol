@@ -134,8 +134,12 @@ model SupervisorHandoverBox {
   dirty: boolean;
   credentialFile?: CredentialText;
 
-  @doc("What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm one until the session stops.")
+  @doc("What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm one as BoxRetention defines.")
   boxRetention: BoxRetention;
+
+  @doc("The idle time left at the handover, counting down from the offer's idleSeconds as turnMilliseconds does for the turn, so an update does not reset it.")
+  @minValue(0)
+  idleMilliseconds: int64;
 
   state: SupervisorHandoverBoxState;
   @maxItems(1000) queued: SupervisorHandoverCommand[];
@@ -188,14 +192,9 @@ union SupervisorHandoverBoxState {
   Turn: SupervisorHandoverTurn,
 }
 
-@doc("""
-  A paused box. It stays paused until BoxTeardown or BoxDiscard names it. A supervisor writes
-  `warmMilliseconds` as 0 and `expired` as false and ignores both on read.
-  """)
+@doc("A paused box. It stays as BoxRetention defines; the idle time it has left is the box's idleMilliseconds.")
 model SupervisorHandoverWarm {
   kind: "Warm";
-  @minValue(0) warmMilliseconds: int64;
-  expired: boolean;
 }
 
 @doc("""
@@ -395,7 +394,7 @@ model BoxBudgets {
   `memoryMib` is the memory of a box whose TurnOffer names no boxMemoryMib, BoxMemoryLimit.DefaultMib by default.
   `overlayMib` is the disk of a box whose TurnOffer names no boxDiskMib, 32768 by default; the drive
   is a sparse file, so the host's disk holds only what the box wrote.
-  A paused box stays until BoxTeardown or BoxDiscard names it, and a box that does not fit is
+  A paused box stays as BoxRetention defines or until BoxTeardown or BoxDiscard names it, and a box that does not fit is
   refused PoolExhausted without touching another box.
   `heartbeatIntervalSeconds` is how often the supervisor sends a Heartbeat after Welcome, 10 by
   default; it matches heartbeatIntervalSeconds of the control plane, whose heartbeatDeadlineSeconds

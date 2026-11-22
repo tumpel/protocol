@@ -359,12 +359,16 @@ model TurnOffer {
   gitAuthorName: DisplayName;
   gitAuthorEmail: EmailAddress;
 
-  @doc("What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout.")
+  @doc("What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays.")
   boxRetention: BoxRetention;
 
   @doc("How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.")
   @minValue(1)
   turnSeconds: int32;
+
+  @doc("The idle time of a Warm box, as BoxRetention defines; the control plane's idle policy.")
+  @minValue(1)
+  idleSeconds: int32;
 
   @doc("""
     The memory in MiB the box boots with: the persona's boxMemoryMib, or BoxMemoryLimit.DefaultMib. A box
