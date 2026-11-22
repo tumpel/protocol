@@ -60,14 +60,18 @@ scalar Sha256Digest extends string;
 @doc("""
   A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
   the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-  connection that speaks another with UnsupportedVersion.
+  connection that speaks another with UnsupportedVersion. Version 34 lacks `heldTurnIds` on Hello
+  and Heartbeat and the TurnFailureReason members HostDropped and HostRevoked; version 35 lacks
+  HostRevoked. A speaker of 36 downgrades to 34 or 35 by sending that version's shape: it leaves
+  out the fields the version lacks and never sends a member it lacks. No host sends HostDropped or
+  HostRevoked, since the control plane records both, so the reason needs no mapping on the wire.
   """)
 @minValue(ChannelProtocolOldest)
 @maxValue(ChannelProtocolVersion)
 @TypeSpec.OpenAPI.extension("x-bound-names", #["Oldest", "Version"])
 scalar ChannelProtocol extends int32;
 
-const ChannelProtocolOldest = 35;
+const ChannelProtocolOldest = 34;
 const ChannelProtocolVersion = 36;
 
 @doc("""

@@ -2310,7 +2310,10 @@ pub mod types {
     ///it out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host
     ///accepts from a box. The control plane records both ranges and shows them on the host.
     ///`heldTurnIds` names the turns the host holds as it connects, as Heartbeat does; the control plane
-    ///fails each Running turn on the host that it does not name with HostDropped.
+    ///fails each Running turn on the host that it does not name with HostDropped. A version 34 Hello and
+    ///Heartbeat carry no `heldTurnIds`: the control plane decodes a 34 host with the version 34 types and
+    ///judges no turn of it against a held list. A host on 35 or later that settles on 34 sends the
+    ///version 34 shape, without `heldTurnIds`.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelHello {
         #[serde(rename = "boxCapacity")]
@@ -2845,7 +2848,11 @@ pub mod types {
     }
     ///A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
     ///the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-    ///connection that speaks another with UnsupportedVersion.
+    ///connection that speaks another with UnsupportedVersion. Version 34 lacks `heldTurnIds` on Hello
+    ///and Heartbeat and the TurnFailureReason members HostDropped and HostRevoked; version 35 lacks
+    ///HostRevoked. A speaker of 36 downgrades to 34 or 35 by sending that version's shape: it leaves
+    ///out the fields the version lacks and never sends a member it lacks. No host sends HostDropped or
+    ///HostRevoked, since the control plane records both, so the reason needs no mapping on the wire.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(transparent)]
     pub struct ChannelProtocol(pub i32);
@@ -51464,7 +51471,7 @@ impl types::ChannelCloseCode {
     pub const UNSUPPORTED_VERSION: u16 = 4426;
 }
 impl types::ChannelProtocol {
-    pub const OLDEST: u16 = 35;
+    pub const OLDEST: u16 = 34;
     pub const VERSION: u16 = 36;
 }
 impl types::ChunkExchange {
