@@ -947,17 +947,11 @@ model HostUsageInput {
   now: int64;
 }
 
-model ReconcileHeldBoxesInput {
+model ReconcileHostHoldingsInput {
   tenantId: EntityId;
   hostId: EntityId;
   @maxItems(1000) heldSessionIds: EntityId[];
   @maxItems(1000) heldClaudeSetupIds: EntityId[];
-  now: int64;
-}
-
-model ReconcileHeldTurnsInput {
-  tenantId: EntityId;
-  hostId: EntityId;
   @maxItems(1000) heldTurnIds: EntityId[];
   now: int64;
 }
@@ -1666,16 +1660,10 @@ model HostUsageRequest {
   input: HostUsageInput;
 }
 
-model ReconcileHeldBoxesRequest {
+model ReconcileHostHoldingsRequest {
   tenantApiVersion: TenantApiProtocol;
-  operation: "reconcileHeldBoxes";
-  input: ReconcileHeldBoxesInput;
-}
-
-model ReconcileHeldTurnsRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "reconcileHeldTurns";
-  input: ReconcileHeldTurnsInput;
+  operation: "reconcileHostHoldings";
+  input: ReconcileHostHoldingsInput;
 }
 
 model ForgetHostUsageRequest {
@@ -1861,8 +1849,7 @@ union TenantRequest {
   offerSent: OfferSentRequest,
   hostHello: HostHelloRequest,
   hostUsage: HostUsageRequest,
-  reconcileHeldBoxes: ReconcileHeldBoxesRequest,
-  reconcileHeldTurns: ReconcileHeldTurnsRequest,
+  reconcileHostHoldings: ReconcileHostHoldingsRequest,
   forgetHostUsage: ForgetHostUsageRequest,
   runningTurnsByHost: RunningTurnsByHostRequest,
   listHostUsage: ListHostUsageRequest,
@@ -2959,9 +2946,7 @@ model HostHelloResult {}
 
 model HostUsageResult {}
 
-model ReconcileHeldBoxesResult {}
-
-model ReconcileHeldTurnsResult {}
+model ReconcileHostHoldingsResult {}
 
 model ForgetHostUsageResult {}
 

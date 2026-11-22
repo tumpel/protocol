@@ -32878,88 +32878,13 @@ pub mod types {
     pub struct TenantApiReadUsageResult {
         pub usage: TenantUsage,
     }
-    ///`TenantApiReconcileHeldBoxesInput`
+    ///`TenantApiReconcileHostHoldingsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiReconcileHeldBoxesInput {
+    pub struct TenantApiReconcileHostHoldingsInput {
         #[serde(rename = "heldClaudeSetupIds")]
         pub held_claude_setup_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "heldSessionIds")]
         pub held_session_ids: ::std::vec::Vec<EntityId>,
-        #[serde(rename = "hostId")]
-        pub host_id: EntityId,
-        pub now: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiReconcileHeldBoxesRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiReconcileHeldBoxesRequest {
-        pub input: TenantApiReconcileHeldBoxesInput,
-        pub operation: TenantApiReconcileHeldBoxesRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiReconcileHeldBoxesRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiReconcileHeldBoxesRequestOperation {
-        #[serde(rename = "reconcileHeldBoxes")]
-        ReconcileHeldBoxes,
-    }
-    impl ::std::fmt::Display for TenantApiReconcileHeldBoxesRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ReconcileHeldBoxes => f.write_str("reconcileHeldBoxes"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiReconcileHeldBoxesRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "reconcileHeldBoxes" => Ok(Self::ReconcileHeldBoxes),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiReconcileHeldBoxesRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiReconcileHeldBoxesRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiReconcileHeldBoxesResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiReconcileHeldBoxesResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiReconcileHeldBoxesResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiReconcileHeldBoxesResult>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiReconcileHeldBoxesResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiReconcileHeldBoxesResult
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///`TenantApiReconcileHeldTurnsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiReconcileHeldTurnsInput {
         #[serde(rename = "heldTurnIds")]
         pub held_turn_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "hostId")]
@@ -32968,67 +32893,67 @@ pub mod types {
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
-    ///`TenantApiReconcileHeldTurnsRequest`
+    ///`TenantApiReconcileHostHoldingsRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiReconcileHeldTurnsRequest {
-        pub input: TenantApiReconcileHeldTurnsInput,
-        pub operation: TenantApiReconcileHeldTurnsRequestOperation,
+    pub struct TenantApiReconcileHostHoldingsRequest {
+        pub input: TenantApiReconcileHostHoldingsInput,
+        pub operation: TenantApiReconcileHostHoldingsRequestOperation,
         #[serde(rename = "tenantApiVersion")]
         pub tenant_api_version: TenantApiProtocol,
     }
-    ///`TenantApiReconcileHeldTurnsRequestOperation`
+    ///`TenantApiReconcileHostHoldingsRequestOperation`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiReconcileHeldTurnsRequestOperation {
-        #[serde(rename = "reconcileHeldTurns")]
-        ReconcileHeldTurns,
+    pub enum TenantApiReconcileHostHoldingsRequestOperation {
+        #[serde(rename = "reconcileHostHoldings")]
+        ReconcileHostHoldings,
     }
-    impl ::std::fmt::Display for TenantApiReconcileHeldTurnsRequestOperation {
+    impl ::std::fmt::Display for TenantApiReconcileHostHoldingsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::ReconcileHeldTurns => f.write_str("reconcileHeldTurns"),
+                Self::ReconcileHostHoldings => f.write_str("reconcileHostHoldings"),
             }
         }
     }
-    impl ::std::str::FromStr for TenantApiReconcileHeldTurnsRequestOperation {
+    impl ::std::str::FromStr for TenantApiReconcileHostHoldingsRequestOperation {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
-                "reconcileHeldTurns" => Ok(Self::ReconcileHeldTurns),
+                "reconcileHostHoldings" => Ok(Self::ReconcileHostHoldings),
                 _ => Err("invalid value".into()),
             }
         }
     }
-    impl ::std::convert::TryFrom<&str> for TenantApiReconcileHeldTurnsRequestOperation {
+    impl ::std::convert::TryFrom<&str> for TenantApiReconcileHostHoldingsRequestOperation {
         type Error = self::error::ConversionError;
         fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiReconcileHeldTurnsRequestOperation {
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiReconcileHostHoldingsRequestOperation {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
-    ///`TenantApiReconcileHeldTurnsResult`
+    ///`TenantApiReconcileHostHoldingsResult`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(transparent)]
-    pub struct TenantApiReconcileHeldTurnsResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiReconcileHeldTurnsResult {
+    pub struct TenantApiReconcileHostHoldingsResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
+    impl ::std::ops::Deref for TenantApiReconcileHostHoldingsResult {
         type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
         fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
             &self.0
         }
     }
-    impl ::std::convert::From<TenantApiReconcileHeldTurnsResult>
+    impl ::std::convert::From<TenantApiReconcileHostHoldingsResult>
         for ::serde_json::Map<::std::string::String, ::serde_json::Value>
     {
-        fn from(value: TenantApiReconcileHeldTurnsResult) -> Self {
+        fn from(value: TenantApiReconcileHostHoldingsResult) -> Self {
             value.0
         }
     }
     impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiReconcileHeldTurnsResult
+        for TenantApiReconcileHostHoldingsResult
     {
         fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
             Self(value)
@@ -37436,8 +37361,7 @@ pub mod types {
         OfferSentRequest(TenantApiOfferSentRequest),
         HostHelloRequest(TenantApiHostHelloRequest),
         HostUsageRequest(TenantApiHostUsageRequest),
-        ReconcileHeldBoxesRequest(TenantApiReconcileHeldBoxesRequest),
-        ReconcileHeldTurnsRequest(TenantApiReconcileHeldTurnsRequest),
+        ReconcileHostHoldingsRequest(TenantApiReconcileHostHoldingsRequest),
         ForgetHostUsageRequest(TenantApiForgetHostUsageRequest),
         RunningTurnsByHostRequest(TenantApiRunningTurnsByHostRequest),
         ListHostUsageRequest(TenantApiListHostUsageRequest),
@@ -37962,14 +37886,9 @@ pub mod types {
             Self::HostUsageRequest(value)
         }
     }
-    impl ::std::convert::From<TenantApiReconcileHeldBoxesRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiReconcileHeldBoxesRequest) -> Self {
-            Self::ReconcileHeldBoxesRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiReconcileHeldTurnsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiReconcileHeldTurnsRequest) -> Self {
-            Self::ReconcileHeldTurnsRequest(value)
+    impl ::std::convert::From<TenantApiReconcileHostHoldingsRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiReconcileHostHoldingsRequest) -> Self {
+            Self::ReconcileHostHoldingsRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiForgetHostUsageRequest> for TenantApiTenantRequest {

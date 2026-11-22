@@ -12874,13 +12874,14 @@
         }
       }
     },
-    "TenantApi.ReconcileHeldBoxesInput": {
+    "TenantApi.ReconcileHostHoldingsInput": {
       "type": "object",
       "required": [
         "tenantId",
         "hostId",
         "heldSessionIds",
         "heldClaudeSetupIds",
+        "heldTurnIds",
         "now"
       ],
       "properties": {
@@ -12904,52 +12905,6 @@
           },
           "maxItems": 1000
         },
-        "now": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
-    "TenantApi.ReconcileHeldBoxesRequest": {
-      "type": "object",
-      "required": [
-        "tenantApiVersion",
-        "operation",
-        "input"
-      ],
-      "properties": {
-        "tenantApiVersion": {
-          "$ref": "#/components/schemas/TenantApiProtocol"
-        },
-        "operation": {
-          "type": "string",
-          "enum": [
-            "reconcileHeldBoxes"
-          ]
-        },
-        "input": {
-          "$ref": "#/components/schemas/TenantApi.ReconcileHeldBoxesInput"
-        }
-      }
-    },
-    "TenantApi.ReconcileHeldBoxesResult": {
-      "type": "object"
-    },
-    "TenantApi.ReconcileHeldTurnsInput": {
-      "type": "object",
-      "required": [
-        "tenantId",
-        "hostId",
-        "heldTurnIds",
-        "now"
-      ],
-      "properties": {
-        "tenantId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "hostId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
         "heldTurnIds": {
           "type": "array",
           "items": {
@@ -12963,7 +12918,7 @@
         }
       }
     },
-    "TenantApi.ReconcileHeldTurnsRequest": {
+    "TenantApi.ReconcileHostHoldingsRequest": {
       "type": "object",
       "required": [
         "tenantApiVersion",
@@ -12977,15 +12932,15 @@
         "operation": {
           "type": "string",
           "enum": [
-            "reconcileHeldTurns"
+            "reconcileHostHoldings"
           ]
         },
         "input": {
-          "$ref": "#/components/schemas/TenantApi.ReconcileHeldTurnsInput"
+          "$ref": "#/components/schemas/TenantApi.ReconcileHostHoldingsInput"
         }
       }
     },
-    "TenantApi.ReconcileHeldTurnsResult": {
+    "TenantApi.ReconcileHostHoldingsResult": {
       "type": "object"
     },
     "TenantApi.RecordPrebuildBuildingInput": {
@@ -16196,10 +16151,7 @@
           "$ref": "#/components/schemas/TenantApi.HostUsageRequest"
         },
         {
-          "$ref": "#/components/schemas/TenantApi.ReconcileHeldBoxesRequest"
-        },
-        {
-          "$ref": "#/components/schemas/TenantApi.ReconcileHeldTurnsRequest"
+          "$ref": "#/components/schemas/TenantApi.ReconcileHostHoldingsRequest"
         },
         {
           "$ref": "#/components/schemas/TenantApi.ForgetHostUsageRequest"
@@ -16346,8 +16298,7 @@
           "offerSent": "#/components/schemas/TenantApi.OfferSentRequest",
           "hostHello": "#/components/schemas/TenantApi.HostHelloRequest",
           "hostUsage": "#/components/schemas/TenantApi.HostUsageRequest",
-          "reconcileHeldBoxes": "#/components/schemas/TenantApi.ReconcileHeldBoxesRequest",
-          "reconcileHeldTurns": "#/components/schemas/TenantApi.ReconcileHeldTurnsRequest",
+          "reconcileHostHoldings": "#/components/schemas/TenantApi.ReconcileHostHoldingsRequest",
           "forgetHostUsage": "#/components/schemas/TenantApi.ForgetHostUsageRequest",
           "runningTurnsByHost": "#/components/schemas/TenantApi.RunningTurnsByHostRequest",
           "listHostUsage": "#/components/schemas/TenantApi.ListHostUsageRequest",
