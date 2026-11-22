@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 19;
+const TenantApiVersion = 20;
 
 namespace TenantApi {
 
@@ -932,11 +932,13 @@ model OfferSentInput {
 }
 
 model HostHelloInput {
+  tenantId: EntityId;
   hostId: EntityId;
   boxCapacity: int32;
   usage: HostUsage;
   now: int64;
   channelProtocol: int32;
+  @maxItems(1000) heldTurnIds: EntityId[];
 }
 
 model HostUsageInput {
@@ -945,11 +947,12 @@ model HostUsageInput {
   now: int64;
 }
 
-model ReconcileHeldBoxesInput {
+model ReconcileHostHoldingsInput {
   tenantId: EntityId;
   hostId: EntityId;
   @maxItems(1000) heldSessionIds: EntityId[];
   @maxItems(1000) heldClaudeSetupIds: EntityId[];
+  @maxItems(1000) heldTurnIds: EntityId[];
   now: int64;
 }
 
@@ -1657,10 +1660,10 @@ model HostUsageRequest {
   input: HostUsageInput;
 }
 
-model ReconcileHeldBoxesRequest {
+model ReconcileHostHoldingsRequest {
   tenantApiVersion: TenantApiProtocol;
-  operation: "reconcileHeldBoxes";
-  input: ReconcileHeldBoxesInput;
+  operation: "reconcileHostHoldings";
+  input: ReconcileHostHoldingsInput;
 }
 
 model ForgetHostUsageRequest {
@@ -1846,7 +1849,7 @@ union TenantRequest {
   offerSent: OfferSentRequest,
   hostHello: HostHelloRequest,
   hostUsage: HostUsageRequest,
-  reconcileHeldBoxes: ReconcileHeldBoxesRequest,
+  reconcileHostHoldings: ReconcileHostHoldingsRequest,
   forgetHostUsage: ForgetHostUsageRequest,
   runningTurnsByHost: RunningTurnsByHostRequest,
   listHostUsage: ListHostUsageRequest,
@@ -2943,7 +2946,7 @@ model HostHelloResult {}
 
 model HostUsageResult {}
 
-model ReconcileHeldBoxesResult {}
+model ReconcileHostHoldingsResult {}
 
 model ForgetHostUsageResult {}
 
