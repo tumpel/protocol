@@ -22,7 +22,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 16;
+const TenantApiVersion = 17;
 
 namespace TenantApi {
 
@@ -421,38 +421,6 @@ model OpenRouterAuthorizationDeadlineReachedInput {
 
 model OpenRouterSecretSetsInput {}
 
-model StartCircleCIAuthorizationInput {
-  tenantId: EntityId;
-  principalId: EntityId;
-  now: int64;
-}
-
-model CompleteCircleCIAuthorizationInput {
-  tenantId: EntityId;
-  principalId: EntityId;
-  circleCIAuthorizationId: EntityId;
-  redirectedUrl: UrlText;
-  now: int64;
-}
-
-model ChooseCircleCIOrganizationInput {
-  tenantId: EntityId;
-  principalId: EntityId;
-  circleCIAuthorizationId: EntityId;
-  organizationId: ShortText;
-  now: int64;
-}
-
-model CircleCIAuthorizationDeadline {
-  circleCIAuthorizationId: EntityId;
-  at: int64;
-}
-
-model CircleCIAuthorizationDeadlineReachedInput {
-  tenantId: EntityId;
-  deadline: CircleCIAuthorizationDeadline;
-}
-
 @doc("A host as the control plane stores it, without its supervisor update reports and protocol ranges.")
 model HostRecord {
   ...OmitProperties<Host, "supervisorUpdateStep" | "supervisorUpdateFailure" | "channelProtocol" | "guestProtocol">;
@@ -561,37 +529,6 @@ model RecordPrebuildBuildingInput {
   now: int64;
 }
 
-model JobInputsTargetInput {
-  tenantId: EntityId;
-  repository: ShortText;
-  headSha: ShortText;
-  runId: int64;
-}
-
-model BindJobRunInput {
-  tenantId: EntityId;
-  prebuildId: EntityId;
-  runId: int64;
-  now: int64;
-}
-
-@doc("A GitHub Actions workflow run event, as the webhook reports it.")
-model RunEvent {
-  action: ShortText;
-  runId: int64;
-  repository: ShortText;
-  path: PathText;
-  headSha: ShortText;
-  htmlUrl: UrlText;
-  conclusion: ShortText | null;
-}
-
-model WorkflowRunReportedInput {
-  tenantId: EntityId;
-  event: RunEvent;
-  now: int64;
-}
-
 model PrebuildDeadline {
   prebuildId: EntityId;
   at: int64;
@@ -618,24 +555,6 @@ model RepositoryRef {
   name: ShortText;
 }
 
-model GitHubActionsStart {
-  prebuildId: EntityId;
-  personaId: EntityId;
-  target: RepositoryRef;
-  repository: ShortText;
-  guestImageDigest: ShortText;
-  rootfsKey: PathText;
-  callerWorkflow: ShortText;
-  apiOrigin: UrlText;
-  rebuild: boolean;
-}
-
-model StartGitHubActionsPrebuildInput {
-  tenantId: EntityId;
-  start: GitHubActionsStart;
-  now: int64;
-}
-
 model PrebuildCommitStart {
   prebuildId: EntityId;
   personaId: EntityId;
@@ -659,88 +578,14 @@ model NewSession {
 model StartHostPrebuildInput {
   tenantId: EntityId;
   commit: PrebuildCommitStart;
-  provider: BuildProvider;
   input: NewSession;
   apiOrigin: UrlText;
-  now: int64;
-}
-
-model UploadTargetInput {
-  tenantId: EntityId;
-  prebuildId: EntityId;
-}
-
-model CircleCIUploadJob {
-  pipelineId: ShortText;
-  headSha: ShortText;
-  jobId: ShortText;
-}
-
-model BindCircleCIUploadJobInput {
-  tenantId: EntityId;
-  prebuildId: EntityId;
-  upload: CircleCIUploadJob;
-  now: int64;
-}
-
-model PrebuildLayerUpload {
-  layerDigest: ShortText;
-  layerSizeBytes: int64;
-}
-
-model StartPrebuildUploadInput {
-  tenantId: EntityId;
-  prebuildId: EntityId;
-  upload: PrebuildLayerUpload;
-  now: int64;
-}
-
-model CompletePrebuildUploadInput {
-  tenantId: EntityId;
-  prebuildId: EntityId;
-  upload: PrebuildLayerUpload;
   now: int64;
 }
 
 model GetPrebuildFailureInput {
   tenantId: EntityId;
   prebuildId: EntityId;
-}
-
-model PrebuildStartRecord {
-  prebuildId: EntityId;
-  personaId: EntityId;
-  key: PrebuildKey;
-  configSource: PrebuildConfigSource;
-  target: RepositoryRef;
-  defaultBranch: ShortText;
-  headSha: ShortText;
-  rootfsKey: PathText;
-}
-
-model DispatchCircleCIPrebuildInput {
-  tenantId: EntityId;
-  start: PrebuildStartRecord;
-  project: CircleCIProject;
-  @TypeSpec.JsonSchema.maxProperties(100) parameters: Record<Summary>;
-  now: int64;
-}
-
-model CircleCIWorkflowCompletedEvent {
-  type: ShortText;
-  workflow: {
-    name: ShortText;
-    status: ShortText;
-    url: HttpUrl;
-  };
-  pipelineId: ShortText;
-  projectId: ShortText;
-}
-
-model CircleCIWorkflowCompletedInput {
-  tenantId: EntityId;
-  event: CircleCIWorkflowCompletedEvent;
-  now: int64;
 }
 
 model RepositoryReadTokenInput {
@@ -1085,67 +930,7 @@ model TranscriptCursorInput {
 
 model ConnectedAccountsInput {}
 
-model DeleteBuildConnectionInput {
-  provider: BuildProvider;
-}
-
-model CircleCIConnectionInput {}
-
-model CircleCITokenInput {}
-
-model ConnectCircleCIInput {
-  start: CircleCIConnectionStart;
-  now: int64;
-}
-
-model ListCircleCIProjectsInput {
-  tenantId: EntityId;
-}
-
-model CircleCIProjectBoundToInput {
-  tenantId: EntityId;
-  projectId: ShortText;
-}
-
-model CircleCIProjectOfInput {
-  tenantId: EntityId;
-  repository: ShortText;
-}
-
-model CircleCIBinding {
-  repository: ShortText;
-  projectSlug: ShortText;
-  projectId: ShortText;
-  pipelineDefinitionId: ShortText;
-  webhookId: ShortText;
-  signingSecret: Token;
-}
-
-model AddCircleCIProjectInput {
-  tenantId: EntityId;
-  binding: CircleCIBinding;
-  now: int64;
-}
-
-model CircleCIWebhooksInput {}
-
-model CircleCIWebhookSecretInput {
-  projectId: ShortText;
-}
-
-model DeleteCircleCIProjectInput {
-  circleCIProjectId: EntityId;
-}
-
-model GitHubActionsConnectionInput {
-  tenantId: EntityId;
-}
-
-model ConnectGitHubActionsInput {
-  tenantId: EntityId;
-  start: GitHubActionsConnectionStart;
-  now: int64;
-}
+model DeleteBuildConnectionInput {}
 
 model NamespaceConnectionInput {}
 
@@ -1493,30 +1278,6 @@ model OpenRouterSecretSetsRequest {
   input: OpenRouterSecretSetsInput;
 }
 
-model StartCircleCIAuthorizationRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "startCircleCIAuthorization";
-  input: StartCircleCIAuthorizationInput;
-}
-
-model CompleteCircleCIAuthorizationRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "completeCircleCIAuthorization";
-  input: CompleteCircleCIAuthorizationInput;
-}
-
-model ChooseCircleCIOrganizationRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "chooseCircleCIOrganization";
-  input: ChooseCircleCIOrganizationInput;
-}
-
-model CircleCIAuthorizationDeadlineReachedRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "circleCIAuthorizationDeadlineReached";
-  input: CircleCIAuthorizationDeadlineReachedInput;
-}
-
 model StartClaudeSetupRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "startClaudeSetup";
@@ -1589,34 +1350,10 @@ model RecordPrebuildBuildingRequest {
   input: RecordPrebuildBuildingInput;
 }
 
-model JobInputsTargetRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "jobInputsTarget";
-  input: JobInputsTargetInput;
-}
-
-model BindJobRunRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "bindJobRun";
-  input: BindJobRunInput;
-}
-
-model WorkflowRunReportedRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "workflowRunReported";
-  input: WorkflowRunReportedInput;
-}
-
 model PrebuildDeadlineReachedRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "prebuildDeadlineReached";
   input: PrebuildDeadlineReachedInput;
-}
-
-model StartGitHubActionsPrebuildRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "startGitHubActionsPrebuild";
-  input: StartGitHubActionsPrebuildInput;
 }
 
 model StartHostPrebuildRequest {
@@ -1625,46 +1362,10 @@ model StartHostPrebuildRequest {
   input: StartHostPrebuildInput;
 }
 
-model UploadTargetRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "uploadTarget";
-  input: UploadTargetInput;
-}
-
-model BindCircleCIUploadJobRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "bindCircleCIUploadJob";
-  input: BindCircleCIUploadJobInput;
-}
-
-model StartPrebuildUploadRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "startPrebuildUpload";
-  input: StartPrebuildUploadInput;
-}
-
-model CompletePrebuildUploadRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "completePrebuildUpload";
-  input: CompletePrebuildUploadInput;
-}
-
 model GetPrebuildFailureRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "getPrebuildFailure";
   input: GetPrebuildFailureInput;
-}
-
-model DispatchCircleCIPrebuildRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "dispatchCircleCIPrebuild";
-  input: DispatchCircleCIPrebuildInput;
-}
-
-model CircleCIWorkflowCompletedRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "circleCIWorkflowCompleted";
-  input: CircleCIWorkflowCompletedInput;
 }
 
 model RepositoryReadTokenRequest {
@@ -1961,78 +1662,6 @@ model DeleteBuildConnectionRequest {
   input: DeleteBuildConnectionInput;
 }
 
-model CircleCIConnectionRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "circleCIConnection";
-  input: CircleCIConnectionInput;
-}
-
-model CircleCITokenRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "circleCIToken";
-  input: CircleCITokenInput;
-}
-
-model ConnectCircleCIRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "connectCircleCI";
-  input: ConnectCircleCIInput;
-}
-
-model ListCircleCIProjectsRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "listCircleCIProjects";
-  input: ListCircleCIProjectsInput;
-}
-
-model CircleCIProjectBoundToRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "circleCIProjectBoundTo";
-  input: CircleCIProjectBoundToInput;
-}
-
-model CircleCIProjectOfRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "circleCIProjectOf";
-  input: CircleCIProjectOfInput;
-}
-
-model AddCircleCIProjectRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "addCircleCIProject";
-  input: AddCircleCIProjectInput;
-}
-
-model CircleCIWebhooksRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "circleCIWebhooks";
-  input: CircleCIWebhooksInput;
-}
-
-model CircleCIWebhookSecretRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "circleCIWebhookSecret";
-  input: CircleCIWebhookSecretInput;
-}
-
-model DeleteCircleCIProjectRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "deleteCircleCIProject";
-  input: DeleteCircleCIProjectInput;
-}
-
-model GitHubActionsConnectionRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "gitHubActionsConnection";
-  input: GitHubActionsConnectionInput;
-}
-
-model ConnectGitHubActionsRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "connectGitHubActions";
-  input: ConnectGitHubActionsInput;
-}
-
 model NamespaceConnectionRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "namespaceConnection";
@@ -2187,10 +1816,6 @@ union TenantRequest {
   openRouterCallback: OpenRouterCallbackRequest,
   openRouterAuthorizationDeadlineReached: OpenRouterAuthorizationDeadlineReachedRequest,
   openRouterSecretSets: OpenRouterSecretSetsRequest,
-  startCircleCIAuthorization: StartCircleCIAuthorizationRequest,
-  completeCircleCIAuthorization: CompleteCircleCIAuthorizationRequest,
-  chooseCircleCIOrganization: ChooseCircleCIOrganizationRequest,
-  circleCIAuthorizationDeadlineReached: CircleCIAuthorizationDeadlineReachedRequest,
   startClaudeSetup: StartClaudeSetupRequest,
   getClaudeSetup: GetClaudeSetupRequest,
   listClaudeSetups: ListClaudeSetupsRequest,
@@ -2203,19 +1828,9 @@ union TenantRequest {
   getPrebuild: GetPrebuildRequest,
   heldPrebuild: HeldPrebuildRequest,
   recordPrebuildBuilding: RecordPrebuildBuildingRequest,
-  jobInputsTarget: JobInputsTargetRequest,
-  bindJobRun: BindJobRunRequest,
-  workflowRunReported: WorkflowRunReportedRequest,
   prebuildDeadlineReached: PrebuildDeadlineReachedRequest,
-  startGitHubActionsPrebuild: StartGitHubActionsPrebuildRequest,
   startHostPrebuild: StartHostPrebuildRequest,
-  uploadTarget: UploadTargetRequest,
-  bindCircleCIUploadJob: BindCircleCIUploadJobRequest,
-  startPrebuildUpload: StartPrebuildUploadRequest,
-  completePrebuildUpload: CompletePrebuildUploadRequest,
   getPrebuildFailure: GetPrebuildFailureRequest,
-  dispatchCircleCIPrebuild: DispatchCircleCIPrebuildRequest,
-  circleCIWorkflowCompleted: CircleCIWorkflowCompletedRequest,
   repositoryReadToken: RepositoryReadTokenRequest,
   startSession: StartSessionRequest,
   startSessionFromIssue: StartSessionFromIssueRequest,
@@ -2265,18 +1880,6 @@ union TenantRequest {
   transcriptCursor: TranscriptCursorRequest,
   connectedAccounts: ConnectedAccountsRequest,
   deleteBuildConnection: DeleteBuildConnectionRequest,
-  circleCIConnection: CircleCIConnectionRequest,
-  circleCIToken: CircleCITokenRequest,
-  connectCircleCI: ConnectCircleCIRequest,
-  listCircleCIProjects: ListCircleCIProjectsRequest,
-  circleCIProjectBoundTo: CircleCIProjectBoundToRequest,
-  circleCIProjectOf: CircleCIProjectOfRequest,
-  addCircleCIProject: AddCircleCIProjectRequest,
-  circleCIWebhooks: CircleCIWebhooksRequest,
-  circleCIWebhookSecret: CircleCIWebhookSecretRequest,
-  deleteCircleCIProject: DeleteCircleCIProjectRequest,
-  gitHubActionsConnection: GitHubActionsConnectionRequest,
-  connectGitHubActions: ConnectGitHubActionsRequest,
   namespaceConnection: NamespaceConnectionRequest,
   connectNamespace: ConnectNamespaceRequest,
   offerSent: OfferSentRequest,
@@ -2708,48 +2311,10 @@ model OpenRouterSecretSetsResult {
   @maxItems(10000) names: ShortText[];
 }
 
-model CircleCIAuthorizationStartedOk {
-  kind: "Started";
-  authorization: CircleCIAuthorization;
-}
-
-model CircleCIRegistrationRefused {
-  kind: "RegistrationRefused";
-  detail: Detail;
-}
-
-model StartCircleCIAuthorizationResult {
-  started: CircleCIAuthorizationStartedOk | CircleCIRegistrationRefused;
-}
-
-model CircleCIAuthorizationSteppedOk {
-  kind: "Stepped";
-  authorization: CircleCIAuthorization;
-}
-
 model AuthorizationNotWaiting {
   kind: "NotWaiting";
   detail: Detail;
 }
-
-model AuthorizationInvalid {
-  kind: "Invalid";
-  detail: Detail;
-}
-
-model CircleCIAuthorizationStepped {
-  stepped: CircleCIAuthorizationSteppedOk | AuthorizationNotFound | AuthorizationNotWaiting | AuthorizationInvalid;
-}
-
-model CompleteCircleCIAuthorizationResult {
-  ...CircleCIAuthorizationStepped;
-}
-
-model ChooseCircleCIOrganizationResult {
-  ...CircleCIAuthorizationStepped;
-}
-
-model CircleCIAuthorizationDeadlineReachedResult {}
 
 model ImageAvailability {
   harness: ShortText;
@@ -2915,94 +2480,11 @@ model HeldPrebuildResult {
 
 model RecordPrebuildBuildingResult {}
 
-model CallerWorkflowConnected {
-  kind: "Connected";
-  callerWorkflow: ShortText;
-}
-
-model CallerWorkflowNotConnected {
-  kind: "NotConnected";
-}
-
-model JobInputsTarget {
-  prebuild: Prebuild;
-  defaultBranch: ShortText;
-  callerWorkflow: CallerWorkflowConnected | CallerWorkflowNotConnected;
-  headSha: ShortText;
-  rootfsKey: PathText;
-}
-
-model JobInputsTargetResult {
-  target: JobInputsTarget | null;
-}
-
-model JobRunBoundOk {
-  kind: "Bound";
-  prebuild: Prebuild;
-}
-
-model JobRunOther {
-  kind: "OtherRun";
-  runId: int64;
-}
-
-model BindJobRunResult {
-  bound: JobRunBoundOk | JobRunOther;
-}
-
-model WorkflowRunReportedResult {}
-
 model PrebuildDeadlineReachedResult {}
-
-model PrebuildStarted {
-  kind: "Started";
-  prebuild: Prebuild;
-}
-
-model PrebuildNoInstallation {
-  kind: "NoInstallation";
-}
-
-model PrebuildTokenRefused {
-  kind: "TokenRefused";
-  detail: Detail;
-}
-
-model PrebuildUnreadable {
-  kind: "Unreadable";
-  detail: Detail;
-}
-
-model PrebuildPermissionMissing {
-  kind: "PermissionMissing";
-  @maxItems(100) permissions: ShortText[];
-  appSlug: ShortText;
-}
-
-model PrebuildAppPermissionMissing {
-  kind: "AppPermissionMissing";
-  @maxItems(100) permissions: ShortText[];
-  appSlug: ShortText;
-  appOwner: ShortText;
-}
-
-model PrebuildCallerRefused {
-  kind: "CallerRefused";
-  detail: Detail;
-}
-
-model PrebuildActionsDisabled {
-  kind: "ActionsDisabled";
-  detail: Detail;
-}
 
 model PrebuildRefused {
   kind: "Refused";
   detail: Detail;
-}
-
-model StartGitHubActionsPrebuildResult {
-  started: PrebuildStarted | PrebuildNoInstallation | PrebuildTokenRefused | PrebuildUnreadable | PrebuildPermissionMissing | PrebuildAppPermissionMissing | PrebuildCallerRefused | PrebuildActionsDisabled | PrebuildRefused;
 }
 
 model HostPrebuildStarted {
@@ -3028,119 +2510,9 @@ model StartHostPrebuildResult {
   started: HostPrebuildStarted | StartDraining | StartUnplaced | StartConnectorDisconnected | ClaudeSetupReleaseUnreadable;
 }
 
-model PrebuildRun {
-  runId: int64;
-  headSha: ShortText;
-}
-
-model UploadJobRecorded {
-  kind: "Job";
-  jobId: ShortText;
-}
-
-model UploadJobAbsent {
-  kind: "NoJob";
-}
-
-model RecordedPipeline {
-  pipelineId: ShortText;
-  projectId: ShortText;
-  headSha: ShortText;
-  job: UploadJobRecorded | UploadJobAbsent;
-}
-
-model GitHubActionsUploadTarget {
-  provider: "GitHubActions";
-  prebuild: Prebuild;
-  defaultBranch: ShortText;
-  upload: PrebuildLayerUpload | null;
-  callerWorkflow: CallerWorkflowConnected | CallerWorkflowNotConnected;
-  run: PrebuildRun;
-}
-
-model CircleCIUploadTarget {
-  provider: "CircleCI";
-  prebuild: Prebuild;
-  defaultBranch: ShortText;
-  upload: PrebuildLayerUpload | null;
-  organizationId: ShortText;
-  pipeline: RecordedPipeline;
-}
-
-model UploadTargetResult {
-  target: GitHubActionsUploadTarget | CircleCIUploadTarget | null;
-}
-
-model CircleCIJobBoundOk {
-  kind: "Bound";
-}
-
-model CircleCIJobOther {
-  kind: "OtherJob";
-  jobId: ShortText;
-}
-
-model CircleCIRevisionMoved {
-  kind: "RevisionMoved";
-  prebuild: Prebuild;
-}
-
-model CircleCIJobRefused {
-  kind: "Refused";
-  status: int32;
-  detail: Detail;
-}
-
-model BindCircleCIUploadJobResult {
-  bound: CircleCIJobBoundOk | CircleCIJobOther | CircleCIRevisionMoved | CircleCIJobRefused;
-}
-
-model UploadRecordedOk {
-  kind: "Recorded";
-  prebuild: Prebuild;
-}
-
-model UploadNotUploading {
-  kind: "NotUploading";
-  prebuild: Prebuild;
-}
-
-model UploadOtherLayer {
-  kind: "OtherLayer";
-  prebuild: Prebuild;
-  recorded: PrebuildLayerUpload;
-}
-
-model UploadRecorded {
-  recorded: UploadRecordedOk | UploadNotUploading | UploadOtherLayer;
-}
-
-model StartPrebuildUploadResult {
-  ...UploadRecorded;
-}
-
-model CompletePrebuildUploadResult {
-  ...UploadRecorded;
-}
-
 model GetPrebuildFailureResult {
   failure: PrebuildFailure | null;
 }
-
-model CircleCIDispatched {
-  kind: "Dispatched";
-  prebuild: Prebuild;
-}
-
-model CircleCIDispatchNotConnected {
-  kind: "NotConnected";
-}
-
-model DispatchCircleCIPrebuildResult {
-  dispatched: CircleCIDispatched | CircleCIDispatchNotConnected | PrebuildRefused;
-}
-
-model CircleCIWorkflowCompletedResult {}
 
 model ReadTokenOk {
   kind: "Token";
@@ -3597,8 +2969,6 @@ model TranscriptCursorResult {
 }
 
 model ConnectedAccounts {
-  GitHubActions: ShortText | null;
-  CircleCI: ShortText | null;
   Namespace: ShortText | null;
 }
 
@@ -3608,79 +2978,6 @@ model ConnectedAccountsResult {
 
 model DeleteBuildConnectionResult {
   deleted: boolean;
-}
-
-model CircleCICredentialAuthorized {
-  kind: "Authorized";
-  @doc("When the OAuth token expires, in epoch milliseconds.")
-  expiresAtMs: int64;
-}
-
-model CircleCICredentialPasted {
-  kind: "Pasted";
-}
-
-@doc("The tenant's CircleCI connection as the tenant Durable Object stores it, without its secret.")
-model CircleCIConnectionRecord {
-  circleCIConnectionId: EntityId;
-  accountLabel: ShortText;
-  organizationId: ShortText;
-  credential: CircleCICredentialAuthorized | CircleCICredentialPasted;
-  createdAt: int64;
-  updatedAt: int64;
-}
-
-model CircleCIConnectionResult {
-  connection: CircleCIConnectionRecord | null;
-}
-
-model CircleCITokenResult {
-  token: Token | null;
-}
-
-model ConnectCircleCIResult {
-  connection: CircleCIConnectionRecord;
-}
-
-model ListCircleCIProjectsResult {
-  @maxItems(10000) projects: CircleCIProject[];
-}
-
-model CircleCIProjectBoundToResult {
-  project: CircleCIProject | null;
-}
-
-model CircleCIProjectOfResult {
-  project: CircleCIProject | null;
-}
-
-model AddCircleCIProjectResult {
-  project: CircleCIProject;
-}
-
-model CircleCIWebhook {
-  circleCIProjectId: EntityId;
-  webhookId: ShortText;
-}
-
-model CircleCIWebhooksResult {
-  @maxItems(10000) webhooks: CircleCIWebhook[];
-}
-
-model CircleCIWebhookSecretResult {
-  secret: Token | null;
-}
-
-model DeleteCircleCIProjectResult {
-  deleted: boolean;
-}
-
-model GitHubActionsConnectionResult {
-  connection: GitHubActionsConnection | null;
-}
-
-model ConnectGitHubActionsResult {
-  connection: GitHubActionsConnection;
 }
 
 @doc("The tenant's Namespace connection as the tenant Durable Object stores it.")

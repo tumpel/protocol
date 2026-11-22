@@ -1,6 +1,5 @@
 import "@typespec/http";
 import "./models.tsp";
-import "./build-provider.tsp";
 
 using TypeSpec.Http;
 
@@ -125,9 +124,6 @@ model Prebuild {
     """)
   guestImageDigest: Sha256Digest;
 
-  @doc("The provider the start named. The prebuild runs on one of the tenant's online Amd64 hosts, as a turn of a session the session list leaves out.")
-  provider: BuildProvider;
-
   configSource: PrebuildConfigSource;
 
   status: PrebuildStatus;
@@ -167,9 +163,6 @@ model PrebuildStart {
   @doc("The persona whose secret set's GITHUB_TOKEN reads the repository when the tenant's GitHub App installation does not cover it, and whose harness version picks the guest image.")
   personaId: EntityId;
 
-  @doc("Recorded on the prebuild; the prebuild runs on one of the tenant's online Amd64 hosts, which builds no other prebuild.")
-  provider: BuildProvider;
-
   @doc("Start a job even when a prebuild with the same key is stored or running; false when left out.")
   rebuild?: boolean;
 }
@@ -178,63 +171,6 @@ model PrebuildListQuery {
   @doc("A GitHub repository, in any form a start accepts. Leave it out to list every prebuild of the tenant.")
   @query
   repository?: RepositoryUrl;
-}
-
-@doc("""
-  What a GitHub Actions run of the caller workflow needs to build its prebuild. The start keeps the
-  rest of the job's inputs out of the caller workflow, so the workflow holds only the API origin.
-  """)
-model PrebuildJobInputs {
-  prebuildId: EntityId;
-  tenantId: EntityId;
-
-  @doc("A presigned GET of the guest image's root filesystem tar, valid for the dispatch and build budgets from this answer.")
-  rootfsUrl: HttpUrl;
-
-  @doc("The digest of the guest image the layer is built on.")
-  imageDigest: Sha256Digest;
-}
-
-@doc("""
-  The OIDC token of the prebuild's upload job: a GitHub Actions token, or a CircleCI V2 job token
-  that circleci run oidc get mints. Its aud is the origin of the API the job calls with no trailing
-  slash, such as https://api.example.com.
-  """)
-model ProviderJobToken is BearerAuth;
-
-@doc("Asks for the presigned upload of a prebuild's layer: one OCI layer tar, named by its sha256 and size.")
-model PrebuildUploadStart {
-  @doc("The tenant that started the prebuild; the dispatch hands it to the job with the prebuild id.")
-  tenantId: EntityId;
-
-  layerDigest: Sha256Digest;
-
-  @doc("At most 5 GiB, what one presigned PUT takes.")
-  @minValue(1)
-  @maxValue(5368709120)
-  layerSizeBytes: int64;
-}
-
-@doc("""
-  Where to PUT the layer: one PUT to `url` carrying content-length of the layer size and
-  x-amz-checksum-sha256 of `sha256`, the two headers the URL signs,
-  before `uploadExpiresAt`, the prebuild upload budget after the exchange. /opt/tumpel/prebuild.mjs
-  upload in the guest image asks for it and makes the PUT.
-  """)
-model PrebuildUploadGrant {
-  prebuildId: EntityId;
-  tenantId: EntityId;
-
-  @doc("The layer digest the PUT is signed for.")
-  sha256: Sha256Digest;
-
-  url: HttpUrl;
-  uploadExpiresAt: offsetDateTime;
-}
-
-@doc("Tells the control plane the job uploaded the layer its start recorded.")
-model PrebuildUploadComplete {
-  tenantId: EntityId;
 }
 
 @doc("Where the devcontainer.json a preview reads came from.")
