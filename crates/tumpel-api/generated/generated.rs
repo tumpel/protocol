@@ -39229,6 +39229,7 @@ pub mod types {
     pub enum TenantApiUnplaceable {
         NotOnline(TenantApiUnplaceableNotOnline),
         NotHealthy(TenantApiUnplaceableNotHealthy),
+        NotHeard(TenantApiUnplaceableNotHeard),
         NoImage(TenantApiUnplaceableNoImage),
         Full(TenantApiUnplaceableFull),
         MemoryFull(TenantApiUnplaceableMemoryFull),
@@ -39244,6 +39245,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiUnplaceableNotHealthy> for TenantApiUnplaceable {
         fn from(value: TenantApiUnplaceableNotHealthy) -> Self {
             Self::NotHealthy(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiUnplaceableNotHeard> for TenantApiUnplaceable {
+        fn from(value: TenantApiUnplaceableNotHeard) -> Self {
+            Self::NotHeard(value)
         }
     }
     impl ::std::convert::From<TenantApiUnplaceableNoImage> for TenantApiUnplaceable {
@@ -39794,6 +39800,79 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHealthyReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The host is Online, but it has not sent a Hello since its tenant restarted, so the tenant does not know its usage yet.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiUnplaceableNotHeard {
+        pub host: TenantApiHostRecord,
+        pub kind: TenantApiUnplaceableNotHeardKind,
+        pub reason: TenantApiUnplaceableNotHeardReason,
+    }
+    ///`TenantApiUnplaceableNotHeardKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUnplaceableNotHeardKind {
+        Unplaceable,
+    }
+    impl ::std::fmt::Display for TenantApiUnplaceableNotHeardKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Unplaceable => f.write_str("Unplaceable"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUnplaceableNotHeardKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Unplaceable" => Ok(Self::Unplaceable),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHeardKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHeardKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiUnplaceableNotHeardReason`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUnplaceableNotHeardReason {
+        NotHeard,
+    }
+    impl ::std::fmt::Display for TenantApiUnplaceableNotHeardReason {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::NotHeard => f.write_str("NotHeard"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUnplaceableNotHeardReason {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "NotHeard" => Ok(Self::NotHeard),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHeardReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHeardReason {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -49900,5 +49979,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 18;
+    pub const VERSION: u16 = 19;
 }
