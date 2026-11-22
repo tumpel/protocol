@@ -19028,9 +19028,6 @@
           "$ref": "#/components/schemas/TenantApi.TakeSteersRequest"
         },
         {
-          "$ref": "#/components/schemas/TenantApi.WaitTurnsRequest"
-        },
-        {
           "$ref": "#/components/schemas/TenantApi.ListEventsRequest"
         },
         {
@@ -19306,7 +19303,6 @@
           "steerTurn": "#/components/schemas/TenantApi.SteerTurnRequest",
           "listSteers": "#/components/schemas/TenantApi.ListSteersRequest",
           "takeSteers": "#/components/schemas/TenantApi.TakeSteersRequest",
-          "waitTurns": "#/components/schemas/TenantApi.WaitTurnsRequest",
           "listEvents": "#/components/schemas/TenantApi.ListEventsRequest",
           "listWebhookEndpoints": "#/components/schemas/TenantApi.ListWebhookEndpointsRequest",
           "createWebhookEndpoint": "#/components/schemas/TenantApi.CreateWebhookEndpointRequest",
@@ -20059,28 +20055,6 @@
         },
         "turn": {
           "$ref": "#/components/schemas/Turn"
-        }
-      }
-    },
-    "TenantApi.TurnsRead": {
-      "type": "object",
-      "required": [
-        "kind",
-        "turns"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "Read"
-          ]
-        },
-        "turns": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/Turn"
-          },
-          "maxItems": 10000
         }
       }
     },
@@ -20981,88 +20955,6 @@
                 }
               ],
               "nullable": true
-            }
-          ]
-        }
-      }
-    },
-    "TenantApi.WaitedTurnNotFound": {
-      "type": "object",
-      "required": [
-        "kind",
-        "turnId"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "NotFound"
-          ]
-        },
-        "turnId": {
-          "$ref": "#/components/schemas/EntityId"
-        }
-      }
-    },
-    "TenantApi.WaitTurnsInput": {
-      "type": "object",
-      "required": [
-        "tenantId",
-        "turnIds",
-        "timeoutSeconds"
-      ],
-      "properties": {
-        "tenantId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "turnIds": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/EntityId"
-          },
-          "maxItems": 1000
-        },
-        "timeoutSeconds": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "TenantApi.WaitTurnsRequest": {
-      "type": "object",
-      "required": [
-        "tenantApiVersion",
-        "operation",
-        "input"
-      ],
-      "properties": {
-        "tenantApiVersion": {
-          "$ref": "#/components/schemas/TenantApiProtocol"
-        },
-        "operation": {
-          "type": "string",
-          "enum": [
-            "waitTurns"
-          ]
-        },
-        "input": {
-          "$ref": "#/components/schemas/TenantApi.WaitTurnsInput"
-        }
-      }
-    },
-    "TenantApi.WaitTurnsResult": {
-      "type": "object",
-      "required": [
-        "waited"
-      ],
-      "properties": {
-        "waited": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TenantApi.TurnsRead"
-            },
-            {
-              "$ref": "#/components/schemas/TenantApi.WaitedTurnNotFound"
             }
           ]
         }

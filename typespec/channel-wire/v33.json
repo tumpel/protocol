@@ -963,7 +963,8 @@
         "type",
         "sentAt",
         "usage",
-        "heldSessionIds"
+        "heldSessionIds",
+        "heldClaudeSetupIds"
       ],
       "properties": {
         "type": {
@@ -985,6 +986,14 @@
             "$ref": "#/components/schemas/EntityId"
           },
           "maxItems": 1000
+        },
+        "heldClaudeSetupIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/EntityId"
+          },
+          "maxItems": 1000,
+          "description": "The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name."
         },
         "health": {
           "allOf": [

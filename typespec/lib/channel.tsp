@@ -166,6 +166,10 @@ model HostHeartbeat {
   usage: HostUsage;
   @maxItems(1000) heldSessionIds: EntityId[];
 
+  @doc("The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name.")
+  @maxItems(1000)
+  heldClaudeSetupIds: EntityId[];
+
   @doc("The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.")
   health?: HostReportedHealth;
 }

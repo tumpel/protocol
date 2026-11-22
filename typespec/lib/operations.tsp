@@ -651,20 +651,6 @@ model MetricTurnQuery {
   cursor?: Summary;
 }
 
-model TurnWaitQuery {
-  @doc("A turn to wait on; repeat it to wait on several turns of any of the tenant's sessions.")
-  @query(#{ explode: true })
-  @minItems(1)
-  @maxItems(50)
-  turnId: EntityId[];
-
-  @doc("The most seconds to wait for one of the turns to end.")
-  @query
-  @minValue(0)
-  @maxValue(50)
-  timeoutSeconds: int32;
-}
-
 model TranscriptQuery {
   @doc("The cursor of an earlier page: the lineSeq after which this page starts. Leave it out to read from the first line.")
   @query
@@ -1209,15 +1195,6 @@ namespace V1 {
     @route("/sessions/{sessionId}/turns")
     @get
     list(...SessionPath): Turn[] | ProblemResponse;
-
-    @doc("""
-      Waits until one of the turns is Completed or Failed, or until timeoutSeconds pass, then reads
-      every turn in the order asked; answers at once when one has already ended. Refused NotFound,
-      naming the turn, when a turnId names no turn of the tenant.
-      """)
-    @route("/turns/wait")
-    @get
-    wait(...TurnWaitQuery): Turn[] | ProblemResponse;
 
     @doc("Reads one turn; its state is Offered, Running, Completed or Failed.")
     @route("/turns/{turnId}")

@@ -865,12 +865,6 @@ model CancelTurnInput {
   now: int64;
 }
 
-model WaitTurnsInput {
-  tenantId: EntityId;
-  @maxItems(1000) turnIds: EntityId[];
-  timeoutSeconds: int32;
-}
-
 model ListEventsInput {
   tenantId: EntityId;
 
@@ -1775,12 +1769,6 @@ model TakeSteersRequest {
   input: TakeSteersInput;
 }
 
-model WaitTurnsRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "waitTurns";
-  input: WaitTurnsInput;
-}
-
 model ListEventsRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "listEvents";
@@ -2245,7 +2233,6 @@ union TenantRequest {
   steerTurn: SteerTurnRequest,
   listSteers: ListSteersRequest,
   takeSteers: TakeSteersRequest,
-  waitTurns: WaitTurnsRequest,
   listEvents: ListEventsRequest,
   listWebhookEndpoints: ListWebhookEndpointsRequest,
   createWebhookEndpoint: CreateWebhookEndpointRequest,
@@ -3379,20 +3366,6 @@ model SteerInboxClosed {
 
 model TakeSteersResult {
   taken: SteersTaken | SteerInboxClosed;
-}
-
-model TurnsRead {
-  kind: "Read";
-  @maxItems(10000) turns: Turn[];
-}
-
-model WaitedTurnNotFound {
-  kind: "NotFound";
-  turnId: EntityId;
-}
-
-model WaitTurnsResult {
-  waited: TurnsRead | WaitedTurnNotFound;
 }
 
 model EventsRead {

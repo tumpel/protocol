@@ -2532,6 +2532,9 @@ pub mod types {
         ///The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub health: ::std::option::Option<HostReportedHealth>,
+        ///The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name.
+        #[serde(rename = "heldClaudeSetupIds")]
+        pub held_claude_setup_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "heldSessionIds")]
         pub held_session_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "sentAt")]
@@ -42170,7 +42173,6 @@ pub mod types {
         SteerTurnRequest(TenantApiSteerTurnRequest),
         ListSteersRequest(TenantApiListSteersRequest),
         TakeSteersRequest(TenantApiTakeSteersRequest),
-        WaitTurnsRequest(TenantApiWaitTurnsRequest),
         ListEventsRequest(TenantApiListEventsRequest),
         ListWebhookEndpointsRequest(TenantApiListWebhookEndpointsRequest),
         CreateWebhookEndpointRequest(TenantApiCreateWebhookEndpointRequest),
@@ -42648,11 +42650,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiTakeSteersRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiTakeSteersRequest) -> Self {
             Self::TakeSteersRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiWaitTurnsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiWaitTurnsRequest) -> Self {
-            Self::WaitTurnsRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiListEventsRequest> for TenantApiTenantRequest {
@@ -44104,45 +44101,6 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiTurnStrandedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiTurnsRead`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiTurnsRead {
-        pub kind: TenantApiTurnsReadKind,
-        pub turns: ::std::vec::Vec<Turn>,
-    }
-    ///`TenantApiTurnsReadKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiTurnsReadKind {
-        Read,
-    }
-    impl ::std::fmt::Display for TenantApiTurnsReadKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Read => f.write_str("Read"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiTurnsReadKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Read" => Ok(Self::Read),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiTurnsReadKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTurnsReadKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -45611,120 +45569,6 @@ pub mod types {
         pub subtype_0: ::std::option::Option<TenantApiGitHubActionsUploadTarget>,
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
         pub subtype_1: ::std::option::Option<TenantApiCircleCiUploadTarget>,
-    }
-    ///`TenantApiWaitTurnsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsInput {
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "timeoutSeconds")]
-        pub timeout_seconds: i32,
-        #[serde(rename = "turnIds")]
-        pub turn_ids: ::std::vec::Vec<EntityId>,
-    }
-    ///`TenantApiWaitTurnsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsRequest {
-        pub input: TenantApiWaitTurnsInput,
-        pub operation: TenantApiWaitTurnsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiWaitTurnsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiWaitTurnsRequestOperation {
-        #[serde(rename = "waitTurns")]
-        WaitTurns,
-    }
-    impl ::std::fmt::Display for TenantApiWaitTurnsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::WaitTurns => f.write_str("waitTurns"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiWaitTurnsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "waitTurns" => Ok(Self::WaitTurns),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiWaitTurnsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiWaitTurnsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiWaitTurnsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsResult {
-        pub waited: TenantApiWaitTurnsResultWaited,
-    }
-    ///`TenantApiWaitTurnsResultWaited`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiWaitTurnsResultWaited {
-        TurnsRead(TenantApiTurnsRead),
-        WaitedTurnNotFound(TenantApiWaitedTurnNotFound),
-    }
-    impl ::std::convert::From<TenantApiTurnsRead> for TenantApiWaitTurnsResultWaited {
-        fn from(value: TenantApiTurnsRead) -> Self {
-            Self::TurnsRead(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiWaitedTurnNotFound> for TenantApiWaitTurnsResultWaited {
-        fn from(value: TenantApiWaitedTurnNotFound) -> Self {
-            Self::WaitedTurnNotFound(value)
-        }
-    }
-    ///`TenantApiWaitedTurnNotFound`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitedTurnNotFound {
-        pub kind: TenantApiWaitedTurnNotFoundKind,
-        #[serde(rename = "turnId")]
-        pub turn_id: EntityId,
-    }
-    ///`TenantApiWaitedTurnNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiWaitedTurnNotFoundKind {
-        NotFound,
-    }
-    impl ::std::fmt::Display for TenantApiWaitedTurnNotFoundKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotFound => f.write_str("NotFound"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiWaitedTurnNotFoundKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotFound" => Ok(Self::NotFound),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiWaitedTurnNotFoundKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiWaitedTurnNotFoundKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
     }
     ///`TenantApiWorkflowRunReportedInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -55770,60 +55614,6 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "triggers_update",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Waits until one of the turns is Completed or Failed, or until timeoutSeconds pass, then reads
-    ///every turn in the order asked; answers at once when one has already ended. Refused NotFound,
-    ///naming the turn, when a turnId names no turn of the tenant.
-    ///
-    ///Sends a `GET` request to `/v1/turns/wait`
-    ///
-    ///Arguments:
-    ///- `timeout_seconds`: The most seconds to wait for one of the turns to end.
-    ///- `turn_id`: A turn to wait on; repeat it to wait on several turns of any of the tenant's sessions.
-    pub async fn turns_wait<'a>(
-        &'a self,
-        timeout_seconds: i32,
-        turn_id: &'a ::std::vec::Vec<types::EntityId>,
-    ) -> Result<ResponseValue<::std::vec::Vec<types::Turn>>, Error<types::Problem>> {
-        let url = format!("{}/v1/turns/wait", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .query(&progenitor_client::QueryParam::new("timeoutSeconds", &timeout_seconds))
-            .query(&progenitor_client::QueryParam::new("turnId", &turn_id))
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "turns_wait",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;
