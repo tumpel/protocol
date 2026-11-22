@@ -136,7 +136,7 @@ enum BoxRetention {
   @doc("The control plane snapshots the box and tears it down as soon as the turn ends; the session reads Stopped, and its next turn boots a fresh box from the snapshot.")
   Off: "Off",
 
-  @doc("The box stays paused until a person stops or archives the session. Placement never evicts it.")
+  @doc("The box stays paused until a person stops or archives the session, or until it has been idle for the turn offer's idleSeconds. Placement never evicts it.")
   Warm: "Warm",
 
   @doc("The box stays paused until placement evicts it to free room for another session's turn; the eviction snapshots the box when needed, tears it down and leaves the session Stopped.")

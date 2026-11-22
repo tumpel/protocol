@@ -4228,7 +4228,7 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
-        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops or idleSeconds pass with no turn.
+        ///What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays.
         #[serde(rename = "boxRetention")]
         pub box_retention: BoxRetention,
         pub credential: ChannelDispatchGrant,
@@ -4239,7 +4239,7 @@ pub mod types {
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: ChannelTurnOfferHarnessVersion,
-        ///How long the host keeps an idle box before it tears it down; the control plane's idle policy.
+        ///The idle time of a Warm box, as BoxRetention defines; the control plane's idle policy.
         #[serde(rename = "idleSeconds")]
         pub idle_seconds: ::std::num::NonZeroU32,
         pub image: ChannelBootImage,
@@ -22576,13 +22576,13 @@ pub mod types {
     pub struct SupervisorHandoverBox {
         #[serde(rename = "boxId")]
         pub box_id: EntityId,
-        ///What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm one until the session stops.
+        ///What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm one as BoxRetention defines.
         #[serde(rename = "boxRetention")]
         pub box_retention: BoxRetention,
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<CredentialText>,
         pub dirty: bool,
-        ///The idle time left before the box is torn down at the handover, so an update does not reset the offer's idleSeconds; like turnMilliseconds, it counts down from the offer's budget.
+        ///The idle time left at the handover, counting down from the offer's idleSeconds as turnMilliseconds does for the turn, so an update does not reset it.
         #[serde(rename = "idleMilliseconds")]
         pub idle_milliseconds: i64,
         pub image: SupervisorHandoverImage,
@@ -23319,7 +23319,7 @@ pub mod types {
     ///`memoryMib` is the memory of a box whose TurnOffer names no boxMemoryMib, BoxMemoryLimit.DefaultMib by default.
     ///`overlayMib` is the disk of a box whose TurnOffer names no boxDiskMib, 32768 by default; the drive
     ///is a sparse file, so the host's disk holds only what the box wrote.
-    ///A paused box stays until BoxTeardown or BoxDiscard names it, and a box that does not fit is
+    ///A paused box stays as BoxRetention defines or until BoxTeardown or BoxDiscard names it, and a box that does not fit is
     ///refused PoolExhausted without touching another box.
     ///`heartbeatIntervalSeconds` is how often the supervisor sends a Heartbeat after Welcome, 10 by
     ///default; it matches heartbeatIntervalSeconds of the control plane, whose heartbeatDeadlineSeconds
@@ -36387,13 +36387,13 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
-        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops or idleSeconds pass with no turn.
+        ///What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays.
         #[serde(rename = "boxRetention")]
         pub box_retention: BoxRetention,
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: TenantApiStoredTurnOfferHarnessVersion,
-        ///How long the host keeps an idle box before it tears it down; the control plane's idle policy.
+        ///The idle time of a Warm box, as BoxRetention defines; the control plane's idle policy.
         #[serde(rename = "idleSeconds")]
         pub idle_seconds: ::std::num::NonZeroU32,
         pub model: ModelName,

@@ -15328,7 +15328,7 @@
               "$ref": "#/components/schemas/BoxRetention"
             }
           ],
-          "description": "What the host does with the session's box after the turn ends; a Warm box stays until the session stops or idleSeconds pass with no turn."
+          "description": "What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays."
         },
         "turnSeconds": {
           "type": "integer",
@@ -15340,7 +15340,7 @@
           "type": "integer",
           "format": "int32",
           "minimum": 1,
-          "description": "How long the host keeps an idle box before it tears it down; the control plane's idle policy."
+          "description": "The idle time of a Warm box, as BoxRetention defines; the control plane's idle policy."
         },
         "boxMemoryMib": {
           "type": "integer",
