@@ -6,7 +6,10 @@ fn a_problem_with_a_code_this_client_does_not_know_still_reads_with_its_title_an
         r#"{"code":"SomethingAddedLater","title":"New refusal","detail":"what failed","fix":"what to do"}"#,
     )
     .expect("an unknown code reads");
-    assert_eq!(problem.code, ProblemCode::Unknown("SomethingAddedLater".to_string()));
+    assert_eq!(
+        problem.code,
+        ProblemCode::Unrecognised("SomethingAddedLater".to_string())
+    );
     assert_eq!(problem.code.to_string(), "SomethingAddedLater");
     assert_eq!(problem.title.as_str(), "New refusal");
     assert_eq!(problem.fix.as_str(), "what to do");

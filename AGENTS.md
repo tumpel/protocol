@@ -21,4 +21,4 @@ Always follow `rules/errors.md` and `rules/coding-standards.md`.
 
 ## Client compatibility
 
-Clients ship before the back end. Every generated Rust enum must decode an unknown value into an explicit Unknown variant and preserve its wire value. Discriminated unions must select known variants by their discriminator and retain unknown shapes for clients to report an update without crashing.
+Clients ship before the back end. Every generated Rust enum must decode an unknown value into an explicit Unrecognised variant and preserve its wire value. Discriminated unions must select known variants by their discriminator and retain unknown shapes for clients to report an update without crashing.

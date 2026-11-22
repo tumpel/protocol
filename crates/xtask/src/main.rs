@@ -199,7 +199,7 @@ fn display_unrecognised(implemented: &mut syn::ItemImpl) -> bool {
     };
     matched
         .arms
-        .push(syn::parse_quote!(Self::Unknown(ref code) => f.write_str(code)));
+        .push(syn::parse_quote!(Self::Unrecognised(ref code) => f.write_str(code)));
     true
 }
 
@@ -218,11 +218,11 @@ fn open_enum(items: &mut [syn::Item], name: &str) -> Result<(), String> {
                     .iter()
                     .any(|variant| !matches!(variant.fields, syn::Fields::Unit));
                 let fallback = if union {
-                    syn::parse_quote!(Unknown(::serde_json::Value))
+                    syn::parse_quote!(Unrecognised(::serde_json::Value))
                 } else {
                     syn::parse_quote!(
                         #[serde(untagged)]
-                        Unknown(::std::string::String)
+                        Unrecognised(::std::string::String)
                     )
                 };
                 declared.variants.push(fallback);
@@ -305,7 +305,7 @@ fn discriminate_enums(file: &mut syn::File, spec: &openapiv3::OpenAPI) -> Result
                 arms.push(quote! {
                     Some(#value) => match ::serde_json::from_value::<#payload>(value.clone()) {
                         Ok(known) => Self::#member(known),
-                        Err(_) => Self::Unknown(value),
+                        Err(_) => Self::Unrecognised(value),
                     }
                 });
             }
@@ -325,7 +325,7 @@ fn discriminate_enums(file: &mut syn::File, spec: &openapiv3::OpenAPI) -> Result
                     let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
                     Ok(match value.get(#tag).and_then(::serde_json::Value::as_str) {
                         #(#arms,)*
-                        _ => Self::Unknown(value),
+                        _ => Self::Unrecognised(value),
                     })
                 }
             }
