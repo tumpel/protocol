@@ -12868,7 +12868,6 @@
         "tenantId",
         "hostId",
         "heldSessionIds",
-        "heldClaudeSetupIds",
         "now"
       ],
       "properties": {
@@ -12879,13 +12878,6 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "heldSessionIds": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/EntityId"
-          },
-          "maxItems": 1000
-        },
-        "heldClaudeSetupIds": {
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/EntityId"
@@ -15283,8 +15275,7 @@
         "model",
         "prompt",
         "boxRetention",
-        "turnSeconds",
-        "idleSeconds"
+        "turnSeconds"
       ],
       "properties": {
         "type": {
@@ -15328,19 +15319,13 @@
               "$ref": "#/components/schemas/BoxRetention"
             }
           ],
-          "description": "What the host does with the session's box after the turn ends; a Warm box stays until the session stops or idleSeconds pass with no turn."
+          "description": "What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout."
         },
         "turnSeconds": {
           "type": "integer",
           "format": "int32",
           "minimum": 1,
           "description": "How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds."
-        },
-        "idleSeconds": {
-          "type": "integer",
-          "format": "int32",
-          "minimum": 1,
-          "description": "How long the host keeps an idle box before it tears it down; the control plane's idle policy."
         },
         "boxMemoryMib": {
           "type": "integer",

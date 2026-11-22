@@ -5,7 +5,7 @@ import "./release.tsp";
 import "./issuer.tsp";
 import "./prebuild.tsp";
 import "./prebuild-template.tsp";
-import "./build-provider.tsp";
+import "./connection.tsp";
 import "./config.tsp";
 import "./claude-setup.tsp";
 

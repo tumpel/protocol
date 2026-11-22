@@ -4228,7 +4228,7 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
-        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops or idleSeconds pass with no turn.
+        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout.
         #[serde(rename = "boxRetention")]
         pub box_retention: BoxRetention,
         pub credential: ChannelDispatchGrant,
@@ -4239,9 +4239,6 @@ pub mod types {
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: ChannelTurnOfferHarnessVersion,
-        ///How long the host keeps an idle box before it tears it down; the control plane's idle policy.
-        #[serde(rename = "idleSeconds")]
-        pub idle_seconds: ::std::num::NonZeroU32,
         pub image: ChannelBootImage,
         #[serde(rename = "lastLineSeq")]
         pub last_line_seq: Sequence,
@@ -22582,9 +22579,6 @@ pub mod types {
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<CredentialText>,
         pub dirty: bool,
-        ///The idle time left before the box is torn down at the handover, so an update does not reset the offer's idleSeconds; like turnMilliseconds, it counts down from the offer's budget.
-        #[serde(rename = "idleMilliseconds")]
-        pub idle_milliseconds: i64,
         pub image: SupervisorHandoverImage,
         pub machine: SupervisorHandoverMachine,
         pub queued: ::std::vec::Vec<SupervisorHandoverCommand>,
@@ -32881,8 +32875,6 @@ pub mod types {
     ///`TenantApiReconcileHeldBoxesInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiReconcileHeldBoxesInput {
-        #[serde(rename = "heldClaudeSetupIds")]
-        pub held_claude_setup_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "heldSessionIds")]
         pub held_session_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "hostId")]
@@ -36387,15 +36379,12 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
-        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops or idleSeconds pass with no turn.
+        ///What the host does with the session's box after the turn ends; a Warm box stays until the session stops, with no idle timeout.
         #[serde(rename = "boxRetention")]
         pub box_retention: BoxRetention,
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: TenantApiStoredTurnOfferHarnessVersion,
-        ///How long the host keeps an idle box before it tears it down; the control plane's idle policy.
-        #[serde(rename = "idleSeconds")]
-        pub idle_seconds: ::std::num::NonZeroU32,
         pub model: ModelName,
         #[serde(rename = "prebuildCommitSha", skip_serializing_if = "::std::option::Option::is_none")]
         pub prebuild_commit_sha: ::std::option::Option<TenantApiStoredTurnOfferPrebuildCommitSha>,
@@ -49900,7 +49889,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 18;
-    pub const VERSION: u16 = 34;
+    pub const VERSION: u16 = 33;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;

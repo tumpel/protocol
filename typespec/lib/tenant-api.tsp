@@ -2,7 +2,6 @@ import "./models.tsp";
 import "./operations.tsp";
 import "./channel.tsp";
 import "./prebuild.tsp";
-import "./build-provider.tsp";
 import "./events.tsp";
 import "./notifications.tsp";
 import "./subscriptions.tsp";
@@ -950,7 +949,6 @@ model ReconcileHeldBoxesInput {
   tenantId: EntityId;
   hostId: EntityId;
   @maxItems(1000) heldSessionIds: EntityId[];
-  @maxItems(1000) heldClaudeSetupIds: EntityId[];
   now: int64;
 }
 
