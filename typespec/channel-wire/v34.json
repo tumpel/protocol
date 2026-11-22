@@ -2056,7 +2056,7 @@
           "type": "integer",
           "format": "int32",
           "minimum": 1,
-          "description": "The idle time of a Warm box, as BoxRetention defines; the control plane's idle policy."
+          "description": "The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy."
         },
         "boxMemoryMib": {
           "type": "integer",

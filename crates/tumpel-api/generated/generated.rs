@@ -4239,7 +4239,7 @@ pub mod types {
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: ChannelTurnOfferHarnessVersion,
-        ///The idle time of a Warm box, as BoxRetention defines; the control plane's idle policy.
+        ///The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy.
         #[serde(rename = "idleSeconds")]
         pub idle_seconds: ::std::num::NonZeroU32,
         pub image: ChannelBootImage,
@@ -6704,24 +6704,12 @@ pub mod types {
         ///The heartbeat interval of the channel, 10 in production: the control plane answers a host message with a Heartbeat once it has sent nothing for half of it. It matches heartbeatIntervalSeconds of the hosts' runtime.json.
         #[serde(rename = "heartbeatIntervalSeconds")]
         pub heartbeat_interval_seconds: ::std::num::NonZeroU32,
-        ///How long a host may take from claiming the prebuild's turn to storing the box's snapshot before the prebuild fails in phase Build, or in phase Upload once the host started storing the snapshot.
-        #[serde(rename = "prebuildBuildBudgetSeconds")]
-        pub prebuild_build_budget_seconds: ::std::num::NonZeroU32,
-        ///How long a prebuild's turn may stay offered before a host claims it; past it the prebuild fails in phase Dispatch.
-        #[serde(rename = "prebuildDispatchBudgetSeconds")]
-        pub prebuild_dispatch_budget_seconds: ::std::num::NonZeroU32,
         ///How long the host may take to answer a SnapshotRequest before the snapshot fails NotAnswered; its presigned upload expires then too.
         #[serde(rename = "snapshotDeadlineSeconds")]
         pub snapshot_deadline_seconds: ::std::num::NonZeroU32,
-        ///How long a session stays idle after a completed turn before the control plane asks for a snapshot. A turn sent sooner resets the wait.
-        #[serde(rename = "snapshotDelaySeconds")]
-        pub snapshot_delay_seconds: i32,
         ///How many lines of a turn go into one transcript chunk object; the last chunk of a turn holds the rest.
         #[serde(rename = "transcriptChunkLines")]
         pub transcript_chunk_lines: ::std::num::NonZeroU32,
-        ///How long a turn may take from TurnRepositoryReady to its first line before it fails NoFirstOutput; it stays at or above firstLineSeconds of the host.
-        #[serde(rename = "turnFirstLineBudgetSeconds")]
-        pub turn_first_line_budget_seconds: ::std::num::NonZeroU32,
         ///How long the host may take to download a guest image its cache lacks, after it sends TurnImageFetching; the offer's image.fetchSeconds. The image URLs stay valid for turnOfferTtlSeconds plus this. A host that runs past it fails the turn ImageFetchTimedOut.
         #[serde(rename = "turnImageFetchBudgetSeconds")]
         pub turn_image_fetch_budget_seconds: ::std::num::NonZeroU32,
@@ -22576,13 +22564,13 @@ pub mod types {
     pub struct SupervisorHandoverBox {
         #[serde(rename = "boxId")]
         pub box_id: EntityId,
-        ///What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm one as BoxRetention defines.
+        ///What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm or Auto one as BoxRetention defines.
         #[serde(rename = "boxRetention")]
         pub box_retention: BoxRetention,
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<CredentialText>,
         pub dirty: bool,
-        ///The idle time left at the handover, counting down from the offer's idleSeconds as turnMilliseconds does for the turn, so an update does not reset it.
+        ///The idle time an Auto box has left at the handover, as BoxRetention defines, counting down from the offer's idleSeconds as turnMilliseconds does for the turn, so an update does not reset it.
         #[serde(rename = "idleMilliseconds")]
         pub idle_milliseconds: i64,
         pub image: SupervisorHandoverImage,
@@ -36389,7 +36377,7 @@ pub mod types {
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: TenantApiStoredTurnOfferHarnessVersion,
-        ///The idle time of a Warm box, as BoxRetention defines; the control plane's idle policy.
+        ///The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy.
         #[serde(rename = "idleSeconds")]
         pub idle_seconds: ::std::num::NonZeroU32,
         pub model: ModelName,

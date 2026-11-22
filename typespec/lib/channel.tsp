@@ -366,7 +366,7 @@ model TurnOffer {
   @minValue(1)
   turnSeconds: int32;
 
-  @doc("The idle time of a Warm box, as BoxRetention defines; the control plane's idle policy.")
+  @doc("The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy.")
   @minValue(1)
   idleSeconds: int32;
 
