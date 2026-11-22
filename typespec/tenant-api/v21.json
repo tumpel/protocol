@@ -214,6 +214,207 @@
         }
       }
     },
+    "ArchivedSession": {
+      "type": "object",
+      "required": [
+        "sessionId",
+        "tenantId",
+        "principalId",
+        "hostId",
+        "boxId",
+        "personaId",
+        "repository",
+        "origin",
+        "startedBy",
+        "tags",
+        "harness",
+        "harnessVersion",
+        "model",
+        "lastTurnId",
+        "lastTurnState",
+        "lastTurnAt",
+        "lastTurn",
+        "boxRetention",
+        "createdAt",
+        "updatedAt",
+        "state"
+      ],
+      "properties": {
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "principalId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "hostId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name."
+        },
+        "origin": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionOrigin"
+            }
+          ],
+          "description": "What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.",
+          "readOnly": true
+        },
+        "startedBy": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionStartedBy"
+            }
+          ],
+          "description": "Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.",
+          "readOnly": true
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags the session carries, each once.",
+          "readOnly": true
+        },
+        "harness": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Harness"
+            }
+          ],
+          "readOnly": true
+        },
+        "harnessVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "readOnly": true
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "lastTurnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session's latest turn. A start offers the first turn together with the session, so every session has one.",
+          "readOnly": true
+        },
+        "lastTurnState": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnState"
+            }
+          ],
+          "readOnly": true
+        },
+        "lastTurnAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the latest turn last changed state.",
+          "readOnly": true
+        },
+        "lastTurn": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Turn"
+            }
+          ],
+          "description": "The session's latest turn, with why it failed once it is Failed.",
+          "readOnly": true
+        },
+        "lastTurnImage": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the latest turn's box boots. Present once the control plane offered the latest turn.",
+          "readOnly": true
+        },
+        "prebuildLayer": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionPrebuildLayer"
+            }
+          ],
+          "description": "The prebuild layer the session's files start from, or why they start without one. The control\nplane records it for each box it boots while the session holds no snapshot of its own; once a\nsnapshot exists, every box restores that snapshot and the layer stays. Present once the control\nplane offered the session's first turn.",
+          "readOnly": true
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What happens to the session's box after each turn, fixed when the session starts.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Archived"
+          ],
+          "readOnly": true
+        }
+      }
+    },
     "BoxRetention": {
       "type": "string",
       "enum": [
@@ -2513,6 +2714,207 @@
       },
       "description": "A page of the tenant's events, oldest first, at most 100. `lastEventId` is the id the read\nreached; pass it as `afterEventId` to read on."
     },
+    "FailedSession": {
+      "type": "object",
+      "required": [
+        "sessionId",
+        "tenantId",
+        "principalId",
+        "hostId",
+        "boxId",
+        "personaId",
+        "repository",
+        "origin",
+        "startedBy",
+        "tags",
+        "harness",
+        "harnessVersion",
+        "model",
+        "lastTurnId",
+        "lastTurnState",
+        "lastTurnAt",
+        "lastTurn",
+        "boxRetention",
+        "createdAt",
+        "updatedAt",
+        "state"
+      ],
+      "properties": {
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "principalId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "hostId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name."
+        },
+        "origin": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionOrigin"
+            }
+          ],
+          "description": "What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.",
+          "readOnly": true
+        },
+        "startedBy": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionStartedBy"
+            }
+          ],
+          "description": "Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.",
+          "readOnly": true
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags the session carries, each once.",
+          "readOnly": true
+        },
+        "harness": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Harness"
+            }
+          ],
+          "readOnly": true
+        },
+        "harnessVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "readOnly": true
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "lastTurnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session's latest turn. A start offers the first turn together with the session, so every session has one.",
+          "readOnly": true
+        },
+        "lastTurnState": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnState"
+            }
+          ],
+          "readOnly": true
+        },
+        "lastTurnAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the latest turn last changed state.",
+          "readOnly": true
+        },
+        "lastTurn": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Turn"
+            }
+          ],
+          "description": "The session's latest turn, with why it failed once it is Failed.",
+          "readOnly": true
+        },
+        "lastTurnImage": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the latest turn's box boots. Present once the control plane offered the latest turn.",
+          "readOnly": true
+        },
+        "prebuildLayer": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionPrebuildLayer"
+            }
+          ],
+          "description": "The prebuild layer the session's files start from, or why they start without one. The control\nplane records it for each box it boots while the session holds no snapshot of its own; once a\nsnapshot exists, every box restores that snapshot and the layer stays. Present once the control\nplane offered the session's first turn.",
+          "readOnly": true
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What happens to the session's box after each turn, fixed when the session starts.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Failed"
+          ],
+          "readOnly": true
+        }
+      }
+    },
     "FailedTurn": {
       "type": "object",
       "required": [
@@ -2930,15 +3332,6 @@
         }
       }
     },
-    "HostPresence": {
-      "type": "string",
-      "enum": [
-        "Online",
-        "Degraded",
-        "Offline"
-      ],
-      "description": "Whether the control plane has heard from a host lately, derived when read from the time of the host's latest Hello or Heartbeat. Nothing is written when it changes."
-    },
     "HostReportedHealth": {
       "type": "string",
       "enum": [
@@ -3007,6 +3400,207 @@
       "format": "uri",
       "maxLength": 4096,
       "description": "A URL the API checks as one."
+    },
+    "IdleSession": {
+      "type": "object",
+      "required": [
+        "sessionId",
+        "tenantId",
+        "principalId",
+        "hostId",
+        "boxId",
+        "personaId",
+        "repository",
+        "origin",
+        "startedBy",
+        "tags",
+        "harness",
+        "harnessVersion",
+        "model",
+        "lastTurnId",
+        "lastTurnState",
+        "lastTurnAt",
+        "lastTurn",
+        "boxRetention",
+        "createdAt",
+        "updatedAt",
+        "state"
+      ],
+      "properties": {
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "principalId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "hostId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name."
+        },
+        "origin": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionOrigin"
+            }
+          ],
+          "description": "What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.",
+          "readOnly": true
+        },
+        "startedBy": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionStartedBy"
+            }
+          ],
+          "description": "Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.",
+          "readOnly": true
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags the session carries, each once.",
+          "readOnly": true
+        },
+        "harness": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Harness"
+            }
+          ],
+          "readOnly": true
+        },
+        "harnessVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "readOnly": true
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "lastTurnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session's latest turn. A start offers the first turn together with the session, so every session has one.",
+          "readOnly": true
+        },
+        "lastTurnState": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnState"
+            }
+          ],
+          "readOnly": true
+        },
+        "lastTurnAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the latest turn last changed state.",
+          "readOnly": true
+        },
+        "lastTurn": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Turn"
+            }
+          ],
+          "description": "The session's latest turn, with why it failed once it is Failed.",
+          "readOnly": true
+        },
+        "lastTurnImage": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the latest turn's box boots. Present once the control plane offered the latest turn.",
+          "readOnly": true
+        },
+        "prebuildLayer": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionPrebuildLayer"
+            }
+          ],
+          "description": "The prebuild layer the session's files start from, or why they start without one. The control\nplane records it for each box it boots while the session holds no snapshot of its own; once a\nsnapshot exists, every box restores that snapshot and the layer stays. Present once the control\nplane offered the session's first turn.",
+          "readOnly": true
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What happens to the session's box after each turn, fixed when the session starts.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Idle"
+          ],
+          "readOnly": true
+        }
+      }
     },
     "ImageHarness": {
       "type": "string",
@@ -4335,6 +4929,207 @@
       "minLength": 1,
       "maxLength": 500
     },
+    "RunningSession": {
+      "type": "object",
+      "required": [
+        "sessionId",
+        "tenantId",
+        "principalId",
+        "hostId",
+        "boxId",
+        "personaId",
+        "repository",
+        "origin",
+        "startedBy",
+        "tags",
+        "harness",
+        "harnessVersion",
+        "model",
+        "lastTurnId",
+        "lastTurnState",
+        "lastTurnAt",
+        "lastTurn",
+        "boxRetention",
+        "createdAt",
+        "updatedAt",
+        "state"
+      ],
+      "properties": {
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "principalId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "hostId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name."
+        },
+        "origin": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionOrigin"
+            }
+          ],
+          "description": "What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.",
+          "readOnly": true
+        },
+        "startedBy": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionStartedBy"
+            }
+          ],
+          "description": "Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.",
+          "readOnly": true
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags the session carries, each once.",
+          "readOnly": true
+        },
+        "harness": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Harness"
+            }
+          ],
+          "readOnly": true
+        },
+        "harnessVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "readOnly": true
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "lastTurnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session's latest turn. A start offers the first turn together with the session, so every session has one.",
+          "readOnly": true
+        },
+        "lastTurnState": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnState"
+            }
+          ],
+          "readOnly": true
+        },
+        "lastTurnAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the latest turn last changed state.",
+          "readOnly": true
+        },
+        "lastTurn": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Turn"
+            }
+          ],
+          "description": "The session's latest turn, with why it failed once it is Failed.",
+          "readOnly": true
+        },
+        "lastTurnImage": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the latest turn's box boots. Present once the control plane offered the latest turn.",
+          "readOnly": true
+        },
+        "prebuildLayer": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionPrebuildLayer"
+            }
+          ],
+          "description": "The prebuild layer the session's files start from, or why they start without one. The control\nplane records it for each box it boots while the session holds no snapshot of its own; once a\nsnapshot exists, every box restores that snapshot and the layer stays. Present once the control\nplane offered the session's first turn.",
+          "readOnly": true
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What happens to the session's box after each turn, fixed when the session starts.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Running"
+          ],
+          "readOnly": true
+        }
+      }
+    },
     "RunningTurn": {
       "type": "object",
       "required": [
@@ -4714,209 +5509,43 @@
     },
     "Session": {
       "type": "object",
-      "required": [
-        "sessionId",
-        "tenantId",
-        "principalId",
-        "hostId",
-        "boxId",
-        "personaId",
-        "repository",
-        "origin",
-        "startedBy",
-        "tags",
-        "harness",
-        "harnessVersion",
-        "model",
-        "state",
-        "lastTurnId",
-        "lastTurnState",
-        "lastTurnAt",
-        "lastTurn",
-        "boxRetention",
-        "createdAt",
-        "updatedAt"
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/StartingSession"
+        },
+        {
+          "$ref": "#/components/schemas/IdleSession"
+        },
+        {
+          "$ref": "#/components/schemas/RunningSession"
+        },
+        {
+          "$ref": "#/components/schemas/StoppingSession"
+        },
+        {
+          "$ref": "#/components/schemas/StoppedSession"
+        },
+        {
+          "$ref": "#/components/schemas/ArchivedSession"
+        },
+        {
+          "$ref": "#/components/schemas/FailedSession"
+        },
+        {
+          "$ref": "#/components/schemas/UnknownSession"
+        }
       ],
-      "properties": {
-        "sessionId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "readOnly": true
-        },
-        "tenantId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "readOnly": true
-        },
-        "principalId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "readOnly": true
-        },
-        "hostId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "readOnly": true
-        },
-        "boxId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "readOnly": true
-        },
-        "personaId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "repository": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/RepositoryUrl"
-            }
-          ],
-          "description": "A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name."
-        },
-        "origin": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/SessionOrigin"
-            }
-          ],
-          "description": "What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.",
-          "readOnly": true
-        },
-        "startedBy": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/SessionStartedBy"
-            }
-          ],
-          "description": "Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.",
-          "readOnly": true
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/SessionTag"
-          },
-          "maxItems": 16,
-          "description": "The tags the session carries, each once.",
-          "readOnly": true
-        },
-        "harness": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/Harness"
-            }
-          ],
-          "readOnly": true
-        },
-        "harnessVersion": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/ShortText"
-            }
-          ],
-          "readOnly": true
-        },
-        "model": {
-          "$ref": "#/components/schemas/ModelName"
-        },
-        "state": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/SessionState"
-            }
-          ],
-          "readOnly": true
-        },
-        "lastTurnId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "description": "The session's latest turn. A start offers the first turn together with the session, so every session has one.",
-          "readOnly": true
-        },
-        "lastTurnState": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/TurnState"
-            }
-          ],
-          "readOnly": true
-        },
-        "lastTurnAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "When the latest turn last changed state.",
-          "readOnly": true
-        },
-        "lastTurn": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/Turn"
-            }
-          ],
-          "description": "The session's latest turn, with why it failed once it is Failed.",
-          "readOnly": true
-        },
-        "lastTurnImage": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/TurnImage"
-            }
-          ],
-          "description": "The image the latest turn's box boots. Present once the control plane offered the latest turn.",
-          "readOnly": true
-        },
-        "prebuildLayer": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/SessionPrebuildLayer"
-            }
-          ],
-          "description": "The prebuild layer the session's files start from, or why they start without one. The control\nplane records it for each box it boots while the session holds no snapshot of its own; once a\nsnapshot exists, every box restores that snapshot and the layer stays. Present once the control\nplane offered the session's first turn.",
-          "readOnly": true
-        },
-        "boxRetention": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/BoxRetention"
-            }
-          ],
-          "description": "What happens to the session's box after each turn, fixed when the session starts.",
-          "readOnly": true
-        },
-        "heardAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "When the session's host last sent a Hello or Heartbeat. Present only while the session reads Unknown.",
-          "readOnly": true
-        },
-        "createdAt": {
-          "type": "integer",
-          "format": "int64",
-          "readOnly": true
-        },
-        "updatedAt": {
-          "type": "integer",
-          "format": "int64",
-          "readOnly": true
+      "discriminator": {
+        "propertyName": "state",
+        "mapping": {
+          "Starting": "#/components/schemas/StartingSession",
+          "Idle": "#/components/schemas/IdleSession",
+          "Running": "#/components/schemas/RunningSession",
+          "Stopping": "#/components/schemas/StoppingSession",
+          "Stopped": "#/components/schemas/StoppedSession",
+          "Archived": "#/components/schemas/ArchivedSession",
+          "Failed": "#/components/schemas/FailedSession",
+          "Unknown": "#/components/schemas/UnknownSession"
         }
       },
       "description": "A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins."
@@ -5227,7 +5856,7 @@
           "description": "The session's tags, each once; none when left out."
         }
       },
-      "description": "A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins."
+      "description": "The fields every session carries, whatever its state."
     },
     "SessionStartedBy": {
       "type": "object",
@@ -5493,6 +6122,207 @@
       },
       "description": "The answer to a start from an issue: the start's answer and the issue the session works."
     },
+    "StartingSession": {
+      "type": "object",
+      "required": [
+        "sessionId",
+        "tenantId",
+        "principalId",
+        "hostId",
+        "boxId",
+        "personaId",
+        "repository",
+        "origin",
+        "startedBy",
+        "tags",
+        "harness",
+        "harnessVersion",
+        "model",
+        "lastTurnId",
+        "lastTurnState",
+        "lastTurnAt",
+        "lastTurn",
+        "boxRetention",
+        "createdAt",
+        "updatedAt",
+        "state"
+      ],
+      "properties": {
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "principalId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "hostId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name."
+        },
+        "origin": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionOrigin"
+            }
+          ],
+          "description": "What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.",
+          "readOnly": true
+        },
+        "startedBy": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionStartedBy"
+            }
+          ],
+          "description": "Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.",
+          "readOnly": true
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags the session carries, each once.",
+          "readOnly": true
+        },
+        "harness": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Harness"
+            }
+          ],
+          "readOnly": true
+        },
+        "harnessVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "readOnly": true
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "lastTurnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session's latest turn. A start offers the first turn together with the session, so every session has one.",
+          "readOnly": true
+        },
+        "lastTurnState": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnState"
+            }
+          ],
+          "readOnly": true
+        },
+        "lastTurnAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the latest turn last changed state.",
+          "readOnly": true
+        },
+        "lastTurn": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Turn"
+            }
+          ],
+          "description": "The session's latest turn, with why it failed once it is Failed.",
+          "readOnly": true
+        },
+        "lastTurnImage": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the latest turn's box boots. Present once the control plane offered the latest turn.",
+          "readOnly": true
+        },
+        "prebuildLayer": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionPrebuildLayer"
+            }
+          ],
+          "description": "The prebuild layer the session's files start from, or why they start without one. The control\nplane records it for each box it boots while the session holds no snapshot of its own; once a\nsnapshot exists, every box restores that snapshot and the layer stays. Present once the control\nplane offered the session's first turn.",
+          "readOnly": true
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What happens to the session's box after each turn, fixed when the session starts.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Starting"
+          ],
+          "readOnly": true
+        }
+      }
+    },
     "StaticConnector": {
       "type": "object",
       "required": [
@@ -5671,6 +6501,408 @@
         "NotAnswered"
       ],
       "description": "Why a stop returned its session to Idle with its box kept."
+    },
+    "StoppedSession": {
+      "type": "object",
+      "required": [
+        "sessionId",
+        "tenantId",
+        "principalId",
+        "hostId",
+        "boxId",
+        "personaId",
+        "repository",
+        "origin",
+        "startedBy",
+        "tags",
+        "harness",
+        "harnessVersion",
+        "model",
+        "lastTurnId",
+        "lastTurnState",
+        "lastTurnAt",
+        "lastTurn",
+        "boxRetention",
+        "createdAt",
+        "updatedAt",
+        "state"
+      ],
+      "properties": {
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "principalId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "hostId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name."
+        },
+        "origin": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionOrigin"
+            }
+          ],
+          "description": "What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.",
+          "readOnly": true
+        },
+        "startedBy": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionStartedBy"
+            }
+          ],
+          "description": "Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.",
+          "readOnly": true
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags the session carries, each once.",
+          "readOnly": true
+        },
+        "harness": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Harness"
+            }
+          ],
+          "readOnly": true
+        },
+        "harnessVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "readOnly": true
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "lastTurnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session's latest turn. A start offers the first turn together with the session, so every session has one.",
+          "readOnly": true
+        },
+        "lastTurnState": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnState"
+            }
+          ],
+          "readOnly": true
+        },
+        "lastTurnAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the latest turn last changed state.",
+          "readOnly": true
+        },
+        "lastTurn": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Turn"
+            }
+          ],
+          "description": "The session's latest turn, with why it failed once it is Failed.",
+          "readOnly": true
+        },
+        "lastTurnImage": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the latest turn's box boots. Present once the control plane offered the latest turn.",
+          "readOnly": true
+        },
+        "prebuildLayer": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionPrebuildLayer"
+            }
+          ],
+          "description": "The prebuild layer the session's files start from, or why they start without one. The control\nplane records it for each box it boots while the session holds no snapshot of its own; once a\nsnapshot exists, every box restores that snapshot and the layer stays. Present once the control\nplane offered the session's first turn.",
+          "readOnly": true
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What happens to the session's box after each turn, fixed when the session starts.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Stopped"
+          ],
+          "readOnly": true
+        }
+      }
+    },
+    "StoppingSession": {
+      "type": "object",
+      "required": [
+        "sessionId",
+        "tenantId",
+        "principalId",
+        "hostId",
+        "boxId",
+        "personaId",
+        "repository",
+        "origin",
+        "startedBy",
+        "tags",
+        "harness",
+        "harnessVersion",
+        "model",
+        "lastTurnId",
+        "lastTurnState",
+        "lastTurnAt",
+        "lastTurn",
+        "boxRetention",
+        "createdAt",
+        "updatedAt",
+        "state"
+      ],
+      "properties": {
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "principalId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "hostId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name."
+        },
+        "origin": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionOrigin"
+            }
+          ],
+          "description": "What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.",
+          "readOnly": true
+        },
+        "startedBy": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionStartedBy"
+            }
+          ],
+          "description": "Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.",
+          "readOnly": true
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags the session carries, each once.",
+          "readOnly": true
+        },
+        "harness": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Harness"
+            }
+          ],
+          "readOnly": true
+        },
+        "harnessVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "readOnly": true
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "lastTurnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session's latest turn. A start offers the first turn together with the session, so every session has one.",
+          "readOnly": true
+        },
+        "lastTurnState": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnState"
+            }
+          ],
+          "readOnly": true
+        },
+        "lastTurnAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the latest turn last changed state.",
+          "readOnly": true
+        },
+        "lastTurn": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Turn"
+            }
+          ],
+          "description": "The session's latest turn, with why it failed once it is Failed.",
+          "readOnly": true
+        },
+        "lastTurnImage": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the latest turn's box boots. Present once the control plane offered the latest turn.",
+          "readOnly": true
+        },
+        "prebuildLayer": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionPrebuildLayer"
+            }
+          ],
+          "description": "The prebuild layer the session's files start from, or why they start without one. The control\nplane records it for each box it boots while the session holds no snapshot of its own; once a\nsnapshot exists, every box restores that snapshot and the layer stays. Present once the control\nplane offered the session's first turn.",
+          "readOnly": true
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What happens to the session's box after each turn, fixed when the session starts.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Stopping"
+          ],
+          "readOnly": true
+        }
+      }
     },
     "StorageKey": {
       "type": "string",
@@ -9205,7 +10437,6 @@
       ],
       "properties": {
         "session": {
-          "type": "object",
           "allOf": [
             {
               "$ref": "#/components/schemas/Session"
@@ -10024,7 +11255,6 @@
         "name",
         "state",
         "health",
-        "presence",
         "reportedHealth",
         "architecture",
         "cpuCount",
@@ -10070,21 +11300,6 @@
             }
           ],
           "description": "The control plane's judgement of the host; it offers work to a Healthy host only.",
-          "readOnly": true
-        },
-        "presence": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/HostPresence"
-            }
-          ],
-          "description": "Whether the control plane heard from the host in the last 90 seconds, derived from heardAt when read.",
-          "readOnly": true
-        },
-        "heardAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "When the host last sent a Hello or Heartbeat the control plane stored. Absent for a host that never sent a Hello.",
           "readOnly": true
         },
         "reportedHealth": {
@@ -18854,6 +20069,215 @@
         "Failed",
         "Unknown"
       ]
+    },
+    "UnknownSession": {
+      "type": "object",
+      "required": [
+        "sessionId",
+        "tenantId",
+        "principalId",
+        "hostId",
+        "boxId",
+        "personaId",
+        "repository",
+        "origin",
+        "startedBy",
+        "tags",
+        "harness",
+        "harnessVersion",
+        "model",
+        "lastTurnId",
+        "lastTurnState",
+        "lastTurnAt",
+        "lastTurn",
+        "boxRetention",
+        "createdAt",
+        "updatedAt",
+        "state",
+        "heardAt"
+      ],
+      "properties": {
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "tenantId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "principalId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "hostId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "boxId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "readOnly": true
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "repository": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RepositoryUrl"
+            }
+          ],
+          "description": "A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name."
+        },
+        "origin": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionOrigin"
+            }
+          ],
+          "description": "What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.",
+          "readOnly": true
+        },
+        "startedBy": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionStartedBy"
+            }
+          ],
+          "description": "Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.",
+          "readOnly": true
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags the session carries, each once.",
+          "readOnly": true
+        },
+        "harness": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Harness"
+            }
+          ],
+          "readOnly": true
+        },
+        "harnessVersion": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ShortText"
+            }
+          ],
+          "readOnly": true
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "lastTurnId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The session's latest turn. A start offers the first turn together with the session, so every session has one.",
+          "readOnly": true
+        },
+        "lastTurnState": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnState"
+            }
+          ],
+          "readOnly": true
+        },
+        "lastTurnAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the latest turn last changed state.",
+          "readOnly": true
+        },
+        "lastTurn": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Turn"
+            }
+          ],
+          "description": "The session's latest turn, with why it failed once it is Failed.",
+          "readOnly": true
+        },
+        "lastTurnImage": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/TurnImage"
+            }
+          ],
+          "description": "The image the latest turn's box boots. Present once the control plane offered the latest turn.",
+          "readOnly": true
+        },
+        "prebuildLayer": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/SessionPrebuildLayer"
+            }
+          ],
+          "description": "The prebuild layer the session's files start from, or why they start without one. The control\nplane records it for each box it boots while the session holds no snapshot of its own; once a\nsnapshot exists, every box restores that snapshot and the layer stays. Present once the control\nplane offered the session's first turn.",
+          "readOnly": true
+        },
+        "boxRetention": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/BoxRetention"
+            }
+          ],
+          "description": "What happens to the session's box after each turn, fixed when the session starts.",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "integer",
+          "format": "int64",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Unknown"
+          ],
+          "readOnly": true
+        },
+        "heardAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the session's host last sent a Hello or Heartbeat.",
+          "readOnly": true
+        }
+      },
+      "description": "A Starting, Running, Idle or Stopping session whose host is Degraded, read in place of its stored state until the host reports again."
     },
     "UnknownTurn": {
       "type": "object",

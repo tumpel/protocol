@@ -471,7 +471,7 @@ model MintedEnrolmentToken {
   installCommand: Detail;
 }
 
-model HostEnrol is Create<Host> {
+model HostEnrol is Create<HostBase> {
   @minLength(1) enrolmentToken: Token;
 }
 
@@ -489,7 +489,7 @@ model HostLabelsPatch {
   @maxItems(64) remove?: HostLabel[];
 }
 
-model SessionStart is Create<Session> {
+model SessionStart is Create<SessionBase> {
   prompt: Prompt;
   @doc("What happens to the box after each turn; left out, the session takes its persona's boxRetention.")
   boxRetention?: BoxRetention;

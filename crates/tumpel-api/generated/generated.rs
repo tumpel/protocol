@@ -286,6 +286,96 @@ pub mod types {
             value.parse()
         }
     }
+    ///`ArchivedSession`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ArchivedSession {
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        ///What happens to the session's box after each turn, fixed when the session starts.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ShortText,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        ///The session's latest turn, with why it failed once it is Failed.
+        #[serde(rename = "lastTurn")]
+        pub last_turn: Turn,
+        ///When the latest turn last changed state.
+        #[serde(rename = "lastTurnAt")]
+        pub last_turn_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The session's latest turn. A start offers the first turn together with the session, so every session has one.
+        #[serde(rename = "lastTurnId")]
+        pub last_turn_id: EntityId,
+        ///The image the latest turn's box boots. Present once the control plane offered the latest turn.
+        #[serde(rename = "lastTurnImage", skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_turn_image: ::std::option::Option<TurnImage>,
+        #[serde(rename = "lastTurnState")]
+        pub last_turn_state: TurnState,
+        pub model: ModelName,
+        ///What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.
+        pub origin: SessionOrigin,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The prebuild layer the session's files start from, or why they start without one. The control
+        ///plane records it for each box it boots while the session holds no snapshot of its own; once a
+        ///snapshot exists, every box restores that snapshot and the layer stays. Present once the control
+        ///plane offered the session's first turn.
+        #[serde(rename = "prebuildLayer", skip_serializing_if = "::std::option::Option::is_none")]
+        pub prebuild_layer: ::std::option::Option<SessionPrebuildLayer>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
+        pub repository: RepositoryUrl,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
+        pub state: ArchivedSessionState,
+        ///The tags the session carries, each once.
+        pub tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`ArchivedSessionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ArchivedSessionState {
+        Archived,
+    }
+    impl ::std::fmt::Display for ArchivedSessionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Archived => f.write_str("Archived"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ArchivedSessionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Archived" => Ok(Self::Archived),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ArchivedSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ArchivedSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///RFC 8414 metadata for the control plane's OAuth authorization server.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct AuthorizationServerMetadata {
@@ -7119,6 +7209,222 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///A host that sent a Hello once, but nothing in the last 90 seconds.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct DegradedHost {
+        pub architecture: HostArchitecture,
+        ///The channel protocol range the host announced at its latest Hello.
+        #[serde(rename = "channelProtocol")]
+        pub channel_protocol: HostChannelProtocol,
+        #[serde(rename = "cpuCount")]
+        pub cpu_count: ::std::num::NonZeroU32,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///The guest protocol range the host announced at its latest Hello.
+        #[serde(rename = "guestProtocol")]
+        pub guest_protocol: HostGuestProtocol,
+        ///The control plane's judgement of the host; it offers work to a Healthy host only.
+        pub health: HostHealth,
+        ///When the host last sent a Hello or Heartbeat.
+        #[serde(rename = "heardAt")]
+        pub heard_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        pub labels: ::std::vec::Vec<HostLabel>,
+        #[serde(rename = "memoryBytes")]
+        pub memory_bytes: ::std::num::NonZeroU64,
+        pub name: DisplayName,
+        pub presence: DegradedHostPresence,
+        #[serde(rename = "publicKey")]
+        pub public_key: DegradedHostPublicKey,
+        ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
+        #[serde(rename = "reportedHealth")]
+        pub reported_health: HostReportedHealth,
+        pub state: HostState,
+        ///The latest supervisor update failure the host reported, kept by its tenant.
+        #[serde(rename = "supervisorUpdateFailure")]
+        pub supervisor_update_failure: SupervisorUpdateLatestFailure,
+        ///The latest supervisor update phase the host reported, kept by its tenant.
+        #[serde(rename = "supervisorUpdateStep")]
+        pub supervisor_update_step: SupervisorUpdateLatestStep,
+        #[serde(rename = "supervisorVersion")]
+        pub supervisor_version: DegradedHostSupervisorVersion,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`DegradedHostPresence`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum DegradedHostPresence {
+        Degraded,
+    }
+    impl ::std::fmt::Display for DegradedHostPresence {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Degraded => f.write_str("Degraded"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for DegradedHostPresence {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Degraded" => Ok(Self::Degraded),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for DegradedHostPresence {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for DegradedHostPresence {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The host's Ed25519 public key, base64. The private key never leaves the host.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct DegradedHostPublicKey(::std::string::String);
+    impl DegradedHostPublicKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for DegradedHostPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for DegradedHostPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for DegradedHostPublicKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for DegradedHostPublicKey {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<DegradedHostPublicKey> for ::std::string::String {
+        fn from(value: DegradedHostPublicKey) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for DegradedHostPublicKey {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("DegradedHostPublicKey: longer than 16384 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("DegradedHostPublicKey: shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for DegradedHostPublicKey {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for DegradedHostPublicKey {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for DegradedHostPublicKey {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///`DegradedHostSupervisorVersion`
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct DegradedHostSupervisorVersion(::std::string::String);
+    impl DegradedHostSupervisorVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for DegradedHostSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for DegradedHostSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for DegradedHostSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for DegradedHostSupervisorVersion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<DegradedHostSupervisorVersion> for ::std::string::String {
+        fn from(value: DegradedHostSupervisorVersion) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for DegradedHostSupervisorVersion {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("DegradedHostSupervisorVersion: longer than 256 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("DegradedHostSupervisorVersion: shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for DegradedHostSupervisorVersion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for DegradedHostSupervisorVersion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for DegradedHostSupervisorVersion {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
     ///The deploy drain. While it is in place the control plane starts no session and no turn, and
     ///refuses both with DeployInProgress. The deploy reads `GET /v1/releases/rollout` with `drainToken`
     ///as the bearer until the control plane reports the new commit.
@@ -8026,6 +8332,96 @@ pub mod types {
     impl ::std::convert::From<Problem> for EventProblem {
         fn from(value: Problem) -> Self {
             Self::Problem(value)
+        }
+    }
+    ///`FailedSession`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct FailedSession {
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        ///What happens to the session's box after each turn, fixed when the session starts.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ShortText,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        ///The session's latest turn, with why it failed once it is Failed.
+        #[serde(rename = "lastTurn")]
+        pub last_turn: Turn,
+        ///When the latest turn last changed state.
+        #[serde(rename = "lastTurnAt")]
+        pub last_turn_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The session's latest turn. A start offers the first turn together with the session, so every session has one.
+        #[serde(rename = "lastTurnId")]
+        pub last_turn_id: EntityId,
+        ///The image the latest turn's box boots. Present once the control plane offered the latest turn.
+        #[serde(rename = "lastTurnImage", skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_turn_image: ::std::option::Option<TurnImage>,
+        #[serde(rename = "lastTurnState")]
+        pub last_turn_state: TurnState,
+        pub model: ModelName,
+        ///What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.
+        pub origin: SessionOrigin,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The prebuild layer the session's files start from, or why they start without one. The control
+        ///plane records it for each box it boots while the session holds no snapshot of its own; once a
+        ///snapshot exists, every box restores that snapshot and the layer stays. Present once the control
+        ///plane offered the session's first turn.
+        #[serde(rename = "prebuildLayer", skip_serializing_if = "::std::option::Option::is_none")]
+        pub prebuild_layer: ::std::option::Option<SessionPrebuildLayer>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
+        pub repository: RepositoryUrl,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
+        pub state: FailedSessionState,
+        ///The tags the session carries, each once.
+        pub tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`FailedSessionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum FailedSessionState {
+        Failed,
+    }
+    impl ::std::fmt::Display for FailedSessionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Failed => f.write_str("Failed"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for FailedSessionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Failed" => Ok(Self::Failed),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for FailedSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for FailedSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
         }
     }
     ///A turn that ended Failed, with why.
@@ -11216,51 +11612,28 @@ pub mod types {
             value.parse()
         }
     }
-    ///A machine the tenant owns, running the supervisor and enrolled to exactly one tenant.
+    ///A machine the tenant owns, running the supervisor and enrolled to exactly one tenant, with its presence.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct Host {
-        pub architecture: HostArchitecture,
-        ///The channel protocol range the host announced at its latest Hello.
-        #[serde(rename = "channelProtocol")]
-        pub channel_protocol: HostChannelProtocol,
-        #[serde(rename = "cpuCount")]
-        pub cpu_count: ::std::num::NonZeroU32,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        ///The guest protocol range the host announced at its latest Hello.
-        #[serde(rename = "guestProtocol")]
-        pub guest_protocol: HostGuestProtocol,
-        ///The control plane's judgement of the host; it offers work to a Healthy host only.
-        pub health: HostHealth,
-        ///When the host last sent a Hello or Heartbeat the control plane stored. Absent for a host that never sent a Hello.
-        #[serde(rename = "heardAt", skip_serializing_if = "::std::option::Option::is_none")]
-        pub heard_at: ::std::option::Option<::chrono::DateTime<::chrono::FixedOffset>>,
-        #[serde(rename = "hostId")]
-        pub host_id: EntityId,
-        pub labels: ::std::vec::Vec<HostLabel>,
-        #[serde(rename = "memoryBytes")]
-        pub memory_bytes: ::std::num::NonZeroU64,
-        pub name: DisplayName,
-        ///Whether the control plane heard from the host in the last 90 seconds, derived from heardAt when read.
-        pub presence: HostPresence,
-        #[serde(rename = "publicKey")]
-        pub public_key: HostPublicKey,
-        ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
-        #[serde(rename = "reportedHealth")]
-        pub reported_health: HostReportedHealth,
-        pub state: HostState,
-        ///The latest supervisor update failure the host reported, kept by its tenant.
-        #[serde(rename = "supervisorUpdateFailure")]
-        pub supervisor_update_failure: SupervisorUpdateLatestFailure,
-        ///The latest supervisor update phase the host reported, kept by its tenant.
-        #[serde(rename = "supervisorUpdateStep")]
-        pub supervisor_update_step: SupervisorUpdateLatestStep,
-        #[serde(rename = "supervisorVersion")]
-        pub supervisor_version: HostSupervisorVersion,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
+    #[serde(untagged)]
+    pub enum Host {
+        OnlineHost(OnlineHost),
+        DegradedHost(DegradedHost),
+        OfflineHost(OfflineHost),
+    }
+    impl ::std::convert::From<OnlineHost> for Host {
+        fn from(value: OnlineHost) -> Self {
+            Self::OnlineHost(value)
+        }
+    }
+    impl ::std::convert::From<DegradedHost> for Host {
+        fn from(value: DegradedHost) -> Self {
+            Self::DegradedHost(value)
+        }
+    }
+    impl ::std::convert::From<OfflineHost> for Host {
+        fn from(value: OfflineHost) -> Self {
+            Self::OfflineHost(value)
+        }
     }
     ///`HostArchitecture`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -11296,6 +11669,185 @@ pub mod types {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
+        }
+    }
+    ///The fields every host carries, whatever its presence.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct HostBase {
+        pub architecture: HostArchitecture,
+        ///The channel protocol range the host announced at its latest Hello.
+        #[serde(rename = "channelProtocol")]
+        pub channel_protocol: HostChannelProtocol,
+        #[serde(rename = "cpuCount")]
+        pub cpu_count: ::std::num::NonZeroU32,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///The guest protocol range the host announced at its latest Hello.
+        #[serde(rename = "guestProtocol")]
+        pub guest_protocol: HostGuestProtocol,
+        ///The control plane's judgement of the host; it offers work to a Healthy host only.
+        pub health: HostHealth,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        pub labels: ::std::vec::Vec<HostLabel>,
+        #[serde(rename = "memoryBytes")]
+        pub memory_bytes: ::std::num::NonZeroU64,
+        pub name: DisplayName,
+        #[serde(rename = "publicKey")]
+        pub public_key: HostBasePublicKey,
+        ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
+        #[serde(rename = "reportedHealth")]
+        pub reported_health: HostReportedHealth,
+        pub state: HostState,
+        ///The latest supervisor update failure the host reported, kept by its tenant.
+        #[serde(rename = "supervisorUpdateFailure")]
+        pub supervisor_update_failure: SupervisorUpdateLatestFailure,
+        ///The latest supervisor update phase the host reported, kept by its tenant.
+        #[serde(rename = "supervisorUpdateStep")]
+        pub supervisor_update_step: SupervisorUpdateLatestStep,
+        #[serde(rename = "supervisorVersion")]
+        pub supervisor_version: HostBaseSupervisorVersion,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///The host's Ed25519 public key, base64. The private key never leaves the host.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct HostBasePublicKey(::std::string::String);
+    impl HostBasePublicKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostBasePublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostBasePublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for HostBasePublicKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for HostBasePublicKey {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<HostBasePublicKey> for ::std::string::String {
+        fn from(value: HostBasePublicKey) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for HostBasePublicKey {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("HostBasePublicKey: longer than 16384 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("HostBasePublicKey: shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostBasePublicKey {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostBasePublicKey {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for HostBasePublicKey {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///`HostBaseSupervisorVersion`
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct HostBaseSupervisorVersion(::std::string::String);
+    impl HostBaseSupervisorVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for HostBaseSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for HostBaseSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for HostBaseSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for HostBaseSupervisorVersion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<HostBaseSupervisorVersion> for ::std::string::String {
+        fn from(value: HostBaseSupervisorVersion) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for HostBaseSupervisorVersion {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("HostBaseSupervisorVersion: longer than 256 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("HostBaseSupervisorVersion: shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostBaseSupervisorVersion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostBaseSupervisorVersion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for HostBaseSupervisorVersion {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
     ///`HostChannelProtocol`
@@ -11357,7 +11909,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///A machine the tenant owns, running the supervisor and enrolled to exactly one tenant.
+    ///The fields every host carries, whatever its presence.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct HostEnrol {
         pub architecture: HostArchitecture,
@@ -11981,75 +12533,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///The host's Ed25519 public key, base64. The private key never leaves the host.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct HostPublicKey(::std::string::String);
-    impl HostPublicKey {
-        pub fn as_str(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::convert::AsRef<str> for HostPublicKey {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::fmt::Display for HostPublicKey {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            f.write_str(&self.0)
-        }
-    }
-    impl ::std::convert::AsRef<::std::ffi::OsStr> for HostPublicKey {
-        fn as_ref(&self) -> &::std::ffi::OsStr {
-            self.0.as_ref()
-        }
-    }
-    impl ::std::ops::Deref for HostPublicKey {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<HostPublicKey> for ::std::string::String {
-        fn from(value: HostPublicKey) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for HostPublicKey {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 16384usize {
-                return Err("HostPublicKey: longer than 16384 characters".into());
-            }
-            if value.chars().count() < 1usize {
-                return Err("HostPublicKey: shorter than 1 characters".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for HostPublicKey {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for HostPublicKey {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for HostPublicKey {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
     ///The health a host reports of itself in its Heartbeat.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostReportedHealth {
@@ -12126,75 +12609,6 @@ pub mod types {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
-        }
-    }
-    ///`HostSupervisorVersion`
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct HostSupervisorVersion(::std::string::String);
-    impl HostSupervisorVersion {
-        pub fn as_str(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::convert::AsRef<str> for HostSupervisorVersion {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::fmt::Display for HostSupervisorVersion {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            f.write_str(&self.0)
-        }
-    }
-    impl ::std::convert::AsRef<::std::ffi::OsStr> for HostSupervisorVersion {
-        fn as_ref(&self) -> &::std::ffi::OsStr {
-            self.0.as_ref()
-        }
-    }
-    impl ::std::ops::Deref for HostSupervisorVersion {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<HostSupervisorVersion> for ::std::string::String {
-        fn from(value: HostSupervisorVersion) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for HostSupervisorVersion {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 256usize {
-                return Err("HostSupervisorVersion: longer than 256 characters".into());
-            }
-            if value.chars().count() < 1usize {
-                return Err("HostSupervisorVersion: shorter than 1 characters".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for HostSupervisorVersion {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for HostSupervisorVersion {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for HostSupervisorVersion {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
     ///What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts
@@ -12288,6 +12702,96 @@ pub mod types {
             ::std::string::String::deserialize(deserializer)?
                 .parse()
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///`IdleSession`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct IdleSession {
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        ///What happens to the session's box after each turn, fixed when the session starts.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ShortText,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        ///The session's latest turn, with why it failed once it is Failed.
+        #[serde(rename = "lastTurn")]
+        pub last_turn: Turn,
+        ///When the latest turn last changed state.
+        #[serde(rename = "lastTurnAt")]
+        pub last_turn_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The session's latest turn. A start offers the first turn together with the session, so every session has one.
+        #[serde(rename = "lastTurnId")]
+        pub last_turn_id: EntityId,
+        ///The image the latest turn's box boots. Present once the control plane offered the latest turn.
+        #[serde(rename = "lastTurnImage", skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_turn_image: ::std::option::Option<TurnImage>,
+        #[serde(rename = "lastTurnState")]
+        pub last_turn_state: TurnState,
+        pub model: ModelName,
+        ///What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.
+        pub origin: SessionOrigin,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The prebuild layer the session's files start from, or why they start without one. The control
+        ///plane records it for each box it boots while the session holds no snapshot of its own; once a
+        ///snapshot exists, every box restores that snapshot and the layer stays. Present once the control
+        ///plane offered the session's first turn.
+        #[serde(rename = "prebuildLayer", skip_serializing_if = "::std::option::Option::is_none")]
+        pub prebuild_layer: ::std::option::Option<SessionPrebuildLayer>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
+        pub repository: RepositoryUrl,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
+        pub state: IdleSessionState,
+        ///The tags the session carries, each once.
+        pub tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`IdleSessionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum IdleSessionState {
+        Idle,
+    }
+    impl ::std::fmt::Display for IdleSessionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Idle => f.write_str("Idle"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for IdleSessionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Idle" => Ok(Self::Idle),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for IdleSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for IdleSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
         }
     }
     ///The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot.
@@ -14795,6 +15299,435 @@ pub mod types {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
+        }
+    }
+    ///A host that never sent a Hello, or is revoked.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct OfflineHost {
+        pub architecture: HostArchitecture,
+        ///The channel protocol range the host announced at its latest Hello.
+        #[serde(rename = "channelProtocol")]
+        pub channel_protocol: HostChannelProtocol,
+        #[serde(rename = "cpuCount")]
+        pub cpu_count: ::std::num::NonZeroU32,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///The guest protocol range the host announced at its latest Hello.
+        #[serde(rename = "guestProtocol")]
+        pub guest_protocol: HostGuestProtocol,
+        ///The control plane's judgement of the host; it offers work to a Healthy host only.
+        pub health: HostHealth,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        pub labels: ::std::vec::Vec<HostLabel>,
+        #[serde(rename = "memoryBytes")]
+        pub memory_bytes: ::std::num::NonZeroU64,
+        pub name: DisplayName,
+        pub presence: OfflineHostPresence,
+        #[serde(rename = "publicKey")]
+        pub public_key: OfflineHostPublicKey,
+        ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
+        #[serde(rename = "reportedHealth")]
+        pub reported_health: HostReportedHealth,
+        pub state: HostState,
+        ///The latest supervisor update failure the host reported, kept by its tenant.
+        #[serde(rename = "supervisorUpdateFailure")]
+        pub supervisor_update_failure: SupervisorUpdateLatestFailure,
+        ///The latest supervisor update phase the host reported, kept by its tenant.
+        #[serde(rename = "supervisorUpdateStep")]
+        pub supervisor_update_step: SupervisorUpdateLatestStep,
+        #[serde(rename = "supervisorVersion")]
+        pub supervisor_version: OfflineHostSupervisorVersion,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`OfflineHostPresence`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum OfflineHostPresence {
+        Offline,
+    }
+    impl ::std::fmt::Display for OfflineHostPresence {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Offline => f.write_str("Offline"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for OfflineHostPresence {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Offline" => Ok(Self::Offline),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for OfflineHostPresence {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for OfflineHostPresence {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The host's Ed25519 public key, base64. The private key never leaves the host.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct OfflineHostPublicKey(::std::string::String);
+    impl OfflineHostPublicKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for OfflineHostPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for OfflineHostPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for OfflineHostPublicKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for OfflineHostPublicKey {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<OfflineHostPublicKey> for ::std::string::String {
+        fn from(value: OfflineHostPublicKey) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for OfflineHostPublicKey {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("OfflineHostPublicKey: longer than 16384 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("OfflineHostPublicKey: shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for OfflineHostPublicKey {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for OfflineHostPublicKey {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for OfflineHostPublicKey {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///`OfflineHostSupervisorVersion`
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct OfflineHostSupervisorVersion(::std::string::String);
+    impl OfflineHostSupervisorVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for OfflineHostSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for OfflineHostSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for OfflineHostSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for OfflineHostSupervisorVersion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<OfflineHostSupervisorVersion> for ::std::string::String {
+        fn from(value: OfflineHostSupervisorVersion) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for OfflineHostSupervisorVersion {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("OfflineHostSupervisorVersion: longer than 256 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("OfflineHostSupervisorVersion: shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for OfflineHostSupervisorVersion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for OfflineHostSupervisorVersion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for OfflineHostSupervisorVersion {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///A host that sent a Hello or Heartbeat within the last 90 seconds and is not revoked.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct OnlineHost {
+        pub architecture: HostArchitecture,
+        ///The channel protocol range the host announced at its latest Hello.
+        #[serde(rename = "channelProtocol")]
+        pub channel_protocol: HostChannelProtocol,
+        #[serde(rename = "cpuCount")]
+        pub cpu_count: ::std::num::NonZeroU32,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///The guest protocol range the host announced at its latest Hello.
+        #[serde(rename = "guestProtocol")]
+        pub guest_protocol: HostGuestProtocol,
+        ///The control plane's judgement of the host; it offers work to a Healthy host only.
+        pub health: HostHealth,
+        ///When the host last sent a Hello or Heartbeat.
+        #[serde(rename = "heardAt")]
+        pub heard_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        pub labels: ::std::vec::Vec<HostLabel>,
+        #[serde(rename = "memoryBytes")]
+        pub memory_bytes: ::std::num::NonZeroU64,
+        pub name: DisplayName,
+        pub presence: OnlineHostPresence,
+        #[serde(rename = "publicKey")]
+        pub public_key: OnlineHostPublicKey,
+        ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
+        #[serde(rename = "reportedHealth")]
+        pub reported_health: HostReportedHealth,
+        pub state: HostState,
+        ///The latest supervisor update failure the host reported, kept by its tenant.
+        #[serde(rename = "supervisorUpdateFailure")]
+        pub supervisor_update_failure: SupervisorUpdateLatestFailure,
+        ///The latest supervisor update phase the host reported, kept by its tenant.
+        #[serde(rename = "supervisorUpdateStep")]
+        pub supervisor_update_step: SupervisorUpdateLatestStep,
+        #[serde(rename = "supervisorVersion")]
+        pub supervisor_version: OnlineHostSupervisorVersion,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`OnlineHostPresence`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum OnlineHostPresence {
+        Online,
+    }
+    impl ::std::fmt::Display for OnlineHostPresence {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Online => f.write_str("Online"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for OnlineHostPresence {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Online" => Ok(Self::Online),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for OnlineHostPresence {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for OnlineHostPresence {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The host's Ed25519 public key, base64. The private key never leaves the host.
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct OnlineHostPublicKey(::std::string::String);
+    impl OnlineHostPublicKey {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for OnlineHostPublicKey {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for OnlineHostPublicKey {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for OnlineHostPublicKey {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for OnlineHostPublicKey {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<OnlineHostPublicKey> for ::std::string::String {
+        fn from(value: OnlineHostPublicKey) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for OnlineHostPublicKey {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 16384usize {
+                return Err("OnlineHostPublicKey: longer than 16384 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("OnlineHostPublicKey: shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for OnlineHostPublicKey {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for OnlineHostPublicKey {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for OnlineHostPublicKey {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
+    ///`OnlineHostSupervisorVersion`
+    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct OnlineHostSupervisorVersion(::std::string::String);
+    impl OnlineHostSupervisorVersion {
+        pub fn as_str(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::convert::AsRef<str> for OnlineHostSupervisorVersion {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+    impl ::std::fmt::Display for OnlineHostSupervisorVersion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            f.write_str(&self.0)
+        }
+    }
+    impl ::std::convert::AsRef<::std::ffi::OsStr> for OnlineHostSupervisorVersion {
+        fn as_ref(&self) -> &::std::ffi::OsStr {
+            self.0.as_ref()
+        }
+    }
+    impl ::std::ops::Deref for OnlineHostSupervisorVersion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<OnlineHostSupervisorVersion> for ::std::string::String {
+        fn from(value: OnlineHostSupervisorVersion) -> Self {
+            value.0
+        }
+    }
+    impl ::std::str::FromStr for OnlineHostSupervisorVersion {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 256usize {
+                return Err("OnlineHostSupervisorVersion: longer than 256 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("OnlineHostSupervisorVersion: shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for OnlineHostSupervisorVersion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for OnlineHostSupervisorVersion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for OnlineHostSupervisorVersion {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
     ///The OpenID Connect discovery document of the stage's issuer, served at
@@ -18864,6 +19797,96 @@ pub mod types {
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
+    ///`RunningSession`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct RunningSession {
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        ///What happens to the session's box after each turn, fixed when the session starts.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ShortText,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        ///The session's latest turn, with why it failed once it is Failed.
+        #[serde(rename = "lastTurn")]
+        pub last_turn: Turn,
+        ///When the latest turn last changed state.
+        #[serde(rename = "lastTurnAt")]
+        pub last_turn_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The session's latest turn. A start offers the first turn together with the session, so every session has one.
+        #[serde(rename = "lastTurnId")]
+        pub last_turn_id: EntityId,
+        ///The image the latest turn's box boots. Present once the control plane offered the latest turn.
+        #[serde(rename = "lastTurnImage", skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_turn_image: ::std::option::Option<TurnImage>,
+        #[serde(rename = "lastTurnState")]
+        pub last_turn_state: TurnState,
+        pub model: ModelName,
+        ///What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.
+        pub origin: SessionOrigin,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The prebuild layer the session's files start from, or why they start without one. The control
+        ///plane records it for each box it boots while the session holds no snapshot of its own; once a
+        ///snapshot exists, every box restores that snapshot and the layer stays. Present once the control
+        ///plane offered the session's first turn.
+        #[serde(rename = "prebuildLayer", skip_serializing_if = "::std::option::Option::is_none")]
+        pub prebuild_layer: ::std::option::Option<SessionPrebuildLayer>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
+        pub repository: RepositoryUrl,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
+        pub state: RunningSessionState,
+        ///The tags the session carries, each once.
+        pub tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`RunningSessionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum RunningSessionState {
+        Running,
+    }
+    impl ::std::fmt::Display for RunningSessionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Running => f.write_str("Running"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for RunningSessionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Running" => Ok(Self::Running),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for RunningSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for RunningSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`RunningTurn`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct RunningTurn {
@@ -19458,63 +20481,56 @@ pub mod types {
     }
     ///A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct Session {
-        #[serde(rename = "boxId")]
-        pub box_id: EntityId,
-        ///What happens to the session's box after each turn, fixed when the session starts.
-        #[serde(rename = "boxRetention")]
-        pub box_retention: BoxRetention,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        pub harness: Harness,
-        #[serde(rename = "harnessVersion")]
-        pub harness_version: ShortText,
-        ///When the session's host last sent a Hello or Heartbeat. Present only while the session reads Unknown.
-        #[serde(rename = "heardAt", skip_serializing_if = "::std::option::Option::is_none")]
-        pub heard_at: ::std::option::Option<::chrono::DateTime<::chrono::FixedOffset>>,
-        #[serde(rename = "hostId")]
-        pub host_id: EntityId,
-        ///The session's latest turn, with why it failed once it is Failed.
-        #[serde(rename = "lastTurn")]
-        pub last_turn: Turn,
-        ///When the latest turn last changed state.
-        #[serde(rename = "lastTurnAt")]
-        pub last_turn_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///The session's latest turn. A start offers the first turn together with the session, so every session has one.
-        #[serde(rename = "lastTurnId")]
-        pub last_turn_id: EntityId,
-        ///The image the latest turn's box boots. Present once the control plane offered the latest turn.
-        #[serde(rename = "lastTurnImage", skip_serializing_if = "::std::option::Option::is_none")]
-        pub last_turn_image: ::std::option::Option<TurnImage>,
-        #[serde(rename = "lastTurnState")]
-        pub last_turn_state: TurnState,
-        pub model: ModelName,
-        ///What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.
-        pub origin: SessionOrigin,
-        #[serde(rename = "personaId")]
-        pub persona_id: EntityId,
-        ///The prebuild layer the session's files start from, or why they start without one. The control
-        ///plane records it for each box it boots while the session holds no snapshot of its own; once a
-        ///snapshot exists, every box restores that snapshot and the layer stays. Present once the control
-        ///plane offered the session's first turn.
-        #[serde(rename = "prebuildLayer", skip_serializing_if = "::std::option::Option::is_none")]
-        pub prebuild_layer: ::std::option::Option<SessionPrebuildLayer>,
-        #[serde(rename = "principalId")]
-        pub principal_id: EntityId,
-        ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
-        pub repository: RepositoryUrl,
-        #[serde(rename = "sessionId")]
-        pub session_id: EntityId,
-        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
-        #[serde(rename = "startedBy")]
-        pub started_by: SessionStartedBy,
-        pub state: SessionState,
-        ///The tags the session carries, each once.
-        pub tags: ::std::vec::Vec<SessionTag>,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
+    #[serde(untagged)]
+    pub enum Session {
+        StartingSession(StartingSession),
+        IdleSession(IdleSession),
+        RunningSession(RunningSession),
+        StoppingSession(StoppingSession),
+        StoppedSession(StoppedSession),
+        ArchivedSession(ArchivedSession),
+        FailedSession(FailedSession),
+        UnknownSession(UnknownSession),
+    }
+    impl ::std::convert::From<StartingSession> for Session {
+        fn from(value: StartingSession) -> Self {
+            Self::StartingSession(value)
+        }
+    }
+    impl ::std::convert::From<IdleSession> for Session {
+        fn from(value: IdleSession) -> Self {
+            Self::IdleSession(value)
+        }
+    }
+    impl ::std::convert::From<RunningSession> for Session {
+        fn from(value: RunningSession) -> Self {
+            Self::RunningSession(value)
+        }
+    }
+    impl ::std::convert::From<StoppingSession> for Session {
+        fn from(value: StoppingSession) -> Self {
+            Self::StoppingSession(value)
+        }
+    }
+    impl ::std::convert::From<StoppedSession> for Session {
+        fn from(value: StoppedSession) -> Self {
+            Self::StoppedSession(value)
+        }
+    }
+    impl ::std::convert::From<ArchivedSession> for Session {
+        fn from(value: ArchivedSession) -> Self {
+            Self::ArchivedSession(value)
+        }
+    }
+    impl ::std::convert::From<FailedSession> for Session {
+        fn from(value: FailedSession) -> Self {
+            Self::FailedSession(value)
+        }
+    }
+    impl ::std::convert::From<UnknownSession> for Session {
+        fn from(value: UnknownSession) -> Self {
+            Self::UnknownSession(value)
+        }
     }
     ///`SessionArchivedEvent`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -19561,6 +20577,62 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
+    }
+    ///The fields every session carries, whatever its state.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SessionBase {
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        ///What happens to the session's box after each turn, fixed when the session starts.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ShortText,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        ///The session's latest turn, with why it failed once it is Failed.
+        #[serde(rename = "lastTurn")]
+        pub last_turn: Turn,
+        ///When the latest turn last changed state.
+        #[serde(rename = "lastTurnAt")]
+        pub last_turn_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The session's latest turn. A start offers the first turn together with the session, so every session has one.
+        #[serde(rename = "lastTurnId")]
+        pub last_turn_id: EntityId,
+        ///The image the latest turn's box boots. Present once the control plane offered the latest turn.
+        #[serde(rename = "lastTurnImage", skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_turn_image: ::std::option::Option<TurnImage>,
+        #[serde(rename = "lastTurnState")]
+        pub last_turn_state: TurnState,
+        pub model: ModelName,
+        ///What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.
+        pub origin: SessionOrigin,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The prebuild layer the session's files start from, or why they start without one. The control
+        ///plane records it for each box it boots while the session holds no snapshot of its own; once a
+        ///snapshot exists, every box restores that snapshot and the layer stays. Present once the control
+        ///plane offered the session's first turn.
+        #[serde(rename = "prebuildLayer", skip_serializing_if = "::std::option::Option::is_none")]
+        pub prebuild_layer: ::std::option::Option<SessionPrebuildLayer>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
+        pub repository: RepositoryUrl,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
+        ///The tags the session carries, each once.
+        pub tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
     }
     ///`SessionFailedEvent`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -19868,7 +20940,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins.
+    ///The fields every session carries, whatever its state.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SessionStart {
         ///What happens to the box after each turn; left out, the session takes its persona's boxRetention.
@@ -21175,6 +22247,96 @@ pub mod types {
         pub session: Session,
         pub turn: Turn,
     }
+    ///`StartingSession`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct StartingSession {
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        ///What happens to the session's box after each turn, fixed when the session starts.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ShortText,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        ///The session's latest turn, with why it failed once it is Failed.
+        #[serde(rename = "lastTurn")]
+        pub last_turn: Turn,
+        ///When the latest turn last changed state.
+        #[serde(rename = "lastTurnAt")]
+        pub last_turn_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The session's latest turn. A start offers the first turn together with the session, so every session has one.
+        #[serde(rename = "lastTurnId")]
+        pub last_turn_id: EntityId,
+        ///The image the latest turn's box boots. Present once the control plane offered the latest turn.
+        #[serde(rename = "lastTurnImage", skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_turn_image: ::std::option::Option<TurnImage>,
+        #[serde(rename = "lastTurnState")]
+        pub last_turn_state: TurnState,
+        pub model: ModelName,
+        ///What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.
+        pub origin: SessionOrigin,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The prebuild layer the session's files start from, or why they start without one. The control
+        ///plane records it for each box it boots while the session holds no snapshot of its own; once a
+        ///snapshot exists, every box restores that snapshot and the layer stays. Present once the control
+        ///plane offered the session's first turn.
+        #[serde(rename = "prebuildLayer", skip_serializing_if = "::std::option::Option::is_none")]
+        pub prebuild_layer: ::std::option::Option<SessionPrebuildLayer>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
+        pub repository: RepositoryUrl,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
+        pub state: StartingSessionState,
+        ///The tags the session carries, each once.
+        pub tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`StartingSessionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum StartingSessionState {
+        Starting,
+    }
+    impl ::std::fmt::Display for StartingSessionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Starting => f.write_str("Starting"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for StartingSessionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Starting" => Ok(Self::Starting),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for StartingSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for StartingSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///A remote MCP server the tenant connects once with one static token. Every session in the tenant
     ///whose persona lists it reaches it through the box's loopback forwarder, which sends the token as
     ///Authorization: Bearer. The URL is fixed at create; the token is write-only.
@@ -21343,6 +22505,186 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for StopFailureReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`StoppedSession`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct StoppedSession {
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        ///What happens to the session's box after each turn, fixed when the session starts.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ShortText,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        ///The session's latest turn, with why it failed once it is Failed.
+        #[serde(rename = "lastTurn")]
+        pub last_turn: Turn,
+        ///When the latest turn last changed state.
+        #[serde(rename = "lastTurnAt")]
+        pub last_turn_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The session's latest turn. A start offers the first turn together with the session, so every session has one.
+        #[serde(rename = "lastTurnId")]
+        pub last_turn_id: EntityId,
+        ///The image the latest turn's box boots. Present once the control plane offered the latest turn.
+        #[serde(rename = "lastTurnImage", skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_turn_image: ::std::option::Option<TurnImage>,
+        #[serde(rename = "lastTurnState")]
+        pub last_turn_state: TurnState,
+        pub model: ModelName,
+        ///What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.
+        pub origin: SessionOrigin,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The prebuild layer the session's files start from, or why they start without one. The control
+        ///plane records it for each box it boots while the session holds no snapshot of its own; once a
+        ///snapshot exists, every box restores that snapshot and the layer stays. Present once the control
+        ///plane offered the session's first turn.
+        #[serde(rename = "prebuildLayer", skip_serializing_if = "::std::option::Option::is_none")]
+        pub prebuild_layer: ::std::option::Option<SessionPrebuildLayer>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
+        pub repository: RepositoryUrl,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
+        pub state: StoppedSessionState,
+        ///The tags the session carries, each once.
+        pub tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`StoppedSessionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum StoppedSessionState {
+        Stopped,
+    }
+    impl ::std::fmt::Display for StoppedSessionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Stopped => f.write_str("Stopped"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for StoppedSessionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Stopped" => Ok(Self::Stopped),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for StoppedSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for StoppedSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`StoppingSession`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct StoppingSession {
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        ///What happens to the session's box after each turn, fixed when the session starts.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ShortText,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        ///The session's latest turn, with why it failed once it is Failed.
+        #[serde(rename = "lastTurn")]
+        pub last_turn: Turn,
+        ///When the latest turn last changed state.
+        #[serde(rename = "lastTurnAt")]
+        pub last_turn_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The session's latest turn. A start offers the first turn together with the session, so every session has one.
+        #[serde(rename = "lastTurnId")]
+        pub last_turn_id: EntityId,
+        ///The image the latest turn's box boots. Present once the control plane offered the latest turn.
+        #[serde(rename = "lastTurnImage", skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_turn_image: ::std::option::Option<TurnImage>,
+        #[serde(rename = "lastTurnState")]
+        pub last_turn_state: TurnState,
+        pub model: ModelName,
+        ///What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.
+        pub origin: SessionOrigin,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The prebuild layer the session's files start from, or why they start without one. The control
+        ///plane records it for each box it boots while the session holds no snapshot of its own; once a
+        ///snapshot exists, every box restores that snapshot and the layer stays. Present once the control
+        ///plane offered the session's first turn.
+        #[serde(rename = "prebuildLayer", skip_serializing_if = "::std::option::Option::is_none")]
+        pub prebuild_layer: ::std::option::Option<SessionPrebuildLayer>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
+        pub repository: RepositoryUrl,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
+        pub state: StoppingSessionState,
+        ///The tags the session carries, each once.
+        pub tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`StoppingSessionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum StoppingSessionState {
+        Stopping,
+    }
+    impl ::std::fmt::Display for StoppingSessionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Stopping => f.write_str("Stopping"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for StoppingSessionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Stopping" => Ok(Self::Stopping),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for StoppingSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for StoppingSessionState {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -29501,17 +30843,12 @@ pub mod types {
         pub created_at: i64,
         ///The control plane's judgement of the host; it offers work to a Healthy host only.
         pub health: HostHealth,
-        ///When the host last sent a Hello or Heartbeat the control plane stored. Absent for a host that never sent a Hello.
-        #[serde(rename = "heardAt", skip_serializing_if = "::std::option::Option::is_none")]
-        pub heard_at: ::std::option::Option<::chrono::DateTime<::chrono::FixedOffset>>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub labels: ::std::vec::Vec<HostLabel>,
         #[serde(rename = "memoryBytes")]
         pub memory_bytes: ::std::num::NonZeroU64,
         pub name: DisplayName,
-        ///Whether the control plane heard from the host in the last 90 seconds, derived from heardAt when read.
-        pub presence: HostPresence,
         #[serde(rename = "publicKey")]
         pub public_key: TenantApiHostRecordPublicKey,
         ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
@@ -42108,6 +43445,99 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TurnState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A Starting, Running, Idle or Stopping session whose host is Degraded, read in place of its stored state until the host reports again.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct UnknownSession {
+        #[serde(rename = "boxId")]
+        pub box_id: EntityId,
+        ///What happens to the session's box after each turn, fixed when the session starts.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub harness: Harness,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ShortText,
+        ///When the session's host last sent a Hello or Heartbeat.
+        #[serde(rename = "heardAt")]
+        pub heard_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        ///The session's latest turn, with why it failed once it is Failed.
+        #[serde(rename = "lastTurn")]
+        pub last_turn: Turn,
+        ///When the latest turn last changed state.
+        #[serde(rename = "lastTurnAt")]
+        pub last_turn_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The session's latest turn. A start offers the first turn together with the session, so every session has one.
+        #[serde(rename = "lastTurnId")]
+        pub last_turn_id: EntityId,
+        ///The image the latest turn's box boots. Present once the control plane offered the latest turn.
+        #[serde(rename = "lastTurnImage", skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_turn_image: ::std::option::Option<TurnImage>,
+        #[serde(rename = "lastTurnState")]
+        pub last_turn_state: TurnState,
+        pub model: ModelName,
+        ///What the session's first prompt came from: a prompt sent with Sessions_start, or the issue of Sessions_startFromIssue.
+        pub origin: SessionOrigin,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The prebuild layer the session's files start from, or why they start without one. The control
+        ///plane records it for each box it boots while the session holds no snapshot of its own; once a
+        ///snapshot exists, every box restores that snapshot and the layer stays. Present once the control
+        ///plane offered the session's first turn.
+        #[serde(rename = "prebuildLayer", skip_serializing_if = "::std::option::Option::is_none")]
+        pub prebuild_layer: ::std::option::Option<SessionPrebuildLayer>,
+        #[serde(rename = "principalId")]
+        pub principal_id: EntityId,
+        ///A GitHub repository as owner/name, github.com/owner/name or https://github.com/owner/name, with or without .git. A start refuses any other form and stores it as https://github.com/owner/name.
+        pub repository: RepositoryUrl,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        ///Who started the session: a person, a turn of another session that called Tumpel with a turn token, or a trigger.
+        #[serde(rename = "startedBy")]
+        pub started_by: SessionStartedBy,
+        pub state: UnknownSessionState,
+        ///The tags the session carries, each once.
+        pub tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///`UnknownSessionState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum UnknownSessionState {
+        Unknown,
+    }
+    impl ::std::fmt::Display for UnknownSessionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Unknown => f.write_str("Unknown"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for UnknownSessionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Unknown" => Ok(Self::Unknown),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for UnknownSessionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for UnknownSessionState {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()

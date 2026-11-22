@@ -422,7 +422,7 @@ model OpenRouterSecretSetsInput {}
 
 @doc("A host as the control plane stores it, without its supervisor update reports and protocol ranges.")
 model HostRecord {
-  ...OmitProperties<Host, "supervisorUpdateStep" | "supervisorUpdateFailure" | "channelProtocol" | "guestProtocol">;
+  ...OmitProperties<HostBase, "supervisorUpdateStep" | "supervisorUpdateFailure" | "channelProtocol" | "guestProtocol">;
 }
 
 model NewClaudeSetup {

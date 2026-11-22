@@ -204,7 +204,7 @@ enum HostPresence {
   @doc("The host sent a Hello or Heartbeat within the last 90 seconds and is not revoked. Only an Online host is placeable.")
   Online: "Online",
 
-  @doc("The host sent a Hello once, but nothing in the last 90 seconds. It gets no offers, and its Offered and Running turns and its Running, Idle and Stopping sessions read Unknown until it reports again.")
+  @doc("The host sent a Hello once, but nothing in the last 90 seconds. It gets no offers, and its Offered and Running turns and its Starting, Running, Idle and Stopping sessions read Unknown until it reports again.")
   Degraded: "Degraded",
 
   @doc("The host never sent a Hello, or it is revoked. It gets no offers.")
@@ -429,7 +429,7 @@ enum SessionState {
   @doc("The box could not clone the session's repository, and the failure of its last turn says why. The session takes no more turns; archive it and start a new session.")
   Failed: "Failed",
 
-  @doc("The host is Degraded; the last stored state is unknown until it reports again. A read-only projection of a Running, Idle or Stopping session, never stored; heardAt says when the host last reported.")
+  @doc("The host is Degraded; the last stored state is unknown until it reports again. A read-only projection of a Starting, Running, Idle or Stopping session, never stored; heardAt says when the host last reported.")
   Unknown: "Unknown",
 }
 
@@ -786,8 +786,8 @@ model OAuthGrant {
   lastIssuedAt: int64;
 }
 
-@doc("A machine the tenant owns, running the supervisor and enrolled to exactly one tenant.")
-model Host {
+@doc("The fields every host carries, whatever its presence.")
+model HostBase {
   @key @visibility(Lifecycle.Read) hostId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
   name: DisplayName;
@@ -796,14 +796,6 @@ model Host {
   @doc("The control plane's judgement of the host; it offers work to a Healthy host only.")
   @visibility(Lifecycle.Read)
   health: HostHealth;
-
-  @doc("Whether the control plane heard from the host in the last 90 seconds, derived from heardAt when read.")
-  @visibility(Lifecycle.Read)
-  presence: HostPresence;
-
-  @doc("When the host last sent a Hello or Heartbeat the control plane stored. Absent for a host that never sent a Hello.")
-  @visibility(Lifecycle.Read)
-  heardAt?: offsetDateTime;
 
   @doc("The health the host reported in its latest Heartbeat, Healthy for a host that reports none.")
   @visibility(Lifecycle.Read)
@@ -840,6 +832,40 @@ model Host {
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
 
+@doc("A host that sent a Hello or Heartbeat within the last 90 seconds and is not revoked.")
+model OnlineHost {
+  ...HostBase;
+  @visibility(Lifecycle.Read) presence: HostPresence.Online;
+
+  @doc("When the host last sent a Hello or Heartbeat.")
+  @visibility(Lifecycle.Read)
+  heardAt: offsetDateTime;
+}
+
+@doc("A host that sent a Hello once, but nothing in the last 90 seconds.")
+model DegradedHost {
+  ...HostBase;
+  @visibility(Lifecycle.Read) presence: HostPresence.Degraded;
+
+  @doc("When the host last sent a Hello or Heartbeat.")
+  @visibility(Lifecycle.Read)
+  heardAt: offsetDateTime;
+}
+
+@doc("A host that never sent a Hello, or is revoked.")
+model OfflineHost {
+  ...HostBase;
+  @visibility(Lifecycle.Read) presence: HostPresence.Offline;
+}
+
+@doc("A machine the tenant owns, running the supervisor and enrolled to exactly one tenant, with its presence.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "presence" })
+union Host {
+  Online: OnlineHost,
+  Degraded: DegradedHost,
+  Offline: OfflineHost,
+}
+
 @doc("A one-time, tenant-scoped token that enrols one host before it expires.")
 model EnrolmentToken {
   @key @visibility(Lifecycle.Read) enrolmentTokenId: EntityId;
@@ -851,8 +877,8 @@ model EnrolmentToken {
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
 
-@doc("A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins.")
-model Session {
+@doc("The fields every session carries, whatever its state.")
+model SessionBase {
   @key @visibility(Lifecycle.Read) sessionId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
   @visibility(Lifecycle.Read) principalId: EntityId;
@@ -879,8 +905,6 @@ model Session {
   @visibility(Lifecycle.Read) harness: Harness;
   @visibility(Lifecycle.Read) harnessVersion: ShortText;
   `model`: ModelName;
-  @visibility(Lifecycle.Read) state: SessionState;
-
   @doc("The session's latest turn. A start offers the first turn together with the session, so every session has one.")
   @visibility(Lifecycle.Read)
   lastTurnId: EntityId;
@@ -912,12 +936,66 @@ model Session {
   @visibility(Lifecycle.Read)
   boxRetention: BoxRetention;
 
-  @doc("When the session's host last sent a Hello or Heartbeat. Present only while the session reads Unknown.")
-  @visibility(Lifecycle.Read)
-  heardAt?: offsetDateTime;
-
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
+}
+
+model StartingSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Starting;
+}
+
+model IdleSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Idle;
+}
+
+model RunningSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Running;
+}
+
+model StoppingSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Stopping;
+}
+
+model StoppedSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Stopped;
+}
+
+model ArchivedSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Archived;
+}
+
+model FailedSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Failed;
+}
+
+@doc("A Starting, Running, Idle or Stopping session whose host is Degraded, read in place of its stored state until the host reports again.")
+model UnknownSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Unknown;
+
+  @doc("When the session's host last sent a Hello or Heartbeat.")
+  @visibility(Lifecycle.Read)
+  heardAt: offsetDateTime;
+}
+
+@doc("A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
+union Session {
+  Starting: StartingSession,
+  Idle: IdleSession,
+  Running: RunningSession,
+  Stopping: StoppingSession,
+  Stopped: StoppedSession,
+  Archived: ArchivedSession,
+  Failed: FailedSession,
+  Unknown: UnknownSession,
 }
 
 @doc("The GitHub issue of the session's repository that the session was started from, and the branch its first prompt asks for.")
