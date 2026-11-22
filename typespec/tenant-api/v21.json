@@ -2819,8 +2819,7 @@
       "enum": [
         "Healthy",
         "RateLimited",
-        "Unhealthy",
-        "Degraded"
+        "Unhealthy"
       ],
       "description": "Whether the control plane offers a host work. It is the control plane's own judgement of the host, kept by its tenant and written once per change."
     },
@@ -2930,6 +2929,15 @@
           "$ref": "#/components/schemas/EntityId"
         }
       }
+    },
+    "HostPresence": {
+      "type": "string",
+      "enum": [
+        "Online",
+        "Degraded",
+        "Offline"
+      ],
+      "description": "Whether the control plane has heard from a host lately, derived when read from the time of the host's latest Hello or Heartbeat. Nothing is written when it changes."
     },
     "HostReportedHealth": {
       "type": "string",
@@ -4892,6 +4900,12 @@
             }
           ],
           "description": "What happens to the session's box after each turn, fixed when the session starts.",
+          "readOnly": true
+        },
+        "heardAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the session's host last sent a Hello or Heartbeat. Present only while the session reads Unknown.",
           "readOnly": true
         },
         "createdAt": {
@@ -9597,6 +9611,14 @@
         }
       }
     },
+    "TenantApi.HostConnectionState": {
+      "type": "string",
+      "enum": [
+        "Online",
+        "Offline"
+      ],
+      "description": "Whether a host's channel is connected, as the control plane records it on connect and close. Read presence comes from the host's heardAt instead."
+    },
     "TenantApi.HostFrameRefused": {
       "type": "object",
       "required": [
@@ -9945,13 +9967,6 @@
         }
       }
     },
-    "TenantApi.HostPresence": {
-      "type": "string",
-      "enum": [
-        "Online",
-        "Offline"
-      ]
-    },
     "TenantApi.HostPresenceInput": {
       "type": "object",
       "required": [
@@ -9968,7 +9983,7 @@
           "$ref": "#/components/schemas/EntityId"
         },
         "presence": {
-          "$ref": "#/components/schemas/TenantApi.HostPresence"
+          "$ref": "#/components/schemas/TenantApi.HostConnectionState"
         },
         "now": {
           "type": "integer",
@@ -10009,6 +10024,7 @@
         "name",
         "state",
         "health",
+        "presence",
         "reportedHealth",
         "architecture",
         "cpuCount",
@@ -10054,6 +10070,21 @@
             }
           ],
           "description": "The control plane's judgement of the host; it offers work to a Healthy host only.",
+          "readOnly": true
+        },
+        "presence": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/HostPresence"
+            }
+          ],
+          "description": "Whether the control plane heard from the host in the last 90 seconds, derived from heardAt when read.",
+          "readOnly": true
+        },
+        "heardAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the host last sent a Hello or Heartbeat the control plane stored. Absent for a host that never sent a Hello.",
           "readOnly": true
         },
         "reportedHealth": {
@@ -17151,9 +17182,6 @@
           "$ref": "#/components/schemas/TenantApi.UnplaceableNotHealthy"
         },
         {
-          "$ref": "#/components/schemas/TenantApi.UnplaceableNotHeard"
-        },
-        {
           "$ref": "#/components/schemas/TenantApi.UnplaceableNoImage"
         },
         {
@@ -17177,7 +17205,6 @@
         "mapping": {
           "NotOnline": "#/components/schemas/TenantApi.UnplaceableNotOnline",
           "NotHealthy": "#/components/schemas/TenantApi.UnplaceableNotHealthy",
-          "NotHeard": "#/components/schemas/TenantApi.UnplaceableNotHeard",
           "NoImage": "#/components/schemas/TenantApi.UnplaceableNoImage",
           "Full": "#/components/schemas/TenantApi.UnplaceableFull",
           "MemoryFull": "#/components/schemas/TenantApi.UnplaceableMemoryFull",
@@ -17402,32 +17429,6 @@
         }
       },
       "description": "The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again."
-    },
-    "TenantApi.UnplaceableNotHeard": {
-      "type": "object",
-      "required": [
-        "kind",
-        "host",
-        "reason"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "Unplaceable"
-          ]
-        },
-        "host": {
-          "$ref": "#/components/schemas/TenantApi.HostRecord"
-        },
-        "reason": {
-          "type": "string",
-          "enum": [
-            "NotHeard"
-          ]
-        }
-      },
-      "description": "The host is Online, but it has not sent a Hello since its tenant restarted, so the tenant does not know its usage yet."
     },
     "TenantApi.UnplaceableNotOnline": {
       "type": "object",
@@ -18697,6 +18698,7 @@
         "HostUpdating",
         "BoxLost",
         "HostDropped",
+        "HostRevoked",
         "Cancelled",
         "ConnectorDisconnected",
         "SnapshotNotStored",
@@ -18865,6 +18867,7 @@
         "createdAt",
         "updatedAt",
         "state",
+        "heardAt",
         "detail"
       ],
       "properties": {
@@ -18946,6 +18949,11 @@
             "Unknown"
           ]
         },
+        "heardAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the turn's host last sent a Hello or Heartbeat."
+        },
         "detail": {
           "allOf": [
             {
@@ -18955,7 +18963,7 @@
           "description": "Which host went silent and since when."
         }
       },
-      "description": "A turn whose host missed its heartbeats past the heartbeat deadline, read in place of Offered or Running until the host speaks again."
+      "description": "An Offered or Running turn whose host is Degraded, read in place of its stored state until the host reports again."
     },
     "UrlText": {
       "type": "string",

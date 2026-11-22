@@ -996,7 +996,8 @@ model PrepareOfferInput {
   now: int64;
 }
 
-enum HostPresence {
+@doc("Whether a host's channel is connected, as the control plane records it on connect and close. Read presence comes from the host's heardAt instead.")
+enum HostConnectionState {
   Online: "Online",
   Offline: "Offline",
 }
@@ -1004,7 +1005,7 @@ enum HostPresence {
 model HostPresenceInput {
   tenantId: EntityId;
   hostId: EntityId;
-  presence: HostPresence;
+  presence: HostConnectionState;
   now: int64;
 }
 
@@ -2299,13 +2300,6 @@ model UnplaceableNotHealthy {
   reason: "NotHealthy";
 }
 
-@doc("The host is Online, but it has not sent a Hello since its tenant restarted, so the tenant does not know its usage yet.")
-model UnplaceableNotHeard {
-  kind: "Unplaceable";
-  host: HostRecord;
-  reason: "NotHeard";
-}
-
 model UnplaceableNoImage {
   kind: "Unplaceable";
   host: HostRecord;
@@ -2356,7 +2350,6 @@ model UnplaceableNoConnectors {
 union Unplaceable {
   NotOnline: UnplaceableNotOnline,
   NotHealthy: UnplaceableNotHealthy,
-  NotHeard: UnplaceableNotHeard,
   NoImage: UnplaceableNoImage,
   Full: UnplaceableFull,
   MemoryFull: UnplaceableMemoryFull,

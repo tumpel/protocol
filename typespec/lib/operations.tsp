@@ -997,7 +997,7 @@ namespace V1 {
     @post
     enrol(@body body: HostEnrol): Host | ProblemResponse;
 
-    @doc("Lists the tenant's hosts with their presence: Enrolled, Online, Offline or Revoked.")
+    @doc("Lists the tenant's hosts with their state and their presence: Online, Degraded or Offline.")
     @get
     list(): Host[] | ProblemResponse;
 

@@ -11232,12 +11232,17 @@ pub mod types {
         pub guest_protocol: HostGuestProtocol,
         ///The control plane's judgement of the host; it offers work to a Healthy host only.
         pub health: HostHealth,
+        ///When the host last sent a Hello or Heartbeat the control plane stored. Absent for a host that never sent a Hello.
+        #[serde(rename = "heardAt", skip_serializing_if = "::std::option::Option::is_none")]
+        pub heard_at: ::std::option::Option<::chrono::DateTime<::chrono::FixedOffset>>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub labels: ::std::vec::Vec<HostLabel>,
         #[serde(rename = "memoryBytes")]
         pub memory_bytes: ::std::num::NonZeroU64,
         pub name: DisplayName,
+        ///Whether the control plane heard from the host in the last 90 seconds, derived from heardAt when read.
+        pub presence: HostPresence,
         #[serde(rename = "publicKey")]
         pub public_key: HostPublicKey,
         ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
@@ -11640,7 +11645,6 @@ pub mod types {
         Healthy,
         RateLimited,
         Unhealthy,
-        Degraded,
     }
     impl ::std::fmt::Display for HostHealth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -11648,7 +11652,6 @@ pub mod types {
                 Self::Healthy => f.write_str("Healthy"),
                 Self::RateLimited => f.write_str("RateLimited"),
                 Self::Unhealthy => f.write_str("Unhealthy"),
-                Self::Degraded => f.write_str("Degraded"),
             }
         }
     }
@@ -11659,7 +11662,6 @@ pub mod types {
                 "Healthy" => Ok(Self::Healthy),
                 "RateLimited" => Ok(Self::RateLimited),
                 "Unhealthy" => Ok(Self::Unhealthy),
-                "Degraded" => Ok(Self::Degraded),
                 _ => Err("invalid value".into()),
             }
         }
@@ -11897,6 +11899,45 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for HostOnlineEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///Whether the control plane has heard from a host lately, derived when read from the time of the host's latest Hello or Heartbeat. Nothing is written when it changes.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum HostPresence {
+        Online,
+        Degraded,
+        Offline,
+    }
+    impl ::std::fmt::Display for HostPresence {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Online => f.write_str("Online"),
+                Self::Degraded => f.write_str("Degraded"),
+                Self::Offline => f.write_str("Offline"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for HostPresence {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Online" => Ok(Self::Online),
+                "Degraded" => Ok(Self::Degraded),
+                "Offline" => Ok(Self::Offline),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for HostPresence {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for HostPresence {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -19428,6 +19469,9 @@ pub mod types {
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: ShortText,
+        ///When the session's host last sent a Hello or Heartbeat. Present only while the session reads Unknown.
+        #[serde(rename = "heardAt", skip_serializing_if = "::std::option::Option::is_none")]
+        pub heard_at: ::std::option::Option<::chrono::DateTime<::chrono::FixedOffset>>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         ///The session's latest turn, with why it failed once it is Failed.
@@ -28924,6 +28968,42 @@ pub mod types {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
         pub prebuild: ::std::option::Option<Prebuild>,
     }
+    ///Whether a host's channel is connected, as the control plane records it on connect and close. Read presence comes from the host's heardAt instead.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiHostConnectionState {
+        Online,
+        Offline,
+    }
+    impl ::std::fmt::Display for TenantApiHostConnectionState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Online => f.write_str("Online"),
+                Self::Offline => f.write_str("Offline"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiHostConnectionState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Online" => Ok(Self::Online),
+                "Offline" => Ok(Self::Offline),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiHostConnectionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHostConnectionState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`TenantApiHostFrameRefused`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiHostFrameRefused {
@@ -29335,49 +29415,13 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiHostPresence`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiHostPresence {
-        Online,
-        Offline,
-    }
-    impl ::std::fmt::Display for TenantApiHostPresence {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Online => f.write_str("Online"),
-                Self::Offline => f.write_str("Offline"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiHostPresence {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Online" => Ok(Self::Online),
-                "Offline" => Ok(Self::Offline),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiHostPresence {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHostPresence {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiHostPresenceInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiHostPresenceInput {
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub now: i64,
-        pub presence: TenantApiHostPresence,
+        pub presence: TenantApiHostConnectionState,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -29457,12 +29501,17 @@ pub mod types {
         pub created_at: i64,
         ///The control plane's judgement of the host; it offers work to a Healthy host only.
         pub health: HostHealth,
+        ///When the host last sent a Hello or Heartbeat the control plane stored. Absent for a host that never sent a Hello.
+        #[serde(rename = "heardAt", skip_serializing_if = "::std::option::Option::is_none")]
+        pub heard_at: ::std::option::Option<::chrono::DateTime<::chrono::FixedOffset>>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub labels: ::std::vec::Vec<HostLabel>,
         #[serde(rename = "memoryBytes")]
         pub memory_bytes: ::std::num::NonZeroU64,
         pub name: DisplayName,
+        ///Whether the control plane heard from the host in the last 90 seconds, derived from heardAt when read.
+        pub presence: HostPresence,
         #[serde(rename = "publicKey")]
         pub public_key: TenantApiHostRecordPublicKey,
         ///The health the host reported in its latest Heartbeat, Healthy for a host that reports none.
@@ -39249,7 +39298,6 @@ pub mod types {
     pub enum TenantApiUnplaceable {
         NotOnline(TenantApiUnplaceableNotOnline),
         NotHealthy(TenantApiUnplaceableNotHealthy),
-        NotHeard(TenantApiUnplaceableNotHeard),
         NoImage(TenantApiUnplaceableNoImage),
         Full(TenantApiUnplaceableFull),
         MemoryFull(TenantApiUnplaceableMemoryFull),
@@ -39265,11 +39313,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiUnplaceableNotHealthy> for TenantApiUnplaceable {
         fn from(value: TenantApiUnplaceableNotHealthy) -> Self {
             Self::NotHealthy(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUnplaceableNotHeard> for TenantApiUnplaceable {
-        fn from(value: TenantApiUnplaceableNotHeard) -> Self {
-            Self::NotHeard(value)
         }
     }
     impl ::std::convert::From<TenantApiUnplaceableNoImage> for TenantApiUnplaceable {
@@ -39820,79 +39863,6 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHealthyReason {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The host is Online, but it has not sent a Hello since its tenant restarted, so the tenant does not know its usage yet.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUnplaceableNotHeard {
-        pub host: TenantApiHostRecord,
-        pub kind: TenantApiUnplaceableNotHeardKind,
-        pub reason: TenantApiUnplaceableNotHeardReason,
-    }
-    ///`TenantApiUnplaceableNotHeardKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUnplaceableNotHeardKind {
-        Unplaceable,
-    }
-    impl ::std::fmt::Display for TenantApiUnplaceableNotHeardKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Unplaceable => f.write_str("Unplaceable"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUnplaceableNotHeardKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Unplaceable" => Ok(Self::Unplaceable),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHeardKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHeardKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUnplaceableNotHeardReason`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUnplaceableNotHeardReason {
-        NotHeard,
-    }
-    impl ::std::fmt::Display for TenantApiUnplaceableNotHeardReason {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotHeard => f.write_str("NotHeard"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUnplaceableNotHeardReason {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotHeard" => Ok(Self::NotHeard),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHeardReason {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHeardReason {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -41791,6 +41761,7 @@ pub mod types {
         HostUpdating,
         BoxLost,
         HostDropped,
+        HostRevoked,
         Cancelled,
         ConnectorDisconnected,
         SnapshotNotStored,
@@ -41827,6 +41798,7 @@ pub mod types {
                 Self::HostUpdating => f.write_str("HostUpdating"),
                 Self::BoxLost => f.write_str("BoxLost"),
                 Self::HostDropped => f.write_str("HostDropped"),
+                Self::HostRevoked => f.write_str("HostRevoked"),
                 Self::Cancelled => f.write_str("Cancelled"),
                 Self::ConnectorDisconnected => f.write_str("ConnectorDisconnected"),
                 Self::SnapshotNotStored => f.write_str("SnapshotNotStored"),
@@ -41866,6 +41838,7 @@ pub mod types {
                 "HostUpdating" => Ok(Self::HostUpdating),
                 "BoxLost" => Ok(Self::BoxLost),
                 "HostDropped" => Ok(Self::HostDropped),
+                "HostRevoked" => Ok(Self::HostRevoked),
                 "Cancelled" => Ok(Self::Cancelled),
                 "ConnectorDisconnected" => Ok(Self::ConnectorDisconnected),
                 "SnapshotNotStored" => Ok(Self::SnapshotNotStored),
@@ -42140,7 +42113,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///A turn whose host missed its heartbeats past the heartbeat deadline, read in place of Offered or Running until the host speaks again.
+    ///An Offered or Running turn whose host is Degraded, read in place of its stored state until the host reports again.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct UnknownTurn {
         ///The control plane mints the id of the box that runs the turn.
@@ -42153,6 +42126,9 @@ pub mod types {
         ///A condition the harness keeps working toward until it holds; only a session whose harness has goals in the harness catalog accepts it.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub goal: ::std::option::Option<Goal>,
+        ///When the turn's host last sent a Hello or Heartbeat.
+        #[serde(rename = "heardAt")]
+        pub heard_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///The image the turn's box boots, recorded when the control plane offers the turn. A turn not yet offered has none.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub image: ::std::option::Option<TurnImage>,
@@ -44735,7 +44711,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Lists the tenant's hosts with their presence: Enrolled, Online, Offline or Revoked.
+    ///Lists the tenant's hosts with their state and their presence: Online, Degraded or Offline.
     ///
     ///Sends a `GET` request to `/v1/hosts`
     ///
@@ -50059,7 +50035,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 35;
-    pub const VERSION: u16 = 35;
+    pub const VERSION: u16 = 36;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;

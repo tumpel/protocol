@@ -68,7 +68,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 35;
-const ChannelProtocolVersion = 35;
+const ChannelProtocolVersion = 36;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -197,9 +197,18 @@ enum HostHealth {
 
   @doc("The host went RateLimited three times within an hour. It gets no offers until a person restores it or the host reconnects with a new Hello.")
   Unhealthy: "Unhealthy",
+}
 
-  @doc("The host missed its heartbeat plus the grace period. It gets no offers until a heartbeat or a reconnect shows it is alive.")
+@doc("Whether the control plane has heard from a host lately, derived when read from the time of the host's latest Hello or Heartbeat. Nothing is written when it changes.")
+enum HostPresence {
+  @doc("The host sent a Hello or Heartbeat within the last 90 seconds and is not revoked. Only an Online host is placeable.")
+  Online: "Online",
+
+  @doc("The host sent a Hello once, but nothing in the last 90 seconds. It gets no offers, and its Offered and Running turns and its Running, Idle and Stopping sessions read Unknown until it reports again.")
   Degraded: "Degraded",
+
+  @doc("The host never sent a Hello, or it is revoked. It gets no offers.")
+  Offline: "Offline",
 }
 
 @doc("The health a host reports of itself in its Heartbeat.")
@@ -420,7 +429,7 @@ enum SessionState {
   @doc("The box could not clone the session's repository, and the failure of its last turn says why. The session takes no more turns; archive it and start a new session.")
   Failed: "Failed",
 
-  @doc("The session's host missed its heartbeats past the heartbeat deadline, so the control plane cannot tell whether the session's turn still runs. The host's next hello or heartbeat settles it.")
+  @doc("The host is Degraded; the last stored state is unknown until it reports again. A read-only projection of a Running, Idle or Stopping session, never stored; heardAt says when the host last reported.")
   Unknown: "Unknown",
 }
 
@@ -430,7 +439,7 @@ enum TurnState {
   Completed: "Completed",
   Failed: "Failed",
 
-  @doc("The turn was Offered or Running on a host that missed its heartbeats past the heartbeat deadline. The host's next hello or heartbeat settles it: a turn the host still holds carries on, and one it no longer holds fails HostDropped.")
+  @doc("The host is Degraded; the last stored state is unknown until it reports again. A read-only projection of an Offered or Running turn, never stored: on the host's next Hello or Heartbeat a turn the host still holds carries on, and one it no longer holds fails HostDropped.")
   Unknown: "Unknown",
 }
 
@@ -509,6 +518,9 @@ enum TurnFailureReason {
 
   @doc("The host's Hello or Heartbeat did not name the turn among the turns it holds: a Running turn the host no longer runs, or an offer the host never took by the second Heartbeat after it was sent; the detail names the host. The control plane records it, so no host sends it.")
   HostDropped: "HostDropped",
+
+  @doc("A person revoked the turn's host while the turn was Offered or Running; the detail names the host. The control plane records it, so no host sends it.")
+  HostRevoked: "HostRevoked",
 
   @doc("A person stopped the session with cancelTurn while the turn was in flight or waiting, or cancelled the turn while it waited; the detail names who.")
   Cancelled: "Cancelled",
@@ -785,6 +797,14 @@ model Host {
   @visibility(Lifecycle.Read)
   health: HostHealth;
 
+  @doc("Whether the control plane heard from the host in the last 90 seconds, derived from heardAt when read.")
+  @visibility(Lifecycle.Read)
+  presence: HostPresence;
+
+  @doc("When the host last sent a Hello or Heartbeat the control plane stored. Absent for a host that never sent a Hello.")
+  @visibility(Lifecycle.Read)
+  heardAt?: offsetDateTime;
+
   @doc("The health the host reported in its latest Heartbeat, Healthy for a host that reports none.")
   @visibility(Lifecycle.Read)
   reportedHealth: HostReportedHealth;
@@ -891,6 +911,10 @@ model Session {
   @doc("What happens to the session's box after each turn, fixed when the session starts.")
   @visibility(Lifecycle.Read)
   boxRetention: BoxRetention;
+
+  @doc("When the session's host last sent a Hello or Heartbeat. Present only while the session reads Unknown.")
+  @visibility(Lifecycle.Read)
+  heardAt?: offsetDateTime;
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
@@ -1031,10 +1055,13 @@ model FailedTurn {
   failedAt: offsetDateTime;
 }
 
-@doc("A turn whose host missed its heartbeats past the heartbeat deadline, read in place of Offered or Running until the host speaks again.")
+@doc("An Offered or Running turn whose host is Degraded, read in place of its stored state until the host reports again.")
 model UnknownTurn {
   ...TurnBase;
   state: TurnState.Unknown;
+
+  @doc("When the turn's host last sent a Hello or Heartbeat.")
+  heardAt: offsetDateTime;
 
   @doc("Which host went silent and since when.")
   detail: Detail;
