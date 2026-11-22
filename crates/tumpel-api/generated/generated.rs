@@ -22937,14 +22937,10 @@ pub mod types {
             value.parse()
         }
     }
-    ///A paused box. It stays paused until BoxTeardown or BoxDiscard names it. A supervisor writes
-    ///`warmMilliseconds` as 0 and `expired` as false and ignores both on read.
+    ///A paused box. It stays as BoxRetention defines; the idle time it has left is the box's idleMilliseconds.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorHandoverWarm {
-        pub expired: bool,
         pub kind: SupervisorHandoverWarmKind,
-        #[serde(rename = "warmMilliseconds")]
-        pub warm_milliseconds: i64,
     }
     ///`SupervisorHandoverWarmKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]

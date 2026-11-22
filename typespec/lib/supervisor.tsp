@@ -192,14 +192,9 @@ union SupervisorHandoverBoxState {
   Turn: SupervisorHandoverTurn,
 }
 
-@doc("""
-  A paused box. It stays paused until BoxTeardown or BoxDiscard names it. A supervisor writes
-  `warmMilliseconds` as 0 and `expired` as false and ignores both on read.
-  """)
+@doc("A paused box. It stays as BoxRetention defines; the idle time it has left is the box's idleMilliseconds.")
 model SupervisorHandoverWarm {
   kind: "Warm";
-  @minValue(0) warmMilliseconds: int64;
-  expired: boolean;
 }
 
 @doc("""
