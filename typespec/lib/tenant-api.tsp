@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 17;
+const TenantApiVersion = 18;
 
 namespace TenantApi {
 
@@ -949,6 +949,7 @@ model ReconcileHeldBoxesInput {
   tenantId: EntityId;
   hostId: EntityId;
   @maxItems(1000) heldSessionIds: EntityId[];
+  @maxItems(1000) heldClaudeSetupIds: EntityId[];
   now: int64;
 }
 

@@ -137,6 +137,10 @@ model SupervisorHandoverBox {
   @doc("What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm one until the session stops.")
   boxRetention: BoxRetention;
 
+  @doc("The idle time left before the box is torn down at the handover, so an update does not reset the offer's idleSeconds; like turnMilliseconds, it counts down from the offer's budget.")
+  @minValue(0)
+  idleMilliseconds: int64;
+
   state: SupervisorHandoverBoxState;
   @maxItems(1000) queued: SupervisorHandoverCommand[];
 }
