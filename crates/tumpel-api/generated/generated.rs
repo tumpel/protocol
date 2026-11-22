@@ -43,17 +43,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`ActiveSubscriptionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ActiveSubscriptionState {
         Active,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ActiveSubscriptionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Active => f.write_str("Active"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -88,17 +85,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`ApiKeyKeyKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ApiKeyKeyKind {
         ApiKey,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ApiKeyKeyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ApiKey => f.write_str("ApiKey"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -131,17 +125,14 @@ pub mod types {
         pub provider: ModelProvider,
     }
     ///`ApiKeyMemberKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ApiKeyMemberKind {
         ApiKey,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ApiKeyMemberKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ApiKey => f.write_str("ApiKey"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -180,17 +171,14 @@ pub mod types {
         pub value: ::std::option::Option<SecretText>,
     }
     ///`ApiKeyUpdateKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ApiKeyUpdateKind {
         ApiKey,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ApiKeyUpdateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ApiKey => f.write_str("ApiKey"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -224,17 +212,14 @@ pub mod types {
         pub value: SecretText,
     }
     ///`ApiKeyValueKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ApiKeyValueKind {
         ApiKey,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ApiKeyValueKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ApiKey => f.write_str("ApiKey"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -269,17 +254,14 @@ pub mod types {
         pub strip_components: i32,
     }
     ///`ArchiveInstallRecipeKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ArchiveInstallRecipeKind {
         Archive,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ArchiveInstallRecipeKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Archive => f.write_str("Archive"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -390,9 +372,6 @@ pub mod types {
         ///Reading the paused box's drive until its files are cut into chunks in the chunk cache; SnapshotTimedOut. The chunk exchanges, the packing and the uploads run until the request's uploadExpiresAt; UploadExpired.
         #[serde(rename = "snapshotSeconds")]
         pub snapshot_seconds: ::std::num::NonZeroU32,
-        ///TurnStart until TurnEnd; TurnTimedOut.
-        #[serde(rename = "turnSeconds")]
-        pub turn_seconds: ::std::num::NonZeroU32,
     }
     ///The disk of a box in MiB, a sparse drive that costs the host only what the box writes. A persona
     ///that names no boxDiskMib runs its boxes with DefaultMib; one that names it may ask for up to MaxMib.
@@ -465,13 +444,11 @@ pub mod types {
         }
     }
     ///What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum BoxRetention {
         Off,
         Warm,
         Auto,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for BoxRetention {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -479,7 +456,6 @@ pub mod types {
                 Self::Off => f.write_str("Off"),
                 Self::Warm => f.write_str("Warm"),
                 Self::Auto => f.write_str("Auto"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -501,49 +477,6 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for BoxRetention {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///A build provider that runs prebuilds on the tenant's own account and bills it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum BuildProvider {
-        GitHubActions,
-        #[serde(rename = "CircleCI")]
-        CircleCi,
-        Namespace,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for BuildProvider {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::GitHubActions => f.write_str("GitHubActions"),
-                Self::CircleCi => f.write_str("CircleCI"),
-                Self::Namespace => f.write_str("Namespace"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for BuildProvider {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "GitHubActions" => Ok(Self::GitHubActions),
-                "CircleCI" => Ok(Self::CircleCi),
-                "Namespace" => Ok(Self::Namespace),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for BuildProvider {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for BuildProvider {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -574,7 +507,6 @@ pub mod types {
     pub enum ChannelBootImage {
         GuestImageDownload(ChannelGuestImageDownload),
         LayeredImageDownload(ChannelLayeredImageDownload),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelGuestImageDownload> for ChannelBootImage {
         fn from(value: ChannelGuestImageDownload) -> Self {
@@ -598,17 +530,14 @@ pub mod types {
         pub type_: ChannelBoxDiscardType,
     }
     ///`ChannelBoxDiscardType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelBoxDiscardType {
         BoxDiscard,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxDiscardType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::BoxDiscard => f.write_str("BoxDiscard"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -633,7 +562,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///The host runs no box of the session any more and returned its TAP device to the pool.
+    ///The host runs no box of the session any more and returned its TAP device to the pool. It answers BoxTeardown or BoxDiscard, or comes unsolicited after the host tore down an Auto box idle for the offer's idleSeconds.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelBoxGone {
         #[serde(rename = "boxId")]
@@ -644,17 +573,14 @@ pub mod types {
         pub type_: ChannelBoxGoneType,
     }
     ///`ChannelBoxGoneType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelBoxGoneType {
         BoxGone,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxGoneType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::BoxGone => f.write_str("BoxGone"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -681,7 +607,8 @@ pub mod types {
     }
     ///Asks the host to tear down the box of a session once a snapshot holds its last completed turn:
     ///when a person stops or archives the session, after each turn of an Off session, and when placement
-    ///evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it. The host
+    ///evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it, except that it
+    ///tears down an Auto box idle for the offer's idleSeconds itself and reports it with an unsolicited BoxGone. The host
     ///answers BoxGone, also when it runs no box of the session with that boxId, or BoxTeardownFailed.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelBoxTeardown {
@@ -707,17 +634,14 @@ pub mod types {
         pub type_: ChannelBoxTeardownFailedType,
     }
     ///`ChannelBoxTeardownFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelBoxTeardownFailedType {
         BoxTeardownFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxTeardownFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::BoxTeardownFailed => f.write_str("BoxTeardownFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -743,17 +667,14 @@ pub mod types {
         }
     }
     ///Why the host kept a box it was asked to tear down.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelBoxTeardownFailureReason {
         BoxDirty,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxTeardownFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::BoxDirty => f.write_str("BoxDirty"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -779,17 +700,14 @@ pub mod types {
         }
     }
     ///`ChannelBoxTeardownType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelBoxTeardownType {
         BoxTeardown,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxTeardownType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::BoxTeardown => f.write_str("BoxTeardown"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -893,17 +811,14 @@ pub mod types {
         }
     }
     ///`ChannelChallengeType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelChallengeType {
         Challenge,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelChallengeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Challenge => f.write_str("Challenge"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -956,17 +871,14 @@ pub mod types {
         pub type_: ChannelClaudeSetupBoxCodeType,
     }
     ///`ChannelClaudeSetupBoxCodeType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelClaudeSetupBoxCodeType {
         ClaudeSetupBoxCode,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxCodeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxCode => f.write_str("ClaudeSetupBoxCode"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1003,17 +915,14 @@ pub mod types {
         pub type_: ChannelClaudeSetupBoxDiscardType,
     }
     ///`ChannelClaudeSetupBoxDiscardType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelClaudeSetupBoxDiscardType {
         ClaudeSetupBoxDiscard,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxDiscardType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxDiscard => f.write_str("ClaudeSetupBoxDiscard"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1052,17 +961,14 @@ pub mod types {
         pub type_: ChannelClaudeSetupBoxFailedType,
     }
     ///`ChannelClaudeSetupBoxFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelClaudeSetupBoxFailedType {
         ClaudeSetupBoxFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxFailed => f.write_str("ClaudeSetupBoxFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1102,6 +1008,9 @@ pub mod types {
         pub box_id: EntityId,
         #[serde(rename = "claudeSetupId")]
         pub claude_setup_id: EntityId,
+        ///How long the person may take from the sign-in URL to submitting the code before the host fails the setup SetupTimedOut.
+        #[serde(rename = "codeSeconds")]
+        pub code_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -1117,6 +1026,9 @@ pub mod types {
         pub token_url: HttpUrl,
         #[serde(rename = "type")]
         pub type_: ChannelClaudeSetupBoxOfferType,
+        ///How long the box may take from this offer to printing the sign-in URL before the host fails the setup SetupUrlMissing.
+        #[serde(rename = "urlSeconds")]
+        pub url_seconds: ::std::num::NonZeroU32,
     }
     ///`ChannelClaudeSetupBoxOfferTokenCredential`
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -1188,17 +1100,14 @@ pub mod types {
         }
     }
     ///`ChannelClaudeSetupBoxOfferType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelClaudeSetupBoxOfferType {
         ClaudeSetupBoxOffer,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxOfferType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxOffer => f.write_str("ClaudeSetupBoxOffer"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1236,17 +1145,14 @@ pub mod types {
         pub user_code: ::std::option::Option<ChannelClaudeSetupBoxUrlUserCode>,
     }
     ///`ChannelClaudeSetupBoxUrlType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelClaudeSetupBoxUrlType {
         ClaudeSetupBoxUrl,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxUrlType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxUrl => f.write_str("ClaudeSetupBoxUrl"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1387,7 +1293,6 @@ pub mod types {
         FrameRefused(ChannelFrameRefused),
         FrameRateLimited(ChannelFrameRateLimited),
         ControlFrame(ChannelControlFrame),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelChallenge> for ChannelControlEnvelope {
         fn from(value: ChannelChallenge) -> Self {
@@ -1434,17 +1339,14 @@ pub mod types {
         pub type_: ChannelControlFrameType,
     }
     ///`ChannelControlFrameType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelControlFrameType {
         Frame,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelControlFrameType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Frame => f.write_str("Frame"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -1486,7 +1388,6 @@ pub mod types {
         ClaudeSetupBoxOffer(ChannelClaudeSetupBoxOffer),
         ClaudeSetupBoxCode(ChannelClaudeSetupBoxCode),
         ClaudeSetupBoxDiscard(ChannelClaudeSetupBoxDiscard),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelTurnOffer> for ChannelControlMessage {
         fn from(value: ChannelTurnOffer) -> Self {
@@ -2038,17 +1939,14 @@ pub mod types {
         }
     }
     ///`ChannelFrameRateLimitedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelFrameRateLimitedType {
         FrameRateLimited,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelFrameRateLimitedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::FrameRateLimited => f.write_str("FrameRateLimited"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2157,17 +2055,14 @@ pub mod types {
         }
     }
     ///`ChannelFrameRefusedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelFrameRefusedType {
         FrameRefused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelFrameRefusedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::FrameRefused => f.write_str("FrameRefused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2225,17 +2120,14 @@ pub mod types {
         pub manifest_url: HttpUrl,
     }
     ///`ChannelGuestImageDownloadKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelGuestImageDownloadKind {
         Full,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelGuestImageDownloadKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Full => f.write_str("Full"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2283,17 +2175,14 @@ pub mod types {
         pub type_: ChannelHeartbeatType,
     }
     ///`ChannelHeartbeatType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelHeartbeatType {
         Heartbeat,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHeartbeatType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Heartbeat => f.write_str("Heartbeat"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2491,17 +2380,14 @@ pub mod types {
         }
     }
     ///`ChannelHelloType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelHelloType {
         Hello,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHelloType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Hello => f.write_str("Hello"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2536,7 +2422,6 @@ pub mod types {
         Hello(ChannelHello),
         HostHeartbeat(ChannelHostHeartbeat),
         HostFrame(ChannelHostFrame),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelHello> for ChannelHostEnvelope {
         fn from(value: ChannelHello) -> Self {
@@ -2563,17 +2448,14 @@ pub mod types {
         pub type_: ChannelHostFrameType,
     }
     ///`ChannelHostFrameType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelHostFrameType {
         Frame,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHostFrameType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Frame => f.write_str("Frame"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2611,6 +2493,9 @@ pub mod types {
         ///The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub health: ::std::option::Option<HostReportedHealth>,
+        ///The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name.
+        #[serde(rename = "heldClaudeSetupIds")]
+        pub held_claude_setup_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "heldSessionIds")]
         pub held_session_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "sentAt")]
@@ -2620,17 +2505,14 @@ pub mod types {
         pub usage: HostUsage,
     }
     ///`ChannelHostHeartbeatType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelHostHeartbeatType {
         Heartbeat,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHostHeartbeatType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Heartbeat => f.write_str("Heartbeat"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2678,7 +2560,6 @@ pub mod types {
         SupervisorUpdateStep(ChannelSupervisorUpdateStep),
         SupervisorUpdateFailed(ChannelSupervisorUpdateFailed),
         TelemetryBatch(ChannelTelemetryBatch),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelTurnImageFetching> for ChannelHostMessage {
         fn from(value: ChannelTurnImageFetching) -> Self {
@@ -2796,17 +2677,14 @@ pub mod types {
         pub layer: ChannelHarnessLayerDownload,
     }
     ///`ChannelLayeredImageDownloadKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelLayeredImageDownloadKind {
         Layered,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelLayeredImageDownloadKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Layered => f.write_str("Layered"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -2992,17 +2870,14 @@ pub mod types {
         }
     }
     ///`ChannelReleasePublishedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelReleasePublishedType {
         ReleasePublished,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelReleasePublishedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ReleasePublished => f.write_str("ReleasePublished"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3042,17 +2917,14 @@ pub mod types {
         pub type_: ChannelRestoreChunksType,
     }
     ///`ChannelRestoreChunksType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelRestoreChunksType {
         RestoreChunks,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelRestoreChunksType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RestoreChunks => f.write_str("RestoreChunks"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3093,17 +2965,14 @@ pub mod types {
         pub type_: ChannelRestoreDownloadsType,
     }
     ///`ChannelRestoreDownloadsType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelRestoreDownloadsType {
         RestoreDownloads,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelRestoreDownloadsType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RestoreDownloads => f.write_str("RestoreDownloads"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3169,17 +3038,14 @@ pub mod types {
         pub type_: ChannelSnapshotChunksHeldType,
     }
     ///`ChannelSnapshotChunksHeldType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotChunksHeldType {
         SnapshotChunksHeld,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotChunksHeldType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotChunksHeld => f.write_str("SnapshotChunksHeld"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3205,17 +3071,14 @@ pub mod types {
         }
     }
     ///`ChannelSnapshotChunksType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotChunksType {
         SnapshotChunks,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotChunksType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotChunks => f.write_str("SnapshotChunks"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3251,17 +3114,14 @@ pub mod types {
         pub uploaded_bytes: i64,
     }
     ///`ChannelSnapshotDoneType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotDoneType {
         SnapshotDone,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotDoneType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotDone => f.write_str("SnapshotDone"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3315,17 +3175,14 @@ pub mod types {
         pub type_: ChannelSnapshotFailedType,
     }
     ///`ChannelSnapshotFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotFailedType {
         SnapshotFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotFailed => f.write_str("SnapshotFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3351,7 +3208,7 @@ pub mod types {
         }
     }
     ///Why the host could not store a snapshot.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotFailureReason {
         BoxNotFound,
         UpperDirectoryUnreadable,
@@ -3360,8 +3217,6 @@ pub mod types {
         SnapshotTimedOut,
         NotAnswered,
         RateLimited,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3373,7 +3228,6 @@ pub mod types {
                 Self::SnapshotTimedOut => f.write_str("SnapshotTimedOut"),
                 Self::NotAnswered => f.write_str("NotAnswered"),
                 Self::RateLimited => f.write_str("RateLimited"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3420,17 +3274,14 @@ pub mod types {
         pub uploads: ::std::vec::Vec<ChannelPackUrl>,
     }
     ///`ChannelSnapshotPackUploadsType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotPackUploadsType {
         SnapshotPackUploads,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotPackUploadsType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotPackUploads => f.write_str("SnapshotPackUploads"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3472,17 +3323,14 @@ pub mod types {
         pub type_: ChannelSnapshotPacksType,
     }
     ///`ChannelSnapshotPacksType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotPacksType {
         SnapshotPacks,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotPacksType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotPacks => f.write_str("SnapshotPacks"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3536,17 +3384,14 @@ pub mod types {
         pub upload_url: HttpUrl,
     }
     ///`ChannelSnapshotRequestType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSnapshotRequestType {
         SnapshotRequest,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotRequestType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SnapshotRequest => f.write_str("SnapshotRequest"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3583,17 +3428,14 @@ pub mod types {
         pub type_: ChannelStoredHostFrameType,
     }
     ///`ChannelStoredHostFrameType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelStoredHostFrameType {
         Frame,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelStoredHostFrameType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Frame => f.write_str("Frame"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3637,17 +3479,14 @@ pub mod types {
         pub type_: ChannelSupervisorUpdateFailedType,
     }
     ///`ChannelSupervisorUpdateFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSupervisorUpdateFailedType {
         SupervisorUpdateFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSupervisorUpdateFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SupervisorUpdateFailed => f.write_str("SupervisorUpdateFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3759,17 +3598,14 @@ pub mod types {
         }
     }
     ///`ChannelSupervisorUpdateStepType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelSupervisorUpdateStepType {
         SupervisorUpdateStep,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSupervisorUpdateStepType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SupervisorUpdateStep => f.write_str("SupervisorUpdateStep"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3810,17 +3646,14 @@ pub mod types {
         pub type_: ChannelTelemetryBatchType,
     }
     ///`ChannelTelemetryBatchType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTelemetryBatchType {
         TelemetryBatch,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTelemetryBatchType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TelemetryBatch => f.write_str("TelemetryBatch"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3858,17 +3691,14 @@ pub mod types {
         pub type_: ChannelTurnCancelType,
     }
     ///`ChannelTurnCancelType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnCancelType {
         TurnCancel,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnCancelType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnCancel => f.write_str("TurnCancel"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3910,17 +3740,14 @@ pub mod types {
         pub type_: ChannelTurnClaimType,
     }
     ///`ChannelTurnClaimType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnClaimType {
         TurnClaim,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnClaimType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnClaim => f.write_str("TurnClaim"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -3954,17 +3781,14 @@ pub mod types {
         pub type_: ChannelTurnClaimedType,
     }
     ///`ChannelTurnClaimedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnClaimedType {
         TurnClaimed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnClaimedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnClaimed => f.write_str("TurnClaimed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4075,17 +3899,14 @@ pub mod types {
         }
     }
     ///`ChannelTurnCompleteType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnCompleteType {
         TurnComplete,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnCompleteType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnComplete => f.write_str("TurnComplete"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4263,17 +4084,14 @@ pub mod types {
         }
     }
     ///`ChannelTurnFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnFailedType {
         TurnFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnFailed => f.write_str("TurnFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4312,17 +4130,14 @@ pub mod types {
         pub type_: ChannelTurnImageFetchingType,
     }
     ///`ChannelTurnImageFetchingType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnImageFetchingType {
         TurnImageFetching,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnImageFetchingType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnImageFetching => f.write_str("TurnImageFetching"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4359,17 +4174,14 @@ pub mod types {
         pub type_: ChannelTurnLineType,
     }
     ///`ChannelTurnLineType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnLineType {
         TurnLine,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnLineType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnLine => f.write_str("TurnLine"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4417,6 +4229,9 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
+        ///What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         pub credential: ChannelDispatchGrant,
         #[serde(rename = "gitAuthorEmail")]
         pub git_author_email: EmailAddress,
@@ -4425,6 +4240,9 @@ pub mod types {
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: ChannelTurnOfferHarnessVersion,
+        ///The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy.
+        #[serde(rename = "idleSeconds")]
+        pub idle_seconds: ::std::num::NonZeroU32,
         pub image: ChannelBootImage,
         #[serde(rename = "lastLineSeq")]
         pub last_line_seq: Sequence,
@@ -4440,6 +4258,9 @@ pub mod types {
         pub snapshots: ::std::vec::Vec<ChannelSnapshotDownload>,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
+        ///How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.
+        #[serde(rename = "turnSeconds")]
+        pub turn_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "type")]
         pub type_: ChannelTurnOfferType,
     }
@@ -4588,17 +4409,14 @@ pub mod types {
         }
     }
     ///`ChannelTurnOfferType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnOfferType {
         TurnOffer,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnOfferType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnOffer => f.write_str("TurnOffer"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4636,17 +4454,14 @@ pub mod types {
         pub type_: ChannelTurnRepositoryCloneFailedType,
     }
     ///`ChannelTurnRepositoryCloneFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnRepositoryCloneFailedType {
         TurnRepositoryCloneFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnRepositoryCloneFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnRepositoryCloneFailed => f.write_str("TurnRepositoryCloneFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4680,17 +4495,14 @@ pub mod types {
         pub type_: ChannelTurnRepositoryReadyType,
     }
     ///`ChannelTurnRepositoryReadyType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnRepositoryReadyType {
         TurnRepositoryReady,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnRepositoryReadyType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnRepositoryReady => f.write_str("TurnRepositoryReady"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4727,17 +4539,14 @@ pub mod types {
         pub type_: ChannelTurnWithdrawnType,
     }
     ///`ChannelTurnWithdrawnType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelTurnWithdrawnType {
         TurnWithdrawn,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnWithdrawnType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnWithdrawn => f.write_str("TurnWithdrawn"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4779,17 +4588,14 @@ pub mod types {
         pub type_: ChannelWelcomeType,
     }
     ///`ChannelWelcomeType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ChannelWelcomeType {
         Welcome,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ChannelWelcomeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Welcome => f.write_str("Welcome"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -4849,905 +4655,6 @@ pub mod types {
                 .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
-    ///One OAuth 2.0 authorization code flow with PKCE S256 that connects the tenant's CircleCI
-    ///organization. The tenant's own client, registered once through CircleCI's dynamic client
-    ///registration, sends the person to CircleCI's consent page; CircleCI sends the browser back to a
-    ///loopback address. The verifier and the token are held sealed and never answered.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorization {
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        #[serde(rename = "principalId")]
-        pub principal_id: EntityId,
-        pub status: CircleCiAuthorizationStatus,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-    }
-    ///`CircleCiAuthorizationAwaitingRedirect`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationAwaitingRedirect {
-        ///CircleCI's consent page, with this authorization's client_id, PKCE S256 challenge and state.
-        #[serde(rename = "authorizeUrl")]
-        pub authorize_url: HttpUrl,
-        ///When the redirect address must arrive by, or the authorization fails AuthorizationTimedOut.
-        #[serde(rename = "redirectDueAt")]
-        pub redirect_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///The loopback address CircleCI sends the browser to, http://127.0.0.1:47151/circleci/callback; nothing listens there unless the tumpel CLI does.
-        #[serde(rename = "redirectUri")]
-        pub redirect_uri: HttpUrl,
-        pub state: CircleCiAuthorizationAwaitingRedirectState,
-    }
-    ///`CircleCiAuthorizationAwaitingRedirectState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationAwaitingRedirectState {
-        AwaitingRedirect,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationAwaitingRedirectState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::AwaitingRedirect => f.write_str("AwaitingRedirect"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationAwaitingRedirectState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "AwaitingRedirect" => Ok(Self::AwaitingRedirect),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationAwaitingRedirectState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationAwaitingRedirectState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The organization a ChoosingOrganization authorization connects; one its organizations lists.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationChoose {
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-        #[serde(rename = "organizationId")]
-        pub organization_id: CircleCiUuid,
-    }
-    ///`CircleCiAuthorizationChoosingOrganization`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationChoosingOrganization {
-        ///When the organization must be chosen by, or the authorization fails AuthorizationTimedOut and the token is discarded.
-        #[serde(rename = "chooseDueAt")]
-        pub choose_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub organizations: ::std::vec::Vec<CircleCiOrganization>,
-        pub state: CircleCiAuthorizationChoosingOrganizationState,
-    }
-    ///`CircleCiAuthorizationChoosingOrganizationState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationChoosingOrganizationState {
-        ChoosingOrganization,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationChoosingOrganizationState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ChoosingOrganization => f.write_str("ChoosingOrganization"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationChoosingOrganizationState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "ChoosingOrganization" => Ok(Self::ChoosingOrganization),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationChoosingOrganizationState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationChoosingOrganizationState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The redirect address of an authorization. Its code is spent once at CircleCI's token endpoint and never stored.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationComplete {
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-        #[serde(rename = "redirectedUrl")]
-        pub redirected_url: CircleCiRedirectedUrl,
-    }
-    ///`CircleCiAuthorizationCompleted`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationCompleted {
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        #[serde(rename = "completedAt")]
-        pub completed_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///When the token stops working.
-        #[serde(rename = "expiresAt")]
-        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        #[serde(rename = "organizationId")]
-        pub organization_id: CircleCiUuid,
-        pub state: CircleCiAuthorizationCompletedState,
-    }
-    ///`CircleCiAuthorizationCompletedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationCompletedState {
-        Completed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationCompletedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Completed => f.write_str("Completed"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationCompletedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Completed" => Ok(Self::Completed),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationCompletedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationCompletedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`CircleCiAuthorizationFailed`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizationFailed {
-        ///What failed and what fixes it.
-        pub detail: Detail,
-        #[serde(rename = "failedAt")]
-        pub failed_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub reason: CircleCiAuthorizationFailureReason,
-        pub state: CircleCiAuthorizationFailedState,
-    }
-    ///`CircleCiAuthorizationFailedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationFailedState {
-        Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationFailedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationFailedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Failed" => Ok(Self::Failed),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationFailedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationFailedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///Why a CircleCI authorization ended Failed. Each reason names the phase it stopped in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationFailureReason {
-        AuthorizationTimedOut,
-        AccessDenied,
-        CodeRefused,
-        NoOrganization,
-        ExchangeFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationFailureReason {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::AuthorizationTimedOut => f.write_str("AuthorizationTimedOut"),
-                Self::AccessDenied => f.write_str("AccessDenied"),
-                Self::CodeRefused => f.write_str("CodeRefused"),
-                Self::NoOrganization => f.write_str("NoOrganization"),
-                Self::ExchangeFailed => f.write_str("ExchangeFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationFailureReason {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "AuthorizationTimedOut" => Ok(Self::AuthorizationTimedOut),
-                "AccessDenied" => Ok(Self::AccessDenied),
-                "CodeRefused" => Ok(Self::CodeRefused),
-                "NoOrganization" => Ok(Self::NoOrganization),
-                "ExchangeFailed" => Ok(Self::ExchangeFailed),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationFailureReason {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationFailureReason {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The phase a CircleCI authorization is in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizationState {
-        AwaitingRedirect,
-        ChoosingOrganization,
-        Completed,
-        Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizationState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::AwaitingRedirect => f.write_str("AwaitingRedirect"),
-                Self::ChoosingOrganization => f.write_str("ChoosingOrganization"),
-                Self::Completed => f.write_str("Completed"),
-                Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizationState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "AwaitingRedirect" => Ok(Self::AwaitingRedirect),
-                "ChoosingOrganization" => Ok(Self::ChoosingOrganization),
-                "Completed" => Ok(Self::Completed),
-                "Failed" => Ok(Self::Failed),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizationState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizationState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///Where a CircleCI authorization is: the consent URL while it waits for the redirect, the organizations while it waits for a choice, the organization once Completed, the reason once Failed.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum CircleCiAuthorizationStatus {
-        AwaitingRedirect(CircleCiAuthorizationAwaitingRedirect),
-        ChoosingOrganization(CircleCiAuthorizationChoosingOrganization),
-        Completed(CircleCiAuthorizationCompleted),
-        Failed(CircleCiAuthorizationFailed),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<CircleCiAuthorizationAwaitingRedirect> for CircleCiAuthorizationStatus {
-        fn from(value: CircleCiAuthorizationAwaitingRedirect) -> Self {
-            Self::AwaitingRedirect(value)
-        }
-    }
-    impl ::std::convert::From<CircleCiAuthorizationChoosingOrganization> for CircleCiAuthorizationStatus {
-        fn from(value: CircleCiAuthorizationChoosingOrganization) -> Self {
-            Self::ChoosingOrganization(value)
-        }
-    }
-    impl ::std::convert::From<CircleCiAuthorizationCompleted> for CircleCiAuthorizationStatus {
-        fn from(value: CircleCiAuthorizationCompleted) -> Self {
-            Self::Completed(value)
-        }
-    }
-    impl ::std::convert::From<CircleCiAuthorizationFailed> for CircleCiAuthorizationStatus {
-        fn from(value: CircleCiAuthorizationFailed) -> Self {
-            Self::Failed(value)
-        }
-    }
-    ///`CircleCiAuthorizedCredential`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiAuthorizedCredential {
-        ///When the token stops working; the connection reads Expiring from 14 days before it and Expired from it.
-        #[serde(rename = "expiresAt")]
-        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub kind: CircleCiAuthorizedCredentialKind,
-    }
-    ///`CircleCiAuthorizedCredentialKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiAuthorizedCredentialKind {
-        Authorized,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for CircleCiAuthorizedCredentialKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Authorized => f.write_str("Authorized"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiAuthorizedCredentialKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Authorized" => Ok(Self::Authorized),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiAuthorizedCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiAuthorizedCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`CircleCiConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiConnected {
-        pub connection: CircleCiConnection,
-        pub state: CircleCiConnectedState,
-    }
-    ///`CircleCiConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiConnectedState {
-        Connected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for CircleCiConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Connected => f.write_str("Connected"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Connected" => Ok(Self::Connected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The tenant's CircleCI build provider. A prebuild runs the pipeline definition of the
-    ///repository's project binding with the tenant's personal API token, which Tumpel holds sealed and
-    ///never answers; the job's upload is accepted only from a token of the organization's issuer.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiConnection {
-        ///The CircleCI organization that bills the builds, as the tenant names it.
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        #[serde(rename = "circleCIConnectionId")]
-        pub circle_ci_connection_id: EntityId,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        pub credential: CircleCiCredential,
-        ///The organization's OIDC issuer, https://oidc.circleci.com/org/<organizationId>, whose job tokens upload the layers.
-        pub issuer: HttpUrl,
-        ///The CircleCI organization id, from Organization Settings > Overview.
-        #[serde(rename = "organizationId")]
-        pub organization_id: CircleCiUuid,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-    }
-    ///The tenant's CircleCI build provider connection.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiConnectionLink {
-        ///The prebuild config to commit, such as .circleci/tumpel-prebuild.yml, as YAML text to copy; its pipeline definition gets no trigger.
-        #[serde(rename = "configExample")]
-        pub config_example: Detail,
-        pub link: CircleCiLink,
-        ///The orb a repository's prebuild config imports: tumpel/prebuild@1.
-        pub orb: ShortText,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///Connects CircleCI with a pasted token, the fallback to an authorization. The control plane checks the token with GET /api/v2/me and seals it; no operation answers it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiConnectionStart {
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        ///A personal API token of a member of the organization; CircleCI's API v2 refuses project tokens.
-        #[serde(rename = "apiToken")]
-        pub api_token: SecretText,
-        #[serde(rename = "organizationId")]
-        pub organization_id: CircleCiUuid,
-    }
-    ///`CircleCiCredential`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum CircleCiCredential {
-        AuthorizedCredential(CircleCiAuthorizedCredential),
-        PastedCredential(CircleCiPastedCredential),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<CircleCiAuthorizedCredential> for CircleCiCredential {
-        fn from(value: CircleCiAuthorizedCredential) -> Self {
-            Self::AuthorizedCredential(value)
-        }
-    }
-    impl ::std::convert::From<CircleCiPastedCredential> for CircleCiCredential {
-        fn from(value: CircleCiPastedCredential) -> Self {
-            Self::PastedCredential(value)
-        }
-    }
-    ///How the connection's personal API token reached Tumpel.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiCredentialKind {
-        Authorized,
-        Pasted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for CircleCiCredentialKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Authorized => f.write_str("Authorized"),
-                Self::Pasted => f.write_str("Pasted"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiCredentialKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Authorized" => Ok(Self::Authorized),
-                "Pasted" => Ok(Self::Pasted),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`CircleCiLink`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum CircleCiLink {
-        Connected(CircleCiConnected),
-        NotConnected(CircleCiNotConnected),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<CircleCiConnected> for CircleCiLink {
-        fn from(value: CircleCiConnected) -> Self {
-            Self::Connected(value)
-        }
-    }
-    impl ::std::convert::From<CircleCiNotConnected> for CircleCiLink {
-        fn from(value: CircleCiNotConnected) -> Self {
-            Self::NotConnected(value)
-        }
-    }
-    ///`CircleCiNotConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiNotConnected {
-        pub state: CircleCiNotConnectedState,
-    }
-    ///`CircleCiNotConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiNotConnectedState {
-        NotConnected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for CircleCiNotConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConnected => f.write_str("NotConnected"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiNotConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConnected" => Ok(Self::NotConnected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///A CircleCI organization the authorized token reads, from GET /api/v2/me/collaborations.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiOrganization {
-        pub name: DisplayName,
-        #[serde(rename = "organizationId")]
-        pub organization_id: CircleCiUuid,
-        ///The organization's slug, such as gh/acme or circleci/<id>.
-        pub slug: ShortText,
-    }
-    ///`CircleCiPastedCredential`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiPastedCredential {
-        pub kind: CircleCiPastedCredentialKind,
-    }
-    ///`CircleCiPastedCredentialKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CircleCiPastedCredentialKind {
-        Pasted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for CircleCiPastedCredentialKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Pasted => f.write_str("Pasted"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CircleCiPastedCredentialKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Pasted" => Ok(Self::Pasted),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiPastedCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiPastedCredentialKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///Binds one repository to the CircleCI project and pipeline definition its prebuilds run. The
-    ///pipeline definition must check out the repository.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiProject {
-        #[serde(rename = "circleCIProjectId")]
-        pub circle_ci_project_id: EntityId,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        ///The pipeline definition the prebuilds run, from Project Settings > Project Setup.
-        #[serde(rename = "pipelineDefinitionId")]
-        pub pipeline_definition_id: CircleCiUuid,
-        ///The CircleCI project id, read from the project at the binding.
-        #[serde(rename = "projectId")]
-        pub project_id: CircleCiUuid,
-        #[serde(rename = "projectSlug")]
-        pub project_slug: CircleCiProjectSlug,
-        ///The repository as https://github.com/<owner>/<name> in lower case.
-        pub repository: RepositoryUrl,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-    }
-    ///`CircleCiProjectAdd`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CircleCiProjectAdd {
-        #[serde(rename = "pipelineDefinitionId")]
-        pub pipeline_definition_id: CircleCiUuid,
-        #[serde(rename = "projectSlug")]
-        pub project_slug: CircleCiProjectSlug,
-        ///A GitHub repository, such as https://github.com/acme/app.git.
-        pub repository: RepositoryUrl,
-    }
-    ///A CircleCI project slug: gh/<owner>/<name> in a GitHub OAuth organization, or
-    ///circleci/<organization id>/<project id> in a GitHub App organization.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct CircleCiProjectSlug(::std::string::String);
-    impl CircleCiProjectSlug {
-        pub fn as_str(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::convert::AsRef<str> for CircleCiProjectSlug {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::fmt::Display for CircleCiProjectSlug {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            f.write_str(&self.0)
-        }
-    }
-    impl ::std::convert::AsRef<::std::ffi::OsStr> for CircleCiProjectSlug {
-        fn as_ref(&self) -> &::std::ffi::OsStr {
-            self.0.as_ref()
-        }
-    }
-    impl ::std::ops::Deref for CircleCiProjectSlug {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<CircleCiProjectSlug> for ::std::string::String {
-        fn from(value: CircleCiProjectSlug) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for CircleCiProjectSlug {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 200usize {
-                return Err("CircleCiProjectSlug: longer than 200 characters".into());
-            }
-            static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
-                ::regress::Regex::new("^(gh|github|circleci)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$").unwrap()
-            });
-            if PATTERN.find(value).is_none() {
-                return Err(
-                    "CircleCiProjectSlug: doesn't match pattern \"^(gh|github|circleci)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$\""
-                        .into(),
-                );
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiProjectSlug {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiProjectSlug {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for CircleCiProjectSlug {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
-    ///The address the browser landed on after CircleCI's consent page, such as http://127.0.0.1:47151/circleci/callback?code=...&state=....
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct CircleCiRedirectedUrl(::std::string::String);
-    impl CircleCiRedirectedUrl {
-        pub fn as_str(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::convert::AsRef<str> for CircleCiRedirectedUrl {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::fmt::Display for CircleCiRedirectedUrl {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            f.write_str(&self.0)
-        }
-    }
-    impl ::std::convert::AsRef<::std::ffi::OsStr> for CircleCiRedirectedUrl {
-        fn as_ref(&self) -> &::std::ffi::OsStr {
-            self.0.as_ref()
-        }
-    }
-    impl ::std::ops::Deref for CircleCiRedirectedUrl {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<CircleCiRedirectedUrl> for ::std::string::String {
-        fn from(value: CircleCiRedirectedUrl) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for CircleCiRedirectedUrl {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 4000usize {
-                return Err("CircleCiRedirectedUrl: longer than 4000 characters".into());
-            }
-            if value.chars().count() < 1usize {
-                return Err("CircleCiRedirectedUrl: shorter than 1 characters".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiRedirectedUrl {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiRedirectedUrl {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for CircleCiRedirectedUrl {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
-    ///A CircleCI id: an organization, a project or a pipeline definition, as a lower-case UUID.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct CircleCiUuid(::std::string::String);
-    impl CircleCiUuid {
-        pub fn as_str(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::convert::AsRef<str> for CircleCiUuid {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::fmt::Display for CircleCiUuid {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            f.write_str(&self.0)
-        }
-    }
-    impl ::std::convert::AsRef<::std::ffi::OsStr> for CircleCiUuid {
-        fn as_ref(&self) -> &::std::ffi::OsStr {
-            self.0.as_ref()
-        }
-    }
-    impl ::std::ops::Deref for CircleCiUuid {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<CircleCiUuid> for ::std::string::String {
-        fn from(value: CircleCiUuid) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for CircleCiUuid {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 36usize {
-                return Err("CircleCiUuid: longer than 36 characters".into());
-            }
-            static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
-                ::regress::Regex::new("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap()
-            });
-            if PATTERN.find(value).is_none() {
-                return Err(
-                    "CircleCiUuid: doesn't match pattern \"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$\""
-                        .into(),
-                );
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CircleCiUuid {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CircleCiUuid {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for CircleCiUuid {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
     ///A short-lived box that signs in to the setup's harness and stores the token in a secret set: it
     ///runs `claude setup-token` from the tenant's pinned Claude Code and stores the SubscriptionToken
     ///member CLAUDE_CODE_OAUTH_TOKEN for Anthropic, or `codex login --device-auth` from the pinned Codex
@@ -5791,17 +4698,14 @@ pub mod types {
         pub user_code: ::std::option::Option<ClaudeSetupUserCode>,
     }
     ///`ClaudeSetupAwaitingCodeState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ClaudeSetupAwaitingCodeState {
         AwaitingCode,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupAwaitingCodeState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::AwaitingCode => f.write_str("AwaitingCode"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -5914,17 +4818,14 @@ pub mod types {
         pub state: ClaudeSetupCompletedState,
     }
     ///`ClaudeSetupCompletedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ClaudeSetupCompletedState {
         Completed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupCompletedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Completed => f.write_str("Completed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -5960,17 +4861,14 @@ pub mod types {
         pub state: ClaudeSetupFailedState,
     }
     ///`ClaudeSetupFailedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ClaudeSetupFailedState {
         Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupFailedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -5996,7 +4894,7 @@ pub mod types {
         }
     }
     ///Why a Claude setup ended Failed. Each reason names the phase it stopped in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ClaudeSetupFailureReason {
         SetupUrlMissing,
         CodeRejected,
@@ -6006,8 +4904,6 @@ pub mod types {
         NoHostOnline,
         Superseded,
         RateLimited,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6020,7 +4916,6 @@ pub mod types {
                 Self::NoHostOnline => f.write_str("NoHostOnline"),
                 Self::Superseded => f.write_str("Superseded"),
                 Self::RateLimited => f.write_str("RateLimited"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -6053,19 +4948,16 @@ pub mod types {
         }
     }
     ///The harness a Claude setup signs in to: Claude Code with claude setup-token, or Codex with codex login --device-auth.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ClaudeSetupHarness {
         ClaudeCode,
         Codex,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupHarness {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeCode => f.write_str("ClaudeCode"),
                 Self::Codex => f.write_str("Codex"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -6092,21 +4984,18 @@ pub mod types {
         }
     }
     ///The secret set member a Claude setup writes: the variable its harness reads a subscription token from.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ClaudeSetupMember {
         #[serde(rename = "CLAUDE_CODE_OAUTH_TOKEN")]
         ClaudeCodeOauthToken,
         #[serde(rename = "CODEX_AUTH_JSON")]
         CodexAuthJson,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupMember {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeCodeOauthToken => f.write_str("CLAUDE_CODE_OAUTH_TOKEN"),
                 Self::CodexAuthJson => f.write_str("CODEX_AUTH_JSON"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -6141,17 +5030,14 @@ pub mod types {
         pub token_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
     }
     ///`ClaudeSetupMintingState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ClaudeSetupMintingState {
         Minting,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupMintingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Minting => f.write_str("Minting"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -6194,17 +5080,14 @@ pub mod types {
         pub url_due_at: ::chrono::DateTime<::chrono::FixedOffset>,
     }
     ///`ClaudeSetupStartingState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ClaudeSetupStartingState {
         Starting,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupStartingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Starting => f.write_str("Starting"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -6230,15 +5113,13 @@ pub mod types {
         }
     }
     ///The phase a Claude setup is in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ClaudeSetupState {
         Starting,
         AwaitingCode,
         Minting,
         Completed,
         Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6248,7 +5129,6 @@ pub mod types {
                 Self::Minting => f.write_str("Minting"),
                 Self::Completed => f.write_str("Completed"),
                 Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -6278,7 +5158,7 @@ pub mod types {
         }
     }
     ///Where a Claude setup is, with the facts of its state: the time each live phase ends by, the sign-in URL while it waits for the code, the member once Completed, the reason once Failed. A setup read past the end of its phase reads Failed.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ClaudeSetupStatus {
         Starting(ClaudeSetupStarting),
@@ -6286,7 +5166,6 @@ pub mod types {
         Minting(ClaudeSetupMinting),
         Completed(ClaudeSetupCompleted),
         Failed(ClaudeSetupFailed),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ClaudeSetupStarting> for ClaudeSetupStatus {
         fn from(value: ClaudeSetupStarting) -> Self {
@@ -6636,17 +5515,14 @@ pub mod types {
         pub turns: ::std::vec::Vec<CompactTranscriptTurn>,
     }
     ///`CompactTranscriptPageForm`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum CompactTranscriptPageForm {
         Compact,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for CompactTranscriptPageForm {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Compact => f.write_str("Compact"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -6709,17 +5585,14 @@ pub mod types {
         pub warning: ::std::option::Option<CompletedTurnWarning>,
     }
     ///`CompletedTurnState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum CompletedTurnState {
         Completed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for CompletedTurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Completed => f.write_str("Completed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -6823,17 +5696,14 @@ pub mod types {
         pub value_from: SecretValueSource,
     }
     ///`ConfigApiKeyKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConfigApiKeyKind {
         ApiKey,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConfigApiKeyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ApiKey => f.write_str("ApiKey"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -6868,14 +5738,12 @@ pub mod types {
         pub resource: ConfigResource,
     }
     ///`ConfigChangeAction`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConfigChangeAction {
         Create,
         Update,
         Delete,
         Rewrite,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConfigChangeAction {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6884,7 +5752,6 @@ pub mod types {
                 Self::Update => f.write_str("Update"),
                 Self::Delete => f.write_str("Delete"),
                 Self::Rewrite => f.write_str("Rewrite"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -6918,7 +5785,6 @@ pub mod types {
     pub enum ConfigExpiry {
         DateTime(::chrono::DateTime<::chrono::FixedOffset>),
         SecretValueSource(SecretValueSource),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<::chrono::DateTime<::chrono::FixedOffset>> for ConfigExpiry {
         fn from(value: ::chrono::DateTime<::chrono::FixedOffset>) -> Self {
@@ -6948,12 +5814,11 @@ pub mod types {
     ///The bytes of a persona file the config names in `from`: Inline (base64, up to
     ///PersonaFileLimit.InlineFileBytes), or Stored by the digest and size of a file uploaded with
     ///Personas_uploadFile.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ConfigFileWrite {
         InlineConfigFile(InlineConfigFile),
         StoredConfigFile(StoredConfigFile),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<InlineConfigFile> for ConfigFileWrite {
         fn from(value: InlineConfigFile) -> Self {
@@ -7015,15 +5880,13 @@ pub mod types {
         pub changes: ::std::vec::Vec<ConfigChange>,
     }
     ///`ConfigResource`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConfigResource {
         Persona,
         SecretSet,
         HarnessPin,
         Host,
         Trigger,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConfigResource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7033,7 +5896,6 @@ pub mod types {
                 Self::HarnessPin => f.write_str("HarnessPin"),
                 Self::Host => f.write_str("Host"),
                 Self::Trigger => f.write_str("Trigger"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7063,13 +5925,12 @@ pub mod types {
         }
     }
     ///One member of a secret set: its kind, name and provider, and the variable its value is read from.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ConfigSecret {
         SecretVariable(ConfigSecretVariable),
         ApiKey(ConfigApiKey),
         SubscriptionToken(ConfigSubscriptionToken),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ConfigSecretVariable> for ConfigSecret {
         fn from(value: ConfigSecretVariable) -> Self {
@@ -7107,17 +5968,14 @@ pub mod types {
         pub value_from: SecretValueSource,
     }
     ///`ConfigSecretVariableKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConfigSecretVariableKind {
         Variable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConfigSecretVariableKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Variable => f.write_str("Variable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7154,17 +6012,14 @@ pub mod types {
         pub value_from: SecretValueSource,
     }
     ///`ConfigSubscriptionTokenKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConfigSubscriptionTokenKind {
         SubscriptionToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConfigSubscriptionTokenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SubscriptionToken => f.write_str("SubscriptionToken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7207,23 +6062,20 @@ pub mod types {
     ///`ConnectedConnection`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ConnectedConnection {
-        ///What the connection is connected as: the GitHub logins of the tenant's installations, comma-separated, the account label the tenant gave a build provider, or for OpenRouter the names of the secret sets that hold an OpenRouter key, comma-separated, since OpenRouter's key exchange names no account.
+        ///What the connection is connected as: the GitHub logins of the tenant's installations, comma-separated, or for OpenRouter the names of the secret sets that hold an OpenRouter key, comma-separated, since OpenRouter's key exchange names no account.
         pub account: Summary,
         pub kind: ConnectionKind,
         pub state: ConnectedConnectionState,
     }
     ///`ConnectedConnectionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectedConnectionState {
         Connected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConnectedConnectionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Connected => f.write_str("Connected"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7248,27 +6100,17 @@ pub mod types {
             value.parse()
         }
     }
-    ///An outside service the tenant links: the GitHub App, one build provider, or OpenRouter as a model provider.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    ///An outside service the tenant links: the GitHub App or OpenRouter as a model provider.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectionKind {
         GitHub,
-        GitHubActions,
-        #[serde(rename = "CircleCI")]
-        CircleCi,
-        Namespace,
         OpenRouter,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConnectionKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GitHub => f.write_str("GitHub"),
-                Self::GitHubActions => f.write_str("GitHubActions"),
-                Self::CircleCi => f.write_str("CircleCI"),
-                Self::Namespace => f.write_str("Namespace"),
                 Self::OpenRouter => f.write_str("OpenRouter"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7277,9 +6119,6 @@ pub mod types {
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
                 "GitHub" => Ok(Self::GitHub),
-                "GitHubActions" => Ok(Self::GitHubActions),
-                "CircleCI" => Ok(Self::CircleCi),
-                "Namespace" => Ok(Self::Namespace),
                 "OpenRouter" => Ok(Self::OpenRouter),
                 _ => Err("invalid value".into()),
             }
@@ -7298,15 +6137,11 @@ pub mod types {
         }
     }
     ///`ConnectionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectionState {
         NotConfigured,
         NotConnected,
         Connected,
-        Expiring,
-        Expired,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConnectionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7314,9 +6149,6 @@ pub mod types {
                 Self::NotConfigured => f.write_str("NotConfigured"),
                 Self::NotConnected => f.write_str("NotConnected"),
                 Self::Connected => f.write_str("Connected"),
-                Self::Expiring => f.write_str("Expiring"),
-                Self::Expired => f.write_str("Expired"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7327,8 +6159,6 @@ pub mod types {
                 "NotConfigured" => Ok(Self::NotConfigured),
                 "NotConnected" => Ok(Self::NotConnected),
                 "Connected" => Ok(Self::Connected),
-                "Expiring" => Ok(Self::Expiring),
-                "Expired" => Ok(Self::Expired),
                 _ => Err("invalid value".into()),
             }
         }
@@ -7345,30 +6175,17 @@ pub mod types {
             value.parse()
         }
     }
-    ///One connection kind of the tenant with its state, its account once connected, and the expiry of a credential that is Expiring or Expired.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    ///One connection kind of the tenant with its state and its account once connected.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ConnectionSummary {
         ConnectedConnection(ConnectedConnection),
-        ExpiringConnection(ExpiringConnection),
-        ExpiredConnection(ExpiredConnection),
         NotConnectedConnection(NotConnectedConnection),
         NotConfiguredConnection(NotConfiguredConnection),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ConnectedConnection> for ConnectionSummary {
         fn from(value: ConnectedConnection) -> Self {
             Self::ConnectedConnection(value)
-        }
-    }
-    impl ::std::convert::From<ExpiringConnection> for ConnectionSummary {
-        fn from(value: ExpiringConnection) -> Self {
-            Self::ExpiringConnection(value)
-        }
-    }
-    impl ::std::convert::From<ExpiredConnection> for ConnectionSummary {
-        fn from(value: ExpiredConnection) -> Self {
-            Self::ExpiredConnection(value)
         }
     }
     impl ::std::convert::From<NotConnectedConnection> for ConnectionSummary {
@@ -7382,12 +6199,11 @@ pub mod types {
         }
     }
     ///A connector of either credential kind.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum Connector {
         StaticConnector(StaticConnector),
         OAuthConnector(OAuthConnector),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<StaticConnector> for Connector {
         fn from(value: StaticConnector) -> Self {
@@ -7410,19 +6226,16 @@ pub mod types {
         pub expires_at: ::std::option::Option<::chrono::DateTime<::chrono::FixedOffset>>,
     }
     ///How a connector's upstream credential is held: one static token, or an OAuth grant.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectorAuth {
         Static,
         OAuth,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorAuth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Static => f.write_str("Static"),
                 Self::OAuth => f.write_str("OAuth"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7475,17 +6288,14 @@ pub mod types {
         pub state: ConnectorAuthorizationFailedState,
     }
     ///`ConnectorAuthorizationFailedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectorAuthorizationFailedState {
         AuthorizationFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorAuthorizationFailedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::AuthorizationFailed => f.write_str("AuthorizationFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7511,14 +6321,12 @@ pub mod types {
         }
     }
     ///Why an OAuth connector's authorization or refresh failed after authorize answered. Each reason names the phase it stopped in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectorAuthorizationFailureReason {
         AuthorizationDenied,
         AuthorizationExpired,
         TokenExchangeFailed,
         RefreshRefused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorAuthorizationFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7527,7 +6335,6 @@ pub mod types {
                 Self::AuthorizationExpired => f.write_str("AuthorizationExpired"),
                 Self::TokenExchangeFailed => f.write_str("TokenExchangeFailed"),
                 Self::RefreshRefused => f.write_str("RefreshRefused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7563,17 +6370,14 @@ pub mod types {
         pub state: ConnectorConnectedState,
     }
     ///`ConnectorConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectorConnectedState {
         Connected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorConnectedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Connected => f.write_str("Connected"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7606,17 +6410,14 @@ pub mod types {
         pub state: ConnectorDisconnectedState,
     }
     ///`ConnectorDisconnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectorDisconnectedState {
         Disconnected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorDisconnectedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Disconnected => f.write_str("Disconnected"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7662,17 +6463,14 @@ pub mod types {
         pub state: ConnectorNotConnectedState,
     }
     ///`ConnectorNotConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectorNotConnectedState {
         NotConnected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorNotConnectedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotConnected => f.write_str("NotConnected"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7698,14 +6496,12 @@ pub mod types {
         }
     }
     ///Whether a connector can serve a new turn.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ConnectorState {
         NotConnected,
         Connected,
         Disconnected,
         AuthorizationFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7714,7 +6510,6 @@ pub mod types {
                 Self::Connected => f.write_str("Connected"),
                 Self::Disconnected => f.write_str("Disconnected"),
                 Self::AuthorizationFailed => f.write_str("AuthorizationFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7743,14 +6538,13 @@ pub mod types {
         }
     }
     ///Whether a connector serves new turns, with when it connected, when it was disconnected, or why its authorization failed.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ConnectorStatus {
         NotConnected(ConnectorNotConnected),
         Connected(ConnectorConnected),
         Disconnected(ConnectorDisconnected),
         AuthorizationFailed(ConnectorAuthorizationFailed),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ConnectorNotConnected> for ConnectorStatus {
         fn from(value: ConnectorNotConnected) -> Self {
@@ -7853,23 +6647,16 @@ pub mod types {
     ///object. The free tier derives its limits from the Cloudflare free plan in the control plane's
     ///limits module; a configured tenant gets `configured`. The per-minute request rates are the
     ///limits of the Workers Rate Limiting bindings named beside them and must match them. A tenant
-    ///with a profile of its own runs under it instead; `defaultProfile` and `ceiling` bound what a
-    ///profile holds.
+    ///with a profile of its own runs under it instead; `ceiling` bounds what a profile holds.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ControlPlaneLimits {
-        ///The most a profile set through the API may hold: each rate and body cap at most the ceiling's,
-        ///and each usage budget at most the ceiling's budget of the same measure and window. The request
-        ///rates must not pass the Workers Rate Limiting bindings, which the Worker checks before it knows
-        ///the tenant. Without it the default profile is the ceiling.
-        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub ceiling: ::std::option::Option<TenantLimitsProfile>,
+        ///The most a profile set through the API may hold: each rate at most the ceiling's, and each usage
+        ///budget at most the ceiling's budget of the same measure and window. Its `writesPerMinute` and
+        ///any Requests per Minute budget must not pass `writesPerMinute` and `readsPerMinute`, the limits
+        ///of the Workers Rate Limiting bindings the Worker checks before it knows the tenant.
+        pub ceiling: TenantLimitsProfile,
         ///The limits of a configured tenant, checked inside its Durable Object.
         pub configured: ::std::vec::Vec<TenantLimit>,
-        ///The profile a Configured tenant with no profile of its own runs under. Without it the control
-        ///plane builds that profile from `readsPerMinute`, `writesPerMinute`, `hostFramesPerMinute` and
-        ///`configured`, with its built-in webhook rate and body caps.
-        #[serde(rename = "defaultProfile", skip_serializing_if = "::std::option::Option::is_none")]
-        pub default_profile: ::std::option::Option<TenantLimitsProfile>,
         ///The tier a new tenant gets; an existing tenant keeps the tier it has.
         #[serde(rename = "defaultTier")]
         pub default_tier: TenantTier,
@@ -7912,36 +6699,18 @@ pub mod types {
         ///How long after a TurnOffer is sent the supervisor still hands its dispatch variables to a box, at least; the expiresAt of its DispatchGrant is the longer of this and turnOfferTtlSeconds plus turnImageFetchBudgetSeconds.
         #[serde(rename = "dispatchGrantTtlSeconds")]
         pub dispatch_grant_ttl_seconds: ::std::num::NonZeroU32,
-        ///The OIDC issuer of GitHub Actions job tokens, https://token.actions.githubusercontent.com on github.com; its keys are at <issuer>/.well-known/jwks.
-        #[serde(rename = "gitHubActionsIssuer")]
-        pub git_hub_actions_issuer: HttpUrl,
         ///How long a host connection may stay silent before the control plane closes it HeartbeatDeadline and reads the host Offline, 30 in production; a claimed turn whose host stays Offline this long fails HostOffline.
         #[serde(rename = "heartbeatDeadlineSeconds")]
         pub heartbeat_deadline_seconds: ::std::num::NonZeroU32,
         ///The heartbeat interval of the channel, 10 in production: the control plane answers a host message with a Heartbeat once it has sent nothing for half of it. It matches heartbeatIntervalSeconds of the hosts' runtime.json.
         #[serde(rename = "heartbeatIntervalSeconds")]
         pub heartbeat_interval_seconds: ::std::num::NonZeroU32,
-        ///How long a prebuild may run from the start of its run to the completion of its layer upload before it fails in phase Build, or in phase Upload once its upload started.
-        #[serde(rename = "prebuildBuildBudgetSeconds")]
-        pub prebuild_build_budget_seconds: ::std::num::NonZeroU32,
-        ///How long a dispatched prebuild may wait for its run to start before it fails in phase Dispatch; the rootfs URL its dispatch hands the run stays valid for this plus prebuildBuildBudgetSeconds.
-        #[serde(rename = "prebuildDispatchBudgetSeconds")]
-        pub prebuild_dispatch_budget_seconds: ::std::num::NonZeroU32,
-        ///How long the presigned PUTs a build job gets for its layer stay valid.
-        #[serde(rename = "prebuildUploadBudgetSeconds")]
-        pub prebuild_upload_budget_seconds: ::std::num::NonZeroU32,
         ///How long the host may take to answer a SnapshotRequest before the snapshot fails NotAnswered; its presigned upload expires then too.
         #[serde(rename = "snapshotDeadlineSeconds")]
         pub snapshot_deadline_seconds: ::std::num::NonZeroU32,
-        ///How long a session stays idle after a completed turn before the control plane asks for a snapshot. A turn sent sooner resets the wait.
-        #[serde(rename = "snapshotDelaySeconds")]
-        pub snapshot_delay_seconds: i32,
         ///How many lines of a turn go into one transcript chunk object; the last chunk of a turn holds the rest.
         #[serde(rename = "transcriptChunkLines")]
         pub transcript_chunk_lines: ::std::num::NonZeroU32,
-        ///How long a turn may take from TurnRepositoryReady to its first line before it fails NoFirstOutput; it stays at or above firstLineSeconds of the host.
-        #[serde(rename = "turnFirstLineBudgetSeconds")]
-        pub turn_first_line_budget_seconds: ::std::num::NonZeroU32,
         ///How long the host may take to download a guest image its cache lacks, after it sends TurnImageFetching; the offer's image.fetchSeconds. The image URLs stay valid for turnOfferTtlSeconds plus this. A host that runs past it fails the turn ImageFetchTimedOut.
         #[serde(rename = "turnImageFetchBudgetSeconds")]
         pub turn_image_fetch_budget_seconds: ::std::num::NonZeroU32,
@@ -7955,13 +6724,11 @@ pub mod types {
     ///Whether a turn on a credential reports what it cost and whether that cost is billed. A turn records
     ///its tokens as turn.tokens and, unless NotReported, its cost as turn.cost in micro-US-dollars, both
     ///with the basis as their costBasis dimension.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum CostBasis {
         Billed,
         NotBilled,
         NotReported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for CostBasis {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7969,7 +6736,6 @@ pub mod types {
                 Self::Billed => f.write_str("Billed"),
                 Self::NotBilled => f.write_str("NotBilled"),
                 Self::NotReported => f.write_str("NotReported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -7997,19 +6763,16 @@ pub mod types {
         }
     }
     ///How a turn picks one of the credentials a harness accepts.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum CredentialChoice {
         CatalogOrder,
         ModelProvider,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for CredentialChoice {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CatalogOrder => f.write_str("CatalogOrder"),
                 Self::ModelProvider => f.write_str("ModelProvider"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -8048,17 +6811,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`CredentialFileKeyKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum CredentialFileKeyKind {
         CredentialFile,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for CredentialFileKeyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CredentialFile => f.write_str("CredentialFile"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -8094,17 +6854,14 @@ pub mod types {
         pub provider: ModelProvider,
     }
     ///`CredentialFileMemberKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum CredentialFileMemberKind {
         CredentialFile,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for CredentialFileMemberKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CredentialFile => f.write_str("CredentialFile"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -8146,17 +6903,14 @@ pub mod types {
         pub value: ::std::option::Option<SecretText>,
     }
     ///`CredentialFileUpdateKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum CredentialFileUpdateKind {
         CredentialFile,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for CredentialFileUpdateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CredentialFile => f.write_str("CredentialFile"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -8193,17 +6947,14 @@ pub mod types {
         pub value: SecretText,
     }
     ///`CredentialFileValueKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum CredentialFileValueKind {
         CredentialFile,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for CredentialFileValueKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CredentialFile => f.write_str("CredentialFile"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -8253,13 +7004,11 @@ pub mod types {
         pub variable_names: ::std::vec::Vec<ShortText>,
     }
     ///The kinds of provider credential a secret set can hold.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum CredentialKind {
         ApiKey,
         SubscriptionToken,
         CredentialFile,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for CredentialKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8267,7 +7016,6 @@ pub mod types {
                 Self::ApiKey => f.write_str("ApiKey"),
                 Self::SubscriptionToken => f.write_str("SubscriptionToken"),
                 Self::CredentialFile => f.write_str("CredentialFile"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -8563,12 +7311,10 @@ pub mod types {
         pub grant_type: DeviceTokenRequestGrantType,
     }
     ///`DeviceTokenRequestGrantType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum DeviceTokenRequestGrantType {
         #[serde(rename = "urn:ietf:params:oauth:grant-type:device_code")]
         UrnIetfParamsOauthGrantTypeDeviceCode,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for DeviceTokenRequestGrantType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8576,7 +7322,6 @@ pub mod types {
                 Self::UrnIetfParamsOauthGrantTypeDeviceCode => {
                     f.write_str("urn:ietf:params:oauth:grant-type:device_code")
                 }
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -8602,17 +7347,14 @@ pub mod types {
         }
     }
     ///`DeviceTokenTokenType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum DeviceTokenTokenType {
         Bearer,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for DeviceTokenTokenType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Bearer => f.write_str("Bearer"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -8714,17 +7456,14 @@ pub mod types {
         pub trigger: TriggerCreate,
     }
     ///`DraftTriggerTestKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum DraftTriggerTestKind {
         Draft,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for DraftTriggerTestKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Draft => f.write_str("Draft"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -8760,17 +7499,14 @@ pub mod types {
         pub path: PersonaFilePath,
     }
     ///`EditPersonaFilePatchKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum EditPersonaFilePatchKind {
         Edit,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for EditPersonaFilePatchKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Edit => f.write_str("Edit"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -8982,17 +7718,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`EndedSubscriptionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum EndedSubscriptionState {
         Ended,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for EndedSubscriptionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Ended => f.write_str("Ended"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -9041,19 +7774,16 @@ pub mod types {
         pub expires_in_seconds: i32,
     }
     ///`EnrolmentTokenState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum EnrolmentTokenState {
         Unused,
         Spent,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for EnrolmentTokenState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unused => f.write_str("Unused"),
                 Self::Spent => f.write_str("Spent"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -9230,17 +7960,14 @@ pub mod types {
         pub title: Summary,
     }
     ///`EventCursorExpiredProblemCode`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum EventCursorExpiredProblemCode {
         EventCursorExpired,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for EventCursorExpiredProblemCode {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::EventCursorExpired => f.write_str("EventCursorExpired"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -9279,7 +8006,6 @@ pub mod types {
     pub enum EventProblem {
         EventCursorExpiredProblem(EventCursorExpiredProblem),
         Problem(Problem),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<EventCursorExpiredProblem> for EventProblem {
         fn from(value: EventCursorExpiredProblem) -> Self {
@@ -9289,98 +8015,6 @@ pub mod types {
     impl ::std::convert::From<Problem> for EventProblem {
         fn from(value: Problem) -> Self {
             Self::Problem(value)
-        }
-    }
-    ///A connection whose credential stopped working; prebuilds on it fail until the tenant connects again.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct ExpiredConnection {
-        pub account: Summary,
-        ///When the credential stopped working.
-        #[serde(rename = "expiredAt")]
-        pub expired_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub kind: ConnectionKind,
-        pub state: ExpiredConnectionState,
-    }
-    ///`ExpiredConnectionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum ExpiredConnectionState {
-        Expired,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for ExpiredConnectionState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Expired => f.write_str("Expired"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ExpiredConnectionState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Expired" => Ok(Self::Expired),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ExpiredConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ExpiredConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///A Connected connection whose credential stops working within the renewal window.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct ExpiringConnection {
-        pub account: Summary,
-        ///When the credential stops working.
-        #[serde(rename = "expiresAt")]
-        pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub kind: ConnectionKind,
-        pub state: ExpiringConnectionState,
-    }
-    ///`ExpiringConnectionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum ExpiringConnectionState {
-        Expiring,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for ExpiringConnectionState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Expiring => f.write_str("Expiring"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ExpiringConnectionState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Expiring" => Ok(Self::Expiring),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ExpiringConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ExpiringConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///A turn that ended Failed, with why.
@@ -9417,17 +8051,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`FailedTurnState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum FailedTurnState {
         Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for FailedTurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -9528,19 +8159,16 @@ pub mod types {
         }
     }
     ///The kind of GitHub account an installation is on, as GitHub reports it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GitHubAccountType {
         User,
         Organization,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GitHubAccountType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::User => f.write_str("User"),
                 Self::Organization => f.write_str("Organization"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -9566,148 +8194,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`GitHubActionsConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct GitHubActionsConnected {
-        pub connection: GitHubActionsConnection,
-        pub state: GitHubActionsConnectedState,
-    }
-    ///`GitHubActionsConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum GitHubActionsConnectedState {
-        Connected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for GitHubActionsConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Connected => f.write_str("Connected"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for GitHubActionsConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Connected" => Ok(Self::Connected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for GitHubActionsConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for GitHubActionsConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The tenant's GitHub Actions build provider. A prebuild dispatches the caller workflow in the
-    ///repository, which calls Tumpel's reusable prebuild workflow; the job's upload is accepted only
-    ///from a run of that workflow.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct GitHubActionsConnection {
-        ///The account GitHub Actions bills, as the tenant names it.
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        ///The caller workflow each repository holds; the start commits or dispatches it and the job token must name it.
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: WorkflowPath,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        #[serde(rename = "gitHubActionsConnectionId")]
-        pub git_hub_actions_connection_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-    }
-    ///The tenant's GitHub Actions build provider connection.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct GitHubActionsConnectionLink {
-        ///The caller workflow a prebuild start commits in each repository at the connection's callerWorkflow path, or at .github/workflows/tumpel-prebuild.yml while not connected, as YAML text.
-        #[serde(rename = "callerWorkflowExample")]
-        pub caller_workflow_example: Detail,
-        pub link: GitHubActionsLink,
-        ///The reusable workflow a caller workflow calls: tumpel/workflows/.github/workflows/prebuild.yml@v2.
-        #[serde(rename = "reusableWorkflow")]
-        pub reusable_workflow: ShortText,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`GitHubActionsConnectionStart`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct GitHubActionsConnectionStart {
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: WorkflowPath,
-    }
-    ///`GitHubActionsLink`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum GitHubActionsLink {
-        Connected(GitHubActionsConnected),
-        NotConnected(GitHubActionsNotConnected),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<GitHubActionsConnected> for GitHubActionsLink {
-        fn from(value: GitHubActionsConnected) -> Self {
-            Self::Connected(value)
-        }
-    }
-    impl ::std::convert::From<GitHubActionsNotConnected> for GitHubActionsLink {
-        fn from(value: GitHubActionsNotConnected) -> Self {
-            Self::NotConnected(value)
-        }
-    }
-    ///`GitHubActionsNotConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct GitHubActionsNotConnected {
-        pub state: GitHubActionsNotConnectedState,
-    }
-    ///`GitHubActionsNotConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum GitHubActionsNotConnectedState {
-        NotConnected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for GitHubActionsNotConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConnected => f.write_str("NotConnected"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for GitHubActionsNotConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConnected" => Ok(Self::NotConnected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for GitHubActionsNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for GitHubActionsNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///The stage has no GitHub App yet; a person creates it once at `setupUrl`.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GitHubAppMissing {
@@ -9716,17 +8202,14 @@ pub mod types {
         pub state: GitHubAppMissingState,
     }
     ///`GitHubAppMissingState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GitHubAppMissingState {
         AppMissing,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GitHubAppMissingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::AppMissing => f.write_str("AppMissing"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -9759,17 +8242,14 @@ pub mod types {
         pub state: GitHubAppReadyState,
     }
     ///`GitHubAppReadyState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GitHubAppReadyState {
         Ready,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GitHubAppReadyState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Ready => f.write_str("Ready"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -9795,12 +8275,11 @@ pub mod types {
         }
     }
     ///`GitHubAppState`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum GitHubAppState {
         Ready(GitHubAppReady),
         Missing(GitHubAppMissing),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<GitHubAppReady> for GitHubAppState {
         fn from(value: GitHubAppReady) -> Self {
@@ -9863,13 +8342,11 @@ pub mod types {
         }
     }
     ///Why the control plane did not link an installation a person brought back from GitHub; GitHubConnections_start sends it to the dashboard as refused=<GitHubInstallRefusal>.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GitHubInstallRefusal {
         OtherTenant,
         NotInstaller,
         InstallerUnknown,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GitHubInstallRefusal {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -9877,7 +8354,6 @@ pub mod types {
                 Self::OtherTenant => f.write_str("OtherTenant"),
                 Self::NotInstaller => f.write_str("NotInstaller"),
                 Self::InstallerUnknown => f.write_str("InstallerUnknown"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -9936,19 +8412,16 @@ pub mod types {
         pub updated_at: i64,
     }
     ///The installation's state as GitHub's last installation webhook reported it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GitHubInstallationStatus {
         Active,
         Suspended,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GitHubInstallationStatus {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Active => f.write_str("Active"),
                 Self::Suspended => f.write_str("Suspended"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -10185,7 +8658,7 @@ pub mod types {
         }
     }
     ///A GitHub webhook event type a trigger listens to, as GitHub names it in X-GitHub-Event.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GitHubTriggerEvent {
         #[serde(rename = "pull_request")]
         PullRequest,
@@ -10195,8 +8668,6 @@ pub mod types {
         Status,
         #[serde(rename = "issues")]
         Issues,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GitHubTriggerEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -10205,7 +8676,6 @@ pub mod types {
                 Self::Push => f.write_str("push"),
                 Self::Status => f.write_str("status"),
                 Self::Issues => f.write_str("issues"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -10242,17 +8712,14 @@ pub mod types {
         pub kind: GitHubTriggerSourceKind,
     }
     ///`GitHubTriggerSourceKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GitHubTriggerSourceKind {
         GitHub,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GitHubTriggerSourceKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GitHub => f.write_str("GitHub"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -10426,17 +8893,14 @@ pub mod types {
         pub type_: GuestClaudeSetupCodeType,
     }
     ///`GuestClaudeSetupCodeType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestClaudeSetupCodeType {
         ClaudeSetupCode,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupCodeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupCode => f.write_str("ClaudeSetupCode"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -10472,17 +8936,14 @@ pub mod types {
         pub type_: GuestClaudeSetupFailedType,
     }
     ///`GuestClaudeSetupFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestClaudeSetupFailedType {
         ClaudeSetupFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupFailed => f.write_str("ClaudeSetupFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -10508,15 +8969,13 @@ pub mod types {
         }
     }
     ///Why a guest Claude setup ended without storing the token.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestClaudeSetupFailureReason {
         UrlNotPrinted,
         CodeRejected,
         ClaudeCodeExited,
         TokenNotStored,
         MintTimedOut,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -10526,7 +8985,6 @@ pub mod types {
                 Self::ClaudeCodeExited => f.write_str("ClaudeCodeExited"),
                 Self::TokenNotStored => f.write_str("TokenNotStored"),
                 Self::MintTimedOut => f.write_str("MintTimedOut"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -10646,17 +9104,14 @@ pub mod types {
         }
     }
     ///`GuestClaudeSetupStartType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestClaudeSetupStartType {
         ClaudeSetupStart,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupStartType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupStart => f.write_str("ClaudeSetupStart"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -10690,17 +9145,14 @@ pub mod types {
         pub type_: GuestClaudeSetupStoredType,
     }
     ///`GuestClaudeSetupStoredType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestClaudeSetupStoredType {
         ClaudeSetupStored,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupStoredType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupStored => f.write_str("ClaudeSetupStored"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -10738,17 +9190,14 @@ pub mod types {
         pub user_code: ::std::option::Option<ClaudeSetupUserCode>,
     }
     ///`GuestClaudeSetupUrlType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestClaudeSetupUrlType {
         ClaudeSetupUrl,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupUrlType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupUrl => f.write_str("ClaudeSetupUrl"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -11152,15 +9601,13 @@ pub mod types {
         }
     }
     ///How the guest hands a turn to the harness and reads where the turn ends.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestHarnessProtocol {
         ClaudeStreamJson,
         PiRpc,
         ShellLines,
         PromptOnStdin,
         CodexExecJson,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestHarnessProtocol {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -11170,7 +9617,6 @@ pub mod types {
                 Self::ShellLines => f.write_str("ShellLines"),
                 Self::PromptOnStdin => f.write_str("PromptOnStdin"),
                 Self::CodexExecJson => f.write_str("CodexExecJson"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -11424,17 +9870,14 @@ pub mod types {
         }
     }
     ///`GuestHelloType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestHelloType {
         GuestHello,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestHelloType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GuestHello => f.write_str("GuestHello"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -11623,14 +10066,13 @@ pub mod types {
         pub kernel_url: HttpUrl,
     }
     ///One frame from the host to the guest.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum GuestInput {
         TurnStart(GuestTurnStart),
         TurnCancel(GuestTurnCancel),
         ClaudeSetupStart(GuestClaudeSetupStart),
         ClaudeSetupCode(GuestClaudeSetupCode),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<GuestTurnStart> for GuestInput {
         fn from(value: GuestTurnStart) -> Self {
@@ -11653,7 +10095,7 @@ pub mod types {
         }
     }
     ///One frame from the guest to the host.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum GuestMessage {
         Hello(GuestHello),
@@ -11664,7 +10106,6 @@ pub mod types {
         ClaudeSetupUrl(GuestClaudeSetupUrl),
         ClaudeSetupStored(GuestClaudeSetupStored),
         ClaudeSetupFailed(GuestClaudeSetupFailed),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<GuestHello> for GuestMessage {
         fn from(value: GuestHello) -> Self {
@@ -11994,17 +10435,14 @@ pub mod types {
         pub type_: GuestTurnCancelType,
     }
     ///`GuestTurnCancelType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestTurnCancelType {
         TurnCancel,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnCancelType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnCancel => f.write_str("TurnCancel"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -12120,7 +10558,7 @@ pub mod types {
         }
     }
     ///`GuestTurnEndReason`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestTurnEndReason {
         Completed,
         HarnessExited,
@@ -12128,8 +10566,6 @@ pub mod types {
         HarnessOutOfMemory,
         Cancelled,
         BoxDiskFull,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnEndReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12140,7 +10576,6 @@ pub mod types {
                 Self::HarnessOutOfMemory => f.write_str("HarnessOutOfMemory"),
                 Self::Cancelled => f.write_str("Cancelled"),
                 Self::BoxDiskFull => f.write_str("BoxDiskFull"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -12171,17 +10606,14 @@ pub mod types {
         }
     }
     ///`GuestTurnEndType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestTurnEndType {
         TurnEnd,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnEndType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnEnd => f.write_str("TurnEnd"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -12287,17 +10719,14 @@ pub mod types {
         pub type_: GuestTurnLineType,
     }
     ///`GuestTurnLineType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestTurnLineType {
         TurnLine,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnLineType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnLine => f.write_str("TurnLine"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -12333,17 +10762,14 @@ pub mod types {
         pub type_: GuestTurnRepositoryCloneFailedType,
     }
     ///`GuestTurnRepositoryCloneFailedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestTurnRepositoryCloneFailedType {
         TurnRepositoryCloneFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnRepositoryCloneFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnRepositoryCloneFailed => f.write_str("TurnRepositoryCloneFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -12377,17 +10803,14 @@ pub mod types {
         pub type_: GuestTurnRepositoryReadyType,
     }
     ///`GuestTurnRepositoryReadyType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestTurnRepositoryReadyType {
         TurnRepositoryReady,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnRepositoryReadyType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnRepositoryReady => f.write_str("TurnRepositoryReady"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -12442,7 +10865,7 @@ pub mod types {
         pub repository: RepositoryUrl,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
-        ///The host's turn budget, budgets.turnSeconds of its runtime config, which the guest names to the harness beside the box's memory, disk and CPUs.
+        ///The turn budget, the TurnOffer's turnSeconds, which the guest names to the harness beside the box's memory, disk and CPUs.
         #[serde(rename = "turnSeconds", skip_serializing_if = "::std::option::Option::is_none")]
         pub turn_seconds: ::std::option::Option<::std::num::NonZeroU32>,
         #[serde(rename = "type")]
@@ -12524,17 +10947,14 @@ pub mod types {
         }
     }
     ///`GuestTurnStartType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum GuestTurnStartType {
         TurnStart,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnStartType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnStart => f.write_str("TurnStart"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -12560,15 +10980,13 @@ pub mod types {
         }
     }
     ///`Harness`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum Harness {
         ClaudeCode,
         Codex,
         OpenCode,
         PiDev,
         MistralAgent,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for Harness {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12578,7 +10996,6 @@ pub mod types {
                 Self::OpenCode => f.write_str("OpenCode"),
                 Self::PiDev => f.write_str("PiDev"),
                 Self::MistralAgent => f.write_str("MistralAgent"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -12756,17 +11173,14 @@ pub mod types {
         pub status: HealthStatus,
     }
     ///`HealthStatus`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HealthStatus {
         Ok,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for HealthStatus {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Ok => f.write_str("Ok"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -12833,19 +11247,16 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`HostArchitecture`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostArchitecture {
         Amd64,
         Arm64,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for HostArchitecture {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Amd64 => f.write_str("Amd64"),
                 Self::Arm64 => f.write_str("Arm64"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -12872,12 +11283,11 @@ pub mod types {
         }
     }
     ///`HostChannelProtocol`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum HostChannelProtocol {
         ProtocolNotReported(HostProtocolNotReported),
         ChannelProtocolReported(HostChannelProtocolReported),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<HostProtocolNotReported> for HostChannelProtocol {
         fn from(value: HostProtocolNotReported) -> Self {
@@ -12899,17 +11309,14 @@ pub mod types {
         pub state: HostChannelProtocolReportedState,
     }
     ///`HostChannelProtocolReportedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostChannelProtocolReportedState {
         Reported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for HostChannelProtocolReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Reported => f.write_str("Reported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -13158,12 +11565,11 @@ pub mod types {
         }
     }
     ///`HostGuestProtocol`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum HostGuestProtocol {
         ProtocolNotReported(HostProtocolNotReported),
         GuestProtocolReported(HostGuestProtocolReported),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<HostProtocolNotReported> for HostGuestProtocol {
         fn from(value: HostProtocolNotReported) -> Self {
@@ -13185,17 +11591,14 @@ pub mod types {
         pub state: HostGuestProtocolReportedState,
     }
     ///`HostGuestProtocolReportedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostGuestProtocolReportedState {
         Reported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for HostGuestProtocolReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Reported => f.write_str("Reported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -13221,13 +11624,12 @@ pub mod types {
         }
     }
     ///Whether the control plane offers a host work. It is the control plane's own judgement of the host, kept by its tenant and written once per change.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostHealth {
         Healthy,
         RateLimited,
         Unhealthy,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
+        Degraded,
     }
     impl ::std::fmt::Display for HostHealth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -13235,7 +11637,7 @@ pub mod types {
                 Self::Healthy => f.write_str("Healthy"),
                 Self::RateLimited => f.write_str("RateLimited"),
                 Self::Unhealthy => f.write_str("Unhealthy"),
-                Self::Unknown(ref code) => f.write_str(code),
+                Self::Degraded => f.write_str("Degraded"),
             }
         }
     }
@@ -13246,6 +11648,7 @@ pub mod types {
                 "Healthy" => Ok(Self::Healthy),
                 "RateLimited" => Ok(Self::RateLimited),
                 "Unhealthy" => Ok(Self::Unhealthy),
+                "Degraded" => Ok(Self::Degraded),
                 _ => Err("invalid value".into()),
             }
         }
@@ -13278,17 +11681,14 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///`HostHealthChangedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostHealthChangedEventEvent {
         HostHealthChanged,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for HostHealthChangedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::HostHealthChanged => f.write_str("HostHealthChanged"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -13413,17 +11813,14 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///`HostOfflineEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostOfflineEventEvent {
         HostOffline,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for HostOfflineEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::HostOffline => f.write_str("HostOffline"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -13462,17 +11859,14 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///`HostOnlineEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostOnlineEventEvent {
         HostOnline,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for HostOnlineEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::HostOnline => f.write_str("HostOnline"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -13503,17 +11897,14 @@ pub mod types {
         pub state: HostProtocolNotReportedState,
     }
     ///`HostProtocolNotReportedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostProtocolNotReportedState {
         NotReported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for HostProtocolNotReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotReported => f.write_str("NotReported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -13608,19 +11999,16 @@ pub mod types {
         }
     }
     ///The health a host reports of itself in its Heartbeat.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostReportedHealth {
         Healthy,
         RateLimited,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for HostReportedHealth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Healthy => f.write_str("Healthy"),
                 Self::RateLimited => f.write_str("RateLimited"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -13647,14 +12035,12 @@ pub mod types {
         }
     }
     ///`HostState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostState {
         Enrolled,
         Online,
         Offline,
         Revoked,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for HostState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -13663,7 +12049,6 @@ pub mod types {
                 Self::Online => f.write_str("Online"),
                 Self::Offline => f.write_str("Offline"),
                 Self::Revoked => f.write_str("Revoked"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -13854,7 +12239,7 @@ pub mod types {
         }
     }
     ///The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ImageHarness {
         ClaudeCode,
         Codex,
@@ -13862,8 +12247,6 @@ pub mod types {
         PiDev,
         MistralAgent,
         Shell,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ImageHarness {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -13874,7 +12257,6 @@ pub mod types {
                 Self::PiDev => f.write_str("PiDev"),
                 Self::MistralAgent => f.write_str("MistralAgent"),
                 Self::Shell => f.write_str("Shell"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -14077,17 +12459,14 @@ pub mod types {
         pub source: InlineConfigFileSource,
     }
     ///`InlineConfigFileSource`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum InlineConfigFileSource {
         Inline,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for InlineConfigFileSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Inline => f.write_str("Inline"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -14134,17 +12513,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`InlinePersonaFileReadSource`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum InlinePersonaFileReadSource {
         Inline,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for InlinePersonaFileReadSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Inline => f.write_str("Inline"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -14170,17 +12546,14 @@ pub mod types {
         }
     }
     ///`InlinePersonaFileSource`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum InlinePersonaFileSource {
         Inline,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for InlinePersonaFileSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Inline => f.write_str("Inline"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -14358,12 +12731,11 @@ pub mod types {
         }
     }
     ///How the guest image installs a harness version.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum InstallRecipe {
         NpmInstallRecipe(NpmInstallRecipe),
         ArchiveInstallRecipe(ArchiveInstallRecipe),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<NpmInstallRecipe> for InstallRecipe {
         fn from(value: NpmInstallRecipe) -> Self {
@@ -14495,18 +12867,15 @@ pub mod types {
         pub use_: IssuerJwkUse,
     }
     ///`IssuerJwkAlg`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum IssuerJwkAlg {
         #[serde(rename = "RS256")]
         Rs256,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for IssuerJwkAlg {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Rs256 => f.write_str("RS256"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -14601,18 +12970,15 @@ pub mod types {
         }
     }
     ///`IssuerJwkKty`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum IssuerJwkKty {
         #[serde(rename = "RSA")]
         Rsa,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for IssuerJwkKty {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Rsa => f.write_str("RSA"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -14707,18 +13073,15 @@ pub mod types {
         }
     }
     ///`IssuerJwkUse`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum IssuerJwkUse {
         #[serde(rename = "sig")]
         Sig,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for IssuerJwkUse {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Sig => f.write_str("sig"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -14973,13 +13336,11 @@ pub mod types {
         pub turns: ::std::vec::Vec<TurnPoint>,
     }
     ///`MetricBucket`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum MetricBucket {
         Minute,
         Hour,
         Day,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for MetricBucket {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -14987,7 +13348,6 @@ pub mod types {
                 Self::Minute => f.write_str("Minute"),
                 Self::Hour => f.write_str("Hour"),
                 Self::Day => f.write_str("Day"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -15326,19 +13686,16 @@ pub mod types {
         }
     }
     ///`MetricKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum MetricKind {
         Turn,
         Sample,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for MetricKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Turn => f.write_str("Turn"),
                 Self::Sample => f.write_str("Sample"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -15562,15 +13919,13 @@ pub mod types {
         }
     }
     ///`ModelProvider`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ModelProvider {
         Anthropic,
         OpenAi,
         Mistral,
         Google,
         OpenRouter,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ModelProvider {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15580,7 +13935,6 @@ pub mod types {
                 Self::Mistral => f.write_str("Mistral"),
                 Self::Google => f.write_str("Google"),
                 Self::OpenRouter => f.write_str("OpenRouter"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -15610,12 +13964,11 @@ pub mod types {
         }
     }
     ///The models a harness runs with one credential.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ModelSupport {
         Listed(ModelSupportListed),
         ProviderChecked(ModelSupportProviderChecked),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ModelSupportListed> for ModelSupport {
         fn from(value: ModelSupportListed) -> Self {
@@ -15634,17 +13987,14 @@ pub mod types {
         pub models: ::std::vec::Vec<ModelName>,
     }
     ///`ModelSupportListedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ModelSupportListedKind {
         Listed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ModelSupportListedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Listed => f.write_str("Listed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -15675,17 +14025,14 @@ pub mod types {
         pub kind: ModelSupportProviderCheckedKind,
     }
     ///`ModelSupportProviderCheckedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ModelSupportProviderCheckedKind {
         ProviderChecked,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for ModelSupportProviderCheckedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ProviderChecked => f.write_str("ProviderChecked"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -15710,273 +14057,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`NamespaceConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnected {
-        pub connection: NamespaceConnection,
-        pub state: NamespaceConnectedState,
-    }
-    ///`NamespaceConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum NamespaceConnectedState {
-        Connected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for NamespaceConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Connected => f.write_str("Connected"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for NamespaceConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Connected" => Ok(Self::Connected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The tenant's Namespace build provider. Namespace trusts tokens of the stage's issuer whose sub
-    ///matches `subjectPattern` and whose aud is `audience`.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnection {
-        ///The Namespace workspace that bills the builds, as the tenant names it.
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        ///The aud Tumpel defines for Namespace: federation.namespaceapis.com.
-        pub audience: OidcAudience,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        ///The stage's OIDC issuer Namespace registers.
-        pub issuer: HttpUrl,
-        #[serde(rename = "namespaceConnectionId")]
-        pub namespace_connection_id: EntityId,
-        ///The sub of a prebuild token: tenant:<tenantId>:persona:<personaName>:job:prebuild, with the prebuild's persona name.
-        #[serde(rename = "subjectPattern")]
-        pub subject_pattern: ShortText,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-        ///The Namespace workspace the builds run in, such as tenant_123456789ab.
-        #[serde(rename = "workspaceId")]
-        pub workspace_id: NamespaceWorkspaceId,
-    }
-    ///The tenant's Namespace build provider connection.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnectionLink {
-        pub link: NamespaceLink,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`NamespaceConnectionStart`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceConnectionStart {
-        #[serde(rename = "accountLabel")]
-        pub account_label: DisplayName,
-        #[serde(rename = "workspaceId")]
-        pub workspace_id: NamespaceWorkspaceId,
-    }
-    ///`NamespaceLink`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum NamespaceLink {
-        Connected(NamespaceConnected),
-        NotConnected(NamespaceNotConnected),
-        NotConfigured(NamespaceNotConfigured),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<NamespaceConnected> for NamespaceLink {
-        fn from(value: NamespaceConnected) -> Self {
-            Self::Connected(value)
-        }
-    }
-    impl ::std::convert::From<NamespaceNotConnected> for NamespaceLink {
-        fn from(value: NamespaceNotConnected) -> Self {
-            Self::NotConnected(value)
-        }
-    }
-    impl ::std::convert::From<NamespaceNotConfigured> for NamespaceLink {
-        fn from(value: NamespaceNotConfigured) -> Self {
-            Self::NotConfigured(value)
-        }
-    }
-    ///The stage has no issuer hostname yet, so Namespace cannot trust its tokens; `fix` says how to deploy it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceNotConfigured {
-        pub detail: Detail,
-        pub fix: Detail,
-        pub state: NamespaceNotConfiguredState,
-    }
-    ///`NamespaceNotConfiguredState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum NamespaceNotConfiguredState {
-        NotConfigured,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for NamespaceNotConfiguredState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConfigured => f.write_str("NotConfigured"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for NamespaceNotConfiguredState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConfigured" => Ok(Self::NotConfigured),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceNotConfiguredState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceNotConfiguredState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///The trust material to register at Namespace before connecting.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct NamespaceNotConnected {
-        ///The aud Tumpel defines for Namespace: federation.namespaceapis.com.
-        pub audience: OidcAudience,
-        pub issuer: HttpUrl,
-        pub state: NamespaceNotConnectedState,
-        #[serde(rename = "subjectPattern")]
-        pub subject_pattern: ShortText,
-    }
-    ///`NamespaceNotConnectedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum NamespaceNotConnectedState {
-        NotConnected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for NamespaceNotConnectedState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConnected => f.write_str("NotConnected"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for NamespaceNotConnectedState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConnected" => Ok(Self::NotConnected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceNotConnectedState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///A Namespace workspace id, such as tenant_123456789ab.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct NamespaceWorkspaceId(::std::string::String);
-    impl NamespaceWorkspaceId {
-        pub fn as_str(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::convert::AsRef<str> for NamespaceWorkspaceId {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::fmt::Display for NamespaceWorkspaceId {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            f.write_str(&self.0)
-        }
-    }
-    impl ::std::convert::AsRef<::std::ffi::OsStr> for NamespaceWorkspaceId {
-        fn as_ref(&self) -> &::std::ffi::OsStr {
-            self.0.as_ref()
-        }
-    }
-    impl ::std::ops::Deref for NamespaceWorkspaceId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<NamespaceWorkspaceId> for ::std::string::String {
-        fn from(value: NamespaceWorkspaceId) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for NamespaceWorkspaceId {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 100usize {
-                return Err("NamespaceWorkspaceId: longer than 100 characters".into());
-            }
-            static PATTERN: ::std::sync::LazyLock<::regress::Regex> =
-                ::std::sync::LazyLock::new(|| ::regress::Regex::new("^tenant_[A-Za-z0-9]+$").unwrap());
-            if PATTERN.find(value).is_none() {
-                return Err("NamespaceWorkspaceId: doesn't match pattern \"^tenant_[A-Za-z0-9]+$\"".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for NamespaceWorkspaceId {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for NamespaceWorkspaceId {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for NamespaceWorkspaceId {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
     ///`NotConfiguredConnection`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct NotConfiguredConnection {
@@ -15984,17 +14064,14 @@ pub mod types {
         pub state: NotConfiguredConnectionState,
     }
     ///`NotConfiguredConnectionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum NotConfiguredConnectionState {
         NotConfigured,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for NotConfiguredConnectionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotConfigured => f.write_str("NotConfigured"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16026,17 +14103,14 @@ pub mod types {
         pub state: NotConnectedConnectionState,
     }
     ///`NotConnectedConnectionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum NotConnectedConnectionState {
         NotConnected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for NotConnectedConnectionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotConnected => f.write_str("NotConnected"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16070,17 +14144,14 @@ pub mod types {
         pub package_version: NpmInstallRecipePackageVersion,
     }
     ///`NpmInstallRecipeKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum NpmInstallRecipeKind {
         Npm,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for NpmInstallRecipeKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Npm => f.write_str("Npm"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16255,18 +14326,15 @@ pub mod types {
         pub resource: ::std::option::Option<UrlText>,
     }
     ///`OAuthAuthorizationCodeRequestGrantType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OAuthAuthorizationCodeRequestGrantType {
         #[serde(rename = "authorization_code")]
         AuthorizationCode,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OAuthAuthorizationCodeRequestGrantType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::AuthorizationCode => f.write_str("authorization_code"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16311,18 +14379,15 @@ pub mod types {
         pub redirect_uris: ::std::vec::Vec<HttpUrl>,
     }
     ///`OAuthClientTokenEndpointAuthMethod`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OAuthClientTokenEndpointAuthMethod {
         #[serde(rename = "none")]
         None,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OAuthClientTokenEndpointAuthMethod {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::None => f.write_str("none"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16366,17 +14431,14 @@ pub mod types {
         pub url: ConnectorUrl,
     }
     ///`OAuthConnectorAuth`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OAuthConnectorAuth {
         OAuth,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OAuthConnectorAuth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::OAuth => f.write_str("OAuth"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16416,7 +14478,7 @@ pub mod types {
         pub error_description: Detail,
     }
     ///The OAuth error codes of RFC 6749, RFC 7591, RFC 8628 and RFC 8707 the control plane answers with.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OAuthErrorCode {
         #[serde(rename = "invalid_request")]
         InvalidRequest,
@@ -16442,8 +14504,6 @@ pub mod types {
         AccessDenied,
         #[serde(rename = "expired_token")]
         ExpiredToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OAuthErrorCode {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16460,7 +14520,6 @@ pub mod types {
                 Self::SlowDown => f.write_str("slow_down"),
                 Self::AccessDenied => f.write_str("access_denied"),
                 Self::ExpiredToken => f.write_str("expired_token"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16525,18 +14584,15 @@ pub mod types {
         pub resource: ::std::option::Option<UrlText>,
     }
     ///`OAuthRefreshTokenRequestGrantType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OAuthRefreshTokenRequestGrantType {
         #[serde(rename = "refresh_token")]
         RefreshToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OAuthRefreshTokenRequestGrantType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RefreshToken => f.write_str("refresh_token"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16579,12 +14635,11 @@ pub mod types {
         pub token_type: OAuthTokenTokenType,
     }
     ///`OAuthTokenRequest`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum OAuthTokenRequest {
         AuthorizationCodeRequest(OAuthAuthorizationCodeRequest),
         RefreshTokenRequest(OAuthRefreshTokenRequest),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<OAuthAuthorizationCodeRequest> for OAuthTokenRequest {
         fn from(value: OAuthAuthorizationCodeRequest) -> Self {
@@ -16597,17 +14652,14 @@ pub mod types {
         }
     }
     ///`OAuthTokenTokenType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OAuthTokenTokenType {
         Bearer,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OAuthTokenTokenType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Bearer => f.write_str("Bearer"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16661,17 +14713,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`OfferedTurnState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OfferedTurnState {
         Offered,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OfferedTurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Offered => f.write_str("Offered"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16696,75 +14745,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///The aud claim a provider requires on Tumpel's tokens, such as federation.namespaceapis.com.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct OidcAudience(::std::string::String);
-    impl OidcAudience {
-        pub fn as_str(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::convert::AsRef<str> for OidcAudience {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::fmt::Display for OidcAudience {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            f.write_str(&self.0)
-        }
-    }
-    impl ::std::convert::AsRef<::std::ffi::OsStr> for OidcAudience {
-        fn as_ref(&self) -> &::std::ffi::OsStr {
-            self.0.as_ref()
-        }
-    }
-    impl ::std::ops::Deref for OidcAudience {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<OidcAudience> for ::std::string::String {
-        fn from(value: OidcAudience) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for OidcAudience {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 500usize {
-                return Err("OidcAudience: longer than 500 characters".into());
-            }
-            if value.chars().count() < 1usize {
-                return Err("OidcAudience: shorter than 1 characters".into());
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for OidcAudience {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for OidcAudience {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for OidcAudience {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
     ///The OpenID Connect discovery document of the stage's issuer, served at
     ///`/.well-known/openid-configuration` on the issuer hostname.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -16779,7 +14759,7 @@ pub mod types {
         pub subject_types_supported: ::std::vec::Vec<OpenIdConfigurationSubjectTypesSupportedItem>,
     }
     ///`OpenIdConfigurationClaimsSupportedItem`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OpenIdConfigurationClaimsSupportedItem {
         #[serde(rename = "iss")]
         Iss,
@@ -16795,8 +14775,6 @@ pub mod types {
         Exp,
         #[serde(rename = "jti")]
         Jti,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OpenIdConfigurationClaimsSupportedItem {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16808,7 +14786,6 @@ pub mod types {
                 Self::Nbf => f.write_str("nbf"),
                 Self::Exp => f.write_str("exp"),
                 Self::Jti => f.write_str("jti"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16840,18 +14817,15 @@ pub mod types {
         }
     }
     ///`OpenIdConfigurationIdTokenSigningAlgValuesSupportedItem`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OpenIdConfigurationIdTokenSigningAlgValuesSupportedItem {
         #[serde(rename = "RS256")]
         Rs256,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OpenIdConfigurationIdTokenSigningAlgValuesSupportedItem {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Rs256 => f.write_str("RS256"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16877,18 +14851,15 @@ pub mod types {
         }
     }
     ///`OpenIdConfigurationResponseTypesSupportedItem`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OpenIdConfigurationResponseTypesSupportedItem {
         #[serde(rename = "id_token")]
         IdToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OpenIdConfigurationResponseTypesSupportedItem {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::IdToken => f.write_str("id_token"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16914,18 +14885,15 @@ pub mod types {
         }
     }
     ///`OpenIdConfigurationScopesSupportedItem`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OpenIdConfigurationScopesSupportedItem {
         #[serde(rename = "openid")]
         Openid,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OpenIdConfigurationScopesSupportedItem {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Openid => f.write_str("openid"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -16951,18 +14919,15 @@ pub mod types {
         }
     }
     ///`OpenIdConfigurationSubjectTypesSupportedItem`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OpenIdConfigurationSubjectTypesSupportedItem {
         #[serde(rename = "public")]
         Public,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OpenIdConfigurationSubjectTypesSupportedItem {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Public => f.write_str("public"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -17020,17 +14985,14 @@ pub mod types {
         pub state: OpenRouterAuthorizationAwaitingCallbackState,
     }
     ///`OpenRouterAuthorizationAwaitingCallbackState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OpenRouterAuthorizationAwaitingCallbackState {
         AwaitingCallback,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationAwaitingCallbackState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::AwaitingCallback => f.write_str("AwaitingCallback"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -17066,17 +15028,14 @@ pub mod types {
         pub state: OpenRouterAuthorizationCompletedState,
     }
     ///`OpenRouterAuthorizationCompletedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OpenRouterAuthorizationCompletedState {
         Completed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationCompletedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Completed => f.write_str("Completed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -17110,17 +15069,14 @@ pub mod types {
         pub state: OpenRouterAuthorizationExchangingState,
     }
     ///`OpenRouterAuthorizationExchangingState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OpenRouterAuthorizationExchangingState {
         Exchanging,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationExchangingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Exchanging => f.write_str("Exchanging"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -17156,17 +15112,14 @@ pub mod types {
         pub state: OpenRouterAuthorizationFailedState,
     }
     ///`OpenRouterAuthorizationFailedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OpenRouterAuthorizationFailedState {
         Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationFailedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -17192,15 +15145,13 @@ pub mod types {
         }
     }
     ///Why an OpenRouter authorization ended Failed. Each reason names the phase it stopped in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OpenRouterAuthorizationFailureReason {
         AuthorizationTimedOut,
         NotConnected,
         CodeRefused,
         ExchangeFailed,
         KeyNotStored,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17210,7 +15161,6 @@ pub mod types {
                 Self::CodeRefused => f.write_str("CodeRefused"),
                 Self::ExchangeFailed => f.write_str("ExchangeFailed"),
                 Self::KeyNotStored => f.write_str("KeyNotStored"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -17246,14 +15196,12 @@ pub mod types {
         pub secret_set_id: EntityId,
     }
     ///The phase an OpenRouter authorization is in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum OpenRouterAuthorizationState {
         AwaitingCallback,
         Exchanging,
         Completed,
         Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17262,7 +15210,6 @@ pub mod types {
                 Self::Exchanging => f.write_str("Exchanging"),
                 Self::Completed => f.write_str("Completed"),
                 Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -17291,14 +15238,13 @@ pub mod types {
         }
     }
     ///Where an OpenRouter authorization is: the authorization URL while it waits for the callback, the exchange time limit while it spends the code, the key label once Completed, the reason once Failed.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum OpenRouterAuthorizationStatus {
         AwaitingCallback(OpenRouterAuthorizationAwaitingCallback),
         Exchanging(OpenRouterAuthorizationExchanging),
         Completed(OpenRouterAuthorizationCompleted),
         Failed(OpenRouterAuthorizationFailed),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<OpenRouterAuthorizationAwaitingCallback> for OpenRouterAuthorizationStatus {
         fn from(value: OpenRouterAuthorizationAwaitingCallback) -> Self {
@@ -17432,17 +15378,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`PausedSubscriptionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PausedSubscriptionState {
         Paused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PausedSubscriptionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Paused => f.write_str("Paused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -17475,17 +15418,14 @@ pub mod types {
         pub principal_id: EntityId,
     }
     ///`PersonOriginKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PersonOriginKind {
         Person,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PersonOriginKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Person => f.write_str("Person"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -17585,12 +15525,11 @@ pub mod types {
     ///in the store under their sha256 digest; the box receives the path and digest of each file. Each
     ///variant is the matching PersonaFileWrite with fields the server adds, so a read without them
     ///is a valid write.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum PersonaFile {
         InlinePersonaFileRead(InlinePersonaFileRead),
         StoredPersonaFileRead(StoredPersonaFileRead),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<InlinePersonaFileRead> for PersonaFile {
         fn from(value: InlinePersonaFileRead) -> Self {
@@ -17705,13 +15644,12 @@ pub mod types {
         }
     }
     ///One change to one file of a persona; every other file is left as it is.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum PersonaFilePatch {
         PutPersonaFilePatch(PutPersonaFilePatch),
         RemovePersonaFilePatch(RemovePersonaFilePatch),
         EditPersonaFilePatch(EditPersonaFilePatch),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<PutPersonaFilePatch> for PersonaFilePatch {
         fn from(value: PutPersonaFilePatch) -> Self {
@@ -17729,13 +15667,11 @@ pub mod types {
         }
     }
     ///`PersonaFilePatchKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PersonaFilePatchKind {
         Put,
         Remove,
         Edit,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PersonaFilePatchKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17743,7 +15679,6 @@ pub mod types {
                 Self::Put => f.write_str("Put"),
                 Self::Remove => f.write_str("Remove"),
                 Self::Edit => f.write_str("Edit"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -17885,19 +15820,16 @@ pub mod types {
         }
     }
     ///`PersonaFileSource`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PersonaFileSource {
         Inline,
         Stored,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PersonaFileSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Inline => f.write_str("Inline"),
                 Self::Stored => f.write_str("Stored"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -17945,12 +15877,11 @@ pub mod types {
         pub size_bytes: PersonaFileSize,
     }
     ///One file of a persona write: inline bytes, or bytes the store holds under their digest.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum PersonaFileWrite {
         InlinePersonaFile(InlinePersonaFile),
         StoredPersonaFile(StoredPersonaFile),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<InlinePersonaFile> for PersonaFileWrite {
         fn from(value: InlinePersonaFile) -> Self {
@@ -18018,10 +15949,11 @@ pub mod types {
         #[serde(rename = "tumpelMcp", skip_serializing_if = "::std::option::Option::is_none")]
         pub tumpel_mcp: ::std::option::Option<bool>,
     }
-    ///A repository's dependencies installed once by a build provider on the tenant's account, stored as
-    ///one layer. The repository, the input digest and the guest image digest are its key: every commit
+    ///A repository's dependencies installed once by a turn on one of the tenant's online Amd64 hosts,
+    ///as a turn of a session the session list leaves out, and stored as one layer: the host's snapshot
+    ///of the box. The repository, the input digest and the guest image digest are its key: every commit
     ///with the same devcontainer files and lockfiles, built on the same guest image, shares one
-    ///prebuild. A prebuild exists only once its provider accepted the job.
+    ///prebuild. A prebuild exists only once its turn is offered to a host.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct Prebuild {
         #[serde(rename = "configSource")]
@@ -18045,13 +15977,11 @@ pub mod types {
         ///The transcript of the prebuild's turn: the output of the repository's setup step.
         #[serde(rename = "logUrl")]
         pub log_url: HttpUrl,
-        ///The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, whose harness version picks the guest image, and whose name the job's subject carries.
+        ///The persona whose secret set's GITHUB_TOKEN read the inputs when the tenant has no GitHub App installation for the repository, and whose harness version picks the guest image.
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
         #[serde(rename = "prebuildId")]
         pub prebuild_id: EntityId,
-        ///The provider the start named. The prebuild runs on one of the tenant's online Amd64 hosts, as a turn of a session the session list leaves out.
-        pub provider: BuildProvider,
         ///The repository as https://github.com/<owner>/<name> in lower case, whatever form the start named it in.
         pub repository: RepositoryUrl,
         #[serde(rename = "startedAt")]
@@ -18068,17 +15998,14 @@ pub mod types {
         pub state: PrebuildBuildingState,
     }
     ///`PrebuildBuildingState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildBuildingState {
         Building,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildBuildingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Building => f.write_str("Building"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18104,19 +16031,16 @@ pub mod types {
         }
     }
     ///Where the commands a prebuild runs came from.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildConfigSource {
         RepositoryFile,
         Default,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildConfigSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RepositoryFile => f.write_str("RepositoryFile"),
                 Self::Default => f.write_str("Default"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18145,7 +16069,7 @@ pub mod types {
     ///`PrebuildConverting`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct PrebuildConverting {
-        ///The sha256 of the compressed OCI layer the job uploaded.
+        ///The sha256 of the compressed OCI layer the host stored.
         #[serde(rename = "layerDigest")]
         pub layer_digest: Sha256Digest,
         #[serde(rename = "layerSizeBytes")]
@@ -18155,17 +16079,14 @@ pub mod types {
         pub uploaded_at: ::chrono::DateTime<::chrono::FixedOffset>,
     }
     ///`PrebuildConvertingState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildConvertingState {
         Converting,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildConvertingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Converting => f.write_str("Converting"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18196,17 +16117,14 @@ pub mod types {
         pub state: PrebuildDispatchedState,
     }
     ///`PrebuildDispatchedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildDispatchedState {
         Dispatched,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildDispatchedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Dispatched => f.write_str("Dispatched"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18236,7 +16154,7 @@ pub mod types {
     pub struct PrebuildDone {
         #[serde(rename = "finishedAt")]
         pub finished_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///The sha256 of the OCI layer the provider uploaded.
+        ///The sha256 of the OCI layer the host stored.
         #[serde(rename = "layerDigest")]
         pub layer_digest: Sha256Digest,
         #[serde(rename = "layerSizeBytes")]
@@ -18258,17 +16176,14 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///`PrebuildDoneEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildDoneEventEvent {
         PrebuildDone,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildDoneEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PrebuildDone => f.write_str("PrebuildDone"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18294,17 +16209,14 @@ pub mod types {
         }
     }
     ///`PrebuildDoneState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildDoneState {
         Done,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildDoneState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Done => f.write_str("Done"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18353,17 +16265,14 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///`PrebuildFailedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildFailedEventEvent {
         PrebuildFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildFailedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PrebuildFailed => f.write_str("PrebuildFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18389,17 +16298,14 @@ pub mod types {
         }
     }
     ///`PrebuildFailedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildFailedState {
         Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildFailedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18429,7 +16335,7 @@ pub mod types {
     pub struct PrebuildFailure {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
-        ///What failed, with what the provider reported.
+        ///What failed, with what the turn reported.
         pub detail: Detail,
         ///What fixes it.
         pub fix: Detail,
@@ -18439,15 +16345,13 @@ pub mod types {
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
-    ///The phase a Failed prebuild stopped in. A provider that refuses the job refuses the start, and no prebuild exists.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    ///The phase a Failed prebuild stopped in. A start the control plane refuses stores no prebuild.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildFailurePhase {
         Dispatch,
         Build,
         Upload,
         Conversion,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildFailurePhase {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18456,7 +16360,6 @@ pub mod types {
                 Self::Build => f.write_str("Build"),
                 Self::Upload => f.write_str("Upload"),
                 Self::Conversion => f.write_str("Conversion"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18494,14 +16397,12 @@ pub mod types {
         pub fix: Detail,
     }
     ///What a preview finds wrong with a config.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildFindingCode {
         DevcontainerInvalid,
         PrebuildImageUnsupported,
         PrebuildFeaturesUnsupported,
         ToolchainMismatch,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildFindingCode {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18510,7 +16411,6 @@ pub mod types {
                 Self::PrebuildImageUnsupported => f.write_str("PrebuildImageUnsupported"),
                 Self::PrebuildFeaturesUnsupported => f.write_str("PrebuildFeaturesUnsupported"),
                 Self::ToolchainMismatch => f.write_str("ToolchainMismatch"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18538,23 +16438,8 @@ pub mod types {
             value.parse()
         }
     }
-    ///What a GitHub Actions run of the caller workflow needs to build its prebuild. The start keeps the
-    ///rest of the job's inputs out of the caller workflow, so the workflow holds only the API origin.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct PrebuildJobInputs {
-        ///The digest of the guest image the layer is built on.
-        #[serde(rename = "imageDigest")]
-        pub image_digest: Sha256Digest,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        ///A presigned GET of the guest image's root filesystem tar, valid for the dispatch and build budgets from this answer.
-        #[serde(rename = "rootfsUrl")]
-        pub rootfs_url: HttpUrl,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
     ///Why a session's files start without a prebuild's layer.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildLayerAbsence {
         BuildsPrebuild,
         HostNotAmd64,
@@ -18562,8 +16447,6 @@ pub mod types {
         NoPrebuild,
         OtherGuestImage,
         NotRecorded,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildLayerAbsence {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18574,7 +16457,6 @@ pub mod types {
                 Self::NoPrebuild => f.write_str("NoPrebuild"),
                 Self::OtherGuestImage => f.write_str("OtherGuestImage"),
                 Self::NotRecorded => f.write_str("NotRecorded"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18605,14 +16487,12 @@ pub mod types {
         }
     }
     ///A devcontainer.json lifecycle command a prebuild runs.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildLifecycleCommand {
         OnCreateCommand,
         UpdateContentCommand,
         PostCreateCommand,
         PostStartCommand,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildLifecycleCommand {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18621,7 +16501,6 @@ pub mod types {
                 Self::UpdateContentCommand => f.write_str("UpdateContentCommand"),
                 Self::PostCreateCommand => f.write_str("PostCreateCommand"),
                 Self::PostStartCommand => f.write_str("PostStartCommand"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18687,17 +16566,14 @@ pub mod types {
         pub source: PrebuildPreviewOfRepositorySource,
     }
     ///`PrebuildPreviewOfRepositorySource`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildPreviewOfRepositorySource {
         RepositoryFile,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildPreviewOfRepositorySource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RepositoryFile => f.write_str("RepositoryFile"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18801,17 +16677,14 @@ pub mod types {
         }
     }
     ///`PrebuildPreviewOfSuppliedSource`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildPreviewOfSuppliedSource {
         Supplied,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildPreviewOfSuppliedSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Supplied => f.write_str("Supplied"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18837,12 +16710,11 @@ pub mod types {
         }
     }
     ///What a preview reads: the repository's devcontainer.json, or a supplied one.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum PrebuildPreviewRequest {
         Repository(PrebuildPreviewOfRepository),
         Supplied(PrebuildPreviewOfSupplied),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<PrebuildPreviewOfRepository> for PrebuildPreviewRequest {
         fn from(value: PrebuildPreviewOfRepository) -> Self {
@@ -18855,19 +16727,16 @@ pub mod types {
         }
     }
     ///Where the devcontainer.json a preview reads came from.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildPreviewSource {
         RepositoryFile,
         Supplied,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildPreviewSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RepositoryFile => f.write_str("RepositoryFile"),
                 Self::Supplied => f.write_str("Supplied"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18899,8 +16768,6 @@ pub mod types {
         ///The persona whose secret set's GITHUB_TOKEN reads the repository when the tenant's GitHub App installation does not cover it, and whose harness version picks the guest image.
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
-        ///Recorded on the prebuild; the prebuild runs on one of the tenant's online Amd64 hosts, which builds no other prebuild.
-        pub provider: BuildProvider,
         ///Start a job even when a prebuild with the same key is stored or running; false when left out.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub rebuild: ::std::option::Option<bool>,
@@ -18908,15 +16775,13 @@ pub mod types {
         pub repository: RepositoryUrl,
     }
     ///`PrebuildState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrebuildState {
         Dispatched,
         Building,
         Converting,
         Done,
         Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18926,7 +16791,6 @@ pub mod types {
                 Self::Converting => f.write_str("Converting"),
                 Self::Done => f.write_str("Done"),
                 Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -18956,7 +16820,7 @@ pub mod types {
         }
     }
     ///Where a prebuild is, with the facts of its state: the layer once Done, the failed phase once Failed.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum PrebuildStatus {
         Dispatched(PrebuildDispatched),
@@ -18964,7 +16828,6 @@ pub mod types {
         Converting(PrebuildConverting),
         Done(PrebuildDone),
         Failed(PrebuildFailed),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<PrebuildDispatched> for PrebuildStatus {
         fn from(value: PrebuildDispatched) -> Self {
@@ -19322,40 +17185,6 @@ pub mod types {
         ///The toolchains the version pins: the guest image it targets.
         pub toolchains: ::std::vec::Vec<PrebuildTemplateToolchain>,
     }
-    ///Tells the control plane the job uploaded the layer its start recorded.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct PrebuildUploadComplete {
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///Where to PUT the layer: one PUT to `url` carrying content-length of the layer size and
-    ///x-amz-checksum-sha256 of `sha256`, the two headers the URL signs,
-    ///before `uploadExpiresAt`, the prebuild upload budget after the exchange. /opt/tumpel/prebuild.mjs
-    ///upload in the guest image asks for it and makes the PUT.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct PrebuildUploadGrant {
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        ///The layer digest the PUT is signed for.
-        pub sha256: Sha256Digest,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "uploadExpiresAt")]
-        pub upload_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        pub url: HttpUrl,
-    }
-    ///Asks for the presigned upload of a prebuild's layer: one OCI layer tar, named by its sha256 and size.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct PrebuildUploadStart {
-        #[serde(rename = "layerDigest")]
-        pub layer_digest: Sha256Digest,
-        ///At most 5 GiB, what one presigned PUT takes.
-        #[serde(rename = "layerSizeBytes")]
-        pub layer_size_bytes: ::std::num::NonZeroU64,
-        ///The tenant that started the prebuild; the dispatch hands it to the job with the prebuild id.
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
     ///A person as a member of one tenant. One principal per email across every tenant it belongs
     ///to; `tenantId` and `role` are its membership of the tenant it is read in.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -19372,19 +17201,16 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`PrincipalRole`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PrincipalRole {
         Owner,
         Member,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PrincipalRole {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Owner => f.write_str("Owner"),
                 Self::Member => f.write_str("Member"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -19432,6 +17258,7 @@ pub mod types {
         HostRevoked,
         NoHostAvailable,
         PoolExhausted,
+        HostDegraded,
         HostOffline,
         HarnessNotInCatalog,
         NoCredential,
@@ -19454,28 +17281,9 @@ pub mod types {
         ReleaseUnreadable,
         TranscriptLineUnreadable,
         ImageNotReleased,
-        NoBuildProvider,
-        BuildProviderUnavailable,
-        DispatchRefused,
         GitHubAppPermissionMissing,
-        CallerWorkflowRefused,
         RepositoryUnreadable,
         GitHubInstallationUnreadable,
-        IssuerMissing,
-        JobTokenRefused,
-        JobTokenMismatch,
-        PrebuildNotUploading,
-        #[serde(rename = "CircleCITokenRefused")]
-        CircleCiTokenRefused,
-        #[serde(rename = "CircleCIProjectMissing")]
-        CircleCiProjectMissing,
-        #[serde(rename = "CircleCIDefinitionMismatch")]
-        CircleCiDefinitionMismatch,
-        #[serde(rename = "CircleCIRefused")]
-        CircleCiRefused,
-        #[serde(rename = "CircleCIAuthorizationNotWaiting")]
-        CircleCiAuthorizationNotWaiting,
-        LayerNotUploaded,
         OwnerRequired,
         LastOwner,
         InvitationExpired,
@@ -19509,7 +17317,7 @@ pub mod types {
         UsageLimitReached,
         AboveFreeTier,
         #[serde(untagged)]
-        Unknown(::std::string::String),
+        Unrecognised(::std::string::String),
     }
     impl ::std::fmt::Display for ProblemCode {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -19525,6 +17333,7 @@ pub mod types {
                 Self::HostRevoked => f.write_str("HostRevoked"),
                 Self::NoHostAvailable => f.write_str("NoHostAvailable"),
                 Self::PoolExhausted => f.write_str("PoolExhausted"),
+                Self::HostDegraded => f.write_str("HostDegraded"),
                 Self::HostOffline => f.write_str("HostOffline"),
                 Self::HarnessNotInCatalog => f.write_str("HarnessNotInCatalog"),
                 Self::NoCredential => f.write_str("NoCredential"),
@@ -19547,23 +17356,9 @@ pub mod types {
                 Self::ReleaseUnreadable => f.write_str("ReleaseUnreadable"),
                 Self::TranscriptLineUnreadable => f.write_str("TranscriptLineUnreadable"),
                 Self::ImageNotReleased => f.write_str("ImageNotReleased"),
-                Self::NoBuildProvider => f.write_str("NoBuildProvider"),
-                Self::BuildProviderUnavailable => f.write_str("BuildProviderUnavailable"),
-                Self::DispatchRefused => f.write_str("DispatchRefused"),
                 Self::GitHubAppPermissionMissing => f.write_str("GitHubAppPermissionMissing"),
-                Self::CallerWorkflowRefused => f.write_str("CallerWorkflowRefused"),
                 Self::RepositoryUnreadable => f.write_str("RepositoryUnreadable"),
                 Self::GitHubInstallationUnreadable => f.write_str("GitHubInstallationUnreadable"),
-                Self::IssuerMissing => f.write_str("IssuerMissing"),
-                Self::JobTokenRefused => f.write_str("JobTokenRefused"),
-                Self::JobTokenMismatch => f.write_str("JobTokenMismatch"),
-                Self::PrebuildNotUploading => f.write_str("PrebuildNotUploading"),
-                Self::CircleCiTokenRefused => f.write_str("CircleCITokenRefused"),
-                Self::CircleCiProjectMissing => f.write_str("CircleCIProjectMissing"),
-                Self::CircleCiDefinitionMismatch => f.write_str("CircleCIDefinitionMismatch"),
-                Self::CircleCiRefused => f.write_str("CircleCIRefused"),
-                Self::CircleCiAuthorizationNotWaiting => f.write_str("CircleCIAuthorizationNotWaiting"),
-                Self::LayerNotUploaded => f.write_str("LayerNotUploaded"),
                 Self::OwnerRequired => f.write_str("OwnerRequired"),
                 Self::LastOwner => f.write_str("LastOwner"),
                 Self::InvitationExpired => f.write_str("InvitationExpired"),
@@ -19596,7 +17391,7 @@ pub mod types {
                 Self::RateLimited => f.write_str("RateLimited"),
                 Self::UsageLimitReached => f.write_str("UsageLimitReached"),
                 Self::AboveFreeTier => f.write_str("AboveFreeTier"),
-                Self::Unknown(ref code) => f.write_str(code),
+                Self::Unrecognised(ref code) => f.write_str(code),
             }
         }
     }
@@ -19615,6 +17410,7 @@ pub mod types {
                 "HostRevoked" => Ok(Self::HostRevoked),
                 "NoHostAvailable" => Ok(Self::NoHostAvailable),
                 "PoolExhausted" => Ok(Self::PoolExhausted),
+                "HostDegraded" => Ok(Self::HostDegraded),
                 "HostOffline" => Ok(Self::HostOffline),
                 "HarnessNotInCatalog" => Ok(Self::HarnessNotInCatalog),
                 "NoCredential" => Ok(Self::NoCredential),
@@ -19637,23 +17433,9 @@ pub mod types {
                 "ReleaseUnreadable" => Ok(Self::ReleaseUnreadable),
                 "TranscriptLineUnreadable" => Ok(Self::TranscriptLineUnreadable),
                 "ImageNotReleased" => Ok(Self::ImageNotReleased),
-                "NoBuildProvider" => Ok(Self::NoBuildProvider),
-                "BuildProviderUnavailable" => Ok(Self::BuildProviderUnavailable),
-                "DispatchRefused" => Ok(Self::DispatchRefused),
                 "GitHubAppPermissionMissing" => Ok(Self::GitHubAppPermissionMissing),
-                "CallerWorkflowRefused" => Ok(Self::CallerWorkflowRefused),
                 "RepositoryUnreadable" => Ok(Self::RepositoryUnreadable),
                 "GitHubInstallationUnreadable" => Ok(Self::GitHubInstallationUnreadable),
-                "IssuerMissing" => Ok(Self::IssuerMissing),
-                "JobTokenRefused" => Ok(Self::JobTokenRefused),
-                "JobTokenMismatch" => Ok(Self::JobTokenMismatch),
-                "PrebuildNotUploading" => Ok(Self::PrebuildNotUploading),
-                "CircleCITokenRefused" => Ok(Self::CircleCiTokenRefused),
-                "CircleCIProjectMissing" => Ok(Self::CircleCiProjectMissing),
-                "CircleCIDefinitionMismatch" => Ok(Self::CircleCiDefinitionMismatch),
-                "CircleCIRefused" => Ok(Self::CircleCiRefused),
-                "CircleCIAuthorizationNotWaiting" => Ok(Self::CircleCiAuthorizationNotWaiting),
-                "LayerNotUploaded" => Ok(Self::LayerNotUploaded),
                 "OwnerRequired" => Ok(Self::OwnerRequired),
                 "LastOwner" => Ok(Self::LastOwner),
                 "InvitationExpired" => Ok(Self::InvitationExpired),
@@ -19781,13 +17563,11 @@ pub mod types {
         pub scopes_supported: ::std::vec::Vec<ShortText>,
     }
     ///Where a pull request is on GitHub.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PullRequestState {
         Open,
         Merged,
         Closed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PullRequestState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -19795,7 +17575,6 @@ pub mod types {
                 Self::Open => f.write_str("Open"),
                 Self::Merged => f.write_str("Merged"),
                 Self::Closed => f.write_str("Closed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -20226,17 +18005,14 @@ pub mod types {
         pub kind: PutPersonaFilePatchKind,
     }
     ///`PutPersonaFilePatchKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum PutPersonaFilePatchKind {
         Put,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for PutPersonaFilePatchKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Put => f.write_str("Put"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -20272,17 +18048,14 @@ pub mod types {
         pub session_state: SessionState,
     }
     ///`RawTranscriptPageForm`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum RawTranscriptPageForm {
         Raw,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for RawTranscriptPageForm {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Raw => f.write_str("Raw"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -20800,17 +18573,14 @@ pub mod types {
         pub path: PersonaFilePath,
     }
     ///`RemovePersonaFilePatchKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum RemovePersonaFilePatchKind {
         Remove,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for RemovePersonaFilePatchKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Remove => f.write_str("Remove"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -20874,14 +18644,12 @@ pub mod types {
         pub updated_at: i64,
     }
     ///Why the box could not clone the session's repository.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum RepositoryCloneFailureCause {
         Refused,
         TimedOut,
         DirectoryNotEmpty,
         Other,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for RepositoryCloneFailureCause {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20890,7 +18658,6 @@ pub mod types {
                 Self::TimedOut => f.write_str("TimedOut"),
                 Self::DirectoryNotEmpty => f.write_str("DirectoryNotEmpty"),
                 Self::Other => f.write_str("Other"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -20919,13 +18686,11 @@ pub mod types {
         }
     }
     ///Where the GITHUB_TOKEN of a turn offer came from.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum RepositoryCredentialSource {
         GitHubApp,
         SecretSet,
         None,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for RepositoryCredentialSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20933,7 +18698,6 @@ pub mod types {
                 Self::GitHubApp => f.write_str("GitHubApp"),
                 Self::SecretSet => f.write_str("SecretSet"),
                 Self::None => f.write_str("None"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -21077,17 +18841,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`RunningTurnState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum RunningTurnState {
         Running,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for RunningTurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Running => f.write_str("Running"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -21121,14 +18882,13 @@ pub mod types {
         pub value: f64,
     }
     ///One member of a secret set, without its value. The value never leaves the control plane in a response.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SecretKey {
         SecretVariableKey(SecretVariableKey),
         ApiKeyKey(ApiKeyKey),
         SubscriptionTokenKey(SubscriptionTokenKey),
         CredentialFileKey(CredentialFileKey),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SecretVariableKey> for SecretKey {
         fn from(value: SecretVariableKey) -> Self {
@@ -21154,14 +18914,12 @@ pub mod types {
     ///SubscriptionToken is the set's credential for one provider; a session whose harness reads that
     ///provider gets it under the variable the harness catalog maps its kind to. A CredentialFile is a
     ///harness's login file, written into the box at the path the harness catalog names.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SecretKind {
         Variable,
         ApiKey,
         SubscriptionToken,
         CredentialFile,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SecretKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21170,7 +18928,6 @@ pub mod types {
                 Self::ApiKey => f.write_str("ApiKey"),
                 Self::SubscriptionToken => f.write_str("SubscriptionToken"),
                 Self::CredentialFile => f.write_str("CredentialFile"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -21199,14 +18956,13 @@ pub mod types {
         }
     }
     ///One member of a secret set update: a new value, or none to keep the value stored under its name or its previousName.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SecretMemberUpdate {
         SecretVariableUpdate(SecretVariableUpdate),
         ApiKeyUpdate(ApiKeyUpdate),
         SubscriptionTokenUpdate(SubscriptionTokenUpdate),
         CredentialFileUpdate(CredentialFileUpdate),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SecretVariableUpdate> for SecretMemberUpdate {
         fn from(value: SecretVariableUpdate) -> Self {
@@ -21407,14 +19163,13 @@ pub mod types {
         }
     }
     ///One member of a secret set with its value, written once and never read back.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SecretValue {
         SecretVariableValue(SecretVariableValue),
         ApiKeyValue(ApiKeyValue),
         SubscriptionTokenValue(SubscriptionTokenValue),
         CredentialFileValue(CredentialFileValue),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SecretVariableValue> for SecretValue {
         fn from(value: SecretVariableValue) -> Self {
@@ -21450,17 +19205,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`SecretVariableKeyKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SecretVariableKeyKind {
         Variable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SecretVariableKeyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Variable => f.write_str("Variable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -21492,17 +19244,14 @@ pub mod types {
         pub name: SecretName,
     }
     ///`SecretVariableMemberKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SecretVariableMemberKind {
         Variable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SecretVariableMemberKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Variable => f.write_str("Variable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -21540,17 +19289,14 @@ pub mod types {
         pub value: ::std::option::Option<SecretText>,
     }
     ///`SecretVariableUpdateKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SecretVariableUpdateKind {
         Variable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SecretVariableUpdateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Variable => f.write_str("Variable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -21583,17 +19329,14 @@ pub mod types {
         pub value: SecretText,
     }
     ///`SecretVariableValueKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SecretVariableValueKind {
         Variable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SecretVariableValueKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Variable => f.write_str("Variable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -21732,17 +19475,14 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///`SessionArchivedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SessionArchivedEventEvent {
         SessionArchived,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SessionArchivedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SessionArchived => f.write_str("SessionArchived"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -21781,17 +19521,14 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///`SessionFailedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SessionFailedEventEvent {
         SessionFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SessionFailedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SessionFailed => f.write_str("SessionFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -21833,17 +19570,14 @@ pub mod types {
         pub turn_id: EntityId,
     }
     ///`SessionIdleEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SessionIdleEventEvent {
         SessionIdle,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SessionIdleEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SessionIdle => f.write_str("SessionIdle"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -21892,17 +19626,14 @@ pub mod types {
         pub title: Summary,
     }
     ///`SessionIssueOriginKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SessionIssueOriginKind {
         Issue,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SessionIssueOriginKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Issue => f.write_str("Issue"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -21928,12 +19659,11 @@ pub mod types {
         }
     }
     ///`SessionOrigin`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SessionOrigin {
         PromptOrigin(SessionPromptOrigin),
         IssueOrigin(SessionIssueOrigin),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SessionPromptOrigin> for SessionOrigin {
         fn from(value: SessionPromptOrigin) -> Self {
@@ -21946,12 +19676,11 @@ pub mod types {
         }
     }
     ///`SessionPrebuildLayer`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SessionPrebuildLayer {
         Stored(SessionPrebuildLayerStored),
         Absent(SessionPrebuildLayerAbsent),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SessionPrebuildLayerStored> for SessionPrebuildLayer {
         fn from(value: SessionPrebuildLayerStored) -> Self {
@@ -21971,17 +19700,14 @@ pub mod types {
         pub reason: PrebuildLayerAbsence,
     }
     ///`SessionPrebuildLayerAbsentLayer`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SessionPrebuildLayerAbsentLayer {
         None,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SessionPrebuildLayerAbsentLayer {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::None => f.write_str("None"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -22017,17 +19743,14 @@ pub mod types {
         pub prebuild_id: EntityId,
     }
     ///`SessionPrebuildLayerStoredLayer`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SessionPrebuildLayerStoredLayer {
         Prebuild,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SessionPrebuildLayerStoredLayer {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Prebuild => f.write_str("Prebuild"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -22058,17 +19781,14 @@ pub mod types {
         pub kind: SessionPromptOriginKind,
     }
     ///`SessionPromptOriginKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SessionPromptOriginKind {
         Prompt,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SessionPromptOriginKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Prompt => f.write_str("Prompt"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -22127,13 +19847,12 @@ pub mod types {
         pub tags: ::std::vec::Vec<SessionTag>,
     }
     ///Who started a session: a person, a turn of another session or a trigger. What the first prompt came from is SessionOrigin.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SessionStartedBy {
         PersonOrigin(PersonOrigin),
         TurnOrigin(TurnOrigin),
         TriggerOrigin(TriggerOrigin),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<PersonOrigin> for SessionStartedBy {
         fn from(value: PersonOrigin) -> Self {
@@ -22151,7 +19870,7 @@ pub mod types {
         }
     }
     ///`SessionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SessionState {
         Starting,
         Idle,
@@ -22160,8 +19879,6 @@ pub mod types {
         Stopped,
         Archived,
         Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SessionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -22173,7 +19890,6 @@ pub mod types {
                 Self::Stopped => f.write_str("Stopped"),
                 Self::Archived => f.write_str("Archived"),
                 Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -22218,17 +19934,14 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///`SessionStoppedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SessionStoppedEventEvent {
         SessionStopped,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SessionStoppedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SessionStopped => f.write_str("SessionStopped"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -22523,17 +20236,14 @@ pub mod types {
         pub uid: i64,
     }
     ///`SnapshotDirectoryEntryKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SnapshotDirectoryEntryKind {
         Directory,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotDirectoryEntryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Directory => f.write_str("Directory"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -22628,7 +20338,7 @@ pub mod types {
         }
     }
     ///`SnapshotEntry`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SnapshotEntry {
         FileEntry(SnapshotFileEntry),
@@ -22636,7 +20346,6 @@ pub mod types {
         OpaqueDirectoryEntry(SnapshotOpaqueDirectoryEntry),
         SymlinkEntry(SnapshotSymlinkEntry),
         WhiteoutEntry(SnapshotWhiteoutEntry),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SnapshotFileEntry> for SnapshotEntry {
         fn from(value: SnapshotFileEntry) -> Self {
@@ -22756,17 +20465,14 @@ pub mod types {
         pub state: SnapshotFailureState,
     }
     ///`SnapshotFailureState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SnapshotFailureState {
         Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotFailureState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -22808,17 +20514,14 @@ pub mod types {
         pub uid: i64,
     }
     ///`SnapshotFileEntryKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SnapshotFileEntryKind {
         File,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotFileEntryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::File => f.write_str("File"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -22935,17 +20638,14 @@ pub mod types {
         pub uid: i64,
     }
     ///`SnapshotOpaqueDirectoryEntryKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SnapshotOpaqueDirectoryEntryKind {
         OpaqueDirectory,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotOpaqueDirectoryEntryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::OpaqueDirectory => f.write_str("OpaqueDirectory"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -23040,12 +20740,11 @@ pub mod types {
         }
     }
     ///`SnapshotOutcome`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SnapshotOutcome {
         Stored(SnapshotStored),
         Failure(SnapshotFailure),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SnapshotStored> for SnapshotOutcome {
         fn from(value: SnapshotStored) -> Self {
@@ -23073,17 +20772,14 @@ pub mod types {
         pub uploaded_bytes: i64,
     }
     ///`SnapshotStoredState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SnapshotStoredState {
         Stored,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotStoredState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Stored => f.write_str("Stored"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -23123,17 +20819,14 @@ pub mod types {
         pub uid: i64,
     }
     ///`SnapshotSymlinkEntryKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SnapshotSymlinkEntryKind {
         Symlink,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotSymlinkEntryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Symlink => f.write_str("Symlink"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -23310,17 +21003,14 @@ pub mod types {
         pub uid: i64,
     }
     ///`SnapshotWhiteoutEntryKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SnapshotWhiteoutEntryKind {
         Whiteout,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotWhiteoutEntryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Whiteout => f.write_str("Whiteout"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -23446,17 +21136,14 @@ pub mod types {
         pub url: ConnectorUrl,
     }
     ///`StaticConnectorAuth`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum StaticConnectorAuth {
         Static,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for StaticConnectorAuth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Static => f.write_str("Static"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -23512,13 +21199,11 @@ pub mod types {
         pub prompt: Prompt,
     }
     ///`SteerState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SteerState {
         Pending,
         Delivered,
         TurnEnded,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SteerState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23526,7 +21211,6 @@ pub mod types {
                 Self::Pending => f.write_str("Pending"),
                 Self::Delivered => f.write_str("Delivered"),
                 Self::TurnEnded => f.write_str("TurnEnded"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -23571,19 +21255,16 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///Why a stop returned its session to Idle with its box kept.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum StopFailureReason {
         BoxDirty,
         NotAnswered,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for StopFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::BoxDirty => f.write_str("BoxDirty"),
                 Self::NotAnswered => f.write_str("NotAnswered"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -23688,17 +21369,14 @@ pub mod types {
         pub source: StoredConfigFileSource,
     }
     ///`StoredConfigFileSource`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum StoredConfigFileSource {
         Stored,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for StoredConfigFileSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Stored => f.write_str("Stored"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -23750,17 +21428,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`StoredPersonaFileReadSource`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum StoredPersonaFileReadSource {
         Stored,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for StoredPersonaFileReadSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Stored => f.write_str("Stored"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -23786,17 +21461,14 @@ pub mod types {
         }
     }
     ///`StoredPersonaFileSource`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum StoredPersonaFileSource {
         Stored,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for StoredPersonaFileSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Stored => f.write_str("Stored"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -23830,17 +21502,14 @@ pub mod types {
         pub trigger_id: EntityId,
     }
     ///`StoredTriggerTestKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum StoredTriggerTestKind {
         Stored,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for StoredTriggerTestKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Stored => f.write_str("Stored"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -23879,13 +21548,12 @@ pub mod types {
     ///crew records one of the listed events. The crew is every other session that carries every crew
     ///tag at the moment of the event and holds no Active subscription itself. Each delivery turn holds
     ///the plan and the events after the cursor, one JSON line each, and works toward the goal.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum Subscription {
         ActiveSubscription(ActiveSubscription),
         PausedSubscription(PausedSubscription),
         EndedSubscription(EndedSubscription),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ActiveSubscription> for Subscription {
         fn from(value: ActiveSubscription) -> Self {
@@ -23958,14 +21626,12 @@ pub mod types {
         pub session_id: EntityId,
     }
     ///Why a subscription is Ended.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionEndReason {
         SessionArchived,
         SessionFailed,
         Expired,
         GoalMet,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionEndReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23974,7 +21640,6 @@ pub mod types {
                 Self::SessionFailed => f.write_str("SessionFailed"),
                 Self::Expired => f.write_str("Expired"),
                 Self::GoalMet => f.write_str("GoalMet"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24020,17 +21685,14 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///`SubscriptionEndedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionEndedEventEvent {
         SubscriptionEnded,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionEndedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24056,7 +21718,7 @@ pub mod types {
         }
     }
     ///An event type a subscription reacts to: one whose event names a session.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionEventType {
         TurnStarted,
         TurnCompleted,
@@ -24067,8 +21729,6 @@ pub mod types {
         SessionArchived,
         SubscriptionPaused,
         SubscriptionEnded,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionEventType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24082,7 +21742,6 @@ pub mod types {
                 Self::SessionArchived => f.write_str("SessionArchived"),
                 Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
                 Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24190,14 +21849,13 @@ pub mod types {
         }
     }
     ///Why a subscription is Paused.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SubscriptionPauseReason {
         ByRequest(SubscriptionPausedByRequest),
         DeliveryFailed(SubscriptionPausedDeliveryFailed),
         CrewFailing(SubscriptionPausedCrewFailing),
         CreditExhausted(SubscriptionPausedCreditExhausted),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SubscriptionPausedByRequest> for SubscriptionPauseReason {
         fn from(value: SubscriptionPausedByRequest) -> Self {
@@ -24226,17 +21884,14 @@ pub mod types {
         pub message: SubscriptionPauseMessage,
     }
     ///`SubscriptionPausedByRequestKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionPausedByRequestKind {
         ByRequest,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionPausedByRequestKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ByRequest => f.write_str("ByRequest"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24269,17 +21924,14 @@ pub mod types {
         pub turn_id: EntityId,
     }
     ///`SubscriptionPausedCreditExhaustedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionPausedCreditExhaustedKind {
         CreditExhausted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionPausedCreditExhaustedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CreditExhausted => f.write_str("CreditExhausted"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24310,17 +21962,14 @@ pub mod types {
         pub kind: SubscriptionPausedCrewFailingKind,
     }
     ///`SubscriptionPausedCrewFailingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionPausedCrewFailingKind {
         CrewFailing,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionPausedCrewFailingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CrewFailing => f.write_str("CrewFailing"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24353,17 +22002,14 @@ pub mod types {
         pub turn_id: EntityId,
     }
     ///`SubscriptionPausedDeliveryFailedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionPausedDeliveryFailedKind {
         DeliveryFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionPausedDeliveryFailedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeliveryFailed => f.write_str("DeliveryFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24406,17 +22052,14 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///`SubscriptionPausedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionPausedEventEvent {
         SubscriptionPaused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionPausedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24442,13 +22085,11 @@ pub mod types {
         }
     }
     ///`SubscriptionState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionState {
         Active,
         Paused,
         Ended,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24456,7 +22097,6 @@ pub mod types {
                 Self::Active => f.write_str("Active"),
                 Self::Paused => f.write_str("Paused"),
                 Self::Ended => f.write_str("Ended"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24496,17 +22136,14 @@ pub mod types {
         pub updated_at: i64,
     }
     ///`SubscriptionTokenKeyKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionTokenKeyKind {
         SubscriptionToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionTokenKeyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SubscriptionToken => f.write_str("SubscriptionToken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24542,17 +22179,14 @@ pub mod types {
         pub provider: ModelProvider,
     }
     ///`SubscriptionTokenMemberKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionTokenMemberKind {
         SubscriptionToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionTokenMemberKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SubscriptionToken => f.write_str("SubscriptionToken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24594,17 +22228,14 @@ pub mod types {
         pub value: ::std::option::Option<SecretText>,
     }
     ///`SubscriptionTokenUpdateKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionTokenUpdateKind {
         SubscriptionToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionTokenUpdateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SubscriptionToken => f.write_str("SubscriptionToken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24641,17 +22272,14 @@ pub mod types {
         pub value: SecretText,
     }
     ///`SubscriptionTokenValueKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionTokenValueKind {
         SubscriptionToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionTokenValueKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SubscriptionToken => f.write_str("SubscriptionToken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24856,7 +22484,7 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///The named ways `tumpel-supervisor run` stops.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorFailure {
         NotEnrolled,
         ChannelStateLost,
@@ -24868,8 +22496,6 @@ pub mod types {
         ChannelUnreachable,
         FrameUndelivered,
         RateLimited,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorFailure {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24884,7 +22510,6 @@ pub mod types {
                 Self::ChannelUnreachable => f.write_str("ChannelUnreachable"),
                 Self::FrameUndelivered => f.write_str("FrameUndelivered"),
                 Self::RateLimited => f.write_str("RateLimited"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -24940,9 +22565,15 @@ pub mod types {
     pub struct SupervisorHandoverBox {
         #[serde(rename = "boxId")]
         pub box_id: EntityId,
+        ///What the box does after each turn, from the offer that booted it; the successor tears an Off box down and keeps a Warm or Auto one as BoxRetention defines.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         #[serde(rename = "credentialFile", skip_serializing_if = "::std::option::Option::is_none")]
         pub credential_file: ::std::option::Option<CredentialText>,
         pub dirty: bool,
+        ///The idle time an Auto box has left at the handover, as BoxRetention defines, counting down from the offer's idleSeconds as turnMilliseconds does for the turn, so an update does not reset it.
+        #[serde(rename = "idleMilliseconds")]
+        pub idle_milliseconds: i64,
         pub image: SupervisorHandoverImage,
         pub machine: SupervisorHandoverMachine,
         pub queued: ::std::vec::Vec<SupervisorHandoverCommand>,
@@ -24953,12 +22584,11 @@ pub mod types {
         pub tap_index: i32,
     }
     ///What a handed box was doing: paused, or running a turn.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SupervisorHandoverBoxState {
         Warm(SupervisorHandoverWarm),
         Turn(SupervisorHandoverTurn),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SupervisorHandoverWarm> for SupervisorHandoverBoxState {
         fn from(value: SupervisorHandoverWarm) -> Self {
@@ -24971,13 +22601,12 @@ pub mod types {
         }
     }
     ///A command that reached a handed box's session while its turn was parked: a snapshot, a teardown or a discard of the box.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SupervisorHandoverCommand {
         Snapshot(SupervisorHandoverSnapshot),
         Teardown(SupervisorHandoverTeardown),
         Discard(SupervisorHandoverDiscard),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SupervisorHandoverSnapshot> for SupervisorHandoverCommand {
         fn from(value: SupervisorHandoverSnapshot) -> Self {
@@ -25000,17 +22629,14 @@ pub mod types {
         pub kind: SupervisorHandoverDiscardKind,
     }
     ///`SupervisorHandoverDiscardKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorHandoverDiscardKind {
         Discard,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverDiscardKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Discard => f.write_str("Discard"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -25042,17 +22668,14 @@ pub mod types {
         pub manifest: GuestImageManifest,
     }
     ///`SupervisorHandoverFullImageKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorHandoverFullImageKind {
         Full,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverFullImageKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Full => f.write_str("Full"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -25078,12 +22701,11 @@ pub mod types {
         }
     }
     ///The image a handed box booted from, so the new binary holds it in its cache and reads its harness.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SupervisorHandoverImage {
         FullImage(SupervisorHandoverFullImage),
         LayeredImage(SupervisorHandoverLayeredImage),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SupervisorHandoverFullImage> for SupervisorHandoverImage {
         fn from(value: SupervisorHandoverFullImage) -> Self {
@@ -25105,17 +22727,14 @@ pub mod types {
         pub layer_path: PathText,
     }
     ///`SupervisorHandoverLayeredImageKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorHandoverLayeredImageKind {
         Layered,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverLayeredImageKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Layered => f.write_str("Layered"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -25176,17 +22795,14 @@ pub mod types {
         pub upload_url: UrlText,
     }
     ///`SupervisorHandoverSnapshotKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorHandoverSnapshotKind {
         Snapshot,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverSnapshotKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Snapshot => f.write_str("Snapshot"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -25217,17 +22833,14 @@ pub mod types {
         pub kind: SupervisorHandoverTeardownKind,
     }
     ///`SupervisorHandoverTeardownKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorHandoverTeardownKind {
         Teardown,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverTeardownKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Teardown => f.write_str("Teardown"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -25281,17 +22894,14 @@ pub mod types {
         pub reason: TurnFailureReason,
     }
     ///`SupervisorHandoverTurnKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorHandoverTurnKind {
         Turn,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverTurnKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Turn => f.write_str("Turn"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -25316,27 +22926,20 @@ pub mod types {
             value.parse()
         }
     }
-    ///A paused box. It stays paused until BoxTeardown or BoxDiscard names it. A supervisor writes
-    ///`warmMilliseconds` as 0 and `expired` as false and ignores both on read.
+    ///A paused box. It stays as BoxRetention defines; the idle time it has left is the box's idleMilliseconds.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorHandoverWarm {
-        pub expired: bool,
         pub kind: SupervisorHandoverWarmKind,
-        #[serde(rename = "warmMilliseconds")]
-        pub warm_milliseconds: i64,
     }
     ///`SupervisorHandoverWarmKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorHandoverWarmKind {
         Warm,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverWarmKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Warm => f.write_str("Warm"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -25701,7 +23304,7 @@ pub mod types {
     ///`memoryMib` is the memory of a box whose TurnOffer names no boxMemoryMib, BoxMemoryLimit.DefaultMib by default.
     ///`overlayMib` is the disk of a box whose TurnOffer names no boxDiskMib, 32768 by default; the drive
     ///is a sparse file, so the host's disk holds only what the box wrote.
-    ///A paused box stays until BoxTeardown or BoxDiscard names it, and a box that does not fit is
+    ///A paused box stays as BoxRetention defines or until BoxTeardown or BoxDiscard names it, and a box that does not fit is
     ///refused PoolExhausted without touching another box.
     ///`heartbeatIntervalSeconds` is how often the supervisor sends a Heartbeat after Welcome, 10 by
     ///default; it matches heartbeatIntervalSeconds of the control plane, whose heartbeatDeadlineSeconds
@@ -25945,7 +23548,7 @@ pub mod types {
         }
     }
     ///Why a supervisor update stopped. Every one but SupervisorUpdateRolledBack leaves the running binary in place.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorUpdateFailureReason {
         SupervisorUpdateFetchFailed,
         SupervisorUpdateChecksumMismatch,
@@ -25954,8 +23557,6 @@ pub mod types {
         SupervisorUpdateIdleTimedOut,
         SupervisorUpdateSwapFailed,
         SupervisorUpdateRolledBack,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdateFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -25967,7 +23568,6 @@ pub mod types {
                 Self::SupervisorUpdateIdleTimedOut => f.write_str("SupervisorUpdateIdleTimedOut"),
                 Self::SupervisorUpdateSwapFailed => f.write_str("SupervisorUpdateSwapFailed"),
                 Self::SupervisorUpdateRolledBack => f.write_str("SupervisorUpdateRolledBack"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -26021,17 +23621,14 @@ pub mod types {
         pub state: SupervisorUpdateFailureReportedState,
     }
     ///`SupervisorUpdateFailureReportedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorUpdateFailureReportedState {
         Reported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdateFailureReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Reported => f.write_str("Reported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -26057,12 +23654,11 @@ pub mod types {
         }
     }
     ///`SupervisorUpdateLatestFailure`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SupervisorUpdateLatestFailure {
         NotReported(SupervisorUpdateNotReported),
         FailureReported(SupervisorUpdateFailureReported),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SupervisorUpdateNotReported> for SupervisorUpdateLatestFailure {
         fn from(value: SupervisorUpdateNotReported) -> Self {
@@ -26075,12 +23671,11 @@ pub mod types {
         }
     }
     ///`SupervisorUpdateLatestStep`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SupervisorUpdateLatestStep {
         NotReported(SupervisorUpdateNotReported),
         StepReported(SupervisorUpdateStepReported),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<SupervisorUpdateNotReported> for SupervisorUpdateLatestStep {
         fn from(value: SupervisorUpdateNotReported) -> Self {
@@ -26098,17 +23693,14 @@ pub mod types {
         pub state: SupervisorUpdateNotReportedState,
     }
     ///`SupervisorUpdateNotReportedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorUpdateNotReportedState {
         NotReported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdateNotReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotReported => f.write_str("NotReported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -26153,7 +23745,7 @@ pub mod types {
     ///box, Restarting swaps the binaries, parks every running turn and execs the new one, which takes
     ///over the running boxes, and Online is the new binary reaching Welcome. WaitingForIdle is what supervisors before the idle claim send between DryRunning and
     ///Restarting; the control plane accepts it and records nothing.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorUpdatePhase {
         Fetching,
         DryRunning,
@@ -26161,8 +23753,6 @@ pub mod types {
         WaitingForIdle,
         Restarting,
         Online,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdatePhase {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26173,7 +23763,6 @@ pub mod types {
                 Self::WaitingForIdle => f.write_str("WaitingForIdle"),
                 Self::Restarting => f.write_str("Restarting"),
                 Self::Online => f.write_str("Online"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -26306,17 +23895,14 @@ pub mod types {
         pub step: SupervisorUpdateStepReport,
     }
     ///`SupervisorUpdateStepReportedState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SupervisorUpdateStepReportedState {
         Reported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdateStepReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Reported => f.write_str("Reported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -26354,64 +23940,6 @@ pub mod types {
         #[serde(rename = "updatedAt")]
         pub updated_at: i64,
     }
-    ///`TenantApiAddCircleCiProjectInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiAddCircleCiProjectInput {
-        pub binding: TenantApiCircleCiBinding,
-        pub now: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiAddCircleCiProjectRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiAddCircleCiProjectRequest {
-        pub input: TenantApiAddCircleCiProjectInput,
-        pub operation: TenantApiAddCircleCiProjectRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiAddCircleCiProjectRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiAddCircleCiProjectRequestOperation {
-        #[serde(rename = "addCircleCIProject")]
-        AddCircleCiProject,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiAddCircleCiProjectRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::AddCircleCiProject => f.write_str("addCircleCIProject"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiAddCircleCiProjectRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "addCircleCIProject" => Ok(Self::AddCircleCiProject),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiAddCircleCiProjectRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiAddCircleCiProjectRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiAddCircleCiProjectResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiAddCircleCiProjectResult {
-        pub project: CircleCiProject,
-    }
     ///`TenantApiApplyConfigInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiApplyConfigInput {
@@ -26429,18 +23957,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiApplyConfigRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiApplyConfigRequestOperation {
         #[serde(rename = "applyConfig")]
         ApplyConfig,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiApplyConfigRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ApplyConfig => f.write_str("applyConfig"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -26477,7 +24002,6 @@ pub mod types {
         Applied(TenantApiConfigApplied),
         Conflict(TenantApiConfigConflict),
         ResourceDeleted(TenantApiConfigResourceDeleted),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConfigApplied> for TenantApiApplyConfigResultApplied {
         fn from(value: TenantApiConfigApplied) -> Self {
@@ -26512,18 +24036,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiArchiveSessionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiArchiveSessionRequestOperation {
         #[serde(rename = "archiveSession")]
         ArchiveSession,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiArchiveSessionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ArchiveSession => f.write_str("archiveSession"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -26560,7 +24081,6 @@ pub mod types {
         ArchivedOk(TenantApiSessionArchivedOk),
         NotFound(TenantApiSessionNotFound),
         NotStopped(TenantApiSessionNotStopped),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionArchivedOk> for TenantApiArchiveSessionResultArchived {
         fn from(value: TenantApiSessionArchivedOk) -> Self {
@@ -26577,65 +24097,20 @@ pub mod types {
             Self::NotStopped(value)
         }
     }
-    ///`TenantApiAuthorizationInvalid`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiAuthorizationInvalid {
-        pub detail: Detail,
-        pub kind: TenantApiAuthorizationInvalidKind,
-    }
-    ///`TenantApiAuthorizationInvalidKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiAuthorizationInvalidKind {
-        Invalid,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiAuthorizationInvalidKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Invalid => f.write_str("Invalid"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiAuthorizationInvalidKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Invalid" => Ok(Self::Invalid),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiAuthorizationInvalidKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiAuthorizationInvalidKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiAuthorizationNoSecretSet`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiAuthorizationNoSecretSet {
         pub kind: TenantApiAuthorizationNoSecretSetKind,
     }
     ///`TenantApiAuthorizationNoSecretSetKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiAuthorizationNoSecretSetKind {
         NoSecretSet,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiAuthorizationNoSecretSetKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NoSecretSet => f.write_str("NoSecretSet"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -26666,17 +24141,14 @@ pub mod types {
         pub kind: TenantApiAuthorizationNotFoundKind,
     }
     ///`TenantApiAuthorizationNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiAuthorizationNotFoundKind {
         NotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiAuthorizationNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotFound => f.write_str("NotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -26708,17 +24180,14 @@ pub mod types {
         pub kind: TenantApiAuthorizationNotWaitingKind,
     }
     ///`TenantApiAuthorizationNotWaitingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiAuthorizationNotWaitingKind {
         NotWaiting,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiAuthorizationNotWaitingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotWaiting => f.write_str("NotWaiting"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -26750,17 +24219,14 @@ pub mod types {
         pub name: ShortText,
     }
     ///`TenantApiAuthorizationOtherCredentialKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiAuthorizationOtherCredentialKind {
         OtherCredential,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiAuthorizationOtherCredentialKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::OtherCredential => f.write_str("OtherCredential"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -26785,264 +24251,11 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiBindCircleCiUploadJobInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindCircleCiUploadJobInput {
-        pub now: i64,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        pub upload: TenantApiCircleCiUploadJob,
-    }
-    ///`TenantApiBindCircleCiUploadJobRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindCircleCiUploadJobRequest {
-        pub input: TenantApiBindCircleCiUploadJobInput,
-        pub operation: TenantApiBindCircleCiUploadJobRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiBindCircleCiUploadJobRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiBindCircleCiUploadJobRequestOperation {
-        #[serde(rename = "bindCircleCIUploadJob")]
-        BindCircleCiUploadJob,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiBindCircleCiUploadJobRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::BindCircleCiUploadJob => f.write_str("bindCircleCIUploadJob"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiBindCircleCiUploadJobRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "bindCircleCIUploadJob" => Ok(Self::BindCircleCiUploadJob),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiBindCircleCiUploadJobRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiBindCircleCiUploadJobRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiBindCircleCiUploadJobResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindCircleCiUploadJobResult {
-        pub bound: TenantApiBindCircleCiUploadJobResultBound,
-    }
-    ///`TenantApiBindCircleCiUploadJobResultBound`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiBindCircleCiUploadJobResultBound {
-        JobBoundOk(TenantApiCircleCiJobBoundOk),
-        JobOther(TenantApiCircleCiJobOther),
-        RevisionMoved(TenantApiCircleCiRevisionMoved),
-        JobRefused(TenantApiCircleCiJobRefused),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiCircleCiJobBoundOk> for TenantApiBindCircleCiUploadJobResultBound {
-        fn from(value: TenantApiCircleCiJobBoundOk) -> Self {
-            Self::JobBoundOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiJobOther> for TenantApiBindCircleCiUploadJobResultBound {
-        fn from(value: TenantApiCircleCiJobOther) -> Self {
-            Self::JobOther(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiRevisionMoved> for TenantApiBindCircleCiUploadJobResultBound {
-        fn from(value: TenantApiCircleCiRevisionMoved) -> Self {
-            Self::RevisionMoved(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiJobRefused> for TenantApiBindCircleCiUploadJobResultBound {
-        fn from(value: TenantApiCircleCiJobRefused) -> Self {
-            Self::JobRefused(value)
-        }
-    }
-    ///`TenantApiBindJobRunInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindJobRunInput {
-        pub now: i64,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "runId")]
-        pub run_id: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiBindJobRunRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindJobRunRequest {
-        pub input: TenantApiBindJobRunInput,
-        pub operation: TenantApiBindJobRunRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiBindJobRunRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiBindJobRunRequestOperation {
-        #[serde(rename = "bindJobRun")]
-        BindJobRun,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiBindJobRunRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::BindJobRun => f.write_str("bindJobRun"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiBindJobRunRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "bindJobRun" => Ok(Self::BindJobRun),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiBindJobRunRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiBindJobRunRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiBindJobRunResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiBindJobRunResult {
-        pub bound: TenantApiBindJobRunResultBound,
-    }
-    ///`TenantApiBindJobRunResultBound`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiBindJobRunResultBound {
-        BoundOk(TenantApiJobRunBoundOk),
-        Other(TenantApiJobRunOther),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiJobRunBoundOk> for TenantApiBindJobRunResultBound {
-        fn from(value: TenantApiJobRunBoundOk) -> Self {
-            Self::BoundOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiJobRunOther> for TenantApiBindJobRunResultBound {
-        fn from(value: TenantApiJobRunOther) -> Self {
-            Self::Other(value)
-        }
-    }
     ///`TenantApiByteRange`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiByteRange {
         pub length: i64,
         pub offset: i64,
-    }
-    ///`TenantApiCallerWorkflowConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCallerWorkflowConnected {
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: ShortText,
-        pub kind: TenantApiCallerWorkflowConnectedKind,
-    }
-    ///`TenantApiCallerWorkflowConnectedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCallerWorkflowConnectedKind {
-        Connected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCallerWorkflowConnectedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Connected => f.write_str("Connected"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCallerWorkflowConnectedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Connected" => Ok(Self::Connected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCallerWorkflowConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCallerWorkflowConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCallerWorkflowNotConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCallerWorkflowNotConnected {
-        pub kind: TenantApiCallerWorkflowNotConnectedKind,
-    }
-    ///`TenantApiCallerWorkflowNotConnectedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCallerWorkflowNotConnectedKind {
-        NotConnected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCallerWorkflowNotConnectedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConnected => f.write_str("NotConnected"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCallerWorkflowNotConnectedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConnected" => Ok(Self::NotConnected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCallerWorkflowNotConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCallerWorkflowNotConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
     }
     ///`TenantApiCancelTurnInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -27064,18 +24277,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiCancelTurnRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCancelTurnRequestOperation {
         #[serde(rename = "cancelTurn")]
         CancelTurn,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCancelTurnRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CancelTurn => f.write_str("cancelTurn"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -27112,7 +24322,6 @@ pub mod types {
         CancelledOk(TenantApiTurnCancelledOk),
         NotFound(TenantApiTurnNotFound),
         NotWaiting(TenantApiTurnNotWaiting),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTurnCancelledOk> for TenantApiCancelTurnResultCancelled {
         fn from(value: TenantApiTurnCancelledOk) -> Self {
@@ -27138,17 +24347,14 @@ pub mod types {
         pub turn_id: EntityId,
     }
     ///`TenantApiCancelUnspokenKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCancelUnspokenKind {
         CancelUnspoken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCancelUnspokenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CancelUnspoken => f.write_str("CancelUnspoken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -27173,1295 +24379,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiChooseCircleCiOrganizationInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiChooseCircleCiOrganizationInput {
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-        pub now: i64,
-        #[serde(rename = "organizationId")]
-        pub organization_id: ShortText,
-        #[serde(rename = "principalId")]
-        pub principal_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiChooseCircleCiOrganizationRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiChooseCircleCiOrganizationRequest {
-        pub input: TenantApiChooseCircleCiOrganizationInput,
-        pub operation: TenantApiChooseCircleCiOrganizationRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiChooseCircleCiOrganizationRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiChooseCircleCiOrganizationRequestOperation {
-        #[serde(rename = "chooseCircleCIOrganization")]
-        ChooseCircleCiOrganization,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiChooseCircleCiOrganizationRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ChooseCircleCiOrganization => f.write_str("chooseCircleCIOrganization"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiChooseCircleCiOrganizationRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "chooseCircleCIOrganization" => Ok(Self::ChooseCircleCiOrganization),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiChooseCircleCiOrganizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiChooseCircleCiOrganizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiChooseCircleCiOrganizationResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiChooseCircleCiOrganizationResult {
-        pub stepped: TenantApiChooseCircleCiOrganizationResultStepped,
-    }
-    ///`TenantApiChooseCircleCiOrganizationResultStepped`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiChooseCircleCiOrganizationResultStepped {
-        CircleCiAuthorizationSteppedOk(TenantApiCircleCiAuthorizationSteppedOk),
-        AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        AuthorizationNotWaiting(TenantApiAuthorizationNotWaiting),
-        AuthorizationInvalid(TenantApiAuthorizationInvalid),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationSteppedOk>
-        for TenantApiChooseCircleCiOrganizationResultStepped
-    {
-        fn from(value: TenantApiCircleCiAuthorizationSteppedOk) -> Self {
-            Self::CircleCiAuthorizationSteppedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotFound> for TenantApiChooseCircleCiOrganizationResultStepped {
-        fn from(value: TenantApiAuthorizationNotFound) -> Self {
-            Self::AuthorizationNotFound(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotWaiting> for TenantApiChooseCircleCiOrganizationResultStepped {
-        fn from(value: TenantApiAuthorizationNotWaiting) -> Self {
-            Self::AuthorizationNotWaiting(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationInvalid> for TenantApiChooseCircleCiOrganizationResultStepped {
-        fn from(value: TenantApiAuthorizationInvalid) -> Self {
-            Self::AuthorizationInvalid(value)
-        }
-    }
-    ///`TenantApiCircleCiAuthorizationDeadline`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationDeadline {
-        pub at: i64,
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-    }
-    ///`TenantApiCircleCiAuthorizationDeadlineReachedInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationDeadlineReachedInput {
-        pub deadline: TenantApiCircleCiAuthorizationDeadline,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiCircleCiAuthorizationDeadlineReachedRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationDeadlineReachedRequest {
-        pub input: TenantApiCircleCiAuthorizationDeadlineReachedInput,
-        pub operation: TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation {
-        #[serde(rename = "circleCIAuthorizationDeadlineReached")]
-        CircleCiAuthorizationDeadlineReached,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiAuthorizationDeadlineReached => f.write_str("circleCIAuthorizationDeadlineReached"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIAuthorizationDeadlineReached" => Ok(Self::CircleCiAuthorizationDeadlineReached),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiAuthorizationDeadlineReachedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiAuthorizationDeadlineReachedResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiCircleCiAuthorizationDeadlineReachedResult(
-        pub ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-    );
-    impl ::std::ops::Deref for TenantApiCircleCiAuthorizationDeadlineReachedResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationDeadlineReachedResult>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiCircleCiAuthorizationDeadlineReachedResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiCircleCiAuthorizationDeadlineReachedResult
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///`TenantApiCircleCiAuthorizationStartedOk`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationStartedOk {
-        pub authorization: CircleCiAuthorization,
-        pub kind: TenantApiCircleCiAuthorizationStartedOkKind,
-    }
-    ///`TenantApiCircleCiAuthorizationStartedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiAuthorizationStartedOkKind {
-        Started,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiAuthorizationStartedOkKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Started => f.write_str("Started"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiAuthorizationStartedOkKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Started" => Ok(Self::Started),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiAuthorizationStartedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiAuthorizationStartedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiAuthorizationStepped`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationStepped {
-        pub stepped: TenantApiCircleCiAuthorizationSteppedStepped,
-    }
-    ///`TenantApiCircleCiAuthorizationSteppedOk`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiAuthorizationSteppedOk {
-        pub authorization: CircleCiAuthorization,
-        pub kind: TenantApiCircleCiAuthorizationSteppedOkKind,
-    }
-    ///`TenantApiCircleCiAuthorizationSteppedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiAuthorizationSteppedOkKind {
-        Stepped,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiAuthorizationSteppedOkKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Stepped => f.write_str("Stepped"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiAuthorizationSteppedOkKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Stepped" => Ok(Self::Stepped),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiAuthorizationSteppedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiAuthorizationSteppedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiAuthorizationSteppedStepped`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiCircleCiAuthorizationSteppedStepped {
-        CircleCiAuthorizationSteppedOk(TenantApiCircleCiAuthorizationSteppedOk),
-        AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        AuthorizationNotWaiting(TenantApiAuthorizationNotWaiting),
-        AuthorizationInvalid(TenantApiAuthorizationInvalid),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationSteppedOk> for TenantApiCircleCiAuthorizationSteppedStepped {
-        fn from(value: TenantApiCircleCiAuthorizationSteppedOk) -> Self {
-            Self::CircleCiAuthorizationSteppedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotFound> for TenantApiCircleCiAuthorizationSteppedStepped {
-        fn from(value: TenantApiAuthorizationNotFound) -> Self {
-            Self::AuthorizationNotFound(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotWaiting> for TenantApiCircleCiAuthorizationSteppedStepped {
-        fn from(value: TenantApiAuthorizationNotWaiting) -> Self {
-            Self::AuthorizationNotWaiting(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationInvalid> for TenantApiCircleCiAuthorizationSteppedStepped {
-        fn from(value: TenantApiAuthorizationInvalid) -> Self {
-            Self::AuthorizationInvalid(value)
-        }
-    }
-    ///`TenantApiCircleCiBinding`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiBinding {
-        #[serde(rename = "pipelineDefinitionId")]
-        pub pipeline_definition_id: ShortText,
-        #[serde(rename = "projectId")]
-        pub project_id: ShortText,
-        #[serde(rename = "projectSlug")]
-        pub project_slug: ShortText,
-        pub repository: ShortText,
-        #[serde(rename = "signingSecret")]
-        pub signing_secret: Token,
-        #[serde(rename = "webhookId")]
-        pub webhook_id: ShortText,
-    }
-    ///`TenantApiCircleCiConnectionInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiCircleCiConnectionInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiCircleCiConnectionInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiConnectionInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiCircleCiConnectionInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiCircleCiConnectionInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///The tenant's CircleCI connection as the tenant Durable Object stores it, without its secret.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiConnectionRecord {
-        #[serde(rename = "accountLabel")]
-        pub account_label: ShortText,
-        #[serde(rename = "circleCIConnectionId")]
-        pub circle_ci_connection_id: EntityId,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        pub credential: TenantApiCircleCiConnectionRecordCredential,
-        #[serde(rename = "organizationId")]
-        pub organization_id: ShortText,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-    }
-    ///`TenantApiCircleCiConnectionRecordCredential`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiCircleCiConnectionRecordCredential {
-        Authorized(TenantApiCircleCiCredentialAuthorized),
-        Pasted(TenantApiCircleCiCredentialPasted),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiCircleCiCredentialAuthorized> for TenantApiCircleCiConnectionRecordCredential {
-        fn from(value: TenantApiCircleCiCredentialAuthorized) -> Self {
-            Self::Authorized(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiCredentialPasted> for TenantApiCircleCiConnectionRecordCredential {
-        fn from(value: TenantApiCircleCiCredentialPasted) -> Self {
-            Self::Pasted(value)
-        }
-    }
-    ///`TenantApiCircleCiConnectionRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiConnectionRequest {
-        pub input: TenantApiCircleCiConnectionInput,
-        pub operation: TenantApiCircleCiConnectionRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiConnectionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiConnectionRequestOperation {
-        #[serde(rename = "circleCIConnection")]
-        CircleCiConnection,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiConnectionRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiConnection => f.write_str("circleCIConnection"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiConnectionRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIConnection" => Ok(Self::CircleCiConnection),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiConnectionResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiConnectionResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub connection: ::std::option::Option<TenantApiCircleCiConnectionRecord>,
-    }
-    ///`TenantApiCircleCiCredentialAuthorized`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiCredentialAuthorized {
-        ///When the OAuth token expires, in epoch milliseconds.
-        #[serde(rename = "expiresAtMs")]
-        pub expires_at_ms: i64,
-        pub kind: TenantApiCircleCiCredentialAuthorizedKind,
-    }
-    ///`TenantApiCircleCiCredentialAuthorizedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiCredentialAuthorizedKind {
-        Authorized,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiCredentialAuthorizedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Authorized => f.write_str("Authorized"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiCredentialAuthorizedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Authorized" => Ok(Self::Authorized),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiCredentialAuthorizedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiCredentialAuthorizedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiCredentialPasted`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiCredentialPasted {
-        pub kind: TenantApiCircleCiCredentialPastedKind,
-    }
-    ///`TenantApiCircleCiCredentialPastedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiCredentialPastedKind {
-        Pasted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiCredentialPastedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Pasted => f.write_str("Pasted"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiCredentialPastedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Pasted" => Ok(Self::Pasted),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiCredentialPastedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiCredentialPastedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiDispatchNotConnected`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiDispatchNotConnected {
-        pub kind: TenantApiCircleCiDispatchNotConnectedKind,
-    }
-    ///`TenantApiCircleCiDispatchNotConnectedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiDispatchNotConnectedKind {
-        NotConnected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiDispatchNotConnectedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotConnected => f.write_str("NotConnected"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiDispatchNotConnectedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotConnected" => Ok(Self::NotConnected),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiDispatchNotConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiDispatchNotConnectedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiDispatched`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiDispatched {
-        pub kind: TenantApiCircleCiDispatchedKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiCircleCiDispatchedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiDispatchedKind {
-        Dispatched,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiDispatchedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Dispatched => f.write_str("Dispatched"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiDispatchedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Dispatched" => Ok(Self::Dispatched),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiDispatchedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiDispatchedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiJobBoundOk`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiJobBoundOk {
-        pub kind: TenantApiCircleCiJobBoundOkKind,
-    }
-    ///`TenantApiCircleCiJobBoundOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiJobBoundOkKind {
-        Bound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiJobBoundOkKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Bound => f.write_str("Bound"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiJobBoundOkKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Bound" => Ok(Self::Bound),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiJobBoundOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiJobBoundOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiJobOther`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiJobOther {
-        #[serde(rename = "jobId")]
-        pub job_id: ShortText,
-        pub kind: TenantApiCircleCiJobOtherKind,
-    }
-    ///`TenantApiCircleCiJobOtherKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiJobOtherKind {
-        OtherJob,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiJobOtherKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::OtherJob => f.write_str("OtherJob"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiJobOtherKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "OtherJob" => Ok(Self::OtherJob),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiJobOtherKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiJobOtherKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiJobRefused`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiJobRefused {
-        pub detail: Detail,
-        pub kind: TenantApiCircleCiJobRefusedKind,
-        pub status: i32,
-    }
-    ///`TenantApiCircleCiJobRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiJobRefusedKind {
-        Refused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiJobRefusedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Refused => f.write_str("Refused"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiJobRefusedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Refused" => Ok(Self::Refused),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiJobRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiJobRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiProjectBoundToInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectBoundToInput {
-        #[serde(rename = "projectId")]
-        pub project_id: ShortText,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiCircleCiProjectBoundToRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectBoundToRequest {
-        pub input: TenantApiCircleCiProjectBoundToInput,
-        pub operation: TenantApiCircleCiProjectBoundToRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiProjectBoundToRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiProjectBoundToRequestOperation {
-        #[serde(rename = "circleCIProjectBoundTo")]
-        CircleCiProjectBoundTo,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiProjectBoundToRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiProjectBoundTo => f.write_str("circleCIProjectBoundTo"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiProjectBoundToRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIProjectBoundTo" => Ok(Self::CircleCiProjectBoundTo),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiProjectBoundToRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiProjectBoundToRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiProjectBoundToResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectBoundToResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub project: ::std::option::Option<CircleCiProject>,
-    }
-    ///`TenantApiCircleCiProjectOfInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectOfInput {
-        pub repository: ShortText,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiCircleCiProjectOfRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectOfRequest {
-        pub input: TenantApiCircleCiProjectOfInput,
-        pub operation: TenantApiCircleCiProjectOfRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiProjectOfRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiProjectOfRequestOperation {
-        #[serde(rename = "circleCIProjectOf")]
-        CircleCiProjectOf,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiProjectOfRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiProjectOf => f.write_str("circleCIProjectOf"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiProjectOfRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIProjectOf" => Ok(Self::CircleCiProjectOf),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiProjectOfRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiProjectOfRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiProjectOfResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiProjectOfResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub project: ::std::option::Option<CircleCiProject>,
-    }
-    ///`TenantApiCircleCiRegistrationRefused`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiRegistrationRefused {
-        pub detail: Detail,
-        pub kind: TenantApiCircleCiRegistrationRefusedKind,
-    }
-    ///`TenantApiCircleCiRegistrationRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiRegistrationRefusedKind {
-        RegistrationRefused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiRegistrationRefusedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::RegistrationRefused => f.write_str("RegistrationRefused"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiRegistrationRefusedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "RegistrationRefused" => Ok(Self::RegistrationRefused),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiRegistrationRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiRegistrationRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiRevisionMoved`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiRevisionMoved {
-        pub kind: TenantApiCircleCiRevisionMovedKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiCircleCiRevisionMovedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiRevisionMovedKind {
-        RevisionMoved,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiRevisionMovedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::RevisionMoved => f.write_str("RevisionMoved"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiRevisionMovedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "RevisionMoved" => Ok(Self::RevisionMoved),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiRevisionMovedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiRevisionMovedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiTokenInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiCircleCiTokenInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiCircleCiTokenInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiTokenInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiCircleCiTokenInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiCircleCiTokenInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///`TenantApiCircleCiTokenRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiTokenRequest {
-        pub input: TenantApiCircleCiTokenInput,
-        pub operation: TenantApiCircleCiTokenRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiTokenRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiTokenRequestOperation {
-        #[serde(rename = "circleCIToken")]
-        CircleCiToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiTokenRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiToken => f.write_str("circleCIToken"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiTokenRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIToken" => Ok(Self::CircleCiToken),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiTokenRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiTokenRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiTokenResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiTokenResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub token: ::std::option::Option<Token>,
-    }
-    ///`TenantApiCircleCiUploadJob`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiUploadJob {
-        #[serde(rename = "headSha")]
-        pub head_sha: ShortText,
-        #[serde(rename = "jobId")]
-        pub job_id: ShortText,
-        #[serde(rename = "pipelineId")]
-        pub pipeline_id: ShortText,
-    }
-    ///`TenantApiCircleCiUploadTarget`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiUploadTarget {
-        #[serde(rename = "defaultBranch")]
-        pub default_branch: ShortText,
-        #[serde(rename = "organizationId")]
-        pub organization_id: ShortText,
-        pub pipeline: TenantApiRecordedPipeline,
-        pub prebuild: Prebuild,
-        pub provider: TenantApiCircleCiUploadTargetProvider,
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub upload: ::std::option::Option<TenantApiPrebuildLayerUpload>,
-    }
-    ///`TenantApiCircleCiUploadTargetProvider`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiUploadTargetProvider {
-        #[serde(rename = "CircleCI")]
-        CircleCi,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiUploadTargetProvider {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCi => f.write_str("CircleCI"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiUploadTargetProvider {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "CircleCI" => Ok(Self::CircleCi),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiUploadTargetProvider {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiUploadTargetProvider {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiWebhook`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhook {
-        #[serde(rename = "circleCIProjectId")]
-        pub circle_ci_project_id: EntityId,
-        #[serde(rename = "webhookId")]
-        pub webhook_id: ShortText,
-    }
-    ///`TenantApiCircleCiWebhookSecretInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhookSecretInput {
-        #[serde(rename = "projectId")]
-        pub project_id: ShortText,
-    }
-    ///`TenantApiCircleCiWebhookSecretRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhookSecretRequest {
-        pub input: TenantApiCircleCiWebhookSecretInput,
-        pub operation: TenantApiCircleCiWebhookSecretRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiWebhookSecretRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiWebhookSecretRequestOperation {
-        #[serde(rename = "circleCIWebhookSecret")]
-        CircleCiWebhookSecret,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiWebhookSecretRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiWebhookSecret => f.write_str("circleCIWebhookSecret"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiWebhookSecretRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIWebhookSecret" => Ok(Self::CircleCiWebhookSecret),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiWebhookSecretRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiWebhookSecretRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiWebhookSecretResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhookSecretResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub secret: ::std::option::Option<Token>,
-    }
-    ///`TenantApiCircleCiWebhooksInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiCircleCiWebhooksInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiCircleCiWebhooksInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiWebhooksInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiCircleCiWebhooksInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiCircleCiWebhooksInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///`TenantApiCircleCiWebhooksRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhooksRequest {
-        pub input: TenantApiCircleCiWebhooksInput,
-        pub operation: TenantApiCircleCiWebhooksRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiWebhooksRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiWebhooksRequestOperation {
-        #[serde(rename = "circleCIWebhooks")]
-        CircleCiWebhooks,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiWebhooksRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiWebhooks => f.write_str("circleCIWebhooks"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiWebhooksRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIWebhooks" => Ok(Self::CircleCiWebhooks),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiWebhooksRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiWebhooksRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiWebhooksResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWebhooksResult {
-        pub webhooks: ::std::vec::Vec<TenantApiCircleCiWebhook>,
-    }
-    ///`TenantApiCircleCiWorkflowCompletedEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWorkflowCompletedEvent {
-        #[serde(rename = "pipelineId")]
-        pub pipeline_id: ShortText,
-        #[serde(rename = "projectId")]
-        pub project_id: ShortText,
-        #[serde(rename = "type")]
-        pub type_: ShortText,
-        pub workflow: TenantApiCircleCiWorkflowCompletedEventWorkflow,
-    }
-    ///`TenantApiCircleCiWorkflowCompletedEventWorkflow`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWorkflowCompletedEventWorkflow {
-        pub name: ShortText,
-        pub status: ShortText,
-        pub url: HttpUrl,
-    }
-    ///`TenantApiCircleCiWorkflowCompletedInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWorkflowCompletedInput {
-        pub event: TenantApiCircleCiWorkflowCompletedEvent,
-        pub now: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiCircleCiWorkflowCompletedRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCircleCiWorkflowCompletedRequest {
-        pub input: TenantApiCircleCiWorkflowCompletedInput,
-        pub operation: TenantApiCircleCiWorkflowCompletedRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCircleCiWorkflowCompletedRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCircleCiWorkflowCompletedRequestOperation {
-        #[serde(rename = "circleCIWorkflowCompleted")]
-        CircleCiWorkflowCompleted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCircleCiWorkflowCompletedRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CircleCiWorkflowCompleted => f.write_str("circleCIWorkflowCompleted"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCircleCiWorkflowCompletedRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "circleCIWorkflowCompleted" => Ok(Self::CircleCiWorkflowCompleted),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCircleCiWorkflowCompletedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCircleCiWorkflowCompletedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCircleCiWorkflowCompletedResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiCircleCiWorkflowCompletedResult(
-        pub ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-    );
-    impl ::std::ops::Deref for TenantApiCircleCiWorkflowCompletedResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiWorkflowCompletedResult>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiCircleCiWorkflowCompletedResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiCircleCiWorkflowCompletedResult
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
     ///`TenantApiClaudeSetupCodedOk`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiClaudeSetupCodedOk {
@@ -28469,17 +24386,14 @@ pub mod types {
         pub setup: ClaudeSetup,
     }
     ///`TenantApiClaudeSetupCodedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiClaudeSetupCodedOkKind {
         Coded,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupCodedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Coded => f.write_str("Coded"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -28527,18 +24441,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiClaudeSetupDeadlineReachedRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiClaudeSetupDeadlineReachedRequestOperation {
         #[serde(rename = "claudeSetupDeadlineReached")]
         ClaudeSetupDeadlineReached,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupDeadlineReachedRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupDeadlineReached => f.write_str("claudeSetupDeadlineReached"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -28596,17 +24507,14 @@ pub mod types {
         pub kind: TenantApiClaudeSetupNotStoredKind,
     }
     ///`TenantApiClaudeSetupNotStoredKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiClaudeSetupNotStoredKind {
         NotStored,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupNotStoredKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotStored => f.write_str("NotStored"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -28638,17 +24546,14 @@ pub mod types {
         pub message: TenantApiClaudeSetupReadyMessage,
     }
     ///`TenantApiClaudeSetupReadyKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiClaudeSetupReadyKind {
         Ready,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupReadyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Ready => f.write_str("Ready"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -28679,7 +24584,6 @@ pub mod types {
     pub enum TenantApiClaudeSetupReadyMessage {
         Offer(ChannelClaudeSetupBoxOffer),
         Code(ChannelClaudeSetupBoxCode),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelClaudeSetupBoxOffer> for TenantApiClaudeSetupReadyMessage {
         fn from(value: ChannelClaudeSetupBoxOffer) -> Self {
@@ -28697,17 +24601,14 @@ pub mod types {
         pub kind: TenantApiClaudeSetupRefusedKind,
     }
     ///`TenantApiClaudeSetupRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiClaudeSetupRefusedKind {
         Refused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupRefusedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Refused => f.write_str("Refused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -28739,17 +24640,14 @@ pub mod types {
         pub kind: TenantApiClaudeSetupReleaseUnreadableKind,
     }
     ///`TenantApiClaudeSetupReleaseUnreadableKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiClaudeSetupReleaseUnreadableKind {
         ReleaseUnreadable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupReleaseUnreadableKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ReleaseUnreadable => f.write_str("ReleaseUnreadable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -28781,17 +24679,14 @@ pub mod types {
         pub setup: ClaudeSetup,
     }
     ///`TenantApiClaudeSetupStartedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiClaudeSetupStartedOkKind {
         Started,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupStartedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Started => f.write_str("Started"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -28822,17 +24717,14 @@ pub mod types {
         pub kind: TenantApiClaudeSetupStoredOkKind,
     }
     ///`TenantApiClaudeSetupStoredOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiClaudeSetupStoredOkKind {
         Stored,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupStoredOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Stored => f.write_str("Stored"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -28864,17 +24756,14 @@ pub mod types {
         pub kind: TenantApiClaudeSetupUnplacedKind,
     }
     ///`TenantApiClaudeSetupUnplacedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiClaudeSetupUnplacedKind {
         Unplaced,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupUnplacedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unplaced => f.write_str("Unplaced"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -28906,17 +24795,14 @@ pub mod types {
         pub message: ChannelClaudeSetupBoxDiscard,
     }
     ///`TenantApiClaudeSetupWithdrawnKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiClaudeSetupWithdrawnKind {
         Withdrawn,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupWithdrawnKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Withdrawn => f.write_str("Withdrawn"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -28961,18 +24847,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiClearConnectorCredentialRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiClearConnectorCredentialRequestOperation {
         #[serde(rename = "clearConnectorCredential")]
         ClearConnectorCredential,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClearConnectorCredentialRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClearConnectorCredential => f.write_str("clearConnectorCredential"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -29010,7 +24893,6 @@ pub mod types {
         NotFound(TenantApiConnectorNotFound),
         NameTaken(TenantApiConnectorNameTaken),
         Changed(TenantApiConnectorChanged),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorWrittenOk> for TenantApiClearConnectorCredentialResultWritten {
         fn from(value: TenantApiConnectorWrittenOk) -> Self {
@@ -29032,185 +24914,6 @@ pub mod types {
             Self::Changed(value)
         }
     }
-    ///`TenantApiCompleteCircleCiAuthorizationInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompleteCircleCiAuthorizationInput {
-        #[serde(rename = "circleCIAuthorizationId")]
-        pub circle_ci_authorization_id: EntityId,
-        pub now: i64,
-        #[serde(rename = "principalId")]
-        pub principal_id: EntityId,
-        #[serde(rename = "redirectedUrl")]
-        pub redirected_url: UrlText,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiCompleteCircleCiAuthorizationRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompleteCircleCiAuthorizationRequest {
-        pub input: TenantApiCompleteCircleCiAuthorizationInput,
-        pub operation: TenantApiCompleteCircleCiAuthorizationRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCompleteCircleCiAuthorizationRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCompleteCircleCiAuthorizationRequestOperation {
-        #[serde(rename = "completeCircleCIAuthorization")]
-        CompleteCircleCiAuthorization,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCompleteCircleCiAuthorizationRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CompleteCircleCiAuthorization => f.write_str("completeCircleCIAuthorization"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCompleteCircleCiAuthorizationRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "completeCircleCIAuthorization" => Ok(Self::CompleteCircleCiAuthorization),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCompleteCircleCiAuthorizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCompleteCircleCiAuthorizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCompleteCircleCiAuthorizationResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompleteCircleCiAuthorizationResult {
-        pub stepped: TenantApiCompleteCircleCiAuthorizationResultStepped,
-    }
-    ///`TenantApiCompleteCircleCiAuthorizationResultStepped`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiCompleteCircleCiAuthorizationResultStepped {
-        CircleCiAuthorizationSteppedOk(TenantApiCircleCiAuthorizationSteppedOk),
-        AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        AuthorizationNotWaiting(TenantApiAuthorizationNotWaiting),
-        AuthorizationInvalid(TenantApiAuthorizationInvalid),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationSteppedOk>
-        for TenantApiCompleteCircleCiAuthorizationResultStepped
-    {
-        fn from(value: TenantApiCircleCiAuthorizationSteppedOk) -> Self {
-            Self::CircleCiAuthorizationSteppedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotFound> for TenantApiCompleteCircleCiAuthorizationResultStepped {
-        fn from(value: TenantApiAuthorizationNotFound) -> Self {
-            Self::AuthorizationNotFound(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationNotWaiting> for TenantApiCompleteCircleCiAuthorizationResultStepped {
-        fn from(value: TenantApiAuthorizationNotWaiting) -> Self {
-            Self::AuthorizationNotWaiting(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAuthorizationInvalid> for TenantApiCompleteCircleCiAuthorizationResultStepped {
-        fn from(value: TenantApiAuthorizationInvalid) -> Self {
-            Self::AuthorizationInvalid(value)
-        }
-    }
-    ///`TenantApiCompletePrebuildUploadInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompletePrebuildUploadInput {
-        pub now: i64,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        pub upload: TenantApiPrebuildLayerUpload,
-    }
-    ///`TenantApiCompletePrebuildUploadRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompletePrebuildUploadRequest {
-        pub input: TenantApiCompletePrebuildUploadInput,
-        pub operation: TenantApiCompletePrebuildUploadRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiCompletePrebuildUploadRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiCompletePrebuildUploadRequestOperation {
-        #[serde(rename = "completePrebuildUpload")]
-        CompletePrebuildUpload,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiCompletePrebuildUploadRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CompletePrebuildUpload => f.write_str("completePrebuildUpload"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiCompletePrebuildUploadRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "completePrebuildUpload" => Ok(Self::CompletePrebuildUpload),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiCompletePrebuildUploadRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiCompletePrebuildUploadRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiCompletePrebuildUploadResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiCompletePrebuildUploadResult {
-        pub recorded: TenantApiCompletePrebuildUploadResultRecorded,
-    }
-    ///`TenantApiCompletePrebuildUploadResultRecorded`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiCompletePrebuildUploadResultRecorded {
-        RecordedOk(TenantApiUploadRecordedOk),
-        NotUploading(TenantApiUploadNotUploading),
-        OtherLayer(TenantApiUploadOtherLayer),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiUploadRecordedOk> for TenantApiCompletePrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadRecordedOk) -> Self {
-            Self::RecordedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadNotUploading> for TenantApiCompletePrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadNotUploading) -> Self {
-            Self::NotUploading(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadOtherLayer> for TenantApiCompletePrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadOtherLayer) -> Self {
-            Self::OtherLayer(value)
-        }
-    }
     ///`TenantApiCompleteSubscriptionInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCompleteSubscriptionInput {
@@ -29229,18 +24932,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiCompleteSubscriptionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCompleteSubscriptionRequestOperation {
         #[serde(rename = "completeSubscription")]
         CompleteSubscription,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCompleteSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CompleteSubscription => f.write_str("completeSubscription"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -29277,7 +24977,6 @@ pub mod types {
         ChangedOk(TenantApiSubscriptionChangedOk),
         NotFound(TenantApiSubscriptionNotFound),
         EndedState(TenantApiSubscriptionEndedState),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSubscriptionChangedOk> for TenantApiCompleteSubscriptionResultCompleted {
         fn from(value: TenantApiSubscriptionChangedOk) -> Self {
@@ -29300,17 +24999,14 @@ pub mod types {
         pub kind: TenantApiConfigAppliedKind,
     }
     ///`TenantApiConfigAppliedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConfigAppliedKind {
         Applied,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConfigAppliedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Applied => f.write_str("Applied"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -29342,17 +25038,14 @@ pub mod types {
         pub kind: TenantApiConfigConflictKind,
     }
     ///`TenantApiConfigConflictKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConfigConflictKind {
         Conflict,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConfigConflictKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Conflict => f.write_str("Conflict"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -29384,17 +25077,14 @@ pub mod types {
         pub resource: UrlText,
     }
     ///`TenantApiConfigResourceDeletedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConfigResourceDeletedKind {
         Deleted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConfigResourceDeletedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Deleted => f.write_str("Deleted"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -29434,7 +25124,6 @@ pub mod types {
         CreateTriggerWrite(TenantApiCreateTriggerWrite),
         UpdateTriggerWrite(TenantApiUpdateTriggerWrite),
         DeleteTriggerWrite(TenantApiDeleteTriggerWrite),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiCreateSecretSetWrite> for TenantApiConfigWrite {
         fn from(value: TenantApiCreateSecretSetWrite) -> Self {
@@ -29491,260 +25180,6 @@ pub mod types {
             Self::DeleteTriggerWrite(value)
         }
     }
-    ///`TenantApiConnectCircleCiInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectCircleCiInput {
-        pub now: i64,
-        pub start: CircleCiConnectionStart,
-    }
-    ///`TenantApiConnectCircleCiRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectCircleCiRequest {
-        pub input: TenantApiConnectCircleCiInput,
-        pub operation: TenantApiConnectCircleCiRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiConnectCircleCiRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiConnectCircleCiRequestOperation {
-        #[serde(rename = "connectCircleCI")]
-        ConnectCircleCi,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiConnectCircleCiRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ConnectCircleCi => f.write_str("connectCircleCI"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiConnectCircleCiRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "connectCircleCI" => Ok(Self::ConnectCircleCi),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiConnectCircleCiRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiConnectCircleCiRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiConnectCircleCiResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectCircleCiResult {
-        pub connection: TenantApiCircleCiConnectionRecord,
-    }
-    ///`TenantApiConnectGitHubActionsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectGitHubActionsInput {
-        pub now: i64,
-        pub start: GitHubActionsConnectionStart,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiConnectGitHubActionsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectGitHubActionsRequest {
-        pub input: TenantApiConnectGitHubActionsInput,
-        pub operation: TenantApiConnectGitHubActionsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiConnectGitHubActionsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiConnectGitHubActionsRequestOperation {
-        #[serde(rename = "connectGitHubActions")]
-        ConnectGitHubActions,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiConnectGitHubActionsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ConnectGitHubActions => f.write_str("connectGitHubActions"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiConnectGitHubActionsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "connectGitHubActions" => Ok(Self::ConnectGitHubActions),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiConnectGitHubActionsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiConnectGitHubActionsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiConnectGitHubActionsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectGitHubActionsResult {
-        pub connection: GitHubActionsConnection,
-    }
-    ///`TenantApiConnectNamespaceInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectNamespaceInput {
-        pub now: i64,
-        pub start: NamespaceConnectionStart,
-    }
-    ///`TenantApiConnectNamespaceRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectNamespaceRequest {
-        pub input: TenantApiConnectNamespaceInput,
-        pub operation: TenantApiConnectNamespaceRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiConnectNamespaceRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiConnectNamespaceRequestOperation {
-        #[serde(rename = "connectNamespace")]
-        ConnectNamespace,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiConnectNamespaceRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ConnectNamespace => f.write_str("connectNamespace"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiConnectNamespaceRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "connectNamespace" => Ok(Self::ConnectNamespace),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiConnectNamespaceRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiConnectNamespaceRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiConnectNamespaceResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectNamespaceResult {
-        pub connection: TenantApiNamespaceConnectionRecord,
-    }
-    ///`TenantApiConnectedAccounts`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectedAccounts {
-        #[serde(rename = "CircleCI", deserialize_with = "::std::option::Option::deserialize")]
-        pub circle_ci: ::std::option::Option<ShortText>,
-        #[serde(rename = "GitHubActions", deserialize_with = "::std::option::Option::deserialize")]
-        pub git_hub_actions: ::std::option::Option<ShortText>,
-        #[serde(rename = "Namespace", deserialize_with = "::std::option::Option::deserialize")]
-        pub namespace: ::std::option::Option<ShortText>,
-    }
-    ///`TenantApiConnectedAccountsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiConnectedAccountsInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiConnectedAccountsInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiConnectedAccountsInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiConnectedAccountsInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiConnectedAccountsInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///`TenantApiConnectedAccountsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectedAccountsRequest {
-        pub input: TenantApiConnectedAccountsInput,
-        pub operation: TenantApiConnectedAccountsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiConnectedAccountsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiConnectedAccountsRequestOperation {
-        #[serde(rename = "connectedAccounts")]
-        ConnectedAccounts,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiConnectedAccountsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ConnectedAccounts => f.write_str("connectedAccounts"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiConnectedAccountsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "connectedAccounts" => Ok(Self::ConnectedAccounts),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiConnectedAccountsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiConnectedAccountsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiConnectedAccountsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiConnectedAccountsResult {
-        pub accounts: TenantApiConnectedAccounts,
-    }
     ///`TenantApiConnectorAuthorizeStartedOk`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiConnectorAuthorizeStartedOk {
@@ -29752,17 +25187,14 @@ pub mod types {
         pub kind: TenantApiConnectorAuthorizeStartedOkKind,
     }
     ///`TenantApiConnectorAuthorizeStartedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorAuthorizeStartedOkKind {
         Started,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorAuthorizeStartedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Started => f.write_str("Started"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -29796,17 +25228,14 @@ pub mod types {
         pub kind: TenantApiConnectorCallbackCodeKind,
     }
     ///`TenantApiConnectorCallbackCodeKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorCallbackCodeKind {
         Code,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorCallbackCodeKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Code => f.write_str("Code"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -29838,17 +25267,14 @@ pub mod types {
         pub name: ShortText,
     }
     ///`TenantApiConnectorCallbackConnectedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorCallbackConnectedKind {
         Connected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorCallbackConnectedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Connected => f.write_str("Connected"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -29880,17 +25306,14 @@ pub mod types {
         pub kind: TenantApiConnectorCallbackErrorKind,
     }
     ///`TenantApiConnectorCallbackErrorKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorCallbackErrorKind {
         Error,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorCallbackErrorKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Error => f.write_str("Error"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -29932,7 +25355,6 @@ pub mod types {
     pub enum TenantApiConnectorCallbackInputCallback {
         Code(TenantApiConnectorCallbackCode),
         Error(TenantApiConnectorCallbackError),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorCallbackCode> for TenantApiConnectorCallbackInputCallback {
         fn from(value: TenantApiConnectorCallbackCode) -> Self {
@@ -29951,17 +25373,14 @@ pub mod types {
         pub kind: TenantApiConnectorCallbackNotConnectedKind,
     }
     ///`TenantApiConnectorCallbackNotConnectedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorCallbackNotConnectedKind {
         NotConnected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorCallbackNotConnectedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotConnected => f.write_str("NotConnected"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -29995,18 +25414,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiConnectorCallbackRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorCallbackRequestOperation {
         #[serde(rename = "connectorCallback")]
         ConnectorCallback,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorCallbackRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ConnectorCallback => f.write_str("connectorCallback"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30042,7 +25458,6 @@ pub mod types {
     pub enum TenantApiConnectorCallbackResultSettled {
         Connected(TenantApiConnectorCallbackConnected),
         NotConnected(TenantApiConnectorCallbackNotConnected),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorCallbackConnected> for TenantApiConnectorCallbackResultSettled {
         fn from(value: TenantApiConnectorCallbackConnected) -> Self {
@@ -30060,17 +25475,14 @@ pub mod types {
         pub kind: TenantApiConnectorChangedKind,
     }
     ///`TenantApiConnectorChangedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorChangedKind {
         Changed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorChangedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Changed => f.write_str("Changed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30101,17 +25513,14 @@ pub mod types {
         pub kind: TenantApiConnectorDeletedOkKind,
     }
     ///`TenantApiConnectorDeletedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorDeletedOkKind {
         Deleted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorDeletedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Deleted => f.write_str("Deleted"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30143,17 +25552,14 @@ pub mod types {
         pub kind: TenantApiConnectorDiscoveryFailedKind,
     }
     ///`TenantApiConnectorDiscoveryFailedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorDiscoveryFailedKind {
         DiscoveryFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorDiscoveryFailedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DiscoveryFailed => f.write_str("DiscoveryFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30185,17 +25591,14 @@ pub mod types {
         pub kind: TenantApiConnectorInUseKind,
     }
     ///`TenantApiConnectorInUseKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorInUseKind {
         InUse,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorInUseKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::InUse => f.write_str("InUse"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30226,17 +25629,14 @@ pub mod types {
         pub kind: TenantApiConnectorNameTakenKind,
     }
     ///`TenantApiConnectorNameTakenKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorNameTakenKind {
         NameTaken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorNameTakenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NameTaken => f.write_str("NameTaken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30268,17 +25668,14 @@ pub mod types {
         pub name: ShortText,
     }
     ///`TenantApiConnectorNoCredentialKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorNoCredentialKind {
         NoCredential,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorNoCredentialKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NoCredential => f.write_str("NoCredential"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30309,17 +25706,14 @@ pub mod types {
         pub kind: TenantApiConnectorNotFoundKind,
     }
     ///`TenantApiConnectorNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorNotFoundKind {
         NotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotFound => f.write_str("NotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30351,17 +25745,14 @@ pub mod types {
         pub kind: TenantApiConnectorRefreshFailedKind,
     }
     ///`TenantApiConnectorRefreshFailedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorRefreshFailedKind {
         RefreshFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorRefreshFailedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RefreshFailed => f.write_str("RefreshFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30393,17 +25784,14 @@ pub mod types {
         pub kind: TenantApiConnectorRegistrationUnsupportedKind,
     }
     ///`TenantApiConnectorRegistrationUnsupportedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorRegistrationUnsupportedKind {
         RegistrationUnsupported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorRegistrationUnsupportedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RegistrationUnsupported => f.write_str("RegistrationUnsupported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30649,17 +26037,14 @@ pub mod types {
         }
     }
     ///`TenantApiConnectorStateClaimsPurpose`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorStateClaimsPurpose {
         ConnectorAuthorization,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorStateClaimsPurpose {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ConnectorAuthorization => f.write_str("ConnectorAuthorization"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30759,17 +26144,14 @@ pub mod types {
         pub kind: TenantApiConnectorTokenRefusedKind,
     }
     ///`TenantApiConnectorTokenRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorTokenRefusedKind {
         Refused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorTokenRefusedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Refused => f.write_str("Refused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30801,17 +26183,14 @@ pub mod types {
         pub token: ConnectorAccessToken,
     }
     ///`TenantApiConnectorTokenServedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorTokenServedOkKind {
         Served,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorTokenServedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Served => f.write_str("Served"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30842,17 +26221,14 @@ pub mod types {
         pub kind: TenantApiConnectorTurnNotRunningKind,
     }
     ///`TenantApiConnectorTurnNotRunningKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorTurnNotRunningKind {
         NotRunning,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorTurnNotRunningKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotRunning => f.write_str("NotRunning"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30884,17 +26260,14 @@ pub mod types {
         pub kind: TenantApiConnectorWrittenOkKind,
     }
     ///`TenantApiConnectorWrittenOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiConnectorWrittenOkKind {
         Written,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorWrittenOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Written => f.write_str("Written"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -30932,7 +26305,6 @@ pub mod types {
         NotFound(TenantApiConnectorNotFound),
         NameTaken(TenantApiConnectorNameTaken),
         Changed(TenantApiConnectorChanged),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorWrittenOk> for TenantApiConnectorWrittenResultWritten {
         fn from(value: TenantApiConnectorWrittenOk) -> Self {
@@ -30973,18 +26345,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiCreateConnectorRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCreateConnectorRequestOperation {
         #[serde(rename = "createConnector")]
         CreateConnector,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateConnectorRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CreateConnector => f.write_str("createConnector"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31022,7 +26391,6 @@ pub mod types {
         NotFound(TenantApiConnectorNotFound),
         NameTaken(TenantApiConnectorNameTaken),
         Changed(TenantApiConnectorChanged),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorWrittenOk> for TenantApiCreateConnectorResultWritten {
         fn from(value: TenantApiConnectorWrittenOk) -> Self {
@@ -31061,18 +26429,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiCreatePersonaRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCreatePersonaRequestOperation {
         #[serde(rename = "createPersona")]
         CreatePersona,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreatePersonaRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CreatePersona => f.write_str("createPersona"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31108,7 +26473,6 @@ pub mod types {
     pub enum TenantApiCreatePersonaResultWritten {
         PersonaWritten(TenantApiPersonaWritten),
         WriteConflict(TenantApiWriteConflict),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiPersonaWritten> for TenantApiCreatePersonaResultWritten {
         fn from(value: TenantApiPersonaWritten) -> Self {
@@ -31127,17 +26491,14 @@ pub mod types {
         pub persona: TenantApiPersonaWrite,
     }
     ///`TenantApiCreatePersonaWriteKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCreatePersonaWriteKind {
         CreatePersona,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreatePersonaWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CreatePersona => f.write_str("CreatePersona"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31181,18 +26542,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiCreatePushSubscriptionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCreatePushSubscriptionRequestOperation {
         #[serde(rename = "createPushSubscription")]
         CreatePushSubscription,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreatePushSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CreatePushSubscription => f.write_str("createPushSubscription"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31242,18 +26600,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiCreateSecretSetRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCreateSecretSetRequestOperation {
         #[serde(rename = "createSecretSet")]
         CreateSecretSet,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateSecretSetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CreateSecretSet => f.write_str("createSecretSet"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31289,7 +26644,6 @@ pub mod types {
     pub enum TenantApiCreateSecretSetResultWritten {
         SecretSetWritten(TenantApiSecretSetWritten),
         WriteConflict(TenantApiWriteConflict),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetWritten> for TenantApiCreateSecretSetResultWritten {
         fn from(value: TenantApiSecretSetWritten) -> Self {
@@ -31313,17 +26667,14 @@ pub mod types {
         pub secret_set_id: EntityId,
     }
     ///`TenantApiCreateSecretSetWriteKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCreateSecretSetWriteKind {
         CreateSecretSet,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateSecretSetWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CreateSecretSet => f.write_str("CreateSecretSet"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31365,18 +26716,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiCreateSubscriptionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCreateSubscriptionRequestOperation {
         #[serde(rename = "createSubscription")]
         CreateSubscription,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CreateSubscription => f.write_str("createSubscription"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31414,7 +26762,6 @@ pub mod types {
         SessionNotFound(TenantApiSessionNotFound),
         SessionArchivedState(TenantApiSessionArchivedState),
         SessionFailedState(TenantApiSessionFailedState),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSubscriptionCreatedOk> for TenantApiCreateSubscriptionResultCreated {
         fn from(value: TenantApiSubscriptionCreatedOk) -> Self {
@@ -31456,18 +26803,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiCreateTriggerRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCreateTriggerRequestOperation {
         #[serde(rename = "createTrigger")]
         CreateTrigger,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateTriggerRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CreateTrigger => f.write_str("createTrigger"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31504,7 +26848,6 @@ pub mod types {
         CreatedOk(TenantApiTriggerCreatedOk),
         NameTaken(TenantApiTriggerNameTaken),
         PersonaNotFound(TenantApiTriggerPersonaNotFound),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTriggerCreatedOk> for TenantApiCreateTriggerResultCreated {
         fn from(value: TenantApiTriggerCreatedOk) -> Self {
@@ -31530,17 +26873,14 @@ pub mod types {
         pub trigger: ConfigTrigger,
     }
     ///`TenantApiCreateTriggerWriteKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCreateTriggerWriteKind {
         CreateTrigger,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateTriggerWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CreateTrigger => f.write_str("CreateTrigger"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31582,18 +26922,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiCreateWebhookEndpointRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiCreateWebhookEndpointRequestOperation {
         #[serde(rename = "createWebhookEndpoint")]
         CreateWebhookEndpoint,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateWebhookEndpointRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CreateWebhookEndpoint => f.write_str("createWebhookEndpoint"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31640,18 +26977,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiDeadlineReachedRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeadlineReachedRequestOperation {
         #[serde(rename = "deadlineReached")]
         DeadlineReached,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeadlineReachedRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeadlineReached => f.write_str("deadlineReached"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31717,18 +27051,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiDeferredOffersRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeferredOffersRequestOperation {
         #[serde(rename = "deferredOffers")]
         DeferredOffers,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeferredOffersRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeferredOffers => f.write_str("deferredOffers"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31758,117 +27089,6 @@ pub mod types {
     pub struct TenantApiDeferredOffersResult {
         pub handoffs: ::std::vec::Vec<TenantApiTurnHandoff>,
     }
-    ///`TenantApiDeleteBuildConnectionInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteBuildConnectionInput {
-        pub provider: BuildProvider,
-    }
-    ///`TenantApiDeleteBuildConnectionRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteBuildConnectionRequest {
-        pub input: TenantApiDeleteBuildConnectionInput,
-        pub operation: TenantApiDeleteBuildConnectionRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiDeleteBuildConnectionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiDeleteBuildConnectionRequestOperation {
-        #[serde(rename = "deleteBuildConnection")]
-        DeleteBuildConnection,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiDeleteBuildConnectionRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::DeleteBuildConnection => f.write_str("deleteBuildConnection"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiDeleteBuildConnectionRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "deleteBuildConnection" => Ok(Self::DeleteBuildConnection),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiDeleteBuildConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiDeleteBuildConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiDeleteBuildConnectionResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteBuildConnectionResult {
-        pub deleted: bool,
-    }
-    ///`TenantApiDeleteCircleCiProjectInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteCircleCiProjectInput {
-        #[serde(rename = "circleCIProjectId")]
-        pub circle_ci_project_id: EntityId,
-    }
-    ///`TenantApiDeleteCircleCiProjectRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteCircleCiProjectRequest {
-        pub input: TenantApiDeleteCircleCiProjectInput,
-        pub operation: TenantApiDeleteCircleCiProjectRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiDeleteCircleCiProjectRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiDeleteCircleCiProjectRequestOperation {
-        #[serde(rename = "deleteCircleCIProject")]
-        DeleteCircleCiProject,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiDeleteCircleCiProjectRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::DeleteCircleCiProject => f.write_str("deleteCircleCIProject"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiDeleteCircleCiProjectRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "deleteCircleCIProject" => Ok(Self::DeleteCircleCiProject),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiDeleteCircleCiProjectRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiDeleteCircleCiProjectRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiDeleteCircleCiProjectResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDeleteCircleCiProjectResult {
-        pub deleted: bool,
-    }
     ///`TenantApiDeleteConnectorInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiDeleteConnectorInput {
@@ -31886,18 +27106,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiDeleteConnectorRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeleteConnectorRequestOperation {
         #[serde(rename = "deleteConnector")]
         DeleteConnector,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteConnectorRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeleteConnector => f.write_str("deleteConnector"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -31935,7 +27152,6 @@ pub mod types {
         NotFound(TenantApiConnectorNotFound),
         Changed(TenantApiConnectorChanged),
         InUse(TenantApiConnectorInUse),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorDeletedOk> for TenantApiDeleteConnectorResultDeleted {
         fn from(value: TenantApiConnectorDeletedOk) -> Self {
@@ -31974,18 +27190,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiDeletePersonaRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeletePersonaRequestOperation {
         #[serde(rename = "deletePersona")]
         DeletePersona,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeletePersonaRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeletePersona => f.write_str("deletePersona"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32022,7 +27235,6 @@ pub mod types {
         Deleted(TenantApiPersonaDeleted),
         NotFound(TenantApiPersonaNotFound),
         InUse(TenantApiPersonaInUse),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiPersonaDeleted> for TenantApiDeletePersonaResultDeleted {
         fn from(value: TenantApiPersonaDeleted) -> Self {
@@ -32047,17 +27259,14 @@ pub mod types {
         pub persona_id: EntityId,
     }
     ///`TenantApiDeletePersonaWriteKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeletePersonaWriteKind {
         DeletePersona,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeletePersonaWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeletePersona => f.write_str("DeletePersona"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32101,18 +27310,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiDeletePushSubscriptionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeletePushSubscriptionRequestOperation {
         #[serde(rename = "deletePushSubscription")]
         DeletePushSubscription,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeletePushSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeletePushSubscription => f.write_str("deletePushSubscription"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32158,18 +27364,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiDeleteSecretSetRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeleteSecretSetRequestOperation {
         #[serde(rename = "deleteSecretSet")]
         DeleteSecretSet,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteSecretSetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeleteSecretSet => f.write_str("deleteSecretSet"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32206,7 +27409,6 @@ pub mod types {
         Deleted(TenantApiSecretSetDeleted),
         NotFound(TenantApiSecretSetNotFound),
         InUse(TenantApiSecretSetInUse),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetDeleted> for TenantApiDeleteSecretSetResultDeleted {
         fn from(value: TenantApiSecretSetDeleted) -> Self {
@@ -32231,17 +27433,14 @@ pub mod types {
         pub secret_set_id: EntityId,
     }
     ///`TenantApiDeleteSecretSetWriteKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeleteSecretSetWriteKind {
         DeleteSecretSet,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteSecretSetWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeleteSecretSet => f.write_str("DeleteSecretSet"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32283,18 +27482,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiDeleteSessionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeleteSessionRequestOperation {
         #[serde(rename = "deleteSession")]
         DeleteSession,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteSessionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeleteSession => f.write_str("deleteSession"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32331,7 +27527,6 @@ pub mod types {
         Deleted(TenantApiSessionDeleted),
         NotFound(TenantApiSessionNotFound),
         NotStopped(TenantApiSessionNotStopped),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionDeleted> for TenantApiDeleteSessionResultDeleted {
         fn from(value: TenantApiSessionDeleted) -> Self {
@@ -32366,18 +27561,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiDeleteSubscriptionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeleteSubscriptionRequestOperation {
         #[serde(rename = "deleteSubscription")]
         DeleteSubscription,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeleteSubscription => f.write_str("deleteSubscription"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32426,18 +27618,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiDeleteTriggerRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeleteTriggerRequestOperation {
         #[serde(rename = "deleteTrigger")]
         DeleteTrigger,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteTriggerRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeleteTrigger => f.write_str("deleteTrigger"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32476,17 +27665,14 @@ pub mod types {
         pub trigger_id: EntityId,
     }
     ///`TenantApiDeleteTriggerWriteKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeleteTriggerWriteKind {
         DeleteTrigger,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteTriggerWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeleteTrigger => f.write_str("DeleteTrigger"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32528,18 +27714,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiDeleteWebhookEndpointRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiDeleteWebhookEndpointRequestOperation {
         #[serde(rename = "deleteWebhookEndpoint")]
         DeleteWebhookEndpoint,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteWebhookEndpointRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::DeleteWebhookEndpoint => f.write_str("deleteWebhookEndpoint"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32570,90 +27753,6 @@ pub mod types {
         ///False when the tenant has no webhook endpoint with the id.
         pub deleted: bool,
     }
-    ///`TenantApiDispatchCircleCiPrebuildInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDispatchCircleCiPrebuildInput {
-        pub now: i64,
-        pub parameters: ::std::collections::HashMap<::std::string::String, Summary>,
-        pub project: CircleCiProject,
-        pub start: TenantApiPrebuildStartRecord,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiDispatchCircleCiPrebuildRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDispatchCircleCiPrebuildRequest {
-        pub input: TenantApiDispatchCircleCiPrebuildInput,
-        pub operation: TenantApiDispatchCircleCiPrebuildRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiDispatchCircleCiPrebuildRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiDispatchCircleCiPrebuildRequestOperation {
-        #[serde(rename = "dispatchCircleCIPrebuild")]
-        DispatchCircleCiPrebuild,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiDispatchCircleCiPrebuildRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::DispatchCircleCiPrebuild => f.write_str("dispatchCircleCIPrebuild"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiDispatchCircleCiPrebuildRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "dispatchCircleCIPrebuild" => Ok(Self::DispatchCircleCiPrebuild),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiDispatchCircleCiPrebuildRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiDispatchCircleCiPrebuildRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiDispatchCircleCiPrebuildResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiDispatchCircleCiPrebuildResult {
-        pub dispatched: TenantApiDispatchCircleCiPrebuildResultDispatched,
-    }
-    ///`TenantApiDispatchCircleCiPrebuildResultDispatched`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiDispatchCircleCiPrebuildResultDispatched {
-        CircleCiDispatched(TenantApiCircleCiDispatched),
-        CircleCiDispatchNotConnected(TenantApiCircleCiDispatchNotConnected),
-        PrebuildRefused(TenantApiPrebuildRefused),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiCircleCiDispatched> for TenantApiDispatchCircleCiPrebuildResultDispatched {
-        fn from(value: TenantApiCircleCiDispatched) -> Self {
-            Self::CircleCiDispatched(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiDispatchNotConnected> for TenantApiDispatchCircleCiPrebuildResultDispatched {
-        fn from(value: TenantApiCircleCiDispatchNotConnected) -> Self {
-            Self::CircleCiDispatchNotConnected(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildRefused> for TenantApiDispatchCircleCiPrebuildResultDispatched {
-        fn from(value: TenantApiPrebuildRefused) -> Self {
-            Self::PrebuildRefused(value)
-        }
-    }
     ///The afterEventId is older than the oldest event the log keeps.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiEventCursorExpired {
@@ -32662,17 +27761,14 @@ pub mod types {
         pub oldest_event_id: Sequence,
     }
     ///`TenantApiEventCursorExpiredKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiEventCursorExpiredKind {
         CursorExpired,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiEventCursorExpiredKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CursorExpired => f.write_str("CursorExpired"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32704,17 +27800,14 @@ pub mod types {
         pub page: EventPage,
     }
     ///`TenantApiEventsReadKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiEventsReadKind {
         Read,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiEventsReadKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Read => f.write_str("Read"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32748,17 +27841,14 @@ pub mod types {
         pub name: ShortText,
     }
     ///`TenantApiExpiredCredentialRefusalKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiExpiredCredentialRefusalKind {
         Expired,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiExpiredCredentialRefusalKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Expired => f.write_str("Expired"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32798,18 +27888,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiForgetHostUsageRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiForgetHostUsageRequestOperation {
         #[serde(rename = "forgetHostUsage")]
         ForgetHostUsage,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiForgetHostUsageRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ForgetHostUsage => f.write_str("forgetHostUsage"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32875,18 +27962,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiForgetPushSubscriptionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiForgetPushSubscriptionRequestOperation {
         #[serde(rename = "forgetPushSubscription")]
         ForgetPushSubscription,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiForgetPushSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ForgetPushSubscription => f.write_str("forgetPushSubscription"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -32953,18 +28037,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetClaudeSetupRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetClaudeSetupRequestOperation {
         #[serde(rename = "getClaudeSetup")]
         GetClaudeSetup,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetClaudeSetupRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetClaudeSetup => f.write_str("getClaudeSetup"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33013,18 +28094,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetConnectorRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetConnectorRequestOperation {
         #[serde(rename = "getConnector")]
         GetConnector,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetConnectorRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetConnector => f.write_str("getConnector"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33074,18 +28152,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetOpenRouterAuthorizationRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetOpenRouterAuthorizationRequestOperation {
         #[serde(rename = "getOpenRouterAuthorization")]
         GetOpenRouterAuthorization,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetOpenRouterAuthorizationRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetOpenRouterAuthorization => f.write_str("getOpenRouterAuthorization"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33121,7 +28196,6 @@ pub mod types {
     pub enum TenantApiGetOpenRouterAuthorizationResultRead {
         OpenRouterAuthorizationFound(TenantApiOpenRouterAuthorizationFound),
         AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiOpenRouterAuthorizationFound> for TenantApiGetOpenRouterAuthorizationResultRead {
         fn from(value: TenantApiOpenRouterAuthorizationFound) -> Self {
@@ -33150,18 +28224,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetPersonaRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetPersonaRequestOperation {
         #[serde(rename = "getPersona")]
         GetPersona,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetPersonaRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetPersona => f.write_str("getPersona"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33209,18 +28280,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetPrebuildFailureRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetPrebuildFailureRequestOperation {
         #[serde(rename = "getPrebuildFailure")]
         GetPrebuildFailure,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetPrebuildFailureRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetPrebuildFailure => f.write_str("getPrebuildFailure"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33268,18 +28336,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetPrebuildRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetPrebuildRequestOperation {
         #[serde(rename = "getPrebuild")]
         GetPrebuild,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetPrebuildRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetPrebuild => f.write_str("getPrebuild"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33327,18 +28392,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetSecretSetRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetSecretSetRequestOperation {
         #[serde(rename = "getSecretSet")]
         GetSecretSet,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetSecretSetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetSecretSet => f.write_str("getSecretSet"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33375,7 +28437,6 @@ pub mod types {
         Found(TenantApiSecretSetFound),
         NotFound(TenantApiSecretSetNotFound),
         Unreadable(TenantApiSecretSetUnreadable),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetFound> for TenantApiGetSecretSetResultRead {
         fn from(value: TenantApiSecretSetFound) -> Self {
@@ -33409,18 +28470,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetSessionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetSessionRequestOperation {
         #[serde(rename = "getSession")]
         GetSession,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetSessionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetSession => f.write_str("getSession"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33468,18 +28526,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetSnapshotRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetSnapshotRequestOperation {
         #[serde(rename = "getSnapshot")]
         GetSnapshot,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetSnapshotRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetSnapshot => f.write_str("getSnapshot"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33527,18 +28582,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetSubscriptionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetSubscriptionRequestOperation {
         #[serde(rename = "getSubscription")]
         GetSubscription,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetSubscription => f.write_str("getSubscription"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33587,18 +28639,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetTriggerRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetTriggerRequestOperation {
         #[serde(rename = "getTrigger")]
         GetTrigger,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetTriggerRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetTrigger => f.write_str("getTrigger"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33647,18 +28696,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetTurnFailureRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetTurnFailureRequestOperation {
         #[serde(rename = "getTurnFailure")]
         GetTurnFailure,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetTurnFailureRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetTurnFailure => f.write_str("getTurnFailure"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33706,18 +28752,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetTurnRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetTurnRequestOperation {
         #[serde(rename = "getTurn")]
         GetTurn,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetTurnRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetTurn => f.write_str("getTurn"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33765,18 +28808,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiGetWebhookEndpointRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiGetWebhookEndpointRequestOperation {
         #[serde(rename = "getWebhookEndpoint")]
         GetWebhookEndpoint,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetWebhookEndpointRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::GetWebhookEndpoint => f.write_str("getWebhookEndpoint"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -33808,149 +28848,6 @@ pub mod types {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
         pub endpoint: ::std::option::Option<WebhookEndpoint>,
     }
-    ///`TenantApiGitHubActionsConnectionInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiGitHubActionsConnectionInput {
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiGitHubActionsConnectionRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiGitHubActionsConnectionRequest {
-        pub input: TenantApiGitHubActionsConnectionInput,
-        pub operation: TenantApiGitHubActionsConnectionRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiGitHubActionsConnectionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiGitHubActionsConnectionRequestOperation {
-        #[serde(rename = "gitHubActionsConnection")]
-        GitHubActionsConnection,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiGitHubActionsConnectionRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::GitHubActionsConnection => f.write_str("gitHubActionsConnection"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiGitHubActionsConnectionRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "gitHubActionsConnection" => Ok(Self::GitHubActionsConnection),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiGitHubActionsConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiGitHubActionsConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiGitHubActionsConnectionResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiGitHubActionsConnectionResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub connection: ::std::option::Option<GitHubActionsConnection>,
-    }
-    ///`TenantApiGitHubActionsStart`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiGitHubActionsStart {
-        #[serde(rename = "apiOrigin")]
-        pub api_origin: UrlText,
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: ShortText,
-        #[serde(rename = "guestImageDigest")]
-        pub guest_image_digest: ShortText,
-        #[serde(rename = "personaId")]
-        pub persona_id: EntityId,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        pub rebuild: bool,
-        pub repository: ShortText,
-        #[serde(rename = "rootfsKey")]
-        pub rootfs_key: PathText,
-        pub target: TenantApiRepositoryRef,
-    }
-    ///`TenantApiGitHubActionsUploadTarget`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiGitHubActionsUploadTarget {
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: TenantApiGitHubActionsUploadTargetCallerWorkflow,
-        #[serde(rename = "defaultBranch")]
-        pub default_branch: ShortText,
-        pub prebuild: Prebuild,
-        pub provider: TenantApiGitHubActionsUploadTargetProvider,
-        pub run: TenantApiPrebuildRun,
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub upload: ::std::option::Option<TenantApiPrebuildLayerUpload>,
-    }
-    ///`TenantApiGitHubActionsUploadTargetCallerWorkflow`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiGitHubActionsUploadTargetCallerWorkflow {
-        Connected(TenantApiCallerWorkflowConnected),
-        NotConnected(TenantApiCallerWorkflowNotConnected),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiCallerWorkflowConnected> for TenantApiGitHubActionsUploadTargetCallerWorkflow {
-        fn from(value: TenantApiCallerWorkflowConnected) -> Self {
-            Self::Connected(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCallerWorkflowNotConnected> for TenantApiGitHubActionsUploadTargetCallerWorkflow {
-        fn from(value: TenantApiCallerWorkflowNotConnected) -> Self {
-            Self::NotConnected(value)
-        }
-    }
-    ///`TenantApiGitHubActionsUploadTargetProvider`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiGitHubActionsUploadTargetProvider {
-        GitHubActions,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiGitHubActionsUploadTargetProvider {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::GitHubActions => f.write_str("GitHubActions"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiGitHubActionsUploadTargetProvider {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "GitHubActions" => Ok(Self::GitHubActions),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiGitHubActionsUploadTargetProvider {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiGitHubActionsUploadTargetProvider {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///The GitHub account a repository token secret acts as, when the set holds one.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiGitHubUser {
@@ -33974,18 +28871,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiHeldPrebuildRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiHeldPrebuildRequestOperation {
         #[serde(rename = "heldPrebuild")]
         HeldPrebuild,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHeldPrebuildRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::HeldPrebuild => f.write_str("heldPrebuild"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -34024,17 +28918,14 @@ pub mod types {
         pub type_: TenantApiHostFrameRefusedType,
     }
     ///`TenantApiHostFrameRefusedType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiHostFrameRefusedType {
         Refused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostFrameRefusedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Refused => f.write_str("Refused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -34079,18 +28970,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiHostHealthRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiHostHealthRequestOperation {
         #[serde(rename = "hostHealth")]
         HostHealth,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostHealthRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::HostHealth => f.write_str("hostHealth"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -34156,18 +29044,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiHostHelloRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiHostHelloRequestOperation {
         #[serde(rename = "hostHello")]
         HostHello,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostHelloRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::HostHello => f.write_str("hostHello"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -34241,7 +29126,6 @@ pub mod types {
         BoxTeardownFailed(ChannelBoxTeardownFailed),
         ClaudeSetupBoxUrl(ChannelClaudeSetupBoxUrl),
         ClaudeSetupBoxFailed(ChannelClaudeSetupBoxFailed),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelTurnImageFetching> for TenantApiHostMessageInputMessage {
         fn from(value: ChannelTurnImageFetching) -> Self {
@@ -34332,18 +29216,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiHostMessageRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiHostMessageRequestOperation {
         #[serde(rename = "hostMessage")]
         HostMessage,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostMessageRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::HostMessage => f.write_str("hostMessage"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -34404,17 +29285,14 @@ pub mod types {
         pub started: Prebuild,
     }
     ///`TenantApiHostPrebuildStartedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiHostPrebuildStartedKind {
         Started,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostPrebuildStartedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Started => f.write_str("Started"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -34440,19 +29318,16 @@ pub mod types {
         }
     }
     ///`TenantApiHostPresence`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiHostPresence {
         Online,
         Offline,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostPresence {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Online => f.write_str("Online"),
                 Self::Offline => f.write_str("Offline"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -34497,18 +29372,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiHostPresenceRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiHostPresenceRequestOperation {
         #[serde(rename = "hostPresence")]
         HostPresence,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostPresenceRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::HostPresence => f.write_str("hostPresence"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -34741,18 +29613,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiHostUsageRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiHostUsageRequestOperation {
         #[serde(rename = "hostUsage")]
         HostUsage,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostUsageRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::HostUsage => f.write_str("hostUsage"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -34815,240 +29684,6 @@ pub mod types {
         pub issue_number: GitHubIssueNumber,
         pub title: Summary,
     }
-    ///`TenantApiJobInputsTarget`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobInputsTarget {
-        #[serde(rename = "callerWorkflow")]
-        pub caller_workflow: TenantApiJobInputsTargetCallerWorkflow,
-        #[serde(rename = "defaultBranch")]
-        pub default_branch: ShortText,
-        #[serde(rename = "headSha")]
-        pub head_sha: ShortText,
-        pub prebuild: Prebuild,
-        #[serde(rename = "rootfsKey")]
-        pub rootfs_key: PathText,
-    }
-    ///`TenantApiJobInputsTargetCallerWorkflow`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiJobInputsTargetCallerWorkflow {
-        Connected(TenantApiCallerWorkflowConnected),
-        NotConnected(TenantApiCallerWorkflowNotConnected),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiCallerWorkflowConnected> for TenantApiJobInputsTargetCallerWorkflow {
-        fn from(value: TenantApiCallerWorkflowConnected) -> Self {
-            Self::Connected(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCallerWorkflowNotConnected> for TenantApiJobInputsTargetCallerWorkflow {
-        fn from(value: TenantApiCallerWorkflowNotConnected) -> Self {
-            Self::NotConnected(value)
-        }
-    }
-    ///`TenantApiJobInputsTargetInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobInputsTargetInput {
-        #[serde(rename = "headSha")]
-        pub head_sha: ShortText,
-        pub repository: ShortText,
-        #[serde(rename = "runId")]
-        pub run_id: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiJobInputsTargetRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobInputsTargetRequest {
-        pub input: TenantApiJobInputsTargetInput,
-        pub operation: TenantApiJobInputsTargetRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiJobInputsTargetRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiJobInputsTargetRequestOperation {
-        #[serde(rename = "jobInputsTarget")]
-        JobInputsTarget,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiJobInputsTargetRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::JobInputsTarget => f.write_str("jobInputsTarget"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiJobInputsTargetRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "jobInputsTarget" => Ok(Self::JobInputsTarget),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiJobInputsTargetRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiJobInputsTargetRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiJobInputsTargetResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobInputsTargetResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub target: ::std::option::Option<TenantApiJobInputsTarget>,
-    }
-    ///`TenantApiJobRunBoundOk`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobRunBoundOk {
-        pub kind: TenantApiJobRunBoundOkKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiJobRunBoundOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiJobRunBoundOkKind {
-        Bound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiJobRunBoundOkKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Bound => f.write_str("Bound"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiJobRunBoundOkKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Bound" => Ok(Self::Bound),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiJobRunBoundOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiJobRunBoundOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiJobRunOther`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiJobRunOther {
-        pub kind: TenantApiJobRunOtherKind,
-        #[serde(rename = "runId")]
-        pub run_id: i64,
-    }
-    ///`TenantApiJobRunOtherKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiJobRunOtherKind {
-        OtherRun,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiJobRunOtherKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::OtherRun => f.write_str("OtherRun"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiJobRunOtherKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "OtherRun" => Ok(Self::OtherRun),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiJobRunOtherKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiJobRunOtherKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiListCircleCiProjectsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiListCircleCiProjectsInput {
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiListCircleCiProjectsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiListCircleCiProjectsRequest {
-        pub input: TenantApiListCircleCiProjectsInput,
-        pub operation: TenantApiListCircleCiProjectsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiListCircleCiProjectsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiListCircleCiProjectsRequestOperation {
-        #[serde(rename = "listCircleCIProjects")]
-        ListCircleCiProjects,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiListCircleCiProjectsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ListCircleCiProjects => f.write_str("listCircleCIProjects"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiListCircleCiProjectsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "listCircleCIProjects" => Ok(Self::ListCircleCiProjects),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiListCircleCiProjectsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiListCircleCiProjectsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiListCircleCiProjectsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiListCircleCiProjectsResult {
-        pub projects: ::std::vec::Vec<CircleCiProject>,
-    }
     ///`TenantApiListClaudeSetupsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiListClaudeSetupsInput {
@@ -35067,18 +29702,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListClaudeSetupsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListClaudeSetupsRequestOperation {
         #[serde(rename = "listClaudeSetups")]
         ListClaudeSetups,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListClaudeSetupsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListClaudeSetups => f.write_str("listClaudeSetups"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35124,18 +29756,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListConnectorsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListConnectorsRequestOperation {
         #[serde(rename = "listConnectors")]
         ListConnectors,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListConnectorsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListConnectors => f.write_str("listConnectors"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35182,18 +29811,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListCredentialHandoversRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListCredentialHandoversRequestOperation {
         #[serde(rename = "listCredentialHandovers")]
         ListCredentialHandovers,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListCredentialHandoversRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListCredentialHandovers => f.write_str("listCredentialHandovers"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35240,8 +29866,6 @@ pub mod types {
         ///The trigger whose events to keep; null keeps every trigger's.
         #[serde(rename = "triggerId", deserialize_with = "::std::option::Option::deserialize")]
         pub trigger_id: ::std::option::Option<EntityId>,
-        #[serde(rename = "waitSeconds")]
-        pub wait_seconds: i32,
     }
     ///`TenantApiListEventsRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -35252,18 +29876,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListEventsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListEventsRequestOperation {
         #[serde(rename = "listEvents")]
         ListEvents,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListEventsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListEvents => f.write_str("listEvents"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35299,7 +29920,6 @@ pub mod types {
     pub enum TenantApiListEventsResultListed {
         EventsRead(TenantApiEventsRead),
         EventCursorExpired(TenantApiEventCursorExpired),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiEventsRead> for TenantApiListEventsResultListed {
         fn from(value: TenantApiEventsRead) -> Self {
@@ -35326,18 +29946,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListHostUsageRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListHostUsageRequestOperation {
         #[serde(rename = "listHostUsage")]
         ListHostUsage,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListHostUsageRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListHostUsage => f.write_str("listHostUsage"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35382,18 +29999,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListLatestPrebuildsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListLatestPrebuildsRequestOperation {
         #[serde(rename = "listLatestPrebuilds")]
         ListLatestPrebuilds,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListLatestPrebuildsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListLatestPrebuilds => f.write_str("listLatestPrebuilds"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35438,18 +30052,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListPersonasRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListPersonasRequestOperation {
         #[serde(rename = "listPersonas")]
         ListPersonas,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListPersonasRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListPersonas => f.write_str("listPersonas"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35508,18 +30119,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListPinsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListPinsRequestOperation {
         #[serde(rename = "listPins")]
         ListPins,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListPinsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListPins => f.write_str("listPins"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35566,18 +30174,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListPrebuildsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListPrebuildsRequestOperation {
         #[serde(rename = "listPrebuilds")]
         ListPrebuilds,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListPrebuildsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListPrebuilds => f.write_str("listPrebuilds"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35624,18 +30229,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListPushSubscriptionsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListPushSubscriptionsRequestOperation {
         #[serde(rename = "listPushSubscriptions")]
         ListPushSubscriptions,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListPushSubscriptionsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListPushSubscriptions => f.write_str("listPushSubscriptions"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35680,18 +30282,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListSecretSetsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListSecretSetsRequestOperation {
         #[serde(rename = "listSecretSets")]
         ListSecretSets,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListSecretSetsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListSecretSets => f.write_str("listSecretSets"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35727,7 +30326,6 @@ pub mod types {
     pub enum TenantApiListSecretSetsResultRead {
         SetsRead(TenantApiSecretSetsRead),
         SetUnreadable(TenantApiSecretSetUnreadable),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetsRead> for TenantApiListSecretSetsResultRead {
         fn from(value: TenantApiSecretSetsRead) -> Self {
@@ -35755,18 +30353,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListSessionsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListSessionsRequestOperation {
         #[serde(rename = "listSessions")]
         ListSessions,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListSessionsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListSessions => f.write_str("listSessions"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35813,18 +30408,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListSnapshotsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListSnapshotsRequestOperation {
         #[serde(rename = "listSnapshots")]
         ListSnapshots,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListSnapshotsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListSnapshots => f.write_str("listSnapshots"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35872,18 +30464,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListSteersRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListSteersRequestOperation {
         #[serde(rename = "listSteers")]
         ListSteers,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListSteersRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListSteers => f.write_str("listSteers"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35931,18 +30520,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListStopFailuresRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListStopFailuresRequestOperation {
         #[serde(rename = "listStopFailures")]
         ListStopFailures,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListStopFailuresRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListStopFailures => f.write_str("listStopFailures"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -35989,18 +30575,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListSubscriptionsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListSubscriptionsRequestOperation {
         #[serde(rename = "listSubscriptions")]
         ListSubscriptions,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListSubscriptionsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListSubscriptions => f.write_str("listSubscriptions"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36045,18 +30628,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListTriggersRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListTriggersRequestOperation {
         #[serde(rename = "listTriggers")]
         ListTriggers,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListTriggersRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListTriggers => f.write_str("listTriggers"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36103,18 +30683,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListTurnsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListTurnsRequestOperation {
         #[serde(rename = "listTurns")]
         ListTurns,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListTurnsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListTurns => f.write_str("listTurns"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36160,18 +30737,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiListWebhookEndpointsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiListWebhookEndpointsRequestOperation {
         #[serde(rename = "listWebhookEndpoints")]
         ListWebhookEndpoints,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListWebhookEndpointsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ListWebhookEndpoints => f.write_str("listWebhookEndpoints"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36212,17 +30786,14 @@ pub mod types {
         pub name: ShortText,
     }
     ///`TenantApiModelUnsupportedCredentialRefusalKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiModelUnsupportedCredentialRefusalKind {
         ModelUnsupported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiModelUnsupportedCredentialRefusalKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ModelUnsupported => f.write_str("ModelUnsupported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36246,95 +30817,6 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
-    }
-    ///`TenantApiNamespaceConnectionInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiNamespaceConnectionInput(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiNamespaceConnectionInput {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiNamespaceConnectionInput>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiNamespaceConnectionInput) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiNamespaceConnectionInput
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
-    ///The tenant's Namespace connection as the tenant Durable Object stores it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiNamespaceConnectionRecord {
-        #[serde(rename = "accountLabel")]
-        pub account_label: ShortText,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        #[serde(rename = "namespaceConnectionId")]
-        pub namespace_connection_id: EntityId,
-        #[serde(rename = "updatedAt")]
-        pub updated_at: i64,
-        #[serde(rename = "workspaceId")]
-        pub workspace_id: ShortText,
-    }
-    ///`TenantApiNamespaceConnectionRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiNamespaceConnectionRequest {
-        pub input: TenantApiNamespaceConnectionInput,
-        pub operation: TenantApiNamespaceConnectionRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiNamespaceConnectionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiNamespaceConnectionRequestOperation {
-        #[serde(rename = "namespaceConnection")]
-        NamespaceConnection,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiNamespaceConnectionRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NamespaceConnection => f.write_str("namespaceConnection"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiNamespaceConnectionRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "namespaceConnection" => Ok(Self::NamespaceConnection),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiNamespaceConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiNamespaceConnectionRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiNamespaceConnectionResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiNamespaceConnectionResult {
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub connection: ::std::option::Option<TenantApiNamespaceConnectionRecord>,
     }
     ///`TenantApiNewClaudeSetup`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -36378,17 +30860,14 @@ pub mod types {
         pub kind: TenantApiNoCredentialRefusalKind,
     }
     ///`TenantApiNoCredentialRefusalKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiNoCredentialRefusalKind {
         NoCredential,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiNoCredentialRefusalKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NoCredential => f.write_str("NoCredential"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36422,17 +30901,14 @@ pub mod types {
         pub provider: ModelProvider,
     }
     ///`TenantApiNoModelCredentialRefusalKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiNoModelCredentialRefusalKind {
         NoModelCredential,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiNoModelCredentialRefusalKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NoModelCredential => f.write_str("NoModelCredential"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36474,17 +30950,14 @@ pub mod types {
         pub snapshots: ::std::vec::Vec<ChannelSnapshotDownload>,
     }
     ///`TenantApiOfferReadyKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOfferReadyKind {
         Ready,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOfferReadyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Ready => f.write_str("Ready"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36524,18 +30997,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiOfferSentRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOfferSentRequestOperation {
         #[serde(rename = "offerSent")]
         OfferSent,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOfferSentRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::OfferSent => f.write_str("offerSent"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36586,17 +31056,14 @@ pub mod types {
         pub kind: TenantApiOfferWithdrawnKind,
     }
     ///`TenantApiOfferWithdrawnKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOfferWithdrawnKind {
         Withdrawn,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOfferWithdrawnKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Withdrawn => f.write_str("Withdrawn"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36637,18 +31104,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiOpenRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOpenRequestOperation {
         #[serde(rename = "open")]
         Open,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Open => f.write_str("open"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36714,18 +31178,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiOpenRouterAuthorizationDeadlineReachedRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOpenRouterAuthorizationDeadlineReachedRequestOperation {
         #[serde(rename = "openRouterAuthorizationDeadlineReached")]
         OpenRouterAuthorizationDeadlineReached,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterAuthorizationDeadlineReachedRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::OpenRouterAuthorizationDeadlineReached => f.write_str("openRouterAuthorizationDeadlineReached"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36785,17 +31246,14 @@ pub mod types {
         pub kind: TenantApiOpenRouterAuthorizationFoundKind,
     }
     ///`TenantApiOpenRouterAuthorizationFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOpenRouterAuthorizationFoundKind {
         Found,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterAuthorizationFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Found => f.write_str("Found"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36827,17 +31285,14 @@ pub mod types {
         pub kind: TenantApiOpenRouterAuthorizationStartedOkKind,
     }
     ///`TenantApiOpenRouterAuthorizationStartedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOpenRouterAuthorizationStartedOkKind {
         Started,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterAuthorizationStartedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Started => f.write_str("Started"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36869,17 +31324,14 @@ pub mod types {
         pub kind: TenantApiOpenRouterCallbackCodeKind,
     }
     ///`TenantApiOpenRouterCallbackCodeKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOpenRouterCallbackCodeKind {
         Code,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterCallbackCodeKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Code => f.write_str("Code"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36920,7 +31372,6 @@ pub mod types {
     pub enum TenantApiOpenRouterCallbackInputCallback {
         Code(TenantApiOpenRouterCallbackCode),
         NoCode(TenantApiOpenRouterCallbackNoCode),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiOpenRouterCallbackCode> for TenantApiOpenRouterCallbackInputCallback {
         fn from(value: TenantApiOpenRouterCallbackCode) -> Self {
@@ -36938,17 +31389,14 @@ pub mod types {
         pub kind: TenantApiOpenRouterCallbackNoCodeKind,
     }
     ///`TenantApiOpenRouterCallbackNoCodeKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOpenRouterCallbackNoCodeKind {
         NoCode,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterCallbackNoCodeKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NoCode => f.write_str("NoCode"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -36982,18 +31430,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiOpenRouterCallbackRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOpenRouterCallbackRequestOperation {
         #[serde(rename = "openRouterCallback")]
         OpenRouterCallback,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterCallbackRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::OpenRouterCallback => f.write_str("openRouterCallback"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37029,7 +31474,6 @@ pub mod types {
     pub enum TenantApiOpenRouterCallbackResultSettled {
         OpenRouterReturned(TenantApiOpenRouterReturned),
         AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiOpenRouterReturned> for TenantApiOpenRouterCallbackResultSettled {
         fn from(value: TenantApiOpenRouterReturned) -> Self {
@@ -37049,17 +31493,14 @@ pub mod types {
         pub secret_set_id: EntityId,
     }
     ///`TenantApiOpenRouterReturnedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOpenRouterReturnedKind {
         Returned,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterReturnedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Returned => f.write_str("Returned"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37117,18 +31558,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiOpenRouterSecretSetsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiOpenRouterSecretSetsRequestOperation {
         #[serde(rename = "openRouterSecretSets")]
         OpenRouterSecretSets,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterSecretSetsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::OpenRouterSecretSets => f.write_str("openRouterSecretSets"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37177,18 +31615,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiPatchPersonaRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPatchPersonaRequestOperation {
         #[serde(rename = "patchPersona")]
         PatchPersona,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPatchPersonaRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PatchPersona => f.write_str("patchPersona"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37224,7 +31659,6 @@ pub mod types {
     pub enum TenantApiPatchPersonaResultWritten {
         PersonaUpdated(TenantApiPersonaUpdated),
         WriteConflict(TenantApiWriteConflict),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiPersonaUpdated> for TenantApiPatchPersonaResultWritten {
         fn from(value: TenantApiPersonaUpdated) -> Self {
@@ -37257,18 +31691,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiPatchSecretSetRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPatchSecretSetRequestOperation {
         #[serde(rename = "patchSecretSet")]
         PatchSecretSet,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPatchSecretSetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PatchSecretSet => f.write_str("patchSecretSet"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37307,7 +31738,6 @@ pub mod types {
         Conflict(TenantApiSecretSetConflict),
         NoStoredValue(TenantApiSecretSetNoStoredValue),
         UncheckedToken(TenantApiSecretSetUncheckedToken),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetUpdated> for TenantApiPatchSecretSetResultPatched {
         fn from(value: TenantApiSecretSetUpdated) -> Self {
@@ -37353,18 +31783,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiPatchSessionTagsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPatchSessionTagsRequestOperation {
         #[serde(rename = "patchSessionTags")]
         PatchSessionTags,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPatchSessionTagsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PatchSessionTags => f.write_str("patchSessionTags"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37401,7 +31828,6 @@ pub mod types {
         Tagged(TenantApiSessionTagged),
         NotFound(TenantApiSessionNotFound),
         TagsOverLimit(TenantApiSessionTagsOverLimit),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionTagged> for TenantApiPatchSessionTagsResultTagged {
         fn from(value: TenantApiSessionTagged) -> Self {
@@ -37437,18 +31863,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiPauseSubscriptionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPauseSubscriptionRequestOperation {
         #[serde(rename = "pauseSubscription")]
         PauseSubscription,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPauseSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PauseSubscription => f.write_str("pauseSubscription"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37485,7 +31908,6 @@ pub mod types {
         ChangedOk(TenantApiSubscriptionChangedOk),
         NotFound(TenantApiSubscriptionNotFound),
         EndedState(TenantApiSubscriptionEndedState),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSubscriptionChangedOk> for TenantApiPauseSubscriptionResultPaused {
         fn from(value: TenantApiSubscriptionChangedOk) -> Self {
@@ -37526,17 +31948,14 @@ pub mod types {
         pub kind: TenantApiPersonaDeletedKind,
     }
     ///`TenantApiPersonaDeletedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPersonaDeletedKind {
         Deleted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPersonaDeletedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Deleted => f.write_str("Deleted"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37568,17 +31987,14 @@ pub mod types {
         pub sessions: ::std::vec::Vec<EntityId>,
     }
     ///`TenantApiPersonaInUseKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPersonaInUseKind {
         InUse,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPersonaInUseKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::InUse => f.write_str("InUse"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37609,17 +32025,14 @@ pub mod types {
         pub kind: TenantApiPersonaNotFoundKind,
     }
     ///`TenantApiPersonaNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPersonaNotFoundKind {
         NotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPersonaNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotFound => f.write_str("NotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37710,18 +32123,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiPinRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPinRequestOperation {
         #[serde(rename = "pin")]
         Pin,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPinRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Pin => f.write_str("pin"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37758,17 +32168,14 @@ pub mod types {
         pub pin: HarnessPinCreate,
     }
     ///`TenantApiPinWriteKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPinWriteKind {
         Pin,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPinWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Pin => f.write_str("Pin"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37793,94 +32200,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiPrebuildActionsDisabled`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildActionsDisabled {
-        pub detail: Detail,
-        pub kind: TenantApiPrebuildActionsDisabledKind,
-    }
-    ///`TenantApiPrebuildActionsDisabledKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildActionsDisabledKind {
-        ActionsDisabled,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildActionsDisabledKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ActionsDisabled => f.write_str("ActionsDisabled"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildActionsDisabledKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "ActionsDisabled" => Ok(Self::ActionsDisabled),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildActionsDisabledKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildActionsDisabledKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiPrebuildAppPermissionMissing`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildAppPermissionMissing {
-        #[serde(rename = "appOwner")]
-        pub app_owner: ShortText,
-        #[serde(rename = "appSlug")]
-        pub app_slug: ShortText,
-        pub kind: TenantApiPrebuildAppPermissionMissingKind,
-        pub permissions: ::std::vec::Vec<ShortText>,
-    }
-    ///`TenantApiPrebuildAppPermissionMissingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildAppPermissionMissingKind {
-        AppPermissionMissing,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildAppPermissionMissingKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::AppPermissionMissing => f.write_str("AppPermissionMissing"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildAppPermissionMissingKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "AppPermissionMissing" => Ok(Self::AppPermissionMissing),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildAppPermissionMissingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildAppPermissionMissingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiPrebuildBuildDue`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildBuildDue {
@@ -37888,17 +32207,14 @@ pub mod types {
         pub name: TenantApiPrebuildBuildDueName,
     }
     ///`TenantApiPrebuildBuildDueName`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPrebuildBuildDueName {
         PrebuildBuild,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrebuildBuildDueName {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PrebuildBuild => f.write_str("PrebuildBuild"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -37918,48 +32234,6 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildBuildDueName {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiPrebuildCallerRefused`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildCallerRefused {
-        pub detail: Detail,
-        pub kind: TenantApiPrebuildCallerRefusedKind,
-    }
-    ///`TenantApiPrebuildCallerRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildCallerRefusedKind {
-        CallerRefused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildCallerRefusedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CallerRefused => f.write_str("CallerRefused"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildCallerRefusedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "CallerRefused" => Ok(Self::CallerRefused),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildCallerRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildCallerRefusedKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -38003,7 +32277,6 @@ pub mod types {
     pub enum TenantApiPrebuildDeadlineReachedInputDue {
         DispatchDue(TenantApiPrebuildDispatchDue),
         BuildDue(TenantApiPrebuildBuildDue),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiPrebuildDispatchDue> for TenantApiPrebuildDeadlineReachedInputDue {
         fn from(value: TenantApiPrebuildDispatchDue) -> Self {
@@ -38024,18 +32297,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiPrebuildDeadlineReachedRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPrebuildDeadlineReachedRequestOperation {
         #[serde(rename = "prebuildDeadlineReached")]
         PrebuildDeadlineReached,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrebuildDeadlineReachedRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PrebuildDeadlineReached => f.write_str("prebuildDeadlineReached"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -38093,17 +32363,14 @@ pub mod types {
         pub name: TenantApiPrebuildDispatchDueName,
     }
     ///`TenantApiPrebuildDispatchDueName`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPrebuildDispatchDueName {
         PrebuildDispatch,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrebuildDispatchDueName {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PrebuildDispatch => f.write_str("PrebuildDispatch"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -38137,99 +32404,6 @@ pub mod types {
         pub input_digest: ShortText,
         pub repository: ShortText,
     }
-    ///`TenantApiPrebuildLayerUpload`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildLayerUpload {
-        #[serde(rename = "layerDigest")]
-        pub layer_digest: ShortText,
-        #[serde(rename = "layerSizeBytes")]
-        pub layer_size_bytes: i64,
-    }
-    ///`TenantApiPrebuildNoInstallation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildNoInstallation {
-        pub kind: TenantApiPrebuildNoInstallationKind,
-    }
-    ///`TenantApiPrebuildNoInstallationKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildNoInstallationKind {
-        NoInstallation,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildNoInstallationKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NoInstallation => f.write_str("NoInstallation"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildNoInstallationKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NoInstallation" => Ok(Self::NoInstallation),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildNoInstallationKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildNoInstallationKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiPrebuildPermissionMissing`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildPermissionMissing {
-        #[serde(rename = "appSlug")]
-        pub app_slug: ShortText,
-        pub kind: TenantApiPrebuildPermissionMissingKind,
-        pub permissions: ::std::vec::Vec<ShortText>,
-    }
-    ///`TenantApiPrebuildPermissionMissingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildPermissionMissingKind {
-        PermissionMissing,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildPermissionMissingKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::PermissionMissing => f.write_str("PermissionMissing"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildPermissionMissingKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "PermissionMissing" => Ok(Self::PermissionMissing),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildPermissionMissingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildPermissionMissingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiPrebuildRefused`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrebuildRefused {
@@ -38237,17 +32411,14 @@ pub mod types {
         pub kind: TenantApiPrebuildRefusedKind,
     }
     ///`TenantApiPrebuildRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPrebuildRefusedKind {
         Refused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrebuildRefusedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Refused => f.write_str("Refused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -38272,158 +32443,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiPrebuildRun`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildRun {
-        #[serde(rename = "headSha")]
-        pub head_sha: ShortText,
-        #[serde(rename = "runId")]
-        pub run_id: i64,
-    }
-    ///`TenantApiPrebuildStartRecord`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildStartRecord {
-        #[serde(rename = "configSource")]
-        pub config_source: PrebuildConfigSource,
-        #[serde(rename = "defaultBranch")]
-        pub default_branch: ShortText,
-        #[serde(rename = "headSha")]
-        pub head_sha: ShortText,
-        pub key: TenantApiPrebuildKey,
-        #[serde(rename = "personaId")]
-        pub persona_id: EntityId,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "rootfsKey")]
-        pub rootfs_key: PathText,
-        pub target: TenantApiRepositoryRef,
-    }
-    ///`TenantApiPrebuildStarted`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildStarted {
-        pub kind: TenantApiPrebuildStartedKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiPrebuildStartedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildStartedKind {
-        Started,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildStartedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Started => f.write_str("Started"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildStartedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Started" => Ok(Self::Started),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildStartedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildStartedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiPrebuildTokenRefused`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildTokenRefused {
-        pub detail: Detail,
-        pub kind: TenantApiPrebuildTokenRefusedKind,
-    }
-    ///`TenantApiPrebuildTokenRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildTokenRefusedKind {
-        TokenRefused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildTokenRefusedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::TokenRefused => f.write_str("TokenRefused"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildTokenRefusedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "TokenRefused" => Ok(Self::TokenRefused),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildTokenRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildTokenRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiPrebuildUnreadable`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiPrebuildUnreadable {
-        pub detail: Detail,
-        pub kind: TenantApiPrebuildUnreadableKind,
-    }
-    ///`TenantApiPrebuildUnreadableKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiPrebuildUnreadableKind {
-        Unreadable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiPrebuildUnreadableKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Unreadable => f.write_str("Unreadable"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiPrebuildUnreadableKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Unreadable" => Ok(Self::Unreadable),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiPrebuildUnreadableKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiPrebuildUnreadableKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiPrepareClaudeSetupInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiPrepareClaudeSetupInput {
@@ -38440,7 +32459,6 @@ pub mod types {
     pub enum TenantApiPrepareClaudeSetupInputStored {
         Offer(TenantApiStoredClaudeSetupOffer),
         Code(TenantApiStoredClaudeSetupCode),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiStoredClaudeSetupOffer> for TenantApiPrepareClaudeSetupInputStored {
         fn from(value: TenantApiStoredClaudeSetupOffer) -> Self {
@@ -38461,18 +32479,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiPrepareClaudeSetupRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPrepareClaudeSetupRequestOperation {
         #[serde(rename = "prepareClaudeSetup")]
         PrepareClaudeSetup,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrepareClaudeSetupRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PrepareClaudeSetup => f.write_str("prepareClaudeSetup"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -38508,7 +32523,6 @@ pub mod types {
     pub enum TenantApiPrepareClaudeSetupResultPrepared {
         Ready(TenantApiClaudeSetupReady),
         Withdrawn(TenantApiClaudeSetupWithdrawn),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiClaudeSetupReady> for TenantApiPrepareClaudeSetupResultPrepared {
         fn from(value: TenantApiClaudeSetupReady) -> Self {
@@ -38540,18 +32554,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiPrepareOfferRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPrepareOfferRequestOperation {
         #[serde(rename = "prepareOffer")]
         PrepareOffer,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrepareOfferRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PrepareOffer => f.write_str("prepareOffer"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -38587,7 +32598,6 @@ pub mod types {
     pub enum TenantApiPrepareOfferResultPrepared {
         Ready(TenantApiOfferReady),
         Withdrawn(TenantApiOfferWithdrawn),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiOfferReady> for TenantApiPrepareOfferResultPrepared {
         fn from(value: TenantApiOfferReady) -> Self {
@@ -38668,18 +32678,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiPushTargetRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiPushTargetRequestOperation {
         #[serde(rename = "pushTarget")]
         PushTarget,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPushTargetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PushTarget => f.write_str("pushTarget"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -38726,18 +32733,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiReadLimitsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiReadLimitsRequestOperation {
         #[serde(rename = "readLimits")]
         ReadLimits,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiReadLimitsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ReadLimits => f.write_str("readLimits"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -38774,17 +32778,14 @@ pub mod types {
         pub token: Token,
     }
     ///`TenantApiReadTokenOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiReadTokenOkKind {
         Token,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiReadTokenOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Token => f.write_str("Token"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -38824,18 +32825,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiReadUsageRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiReadUsageRequestOperation {
         #[serde(rename = "readUsage")]
         ReadUsage,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiReadUsageRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ReadUsage => f.write_str("readUsage"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -38868,6 +32866,8 @@ pub mod types {
     ///`TenantApiReconcileHeldBoxesInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiReconcileHeldBoxesInput {
+        #[serde(rename = "heldClaudeSetupIds")]
+        pub held_claude_setup_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "heldSessionIds")]
         pub held_session_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "hostId")]
@@ -38885,18 +32885,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiReconcileHeldBoxesRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiReconcileHeldBoxesRequestOperation {
         #[serde(rename = "reconcileHeldBoxes")]
         ReconcileHeldBoxes,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiReconcileHeldBoxesRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ReconcileHeldBoxes => f.write_str("reconcileHeldBoxes"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -38963,18 +32960,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiRecordPrebuildBuildingRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiRecordPrebuildBuildingRequestOperation {
         #[serde(rename = "recordPrebuildBuilding")]
         RecordPrebuildBuilding,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRecordPrebuildBuildingRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RecordPrebuildBuilding => f.write_str("recordPrebuildBuilding"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39023,35 +33017,6 @@ pub mod types {
             Self(value)
         }
     }
-    ///`TenantApiRecordedPipeline`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiRecordedPipeline {
-        #[serde(rename = "headSha")]
-        pub head_sha: ShortText,
-        pub job: TenantApiRecordedPipelineJob,
-        #[serde(rename = "pipelineId")]
-        pub pipeline_id: ShortText,
-        #[serde(rename = "projectId")]
-        pub project_id: ShortText,
-    }
-    ///`TenantApiRecordedPipelineJob`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiRecordedPipelineJob {
-        Recorded(TenantApiUploadJobRecorded),
-        Absent(TenantApiUploadJobAbsent),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiUploadJobRecorded> for TenantApiRecordedPipelineJob {
-        fn from(value: TenantApiUploadJobRecorded) -> Self {
-            Self::Recorded(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadJobAbsent> for TenantApiRecordedPipelineJob {
-        fn from(value: TenantApiUploadJobAbsent) -> Self {
-            Self::Absent(value)
-        }
-    }
     ///`TenantApiRemoveSecretMemberInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiRemoveSecretMemberInput {
@@ -39071,18 +33036,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiRemoveSecretMemberRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiRemoveSecretMemberRequestOperation {
         #[serde(rename = "removeSecretMember")]
         RemoveSecretMember,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRemoveSecretMemberRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RemoveSecretMember => f.write_str("removeSecretMember"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39120,7 +33082,6 @@ pub mod types {
         SetMissing(TenantApiSecretSetMissing),
         MemberNotFound(TenantApiSecretMemberNotFound),
         SetUnreadable(TenantApiSecretSetUnreadable),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretMemberRemoved> for TenantApiRemoveSecretMemberResultRemoved {
         fn from(value: TenantApiSecretMemberRemoved) -> Self {
@@ -39163,18 +33124,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiRenameConnectorRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiRenameConnectorRequestOperation {
         #[serde(rename = "renameConnector")]
         RenameConnector,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRenameConnectorRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RenameConnector => f.write_str("renameConnector"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39212,7 +33170,6 @@ pub mod types {
         NotFound(TenantApiConnectorNotFound),
         NameTaken(TenantApiConnectorNameTaken),
         Changed(TenantApiConnectorChanged),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorWrittenOk> for TenantApiRenameConnectorResultWritten {
         fn from(value: TenantApiConnectorWrittenOk) -> Self {
@@ -39247,21 +33204,18 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///`TenantApiRepositoryReadTokenInputPermissionsValue`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiRepositoryReadTokenInputPermissionsValue {
         #[serde(rename = "read")]
         Read,
         #[serde(rename = "write")]
         Write,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRepositoryReadTokenInputPermissionsValue {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Read => f.write_str("read"),
                 Self::Write => f.write_str("write"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39296,18 +33250,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiRepositoryReadTokenRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiRepositoryReadTokenRequestOperation {
         #[serde(rename = "repositoryReadToken")]
         RepositoryReadToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRepositoryReadTokenRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RepositoryReadToken => f.write_str("repositoryReadToken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39343,7 +33294,6 @@ pub mod types {
     pub enum TenantApiRepositoryReadTokenResultRead {
         ReadTokenOk(TenantApiReadTokenOk),
         PrebuildRefused(TenantApiPrebuildRefused),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiReadTokenOk> for TenantApiRepositoryReadTokenResultRead {
         fn from(value: TenantApiReadTokenOk) -> Self {
@@ -39379,18 +33329,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiResumeSubscriptionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiResumeSubscriptionRequestOperation {
         #[serde(rename = "resumeSubscription")]
         ResumeSubscription,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiResumeSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ResumeSubscription => f.write_str("resumeSubscription"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39428,7 +33375,6 @@ pub mod types {
         NotFound(TenantApiSubscriptionNotFound),
         EndedState(TenantApiSubscriptionEndedState),
         CursorExpired(TenantApiSubscriptionCursorExpired),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSubscriptionChangedOk> for TenantApiResumeSubscriptionResultResumed {
         fn from(value: TenantApiSubscriptionChangedOk) -> Self {
@@ -39462,17 +33408,14 @@ pub mod types {
         pub secret_set_id: EntityId,
     }
     ///`TenantApiRewriteSecretSetWriteKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiRewriteSecretSetWriteKind {
         RewriteSecretSet,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRewriteSecretSetWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RewriteSecretSet => f.write_str("RewriteSecretSet"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39496,21 +33439,6 @@ pub mod types {
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
-    }
-    ///A GitHub Actions workflow run event, as the webhook reports it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiRunEvent {
-        pub action: ShortText,
-        #[serde(deserialize_with = "::std::option::Option::deserialize")]
-        pub conclusion: ::std::option::Option<ShortText>,
-        #[serde(rename = "headSha")]
-        pub head_sha: ShortText,
-        #[serde(rename = "htmlUrl")]
-        pub html_url: UrlText,
-        pub path: PathText,
-        pub repository: ShortText,
-        #[serde(rename = "runId")]
-        pub run_id: i64,
     }
     ///`TenantApiRunningTurns`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -39553,18 +33481,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiRunningTurnsByHostRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiRunningTurnsByHostRequestOperation {
         #[serde(rename = "runningTurnsByHost")]
         RunningTurnsByHost,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRunningTurnsByHostRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::RunningTurnsByHost => f.write_str("runningTurnsByHost"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39600,17 +33525,14 @@ pub mod types {
         pub kind: TenantApiSecretMemberNotFoundKind,
     }
     ///`TenantApiSecretMemberNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretMemberNotFoundKind {
         MemberNotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretMemberNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::MemberNotFound => f.write_str("MemberNotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39643,17 +33565,14 @@ pub mod types {
         pub secret_set: SecretSet,
     }
     ///`TenantApiSecretMemberRemovedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretMemberRemovedKind {
         Removed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretMemberRemovedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Removed => f.write_str("Removed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39686,17 +33605,14 @@ pub mod types {
         pub secret_set: SecretSet,
     }
     ///`TenantApiSecretMemberWrittenKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretMemberWrittenKind {
         Set,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretMemberWrittenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Set => f.write_str("Set"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39728,17 +33644,14 @@ pub mod types {
         pub kind: TenantApiSecretSetConflictKind,
     }
     ///`TenantApiSecretSetConflictKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretSetConflictKind {
         Conflict,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetConflictKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Conflict => f.write_str("Conflict"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39769,17 +33682,14 @@ pub mod types {
         pub kind: TenantApiSecretSetDeletedKind,
     }
     ///`TenantApiSecretSetDeletedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretSetDeletedKind {
         Deleted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetDeletedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Deleted => f.write_str("Deleted"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39812,17 +33722,14 @@ pub mod types {
         pub secret_set: SecretSet,
     }
     ///`TenantApiSecretSetFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretSetFoundKind {
         Found,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Found => f.write_str("Found"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39854,17 +33761,14 @@ pub mod types {
         pub personas: ::std::vec::Vec<ShortText>,
     }
     ///`TenantApiSecretSetInUseKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretSetInUseKind {
         InUse,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetInUseKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::InUse => f.write_str("InUse"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39895,17 +33799,14 @@ pub mod types {
         pub kind: TenantApiSecretSetMissingKind,
     }
     ///`TenantApiSecretSetMissingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretSetMissingKind {
         SetNotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetMissingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SetNotFound => f.write_str("SetNotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39938,17 +33839,14 @@ pub mod types {
         pub source: ShortText,
     }
     ///`TenantApiSecretSetNoStoredValueKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretSetNoStoredValueKind {
         NoStoredValue,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetNoStoredValueKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NoStoredValue => f.write_str("NoStoredValue"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -39979,17 +33877,14 @@ pub mod types {
         pub kind: TenantApiSecretSetNotFoundKind,
     }
     ///`TenantApiSecretSetNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretSetNotFoundKind {
         NotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotFound => f.write_str("NotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40021,17 +33916,14 @@ pub mod types {
         pub source: ShortText,
     }
     ///`TenantApiSecretSetUncheckedTokenKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretSetUncheckedTokenKind {
         UncheckedToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetUncheckedTokenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::UncheckedToken => f.write_str("UncheckedToken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40067,17 +33959,14 @@ pub mod types {
         pub secret_set_id: EntityId,
     }
     ///`TenantApiSecretSetUnreadableKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretSetUnreadableKind {
         Unreadable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetUnreadableKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unreadable => f.write_str("Unreadable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40110,17 +33999,14 @@ pub mod types {
         pub secret_set: SecretSet,
     }
     ///`TenantApiSecretSetUpdatedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretSetUpdatedKind {
         Updated,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetUpdatedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Updated => f.write_str("Updated"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40159,17 +34045,14 @@ pub mod types {
         pub secret_sets: ::std::vec::Vec<SecretSet>,
     }
     ///`TenantApiSecretSetsReadKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSecretSetsReadKind {
         Read,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetsReadKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Read => f.write_str("Read"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40214,18 +34097,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiSendTurnRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSendTurnRequestOperation {
         #[serde(rename = "sendTurn")]
         SendTurn,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSendTurnRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SendTurn => f.write_str("sendTurn"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40270,7 +34150,6 @@ pub mod types {
         SessionArchivedState(TenantApiSessionArchivedState),
         SessionFailedState(TenantApiSessionFailedState),
         TurnCredentialRefused(TenantApiTurnCredentialRefused),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTurnSentOk> for TenantApiSendTurnResultSent {
         fn from(value: TenantApiTurnSentOk) -> Self {
@@ -40345,18 +34224,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiServeConnectorTokenRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiServeConnectorTokenRequestOperation {
         #[serde(rename = "serveConnectorToken")]
         ServeConnectorToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiServeConnectorTokenRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ServeConnectorToken => f.write_str("serveConnectorToken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40395,7 +34271,6 @@ pub mod types {
         TurnNotRunning(TenantApiConnectorTurnNotRunning),
         NoCredential(TenantApiConnectorNoCredential),
         RefreshFailed(TenantApiConnectorRefreshFailed),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorTokenServedOk> for TenantApiServeConnectorTokenResultServed {
         fn from(value: TenantApiConnectorTokenServedOk) -> Self {
@@ -40429,17 +34304,14 @@ pub mod types {
         pub session: Session,
     }
     ///`TenantApiSessionArchivedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionArchivedOkKind {
         Archived,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionArchivedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Archived => f.write_str("Archived"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40470,17 +34342,14 @@ pub mod types {
         pub kind: TenantApiSessionArchivedStateKind,
     }
     ///`TenantApiSessionArchivedStateKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionArchivedStateKind {
         Archived,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionArchivedStateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Archived => f.write_str("Archived"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40506,7 +34375,7 @@ pub mod types {
         }
     }
     ///`TenantApiSessionDeadlineName`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionDeadlineName {
         FirstLine,
         Total,
@@ -40515,8 +34384,6 @@ pub mod types {
         Teardown,
         TeardownAnswer,
         HostOffline,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionDeadlineName {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -40528,7 +34395,6 @@ pub mod types {
                 Self::Teardown => f.write_str("Teardown"),
                 Self::TeardownAnswer => f.write_str("TeardownAnswer"),
                 Self::HostOffline => f.write_str("HostOffline"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40565,17 +34431,14 @@ pub mod types {
         pub kind: TenantApiSessionDeletedKind,
     }
     ///`TenantApiSessionDeletedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionDeletedKind {
         Deleted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionDeletedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Deleted => f.write_str("Deleted"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40612,17 +34475,14 @@ pub mod types {
         pub kind: TenantApiSessionFailedStateKind,
     }
     ///`TenantApiSessionFailedStateKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionFailedStateKind {
         Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionFailedStateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40670,17 +34530,14 @@ pub mod types {
         pub started: StartedSessionFromIssue,
     }
     ///`TenantApiSessionFromIssueStartedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionFromIssueStartedOkKind {
         Started,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionFromIssueStartedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Started => f.write_str("Started"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40711,17 +34568,14 @@ pub mod types {
         pub kind: TenantApiSessionNotFoundKind,
     }
     ///`TenantApiSessionNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionNotFoundKind {
         NotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotFound => f.write_str("NotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40753,17 +34607,14 @@ pub mod types {
         pub state: SessionState,
     }
     ///`TenantApiSessionNotStoppedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionNotStoppedKind {
         NotStopped,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionNotStoppedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotStopped => f.write_str("NotStopped"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40795,17 +34646,14 @@ pub mod types {
         pub started: StartedSession,
     }
     ///`TenantApiSessionStartedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionStartedOkKind {
         Started,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionStartedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Started => f.write_str("Started"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40836,17 +34684,14 @@ pub mod types {
         pub kind: TenantApiSessionStoppingKind,
     }
     ///`TenantApiSessionStoppingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionStoppingKind {
         Stopping,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionStoppingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Stopping => f.write_str("Stopping"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40878,17 +34723,14 @@ pub mod types {
         pub session: Session,
     }
     ///`TenantApiSessionStoppingWithKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionStoppingWithKind {
         Stopping,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionStoppingWithKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Stopping => f.write_str("Stopping"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40920,17 +34762,14 @@ pub mod types {
         pub session: Session,
     }
     ///`TenantApiSessionTaggedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionTaggedKind {
         Tagged,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionTaggedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Tagged => f.write_str("Tagged"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -40962,17 +34801,14 @@ pub mod types {
         pub tags: ::std::vec::Vec<SessionTag>,
     }
     ///`TenantApiSessionTagsOverLimitKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSessionTagsOverLimitKind {
         TagsOverLimit,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionTagsOverLimitKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TagsOverLimit => f.write_str("TagsOverLimit"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -41014,18 +34850,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiSetLimitsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSetLimitsRequestOperation {
         #[serde(rename = "setLimits")]
         SetLimits,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSetLimitsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SetLimits => f.write_str("setLimits"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -41076,18 +34909,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiSetSecretMemberRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSetSecretMemberRequestOperation {
         #[serde(rename = "setSecretMember")]
         SetSecretMember,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSetSecretMemberRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SetSecretMember => f.write_str("setSecretMember"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -41125,7 +34955,6 @@ pub mod types {
         SetMissing(TenantApiSecretSetMissing),
         SetConflict(TenantApiSecretSetConflict),
         SetUnreadable(TenantApiSecretSetUnreadable),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretMemberWritten> for TenantApiSetSecretMemberResultSet {
         fn from(value: TenantApiSecretMemberWritten) -> Self {
@@ -41166,18 +34995,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiSetSessionTagsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSetSessionTagsRequestOperation {
         #[serde(rename = "setSessionTags")]
         SetSessionTags,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSetSessionTagsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SetSessionTags => f.write_str("setSessionTags"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -41213,7 +35039,6 @@ pub mod types {
     pub enum TenantApiSetSessionTagsResultTagged {
         Tagged(TenantApiSessionTagged),
         NotFound(TenantApiSessionNotFound),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionTagged> for TenantApiSetSessionTagsResultTagged {
         fn from(value: TenantApiSessionTagged) -> Self {
@@ -41246,18 +35071,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiSetStaticTokenRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSetStaticTokenRequestOperation {
         #[serde(rename = "setStaticToken")]
         SetStaticToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSetStaticTokenRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SetStaticToken => f.write_str("setStaticToken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -41295,7 +35117,6 @@ pub mod types {
         NotFound(TenantApiConnectorNotFound),
         NameTaken(TenantApiConnectorNameTaken),
         Changed(TenantApiConnectorChanged),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorWrittenOk> for TenantApiSetStaticTokenResultWritten {
         fn from(value: TenantApiConnectorWrittenOk) -> Self {
@@ -41335,18 +35156,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiSetWebhookEndpointStatusRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSetWebhookEndpointStatusRequestOperation {
         #[serde(rename = "setWebhookEndpointStatus")]
         SetWebhookEndpointStatus,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSetWebhookEndpointStatusRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SetWebhookEndpointStatus => f.write_str("setWebhookEndpointStatus"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -41397,85 +35215,6 @@ pub mod types {
             Self(value)
         }
     }
-    ///`TenantApiStartCircleCiAuthorizationInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartCircleCiAuthorizationInput {
-        pub now: i64,
-        #[serde(rename = "principalId")]
-        pub principal_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiStartCircleCiAuthorizationRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartCircleCiAuthorizationRequest {
-        pub input: TenantApiStartCircleCiAuthorizationInput,
-        pub operation: TenantApiStartCircleCiAuthorizationRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiStartCircleCiAuthorizationRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiStartCircleCiAuthorizationRequestOperation {
-        #[serde(rename = "startCircleCIAuthorization")]
-        StartCircleCiAuthorization,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiStartCircleCiAuthorizationRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::StartCircleCiAuthorization => f.write_str("startCircleCIAuthorization"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiStartCircleCiAuthorizationRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "startCircleCIAuthorization" => Ok(Self::StartCircleCiAuthorization),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiStartCircleCiAuthorizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiStartCircleCiAuthorizationRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiStartCircleCiAuthorizationResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartCircleCiAuthorizationResult {
-        pub started: TenantApiStartCircleCiAuthorizationResultStarted,
-    }
-    ///`TenantApiStartCircleCiAuthorizationResultStarted`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiStartCircleCiAuthorizationResultStarted {
-        AuthorizationStartedOk(TenantApiCircleCiAuthorizationStartedOk),
-        RegistrationRefused(TenantApiCircleCiRegistrationRefused),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationStartedOk>
-        for TenantApiStartCircleCiAuthorizationResultStarted
-    {
-        fn from(value: TenantApiCircleCiAuthorizationStartedOk) -> Self {
-            Self::AuthorizationStartedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiRegistrationRefused> for TenantApiStartCircleCiAuthorizationResultStarted {
-        fn from(value: TenantApiCircleCiRegistrationRefused) -> Self {
-            Self::RegistrationRefused(value)
-        }
-    }
     ///`TenantApiStartClaudeSetupInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiStartClaudeSetupInput {
@@ -41493,18 +35232,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiStartClaudeSetupRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStartClaudeSetupRequestOperation {
         #[serde(rename = "startClaudeSetup")]
         StartClaudeSetup,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartClaudeSetupRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::StartClaudeSetup => f.write_str("startClaudeSetup"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -41543,7 +35279,6 @@ pub mod types {
         ClaudeSetupReleaseUnreadable(TenantApiClaudeSetupReleaseUnreadable),
         AuthorizationNoSecretSet(TenantApiAuthorizationNoSecretSet),
         AuthorizationOtherCredential(TenantApiAuthorizationOtherCredential),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiClaudeSetupStartedOk> for TenantApiStartClaudeSetupResultStarted {
         fn from(value: TenantApiClaudeSetupStartedOk) -> Self {
@@ -41594,18 +35329,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiStartConnectorAuthorizationRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStartConnectorAuthorizationRequestOperation {
         #[serde(rename = "startConnectorAuthorization")]
         StartConnectorAuthorization,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartConnectorAuthorizationRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::StartConnectorAuthorization => f.write_str("startConnectorAuthorization"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -41644,7 +35376,6 @@ pub mod types {
         Changed(TenantApiConnectorChanged),
         DiscoveryFailed(TenantApiConnectorDiscoveryFailed),
         RegistrationUnsupported(TenantApiConnectorRegistrationUnsupported),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorAuthorizeStartedOk> for TenantApiStartConnectorAuthorizationResultStarted {
         fn from(value: TenantApiConnectorAuthorizeStartedOk) -> Self {
@@ -41680,17 +35411,14 @@ pub mod types {
         pub names: ::std::vec::Vec<ShortText>,
     }
     ///`TenantApiStartConnectorDisconnectedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStartConnectorDisconnectedKind {
         ConnectorDisconnected,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartConnectorDisconnectedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ConnectorDisconnected => f.write_str("ConnectorDisconnected"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -41721,17 +35449,14 @@ pub mod types {
         pub kind: TenantApiStartDrainingKind,
     }
     ///`TenantApiStartDrainingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStartDrainingKind {
         Draining,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartDrainingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Draining => f.write_str("Draining"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -41756,124 +35481,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiStartGitHubActionsPrebuildInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartGitHubActionsPrebuildInput {
-        pub now: i64,
-        pub start: TenantApiGitHubActionsStart,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiStartGitHubActionsPrebuildRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartGitHubActionsPrebuildRequest {
-        pub input: TenantApiStartGitHubActionsPrebuildInput,
-        pub operation: TenantApiStartGitHubActionsPrebuildRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiStartGitHubActionsPrebuildRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiStartGitHubActionsPrebuildRequestOperation {
-        #[serde(rename = "startGitHubActionsPrebuild")]
-        StartGitHubActionsPrebuild,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiStartGitHubActionsPrebuildRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::StartGitHubActionsPrebuild => f.write_str("startGitHubActionsPrebuild"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiStartGitHubActionsPrebuildRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "startGitHubActionsPrebuild" => Ok(Self::StartGitHubActionsPrebuild),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiStartGitHubActionsPrebuildRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiStartGitHubActionsPrebuildRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiStartGitHubActionsPrebuildResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartGitHubActionsPrebuildResult {
-        pub started: TenantApiStartGitHubActionsPrebuildResultStarted,
-    }
-    ///`TenantApiStartGitHubActionsPrebuildResultStarted`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiStartGitHubActionsPrebuildResultStarted {
-        Started(TenantApiPrebuildStarted),
-        NoInstallation(TenantApiPrebuildNoInstallation),
-        TokenRefused(TenantApiPrebuildTokenRefused),
-        Unreadable(TenantApiPrebuildUnreadable),
-        PermissionMissing(TenantApiPrebuildPermissionMissing),
-        AppPermissionMissing(TenantApiPrebuildAppPermissionMissing),
-        CallerRefused(TenantApiPrebuildCallerRefused),
-        ActionsDisabled(TenantApiPrebuildActionsDisabled),
-        Refused(TenantApiPrebuildRefused),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiPrebuildStarted> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildStarted) -> Self {
-            Self::Started(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildNoInstallation> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildNoInstallation) -> Self {
-            Self::NoInstallation(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildTokenRefused> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildTokenRefused) -> Self {
-            Self::TokenRefused(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildUnreadable> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildUnreadable) -> Self {
-            Self::Unreadable(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildPermissionMissing> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildPermissionMissing) -> Self {
-            Self::PermissionMissing(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildAppPermissionMissing> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildAppPermissionMissing) -> Self {
-            Self::AppPermissionMissing(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildCallerRefused> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildCallerRefused) -> Self {
-            Self::CallerRefused(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildActionsDisabled> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildActionsDisabled) -> Self {
-            Self::ActionsDisabled(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiPrebuildRefused> for TenantApiStartGitHubActionsPrebuildResultStarted {
-        fn from(value: TenantApiPrebuildRefused) -> Self {
-            Self::Refused(value)
-        }
-    }
     ///`TenantApiStartHostPrebuildInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiStartHostPrebuildInput {
@@ -41882,7 +35489,6 @@ pub mod types {
         pub commit: TenantApiPrebuildCommitStart,
         pub input: TenantApiNewSession,
         pub now: i64,
-        pub provider: BuildProvider,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
@@ -41895,18 +35501,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiStartHostPrebuildRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStartHostPrebuildRequestOperation {
         #[serde(rename = "startHostPrebuild")]
         StartHostPrebuild,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartHostPrebuildRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::StartHostPrebuild => f.write_str("startHostPrebuild"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -41945,7 +35548,6 @@ pub mod types {
         StartUnplaced(TenantApiStartUnplaced),
         StartConnectorDisconnected(TenantApiStartConnectorDisconnected),
         ClaudeSetupReleaseUnreadable(TenantApiClaudeSetupReleaseUnreadable),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiHostPrebuildStarted> for TenantApiStartHostPrebuildResultStarted {
         fn from(value: TenantApiHostPrebuildStarted) -> Self {
@@ -41991,18 +35593,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiStartOpenRouterAuthorizationRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStartOpenRouterAuthorizationRequestOperation {
         #[serde(rename = "startOpenRouterAuthorization")]
         StartOpenRouterAuthorization,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartOpenRouterAuthorizationRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::StartOpenRouterAuthorization => f.write_str("startOpenRouterAuthorization"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42039,7 +35638,6 @@ pub mod types {
         OpenRouterAuthorizationStartedOk(TenantApiOpenRouterAuthorizationStartedOk),
         AuthorizationNoSecretSet(TenantApiAuthorizationNoSecretSet),
         AuthorizationOtherCredential(TenantApiAuthorizationOtherCredential),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiOpenRouterAuthorizationStartedOk>
         for TenantApiStartOpenRouterAuthorizationResultStarted
@@ -42060,90 +35658,6 @@ pub mod types {
             Self::AuthorizationOtherCredential(value)
         }
     }
-    ///`TenantApiStartPrebuildUploadInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartPrebuildUploadInput {
-        pub now: i64,
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        pub upload: TenantApiPrebuildLayerUpload,
-    }
-    ///`TenantApiStartPrebuildUploadRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartPrebuildUploadRequest {
-        pub input: TenantApiStartPrebuildUploadInput,
-        pub operation: TenantApiStartPrebuildUploadRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiStartPrebuildUploadRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiStartPrebuildUploadRequestOperation {
-        #[serde(rename = "startPrebuildUpload")]
-        StartPrebuildUpload,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiStartPrebuildUploadRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::StartPrebuildUpload => f.write_str("startPrebuildUpload"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiStartPrebuildUploadRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "startPrebuildUpload" => Ok(Self::StartPrebuildUpload),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiStartPrebuildUploadRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiStartPrebuildUploadRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiStartPrebuildUploadResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartPrebuildUploadResult {
-        pub recorded: TenantApiStartPrebuildUploadResultRecorded,
-    }
-    ///`TenantApiStartPrebuildUploadResultRecorded`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiStartPrebuildUploadResultRecorded {
-        RecordedOk(TenantApiUploadRecordedOk),
-        NotUploading(TenantApiUploadNotUploading),
-        OtherLayer(TenantApiUploadOtherLayer),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiUploadRecordedOk> for TenantApiStartPrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadRecordedOk) -> Self {
-            Self::RecordedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadNotUploading> for TenantApiStartPrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadNotUploading) -> Self {
-            Self::NotUploading(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadOtherLayer> for TenantApiStartPrebuildUploadResultRecorded {
-        fn from(value: TenantApiUploadOtherLayer) -> Self {
-            Self::OtherLayer(value)
-        }
-    }
     ///`TenantApiStartSessionFromIssueInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiStartSessionFromIssueInput {
@@ -42162,18 +35676,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiStartSessionFromIssueRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStartSessionFromIssueRequestOperation {
         #[serde(rename = "startSessionFromIssue")]
         StartSessionFromIssue,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartSessionFromIssueRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::StartSessionFromIssue => f.write_str("startSessionFromIssue"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42213,7 +35724,6 @@ pub mod types {
         StartConnectorDisconnected(TenantApiStartConnectorDisconnected),
         ClaudeSetupReleaseUnreadable(TenantApiClaudeSetupReleaseUnreadable),
         SessionTagsOverLimit(TenantApiSessionTagsOverLimit),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionFromIssueStartedOk> for TenantApiStartSessionFromIssueResultStarted {
         fn from(value: TenantApiSessionFromIssueStartedOk) -> Self {
@@ -42262,18 +35772,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiStartSessionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStartSessionRequestOperation {
         #[serde(rename = "startSession")]
         StartSession,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartSessionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::StartSession => f.write_str("startSession"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42313,7 +35820,6 @@ pub mod types {
         StartConnectorDisconnected(TenantApiStartConnectorDisconnected),
         ClaudeSetupReleaseUnreadable(TenantApiClaudeSetupReleaseUnreadable),
         SessionTagsOverLimit(TenantApiSessionTagsOverLimit),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionStartedOk> for TenantApiStartSessionResultStarted {
         fn from(value: TenantApiSessionStartedOk) -> Self {
@@ -42352,17 +35858,14 @@ pub mod types {
         pub kind: TenantApiStartUnplacedKind,
     }
     ///`TenantApiStartUnplacedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStartUnplacedKind {
         Unplaced,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartUnplacedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unplaced => f.write_str("Unplaced"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42393,17 +35896,14 @@ pub mod types {
         pub kind: TenantApiSteerInboxClosedKind,
     }
     ///`TenantApiSteerInboxClosedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSteerInboxClosedKind {
         Closed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSteerInboxClosedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Closed => f.write_str("Closed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42435,17 +35935,14 @@ pub mod types {
         pub steer: Steer,
     }
     ///`TenantApiSteerSentOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSteerSentOkKind {
         Sent,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSteerSentOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Sent => f.write_str("Sent"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42489,18 +35986,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiSteerTurnRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSteerTurnRequestOperation {
         #[serde(rename = "steerTurn")]
         SteerTurn,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSteerTurnRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SteerTurn => f.write_str("steerTurn"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42538,7 +36032,6 @@ pub mod types {
         TurnNotFound(TenantApiTurnNotFound),
         TurnNotRunning(TenantApiTurnNotRunning),
         SteerUnsupported(TenantApiSteerUnsupported),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSteerSentOk> for TenantApiSteerTurnResultSent {
         fn from(value: TenantApiSteerSentOk) -> Self {
@@ -42566,17 +36059,14 @@ pub mod types {
         pub kind: TenantApiSteerUnsupportedKind,
     }
     ///`TenantApiSteerUnsupportedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSteerUnsupportedKind {
         Unsupported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSteerUnsupportedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unsupported => f.write_str("Unsupported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42608,17 +36098,14 @@ pub mod types {
         pub prompts: ::std::vec::Vec<Prompt>,
     }
     ///`TenantApiSteersTakenKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSteersTakenKind {
         Taken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSteersTakenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Taken => f.write_str("Taken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42663,18 +36150,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiStopSessionRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStopSessionRequestOperation {
         #[serde(rename = "stopSession")]
         StopSession,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStopSessionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::StopSession => f.write_str("stopSession"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42713,7 +36197,6 @@ pub mod types {
         TurnInFlight(TenantApiTurnInFlight),
         CancelUnspoken(TenantApiCancelUnspoken),
         SessionArchivedState(TenantApiSessionArchivedState),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionStoppingWith> for TenantApiStopSessionResultStopped {
         fn from(value: TenantApiSessionStoppingWith) -> Self {
@@ -42751,17 +36234,14 @@ pub mod types {
         pub type_: TenantApiStoredClaudeSetupCodeType,
     }
     ///`TenantApiStoredClaudeSetupCodeType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStoredClaudeSetupCodeType {
         ClaudeSetupBoxCode,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStoredClaudeSetupCodeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxCode => f.write_str("ClaudeSetupBoxCode"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42797,17 +36277,14 @@ pub mod types {
         pub type_: TenantApiStoredClaudeSetupOfferType,
     }
     ///`TenantApiStoredClaudeSetupOfferType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStoredClaudeSetupOfferType {
         ClaudeSetupBoxOffer,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStoredClaudeSetupOfferType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::ClaudeSetupBoxOffer => f.write_str("ClaudeSetupBoxOffer"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -42895,9 +36372,15 @@ pub mod types {
         ///the box with memoryMib of its runtime config.
         #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub box_memory_mib: ::std::option::Option<i32>,
+        ///What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
         pub harness: Harness,
         #[serde(rename = "harnessVersion")]
         pub harness_version: TenantApiStoredTurnOfferHarnessVersion,
+        ///The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy.
+        #[serde(rename = "idleSeconds")]
+        pub idle_seconds: ::std::num::NonZeroU32,
         pub model: ModelName,
         #[serde(rename = "prebuildCommitSha", skip_serializing_if = "::std::option::Option::is_none")]
         pub prebuild_commit_sha: ::std::option::Option<TenantApiStoredTurnOfferPrebuildCommitSha>,
@@ -42907,6 +36390,9 @@ pub mod types {
         pub session_id: EntityId,
         #[serde(rename = "turnId")]
         pub turn_id: EntityId,
+        ///How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.
+        #[serde(rename = "turnSeconds")]
+        pub turn_seconds: ::std::num::NonZeroU32,
         #[serde(rename = "type")]
         pub type_: TenantApiStoredTurnOfferType,
     }
@@ -43057,17 +36543,14 @@ pub mod types {
         }
     }
     ///`TenantApiStoredTurnOfferType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiStoredTurnOfferType {
         TurnOffer,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStoredTurnOfferType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnOffer => f.write_str("TurnOffer"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43111,18 +36594,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiSubmitClaudeSetupCodeRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSubmitClaudeSetupCodeRequestOperation {
         #[serde(rename = "submitClaudeSetupCode")]
         SubmitClaudeSetupCode,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubmitClaudeSetupCodeRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SubmitClaudeSetupCode => f.write_str("submitClaudeSetupCode"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43159,7 +36639,6 @@ pub mod types {
         ClaudeSetupCodedOk(TenantApiClaudeSetupCodedOk),
         AuthorizationNotFound(TenantApiAuthorizationNotFound),
         AuthorizationNotWaiting(TenantApiAuthorizationNotWaiting),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiClaudeSetupCodedOk> for TenantApiSubmitClaudeSetupCodeResultCoded {
         fn from(value: TenantApiClaudeSetupCodedOk) -> Self {
@@ -43183,17 +36662,14 @@ pub mod types {
         pub subscription: Subscription,
     }
     ///`TenantApiSubscriptionChangedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSubscriptionChangedOkKind {
         Changed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubscriptionChangedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Changed => f.write_str("Changed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43225,17 +36701,14 @@ pub mod types {
         pub subscription: Subscription,
     }
     ///`TenantApiSubscriptionCreatedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSubscriptionCreatedOkKind {
         Created,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubscriptionCreatedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Created => f.write_str("Created"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43270,17 +36743,14 @@ pub mod types {
         pub oldest_event_id: Sequence,
     }
     ///`TenantApiSubscriptionCursorExpiredKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSubscriptionCursorExpiredKind {
         CursorExpired,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubscriptionCursorExpiredKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CursorExpired => f.write_str("CursorExpired"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43312,17 +36782,14 @@ pub mod types {
         pub subscription: Subscription,
     }
     ///`TenantApiSubscriptionEndedStateKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSubscriptionEndedStateKind {
         Ended,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubscriptionEndedStateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Ended => f.write_str("Ended"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43361,17 +36828,14 @@ pub mod types {
         pub kind: TenantApiSubscriptionNotFoundKind,
     }
     ///`TenantApiSubscriptionNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSubscriptionNotFoundKind {
         NotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubscriptionNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotFound => f.write_str("NotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43409,7 +36873,6 @@ pub mod types {
     pub enum TenantApiSupervisorUpdateInputMessage {
         Step(ChannelSupervisorUpdateStep),
         Failed(ChannelSupervisorUpdateFailed),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelSupervisorUpdateStep> for TenantApiSupervisorUpdateInputMessage {
         fn from(value: ChannelSupervisorUpdateStep) -> Self {
@@ -43430,18 +36893,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiSupervisorUpdateRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSupervisorUpdateRequestOperation {
         #[serde(rename = "supervisorUpdate")]
         SupervisorUpdate,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSupervisorUpdateRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SupervisorUpdate => f.write_str("supervisorUpdate"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43513,18 +36973,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiSupervisorUpdatesRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiSupervisorUpdatesRequestOperation {
         #[serde(rename = "supervisorUpdates")]
         SupervisorUpdates,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSupervisorUpdatesRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::SupervisorUpdates => f.write_str("supervisorUpdates"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43571,18 +37028,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiTakeSteersRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTakeSteersRequestOperation {
         #[serde(rename = "takeSteers")]
         TakeSteers,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTakeSteersRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TakeSteers => f.write_str("takeSteers"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43618,7 +37072,6 @@ pub mod types {
     pub enum TenantApiTakeSteersResultTaken {
         SteersTaken(TenantApiSteersTaken),
         SteerInboxClosed(TenantApiSteerInboxClosed),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSteersTaken> for TenantApiTakeSteersResultTaken {
         fn from(value: TenantApiSteersTaken) -> Self {
@@ -43640,17 +37093,14 @@ pub mod types {
         pub tenant_api_version: i32,
     }
     ///`TenantApiTenantApiVersionUnsupportedRefusal`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTenantApiVersionUnsupportedRefusal {
         TenantApiVersionUnsupported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTenantApiVersionUnsupportedRefusal {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TenantApiVersionUnsupported => f.write_str("TenantApiVersionUnsupported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43688,17 +37138,14 @@ pub mod types {
         pub window: TenantUsageWindow,
     }
     ///`TenantApiTenantLimitReachedRefusal`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTenantLimitReachedRefusal {
         TenantLimitReached,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTenantLimitReachedRefusal {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TenantLimitReached => f.write_str("TenantLimitReached"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43730,17 +37177,14 @@ pub mod types {
         pub refusal: TenantApiTenantOperationUnknownRefusal,
     }
     ///`TenantApiTenantOperationUnknownRefusal`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTenantOperationUnknownRefusal {
         TenantOperationUnknown,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTenantOperationUnknownRefusal {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TenantOperationUnknown => f.write_str("TenantOperationUnknown"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -43773,7 +37217,6 @@ pub mod types {
         OperationUnknown(TenantApiTenantOperationUnknown),
         RequestInvalid(TenantApiTenantRequestInvalid),
         LimitReached(TenantApiTenantLimitReached),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTenantApiVersionUnsupported> for TenantApiTenantRefusal {
         fn from(value: TenantApiTenantApiVersionUnsupported) -> Self {
@@ -43836,10 +37279,6 @@ pub mod types {
         OpenRouterCallbackRequest(TenantApiOpenRouterCallbackRequest),
         OpenRouterAuthorizationDeadlineReachedRequest(TenantApiOpenRouterAuthorizationDeadlineReachedRequest),
         OpenRouterSecretSetsRequest(TenantApiOpenRouterSecretSetsRequest),
-        StartCircleCiAuthorizationRequest(TenantApiStartCircleCiAuthorizationRequest),
-        CompleteCircleCiAuthorizationRequest(TenantApiCompleteCircleCiAuthorizationRequest),
-        ChooseCircleCiOrganizationRequest(TenantApiChooseCircleCiOrganizationRequest),
-        CircleCiAuthorizationDeadlineReachedRequest(TenantApiCircleCiAuthorizationDeadlineReachedRequest),
         StartClaudeSetupRequest(TenantApiStartClaudeSetupRequest),
         GetClaudeSetupRequest(TenantApiGetClaudeSetupRequest),
         ListClaudeSetupsRequest(TenantApiListClaudeSetupsRequest),
@@ -43852,19 +37291,9 @@ pub mod types {
         GetPrebuildRequest(TenantApiGetPrebuildRequest),
         HeldPrebuildRequest(TenantApiHeldPrebuildRequest),
         RecordPrebuildBuildingRequest(TenantApiRecordPrebuildBuildingRequest),
-        JobInputsTargetRequest(TenantApiJobInputsTargetRequest),
-        BindJobRunRequest(TenantApiBindJobRunRequest),
-        WorkflowRunReportedRequest(TenantApiWorkflowRunReportedRequest),
         PrebuildDeadlineReachedRequest(TenantApiPrebuildDeadlineReachedRequest),
-        StartGitHubActionsPrebuildRequest(TenantApiStartGitHubActionsPrebuildRequest),
         StartHostPrebuildRequest(TenantApiStartHostPrebuildRequest),
-        UploadTargetRequest(TenantApiUploadTargetRequest),
-        BindCircleCiUploadJobRequest(TenantApiBindCircleCiUploadJobRequest),
-        StartPrebuildUploadRequest(TenantApiStartPrebuildUploadRequest),
-        CompletePrebuildUploadRequest(TenantApiCompletePrebuildUploadRequest),
         GetPrebuildFailureRequest(TenantApiGetPrebuildFailureRequest),
-        DispatchCircleCiPrebuildRequest(TenantApiDispatchCircleCiPrebuildRequest),
-        CircleCiWorkflowCompletedRequest(TenantApiCircleCiWorkflowCompletedRequest),
         RepositoryReadTokenRequest(TenantApiRepositoryReadTokenRequest),
         StartSessionRequest(TenantApiStartSessionRequest),
         StartSessionFromIssueRequest(TenantApiStartSessionFromIssueRequest),
@@ -43882,7 +37311,6 @@ pub mod types {
         SteerTurnRequest(TenantApiSteerTurnRequest),
         ListSteersRequest(TenantApiListSteersRequest),
         TakeSteersRequest(TenantApiTakeSteersRequest),
-        WaitTurnsRequest(TenantApiWaitTurnsRequest),
         ListEventsRequest(TenantApiListEventsRequest),
         ListWebhookEndpointsRequest(TenantApiListWebhookEndpointsRequest),
         CreateWebhookEndpointRequest(TenantApiCreateWebhookEndpointRequest),
@@ -43913,22 +37341,6 @@ pub mod types {
         ListCredentialHandoversRequest(TenantApiListCredentialHandoversRequest),
         GetSnapshotRequest(TenantApiGetSnapshotRequest),
         TranscriptCursorRequest(TenantApiTranscriptCursorRequest),
-        ConnectedAccountsRequest(TenantApiConnectedAccountsRequest),
-        DeleteBuildConnectionRequest(TenantApiDeleteBuildConnectionRequest),
-        CircleCiConnectionRequest(TenantApiCircleCiConnectionRequest),
-        CircleCiTokenRequest(TenantApiCircleCiTokenRequest),
-        ConnectCircleCiRequest(TenantApiConnectCircleCiRequest),
-        ListCircleCiProjectsRequest(TenantApiListCircleCiProjectsRequest),
-        CircleCiProjectBoundToRequest(TenantApiCircleCiProjectBoundToRequest),
-        CircleCiProjectOfRequest(TenantApiCircleCiProjectOfRequest),
-        AddCircleCiProjectRequest(TenantApiAddCircleCiProjectRequest),
-        CircleCiWebhooksRequest(TenantApiCircleCiWebhooksRequest),
-        CircleCiWebhookSecretRequest(TenantApiCircleCiWebhookSecretRequest),
-        DeleteCircleCiProjectRequest(TenantApiDeleteCircleCiProjectRequest),
-        GitHubActionsConnectionRequest(TenantApiGitHubActionsConnectionRequest),
-        ConnectGitHubActionsRequest(TenantApiConnectGitHubActionsRequest),
-        NamespaceConnectionRequest(TenantApiNamespaceConnectionRequest),
-        ConnectNamespaceRequest(TenantApiConnectNamespaceRequest),
         OfferSentRequest(TenantApiOfferSentRequest),
         HostHelloRequest(TenantApiHostHelloRequest),
         HostUsageRequest(TenantApiHostUsageRequest),
@@ -43946,7 +37358,6 @@ pub mod types {
         HostHealthRequest(TenantApiHostHealthRequest),
         HostMessageRequest(TenantApiHostMessageRequest),
         DeadlineReachedRequest(TenantApiDeadlineReachedRequest),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiListPersonasRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiListPersonasRequest) -> Self {
@@ -44133,26 +37544,6 @@ pub mod types {
             Self::OpenRouterSecretSetsRequest(value)
         }
     }
-    impl ::std::convert::From<TenantApiStartCircleCiAuthorizationRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiStartCircleCiAuthorizationRequest) -> Self {
-            Self::StartCircleCiAuthorizationRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCompleteCircleCiAuthorizationRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCompleteCircleCiAuthorizationRequest) -> Self {
-            Self::CompleteCircleCiAuthorizationRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiChooseCircleCiOrganizationRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiChooseCircleCiOrganizationRequest) -> Self {
-            Self::ChooseCircleCiOrganizationRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiAuthorizationDeadlineReachedRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiAuthorizationDeadlineReachedRequest) -> Self {
-            Self::CircleCiAuthorizationDeadlineReachedRequest(value)
-        }
-    }
     impl ::std::convert::From<TenantApiStartClaudeSetupRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiStartClaudeSetupRequest) -> Self {
             Self::StartClaudeSetupRequest(value)
@@ -44213,29 +37604,9 @@ pub mod types {
             Self::RecordPrebuildBuildingRequest(value)
         }
     }
-    impl ::std::convert::From<TenantApiJobInputsTargetRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiJobInputsTargetRequest) -> Self {
-            Self::JobInputsTargetRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiBindJobRunRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiBindJobRunRequest) -> Self {
-            Self::BindJobRunRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiWorkflowRunReportedRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiWorkflowRunReportedRequest) -> Self {
-            Self::WorkflowRunReportedRequest(value)
-        }
-    }
     impl ::std::convert::From<TenantApiPrebuildDeadlineReachedRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiPrebuildDeadlineReachedRequest) -> Self {
             Self::PrebuildDeadlineReachedRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiStartGitHubActionsPrebuildRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiStartGitHubActionsPrebuildRequest) -> Self {
-            Self::StartGitHubActionsPrebuildRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiStartHostPrebuildRequest> for TenantApiTenantRequest {
@@ -44243,39 +37614,9 @@ pub mod types {
             Self::StartHostPrebuildRequest(value)
         }
     }
-    impl ::std::convert::From<TenantApiUploadTargetRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiUploadTargetRequest) -> Self {
-            Self::UploadTargetRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiBindCircleCiUploadJobRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiBindCircleCiUploadJobRequest) -> Self {
-            Self::BindCircleCiUploadJobRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiStartPrebuildUploadRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiStartPrebuildUploadRequest) -> Self {
-            Self::StartPrebuildUploadRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCompletePrebuildUploadRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCompletePrebuildUploadRequest) -> Self {
-            Self::CompletePrebuildUploadRequest(value)
-        }
-    }
     impl ::std::convert::From<TenantApiGetPrebuildFailureRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiGetPrebuildFailureRequest) -> Self {
             Self::GetPrebuildFailureRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiDispatchCircleCiPrebuildRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiDispatchCircleCiPrebuildRequest) -> Self {
-            Self::DispatchCircleCiPrebuildRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiWorkflowCompletedRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiWorkflowCompletedRequest) -> Self {
-            Self::CircleCiWorkflowCompletedRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiRepositoryReadTokenRequest> for TenantApiTenantRequest {
@@ -44361,11 +37702,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiTakeSteersRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiTakeSteersRequest) -> Self {
             Self::TakeSteersRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiWaitTurnsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiWaitTurnsRequest) -> Self {
-            Self::WaitTurnsRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiListEventsRequest> for TenantApiTenantRequest {
@@ -44518,86 +37854,6 @@ pub mod types {
             Self::TranscriptCursorRequest(value)
         }
     }
-    impl ::std::convert::From<TenantApiConnectedAccountsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiConnectedAccountsRequest) -> Self {
-            Self::ConnectedAccountsRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiDeleteBuildConnectionRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiDeleteBuildConnectionRequest) -> Self {
-            Self::DeleteBuildConnectionRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiConnectionRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiConnectionRequest) -> Self {
-            Self::CircleCiConnectionRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiTokenRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiTokenRequest) -> Self {
-            Self::CircleCiTokenRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiConnectCircleCiRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiConnectCircleCiRequest) -> Self {
-            Self::ConnectCircleCiRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiListCircleCiProjectsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiListCircleCiProjectsRequest) -> Self {
-            Self::ListCircleCiProjectsRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiProjectBoundToRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiProjectBoundToRequest) -> Self {
-            Self::CircleCiProjectBoundToRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiProjectOfRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiProjectOfRequest) -> Self {
-            Self::CircleCiProjectOfRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiAddCircleCiProjectRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiAddCircleCiProjectRequest) -> Self {
-            Self::AddCircleCiProjectRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiWebhooksRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiWebhooksRequest) -> Self {
-            Self::CircleCiWebhooksRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiCircleCiWebhookSecretRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiCircleCiWebhookSecretRequest) -> Self {
-            Self::CircleCiWebhookSecretRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiDeleteCircleCiProjectRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiDeleteCircleCiProjectRequest) -> Self {
-            Self::DeleteCircleCiProjectRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiGitHubActionsConnectionRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiGitHubActionsConnectionRequest) -> Self {
-            Self::GitHubActionsConnectionRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiConnectGitHubActionsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiConnectGitHubActionsRequest) -> Self {
-            Self::ConnectGitHubActionsRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiNamespaceConnectionRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiNamespaceConnectionRequest) -> Self {
-            Self::NamespaceConnectionRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiConnectNamespaceRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiConnectNamespaceRequest) -> Self {
-            Self::ConnectNamespaceRequest(value)
-        }
-    }
     impl ::std::convert::From<TenantApiOfferSentRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiOfferSentRequest) -> Self {
             Self::OfferSentRequest(value)
@@ -44691,17 +37947,14 @@ pub mod types {
         pub refusal: TenantApiTenantRequestInvalidRefusal,
     }
     ///`TenantApiTenantRequestInvalidRefusal`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTenantRequestInvalidRefusal {
         TenantRequestInvalid,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTenantRequestInvalidRefusal {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TenantRequestInvalid => f.write_str("TenantRequestInvalid"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -44742,17 +37995,14 @@ pub mod types {
         pub storage_key: StorageKey,
     }
     ///`TenantApiTranscriptChunkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTranscriptChunkKind {
         Chunk,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTranscriptChunkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Chunk => f.write_str("Chunk"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -44800,18 +38050,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiTranscriptCursorRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTranscriptCursorRequestOperation {
         #[serde(rename = "transcriptCursor")]
         TranscriptCursor,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTranscriptCursorRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TranscriptCursor => f.write_str("transcriptCursor"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -44863,17 +38110,14 @@ pub mod types {
         pub session_state: SessionState,
     }
     ///`TenantApiTranscriptLinesKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTranscriptLinesKind {
         Lines,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTranscriptLinesKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Lines => f.write_str("Lines"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -44905,17 +38149,14 @@ pub mod types {
         pub trigger: Trigger,
     }
     ///`TenantApiTriggerCreatedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTriggerCreatedOkKind {
         Created,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerCreatedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Created => f.write_str("Created"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -44948,17 +38189,14 @@ pub mod types {
         pub session_id: EntityId,
     }
     ///`TenantApiTriggerDeliveryRepeatedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTriggerDeliveryRepeatedKind {
         Repeated,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerDeliveryRepeatedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Repeated => f.write_str("Repeated"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45004,7 +38242,6 @@ pub mod types {
     pub enum TenantApiTriggerFiredInputFired {
         Matched(TenantApiTriggerFiredMatched),
         Refused(TenantApiTriggerFiredRefused),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTriggerFiredMatched> for TenantApiTriggerFiredInputFired {
         fn from(value: TenantApiTriggerFiredMatched) -> Self {
@@ -45026,17 +38263,14 @@ pub mod types {
         pub repository: RepositoryUrl,
     }
     ///`TenantApiTriggerFiredMatchedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTriggerFiredMatchedKind {
         Matched,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerFiredMatchedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Matched => f.write_str("Matched"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45068,17 +38302,14 @@ pub mod types {
         pub refusal: TriggerStartRefusal,
     }
     ///`TenantApiTriggerFiredRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTriggerFiredRefusedKind {
         Refused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerFiredRefusedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Refused => f.write_str("Refused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45112,18 +38343,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiTriggerFiredRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTriggerFiredRequestOperation {
         #[serde(rename = "triggerFired")]
         TriggerFired,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerFiredRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TriggerFired => f.write_str("triggerFired"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45161,7 +38389,6 @@ pub mod types {
         TriggerDeliveryRepeated(TenantApiTriggerDeliveryRepeated),
         TriggerNotFound(TenantApiTriggerNotFound),
         TriggerStartRefusedOk(TenantApiTriggerStartRefusedOk),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionStartedOk> for TenantApiTriggerFiredResultFired {
         fn from(value: TenantApiSessionStartedOk) -> Self {
@@ -45189,17 +38416,14 @@ pub mod types {
         pub kind: TenantApiTriggerNameTakenKind,
     }
     ///`TenantApiTriggerNameTakenKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTriggerNameTakenKind {
         NameTaken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerNameTakenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NameTaken => f.write_str("NameTaken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45230,17 +38454,14 @@ pub mod types {
         pub kind: TenantApiTriggerNotFoundKind,
     }
     ///`TenantApiTriggerNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTriggerNotFoundKind {
         NotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotFound => f.write_str("NotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45271,17 +38492,14 @@ pub mod types {
         pub kind: TenantApiTriggerPersonaNotFoundKind,
     }
     ///`TenantApiTriggerPersonaNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTriggerPersonaNotFoundKind {
         PersonaNotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerPersonaNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::PersonaNotFound => f.write_str("PersonaNotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45313,17 +38531,14 @@ pub mod types {
         pub refusal: TriggerStartRefusal,
     }
     ///`TenantApiTriggerStartRefusedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTriggerStartRefusedOkKind {
         Refused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerStartRefusedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Refused => f.write_str("Refused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45355,17 +38570,14 @@ pub mod types {
         pub trigger: Trigger,
     }
     ///`TenantApiTriggerUpdatedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTriggerUpdatedOkKind {
         Updated,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerUpdatedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Updated => f.write_str("Updated"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45397,17 +38609,14 @@ pub mod types {
         pub turn: Turn,
     }
     ///`TenantApiTurnCancelledOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTurnCancelledOkKind {
         Cancelled,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnCancelledOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Cancelled => f.write_str("Cancelled"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45441,17 +38650,14 @@ pub mod types {
         pub refusal: TenantApiTurnCredentialRefusedRefusal,
     }
     ///`TenantApiTurnCredentialRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTurnCredentialRefusedKind {
         CredentialRefused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnCredentialRefusedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::CredentialRefused => f.write_str("CredentialRefused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45485,7 +38691,6 @@ pub mod types {
         UnsupportedCredentialRefusal(TenantApiUnsupportedCredentialRefusal),
         ModelUnsupportedCredentialRefusal(TenantApiModelUnsupportedCredentialRefusal),
         ExpiredCredentialRefusal(TenantApiExpiredCredentialRefusal),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiNoCredentialRefusal> for TenantApiTurnCredentialRefusedRefusal {
         fn from(value: TenantApiNoCredentialRefusal) -> Self {
@@ -45529,17 +38734,14 @@ pub mod types {
         pub type_: TenantApiTurnHandoffType,
     }
     ///`TenantApiTurnHandoffType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTurnHandoffType {
         TurnHandoff,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnHandoffType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnHandoff => f.write_str("TurnHandoff"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45572,17 +38774,14 @@ pub mod types {
         pub turn_id: EntityId,
     }
     ///`TenantApiTurnInFlightKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTurnInFlightKind {
         InFlight,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnInFlightKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::InFlight => f.write_str("InFlight"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45646,18 +38845,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiTurnMetricDimensionsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTurnMetricDimensionsRequestOperation {
         #[serde(rename = "turnMetricDimensions")]
         TurnMetricDimensions,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnMetricDimensionsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnMetricDimensions => f.write_str("turnMetricDimensions"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45693,17 +38889,14 @@ pub mod types {
         pub kind: TenantApiTurnNotFoundKind,
     }
     ///`TenantApiTurnNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTurnNotFoundKind {
         NotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotFound => f.write_str("NotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45735,17 +38928,14 @@ pub mod types {
         pub state: TurnState,
     }
     ///`TenantApiTurnNotRunningKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTurnNotRunningKind {
         NotRunning,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnNotRunningKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotRunning => f.write_str("NotRunning"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45777,17 +38967,14 @@ pub mod types {
         pub state: TurnState,
     }
     ///`TenantApiTurnNotWaitingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTurnNotWaitingKind {
         NotWaiting,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnNotWaitingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotWaiting => f.write_str("NotWaiting"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45819,17 +39006,14 @@ pub mod types {
         pub turn: Turn,
     }
     ///`TenantApiTurnSentOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTurnSentOkKind {
         Sent,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnSentOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Sent => f.write_str("Sent"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45862,17 +39046,14 @@ pub mod types {
         pub missing_turn_ids: ::std::vec::Vec<EntityId>,
     }
     ///`TenantApiTurnStrandedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiTurnStrandedKind {
         Stranded,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnStrandedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Stranded => f.write_str("Stranded"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -45897,48 +39078,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiTurnsRead`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiTurnsRead {
-        pub kind: TenantApiTurnsReadKind,
-        pub turns: ::std::vec::Vec<Turn>,
-    }
-    ///`TenantApiTurnsReadKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiTurnsReadKind {
-        Read,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiTurnsReadKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Read => f.write_str("Read"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiTurnsReadKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Read" => Ok(Self::Read),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiTurnsReadKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTurnsReadKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiUnknownConnectorsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnknownConnectorsInput {
@@ -45954,18 +39093,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiUnknownConnectorsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnknownConnectorsRequestOperation {
         #[serde(rename = "unknownConnectors")]
         UnknownConnectors,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnknownConnectorsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::UnknownConnectors => f.write_str("unknownConnectors"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46010,18 +39146,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiUnpinRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnpinRequestOperation {
         #[serde(rename = "unpin")]
         Unpin,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnpinRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unpin => f.write_str("unpin"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46058,17 +39191,14 @@ pub mod types {
         pub kind: TenantApiUnpinWriteKind,
     }
     ///`TenantApiUnpinWriteKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnpinWriteKind {
         Unpin,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnpinWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unpin => f.write_str("Unpin"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46099,13 +39229,13 @@ pub mod types {
     pub enum TenantApiUnplaceable {
         NotOnline(TenantApiUnplaceableNotOnline),
         NotHealthy(TenantApiUnplaceableNotHealthy),
+        NotHeard(TenantApiUnplaceableNotHeard),
         NoImage(TenantApiUnplaceableNoImage),
         Full(TenantApiUnplaceableFull),
         MemoryFull(TenantApiUnplaceableMemoryFull),
         NoMemory(TenantApiUnplaceableNoMemory),
         NoDisk(TenantApiUnplaceableNoDisk),
         NoConnectors(TenantApiUnplaceableNoConnectors),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiUnplaceableNotOnline> for TenantApiUnplaceable {
         fn from(value: TenantApiUnplaceableNotOnline) -> Self {
@@ -46115,6 +39245,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiUnplaceableNotHealthy> for TenantApiUnplaceable {
         fn from(value: TenantApiUnplaceableNotHealthy) -> Self {
             Self::NotHealthy(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiUnplaceableNotHeard> for TenantApiUnplaceable {
+        fn from(value: TenantApiUnplaceableNotHeard) -> Self {
+            Self::NotHeard(value)
         }
     }
     impl ::std::convert::From<TenantApiUnplaceableNoImage> for TenantApiUnplaceable {
@@ -46156,17 +39291,14 @@ pub mod types {
         pub usage: ReportedHostUsage,
     }
     ///`TenantApiUnplaceableFullKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableFullKind {
         Unplaceable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableFullKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unplaceable => f.write_str("Unplaceable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46192,17 +39324,14 @@ pub mod types {
         }
     }
     ///`TenantApiUnplaceableFullReason`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableFullReason {
         Full,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableFullReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Full => f.write_str("Full"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46238,17 +39367,14 @@ pub mod types {
         pub usage: ReportedHostUsage,
     }
     ///`TenantApiUnplaceableMemoryFullKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableMemoryFullKind {
         Unplaceable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableMemoryFullKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unplaceable => f.write_str("Unplaceable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46274,17 +39400,14 @@ pub mod types {
         }
     }
     ///`TenantApiUnplaceableMemoryFullReason`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableMemoryFullReason {
         MemoryFull,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableMemoryFullReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::MemoryFull => f.write_str("MemoryFull"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46318,17 +39441,14 @@ pub mod types {
         pub usage: ReportedHostUsage,
     }
     ///`TenantApiUnplaceableNoConnectorsKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNoConnectorsKind {
         Unplaceable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoConnectorsKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unplaceable => f.write_str("Unplaceable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46354,17 +39474,14 @@ pub mod types {
         }
     }
     ///`TenantApiUnplaceableNoConnectorsReason`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNoConnectorsReason {
         NoConnectors,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoConnectorsReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NoConnectors => f.write_str("NoConnectors"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46400,17 +39517,14 @@ pub mod types {
         pub usage: ReportedHostUsage,
     }
     ///`TenantApiUnplaceableNoDiskKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNoDiskKind {
         Unplaceable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoDiskKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unplaceable => f.write_str("Unplaceable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46436,17 +39550,14 @@ pub mod types {
         }
     }
     ///`TenantApiUnplaceableNoDiskReason`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNoDiskReason {
         NoDisk,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoDiskReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NoDisk => f.write_str("NoDisk"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46480,17 +39591,14 @@ pub mod types {
         pub reason: TenantApiUnplaceableNoImageReason,
     }
     ///`TenantApiUnplaceableNoImageKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNoImageKind {
         Unplaceable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoImageKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unplaceable => f.write_str("Unplaceable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46516,17 +39624,14 @@ pub mod types {
         }
     }
     ///`TenantApiUnplaceableNoImageReason`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNoImageReason {
         NoImage,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoImageReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NoImage => f.write_str("NoImage"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46562,17 +39667,14 @@ pub mod types {
         pub usage: ReportedHostUsage,
     }
     ///`TenantApiUnplaceableNoMemoryKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNoMemoryKind {
         Unplaceable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoMemoryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unplaceable => f.write_str("Unplaceable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46598,17 +39700,14 @@ pub mod types {
         }
     }
     ///`TenantApiUnplaceableNoMemoryReason`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNoMemoryReason {
         NoMemory,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoMemoryReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NoMemory => f.write_str("NoMemory"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46641,17 +39740,14 @@ pub mod types {
         pub reason: TenantApiUnplaceableNotHealthyReason,
     }
     ///`TenantApiUnplaceableNotHealthyKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNotHealthyKind {
         Unplaceable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNotHealthyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unplaceable => f.write_str("Unplaceable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46677,17 +39773,14 @@ pub mod types {
         }
     }
     ///`TenantApiUnplaceableNotHealthyReason`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNotHealthyReason {
         NotHealthy,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNotHealthyReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotHealthy => f.write_str("NotHealthy"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46712,6 +39805,79 @@ pub mod types {
             value.parse()
         }
     }
+    ///The host is Online, but it has not sent a Hello since its tenant restarted, so the tenant does not know its usage yet.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiUnplaceableNotHeard {
+        pub host: TenantApiHostRecord,
+        pub kind: TenantApiUnplaceableNotHeardKind,
+        pub reason: TenantApiUnplaceableNotHeardReason,
+    }
+    ///`TenantApiUnplaceableNotHeardKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUnplaceableNotHeardKind {
+        Unplaceable,
+    }
+    impl ::std::fmt::Display for TenantApiUnplaceableNotHeardKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Unplaceable => f.write_str("Unplaceable"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUnplaceableNotHeardKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Unplaceable" => Ok(Self::Unplaceable),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHeardKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHeardKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiUnplaceableNotHeardReason`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiUnplaceableNotHeardReason {
+        NotHeard,
+    }
+    impl ::std::fmt::Display for TenantApiUnplaceableNotHeardReason {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::NotHeard => f.write_str("NotHeard"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiUnplaceableNotHeardReason {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "NotHeard" => Ok(Self::NotHeard),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiUnplaceableNotHeardReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUnplaceableNotHeardReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///`TenantApiUnplaceableNotOnline`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnplaceableNotOnline {
@@ -46720,17 +39886,14 @@ pub mod types {
         pub reason: TenantApiUnplaceableNotOnlineReason,
     }
     ///`TenantApiUnplaceableNotOnlineKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNotOnlineKind {
         Unplaceable,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNotOnlineKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unplaceable => f.write_str("Unplaceable"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46756,17 +39919,14 @@ pub mod types {
         }
     }
     ///`TenantApiUnplaceableNotOnlineReason`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnplaceableNotOnlineReason {
         NotOnline,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNotOnlineReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::NotOnline => f.write_str("NotOnline"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46801,17 +39961,14 @@ pub mod types {
         pub supported: ::std::vec::Vec<ShortText>,
     }
     ///`TenantApiUnsupportedCredentialRefusalKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUnsupportedCredentialRefusalKind {
         Unsupported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnsupportedCredentialRefusalKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Unsupported => f.write_str("Unsupported"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46855,18 +40012,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiUpdatePersonaRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUpdatePersonaRequestOperation {
         #[serde(rename = "updatePersona")]
         UpdatePersona,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUpdatePersonaRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::UpdatePersona => f.write_str("updatePersona"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46902,7 +40056,6 @@ pub mod types {
     pub enum TenantApiUpdatePersonaResultWritten {
         PersonaUpdated(TenantApiPersonaUpdated),
         WriteConflict(TenantApiWriteConflict),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiPersonaUpdated> for TenantApiUpdatePersonaResultWritten {
         fn from(value: TenantApiPersonaUpdated) -> Self {
@@ -46923,17 +40076,14 @@ pub mod types {
         pub persona_id: EntityId,
     }
     ///`TenantApiUpdatePersonaWriteKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUpdatePersonaWriteKind {
         UpdatePersona,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUpdatePersonaWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::UpdatePersona => f.write_str("UpdatePersona"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -46979,18 +40129,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiUpdateSecretSetRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUpdateSecretSetRequestOperation {
         #[serde(rename = "updateSecretSet")]
         UpdateSecretSet,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUpdateSecretSetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::UpdateSecretSet => f.write_str("updateSecretSet"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -47029,7 +40176,6 @@ pub mod types {
         Conflict(TenantApiSecretSetConflict),
         NoStoredValue(TenantApiSecretSetNoStoredValue),
         UncheckedToken(TenantApiSecretSetUncheckedToken),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetUpdated> for TenantApiUpdateSecretSetResultUpdated {
         fn from(value: TenantApiSecretSetUpdated) -> Self {
@@ -47078,18 +40224,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiUpdateTriggerRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUpdateTriggerRequestOperation {
         #[serde(rename = "updateTrigger")]
         UpdateTrigger,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUpdateTriggerRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::UpdateTrigger => f.write_str("updateTrigger"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -47127,7 +40270,6 @@ pub mod types {
         NotFound(TenantApiTriggerNotFound),
         NameTaken(TenantApiTriggerNameTaken),
         PersonaNotFound(TenantApiTriggerPersonaNotFound),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTriggerUpdatedOk> for TenantApiUpdateTriggerResultUpdated {
         fn from(value: TenantApiTriggerUpdatedOk) -> Self {
@@ -47160,17 +40302,14 @@ pub mod types {
         pub trigger_id: EntityId,
     }
     ///`TenantApiUpdateTriggerWriteKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiUpdateTriggerWriteKind {
         UpdateTrigger,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUpdateTriggerWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::UpdateTrigger => f.write_str("UpdateTrigger"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -47195,510 +40334,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiUploadJobAbsent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadJobAbsent {
-        pub kind: TenantApiUploadJobAbsentKind,
-    }
-    ///`TenantApiUploadJobAbsentKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadJobAbsentKind {
-        NoJob,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiUploadJobAbsentKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NoJob => f.write_str("NoJob"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadJobAbsentKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NoJob" => Ok(Self::NoJob),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadJobAbsentKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadJobAbsentKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadJobRecorded`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadJobRecorded {
-        #[serde(rename = "jobId")]
-        pub job_id: ShortText,
-        pub kind: TenantApiUploadJobRecordedKind,
-    }
-    ///`TenantApiUploadJobRecordedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadJobRecordedKind {
-        Job,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiUploadJobRecordedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Job => f.write_str("Job"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadJobRecordedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Job" => Ok(Self::Job),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadJobRecordedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadJobRecordedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadNotUploading`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadNotUploading {
-        pub kind: TenantApiUploadNotUploadingKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiUploadNotUploadingKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadNotUploadingKind {
-        NotUploading,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiUploadNotUploadingKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotUploading => f.write_str("NotUploading"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadNotUploadingKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotUploading" => Ok(Self::NotUploading),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadNotUploadingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadNotUploadingKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadOtherLayer`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadOtherLayer {
-        pub kind: TenantApiUploadOtherLayerKind,
-        pub prebuild: Prebuild,
-        pub recorded: TenantApiPrebuildLayerUpload,
-    }
-    ///`TenantApiUploadOtherLayerKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadOtherLayerKind {
-        OtherLayer,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiUploadOtherLayerKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::OtherLayer => f.write_str("OtherLayer"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadOtherLayerKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "OtherLayer" => Ok(Self::OtherLayer),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadOtherLayerKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadOtherLayerKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadRecorded`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadRecorded {
-        pub recorded: TenantApiUploadRecordedRecorded,
-    }
-    ///`TenantApiUploadRecordedOk`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadRecordedOk {
-        pub kind: TenantApiUploadRecordedOkKind,
-        pub prebuild: Prebuild,
-    }
-    ///`TenantApiUploadRecordedOkKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadRecordedOkKind {
-        Recorded,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiUploadRecordedOkKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Recorded => f.write_str("Recorded"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadRecordedOkKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Recorded" => Ok(Self::Recorded),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadRecordedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadRecordedOkKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadRecordedRecorded`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiUploadRecordedRecorded {
-        RecordedOk(TenantApiUploadRecordedOk),
-        NotUploading(TenantApiUploadNotUploading),
-        OtherLayer(TenantApiUploadOtherLayer),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiUploadRecordedOk> for TenantApiUploadRecordedRecorded {
-        fn from(value: TenantApiUploadRecordedOk) -> Self {
-            Self::RecordedOk(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadNotUploading> for TenantApiUploadRecordedRecorded {
-        fn from(value: TenantApiUploadNotUploading) -> Self {
-            Self::NotUploading(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiUploadOtherLayer> for TenantApiUploadRecordedRecorded {
-        fn from(value: TenantApiUploadOtherLayer) -> Self {
-            Self::OtherLayer(value)
-        }
-    }
-    ///`TenantApiUploadTargetInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadTargetInput {
-        #[serde(rename = "prebuildId")]
-        pub prebuild_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiUploadTargetRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadTargetRequest {
-        pub input: TenantApiUploadTargetInput,
-        pub operation: TenantApiUploadTargetRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiUploadTargetRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiUploadTargetRequestOperation {
-        #[serde(rename = "uploadTarget")]
-        UploadTarget,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiUploadTargetRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::UploadTarget => f.write_str("uploadTarget"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiUploadTargetRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "uploadTarget" => Ok(Self::UploadTarget),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiUploadTargetRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiUploadTargetRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiUploadTargetResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiUploadTargetResult {
-        pub target: TenantApiUploadTargetResultTarget,
-    }
-    ///`TenantApiUploadTargetResultTarget`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
-    pub struct TenantApiUploadTargetResultTarget {
-        #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_0: ::std::option::Option<TenantApiGitHubActionsUploadTarget>,
-        #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_1: ::std::option::Option<TenantApiCircleCiUploadTarget>,
-    }
-    ///`TenantApiWaitTurnsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsInput {
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-        #[serde(rename = "timeoutSeconds")]
-        pub timeout_seconds: i32,
-        #[serde(rename = "turnIds")]
-        pub turn_ids: ::std::vec::Vec<EntityId>,
-    }
-    ///`TenantApiWaitTurnsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsRequest {
-        pub input: TenantApiWaitTurnsInput,
-        pub operation: TenantApiWaitTurnsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiWaitTurnsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiWaitTurnsRequestOperation {
-        #[serde(rename = "waitTurns")]
-        WaitTurns,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiWaitTurnsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::WaitTurns => f.write_str("waitTurns"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiWaitTurnsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "waitTurns" => Ok(Self::WaitTurns),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiWaitTurnsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiWaitTurnsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiWaitTurnsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitTurnsResult {
-        pub waited: TenantApiWaitTurnsResultWaited,
-    }
-    ///`TenantApiWaitTurnsResultWaited`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiWaitTurnsResultWaited {
-        TurnsRead(TenantApiTurnsRead),
-        WaitedTurnNotFound(TenantApiWaitedTurnNotFound),
-        Unknown(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiTurnsRead> for TenantApiWaitTurnsResultWaited {
-        fn from(value: TenantApiTurnsRead) -> Self {
-            Self::TurnsRead(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiWaitedTurnNotFound> for TenantApiWaitTurnsResultWaited {
-        fn from(value: TenantApiWaitedTurnNotFound) -> Self {
-            Self::WaitedTurnNotFound(value)
-        }
-    }
-    ///`TenantApiWaitedTurnNotFound`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWaitedTurnNotFound {
-        pub kind: TenantApiWaitedTurnNotFoundKind,
-        #[serde(rename = "turnId")]
-        pub turn_id: EntityId,
-    }
-    ///`TenantApiWaitedTurnNotFoundKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiWaitedTurnNotFoundKind {
-        NotFound,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiWaitedTurnNotFoundKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::NotFound => f.write_str("NotFound"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiWaitedTurnNotFoundKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "NotFound" => Ok(Self::NotFound),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiWaitedTurnNotFoundKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiWaitedTurnNotFoundKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiWorkflowRunReportedInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWorkflowRunReportedInput {
-        pub event: TenantApiRunEvent,
-        pub now: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiWorkflowRunReportedRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiWorkflowRunReportedRequest {
-        pub input: TenantApiWorkflowRunReportedInput,
-        pub operation: TenantApiWorkflowRunReportedRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiWorkflowRunReportedRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiWorkflowRunReportedRequestOperation {
-        #[serde(rename = "workflowRunReported")]
-        WorkflowRunReported,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiWorkflowRunReportedRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::WorkflowRunReported => f.write_str("workflowRunReported"),
-                Self::Unknown(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiWorkflowRunReportedRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "workflowRunReported" => Ok(Self::WorkflowRunReported),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiWorkflowRunReportedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiWorkflowRunReportedRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiWorkflowRunReportedResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiWorkflowRunReportedResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiWorkflowRunReportedResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiWorkflowRunReportedResult>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiWorkflowRunReportedResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiWorkflowRunReportedResult
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
     ///`TenantApiWriteClaudeSetupTokenInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiWriteClaudeSetupTokenInput {
@@ -47721,18 +40356,15 @@ pub mod types {
         pub tenant_api_version: TenantApiProtocol,
     }
     ///`TenantApiWriteClaudeSetupTokenRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiWriteClaudeSetupTokenRequestOperation {
         #[serde(rename = "writeClaudeSetupToken")]
         WriteClaudeSetupToken,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiWriteClaudeSetupTokenRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::WriteClaudeSetupToken => f.write_str("writeClaudeSetupToken"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -47771,7 +40403,6 @@ pub mod types {
         ClaudeSetupRefused(TenantApiClaudeSetupRefused),
         AuthorizationNotWaiting(TenantApiAuthorizationNotWaiting),
         ClaudeSetupNotStored(TenantApiClaudeSetupNotStored),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiClaudeSetupStoredOk> for TenantApiWriteClaudeSetupTokenResultStored {
         fn from(value: TenantApiClaudeSetupStoredOk) -> Self {
@@ -47855,7 +40486,7 @@ pub mod types {
     ///A record that something happened in a tenant. The control plane appends it in the same
     ///transaction as the state change it reports. It holds ids and the fact that changed; read the
     ///resource for the rest.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantEvent {
         TurnStartedEvent(TurnStartedEvent),
@@ -47875,7 +40506,6 @@ pub mod types {
         TriggerStartRefusedEvent(TriggerStartRefusedEvent),
         UsageNearLimitEvent(UsageNearLimitEvent),
         UsageLimitReachedEvent(UsageLimitReachedEvent),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TurnStartedEvent> for TenantEvent {
         fn from(value: TurnStartedEvent) -> Self {
@@ -47974,7 +40604,7 @@ pub mod types {
         pub tenant_id: EntityId,
     }
     ///The kind of a tenant event, named for the state change it records.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantEventType {
         TurnStarted,
         TurnCompleted,
@@ -47993,8 +40623,6 @@ pub mod types {
         TriggerStartRefused,
         UsageNearLimit,
         UsageLimitReached,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantEventType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -48016,7 +40644,6 @@ pub mod types {
                 Self::TriggerStartRefused => f.write_str("TriggerStartRefused"),
                 Self::UsageNearLimit => f.write_str("UsageNearLimit"),
                 Self::UsageLimitReached => f.write_str("UsageLimitReached"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -48070,48 +40697,35 @@ pub mod types {
         pub profile: TenantLimitsProfile,
         pub source: TenantLimitsSource,
     }
-    ///Runs the tenant under the preset profile of a tier and drops any profile set for it. A Free tenant may choose only Free.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantLimitsPreset {
-        pub tier: TenantTier,
-    }
-    ///Every limit one tenant runs under. The tenant Durable Object counts the request rates and the
-    ///usage budgets, the host channel counts the frames of each host, and the Worker checks the body
-    ///caps once it knows the tenant.
+    ///Every limit one tenant runs under. The tenant Durable Object counts the writing requests and the
+    ///usage budgets, and the host channel counts the frames of each host. A request rate is a usage
+    ///budget of Requests per Minute.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantLimitsProfile {
-        ///The largest request body the tenant may send, in bytes.
-        #[serde(rename = "bodyBytes")]
-        pub body_bytes: ::std::num::NonZeroU32,
-        ///The largest tenant config the tenant may plan or apply, in bytes.
-        #[serde(rename = "configBodyBytes")]
-        pub config_body_bytes: ::std::num::NonZeroU32,
         ///Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.
         #[serde(rename = "hostFramesPerMinute")]
         pub host_frames_per_minute: ::std::num::NonZeroU32,
-        ///Requests a minute the tenant may send: API calls and MCP tool calls.
-        #[serde(rename = "readsPerMinute")]
-        pub reads_per_minute: ::std::num::NonZeroU32,
         ///The usage budgets of the tenant.
         pub usage: ::std::vec::Vec<TenantLimit>,
-        ///Signed webhook deliveries a minute the tenant may receive, from GitHub and CircleCI.
-        #[serde(rename = "webhookDeliveriesPerMinute")]
-        pub webhook_deliveries_per_minute: ::std::num::NonZeroU32,
         ///Requests a minute the tenant may send that change its state.
         #[serde(rename = "writesPerMinute")]
         pub writes_per_minute: ::std::num::NonZeroU32,
     }
-    ///What a limits change sets: the preset of a tier, or a profile of the tenant's own.
+    ///Drops the profile set for the tenant, so it runs under the preset of the tier it has. It never changes the tier.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantLimitsReset {
+        pub reset: bool,
+    }
+    ///What a limits change sets: a reset to the preset of the tenant's tier, or a profile of the tenant's own.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantLimitsSet {
-        Preset(TenantLimitsPreset),
+        Reset(TenantLimitsReset),
         Profile(TenantLimitsProfile),
-        Unknown(::serde_json::Value),
     }
-    impl ::std::convert::From<TenantLimitsPreset> for TenantLimitsSet {
-        fn from(value: TenantLimitsPreset) -> Self {
-            Self::Preset(value)
+    impl ::std::convert::From<TenantLimitsReset> for TenantLimitsSet {
+        fn from(value: TenantLimitsReset) -> Self {
+            Self::Reset(value)
         }
     }
     impl ::std::convert::From<TenantLimitsProfile> for TenantLimitsSet {
@@ -48120,13 +40734,11 @@ pub mod types {
         }
     }
     ///Where the profile a tenant runs under comes from.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantLimitsSource {
         Free,
         Configured,
         Custom,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantLimitsSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -48134,7 +40746,6 @@ pub mod types {
                 Self::Free => f.write_str("Free"),
                 Self::Configured => f.write_str("Configured"),
                 Self::Custom => f.write_str("Custom"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -48170,19 +40781,16 @@ pub mod types {
     ///The limits a tenant runs under. Free keeps the tenant inside the allowances the hosting plan
     ///includes at no charge and refuses traffic past them; Configured runs under the limits its
     ///deployment configures.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantTier {
         Free,
         Configured,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantTier {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Free => f.write_str("Free"),
                 Self::Configured => f.write_str("Configured"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -48226,14 +40834,12 @@ pub mod types {
         pub window: TenantUsageWindow,
     }
     ///What a tenant limit counts.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantUsageMeasure {
         Requests,
         Writes,
         RowsWritten,
         RowsRead,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantUsageMeasure {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -48242,7 +40848,6 @@ pub mod types {
                 Self::Writes => f.write_str("Writes"),
                 Self::RowsWritten => f.write_str("RowsWritten"),
                 Self::RowsRead => f.write_str("RowsRead"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -48271,13 +40876,11 @@ pub mod types {
         }
     }
     ///The fixed window a tenant limit counts over.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantUsageWindow {
         Minute,
         Hour,
         Day,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TenantUsageWindow {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -48285,7 +40888,6 @@ pub mod types {
                 Self::Minute => f.write_str("Minute"),
                 Self::Hour => f.write_str("Hour"),
                 Self::Day => f.write_str("Day"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -48379,14 +40981,12 @@ pub mod types {
         }
     }
     ///The kind of tokens a turn.tokens point counts, as its tokenKind dimension.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TokenKind {
         Input,
         Output,
         CacheRead,
         CacheWrite,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TokenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -48395,7 +40995,6 @@ pub mod types {
                 Self::Output => f.write_str("Output"),
                 Self::CacheRead => f.write_str("CacheRead"),
                 Self::CacheWrite => f.write_str("CacheWrite"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -48424,13 +41023,11 @@ pub mod types {
         }
     }
     ///A toolchain the guest image carries.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum Toolchain {
         Node,
         Rust,
         Python,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for Toolchain {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -48438,7 +41035,6 @@ pub mod types {
                 Self::Node => f.write_str("Node"),
                 Self::Rust => f.write_str("Rust"),
                 Self::Python => f.write_str("Python"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -48485,12 +41081,11 @@ pub mod types {
     ///kept text grouped by turn. `cursor` is the lineSeq the page read up to, dropped lines included,
     ///or the `after` the read passed when nothing was read; pass it as `after` to read on.
     ///`finished` is true when no turn is in flight and no line follows `cursor`.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TranscriptPage {
         RawTranscriptPage(RawTranscriptPage),
         CompactTranscriptPage(CompactTranscriptPage),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<RawTranscriptPage> for TranscriptPage {
         fn from(value: RawTranscriptPage) -> Self {
@@ -48789,17 +41384,14 @@ pub mod types {
         pub trigger_id: EntityId,
     }
     ///`TriggerOriginKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TriggerOriginKind {
         Trigger,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TriggerOriginKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Trigger => f.write_str("Trigger"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -48909,17 +41501,14 @@ pub mod types {
         pub trigger_id: EntityId,
     }
     ///`TriggerStartRefusedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TriggerStartRefusedEventEvent {
         TriggerStartRefused,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TriggerStartRefusedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TriggerStartRefused => f.write_str("TriggerStartRefused"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -48945,12 +41534,11 @@ pub mod types {
         }
     }
     ///A trigger and a pasted payload to match it against. The payload carries no event type, so the test takes it to be of the event its source names.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TriggerTest {
         StoredTriggerTest(StoredTriggerTest),
         DraftTriggerTest(DraftTriggerTest),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<StoredTriggerTest> for TriggerTest {
         fn from(value: StoredTriggerTest) -> Self {
@@ -48975,14 +41563,13 @@ pub mod types {
         pub prompt: Prompt,
     }
     ///One prompt and the harness's completion of it, run on a session's box.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum Turn {
         OfferedTurn(OfferedTurn),
         RunningTurn(RunningTurn),
         CompletedTurn(CompletedTurn),
         FailedTurn(FailedTurn),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<OfferedTurn> for Turn {
         fn from(value: OfferedTurn) -> Self {
@@ -49047,17 +41634,14 @@ pub mod types {
         pub turn_id: EntityId,
     }
     ///`TurnCompletedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TurnCompletedEventEvent {
         TurnCompleted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TurnCompletedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnCompleted => f.write_str("TurnCompleted"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49101,17 +41685,14 @@ pub mod types {
         pub turn_id: EntityId,
     }
     ///`TurnFailedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TurnFailedEventEvent {
         TurnFailed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TurnFailedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnFailed => f.write_str("TurnFailed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49154,7 +41735,7 @@ pub mod types {
         pub turn_id: EntityId,
     }
     ///Why a turn ended Failed. Each reason names the phase the turn stopped in.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TurnFailureReason {
         NotClaimed,
         Undelivered,
@@ -49165,6 +41746,7 @@ pub mod types {
         CredentialExpired,
         BoxBootFailed,
         PoolExhausted,
+        HostDegraded,
         SnapshotUnreadable,
         HarnessExited,
         HarnessOutOfMemory,
@@ -49186,8 +41768,6 @@ pub mod types {
         ConnectorDisconnected,
         SnapshotNotStored,
         RateLimited,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TurnFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -49201,6 +41781,7 @@ pub mod types {
                 Self::CredentialExpired => f.write_str("CredentialExpired"),
                 Self::BoxBootFailed => f.write_str("BoxBootFailed"),
                 Self::PoolExhausted => f.write_str("PoolExhausted"),
+                Self::HostDegraded => f.write_str("HostDegraded"),
                 Self::SnapshotUnreadable => f.write_str("SnapshotUnreadable"),
                 Self::HarnessExited => f.write_str("HarnessExited"),
                 Self::HarnessOutOfMemory => f.write_str("HarnessOutOfMemory"),
@@ -49222,7 +41803,6 @@ pub mod types {
                 Self::ConnectorDisconnected => f.write_str("ConnectorDisconnected"),
                 Self::SnapshotNotStored => f.write_str("SnapshotNotStored"),
                 Self::RateLimited => f.write_str("RateLimited"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49239,6 +41819,7 @@ pub mod types {
                 "CredentialExpired" => Ok(Self::CredentialExpired),
                 "BoxBootFailed" => Ok(Self::BoxBootFailed),
                 "PoolExhausted" => Ok(Self::PoolExhausted),
+                "HostDegraded" => Ok(Self::HostDegraded),
                 "SnapshotUnreadable" => Ok(Self::SnapshotUnreadable),
                 "HarnessExited" => Ok(Self::HarnessExited),
                 "HarnessOutOfMemory" => Ok(Self::HarnessOutOfMemory),
@@ -49284,17 +41865,14 @@ pub mod types {
         pub kind: TurnFullImageKind,
     }
     ///`TurnFullImageKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TurnFullImageKind {
         Full,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TurnFullImageKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Full => f.write_str("Full"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49320,12 +41898,11 @@ pub mod types {
         }
     }
     ///The image a turn's box boots.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TurnImage {
         FullImage(TurnFullImage),
         LayeredImage(TurnLayeredImage),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<TurnFullImage> for TurnImage {
         fn from(value: TurnFullImage) -> Self {
@@ -49347,17 +41924,14 @@ pub mod types {
         pub kind: TurnLayeredImageKind,
     }
     ///`TurnLayeredImageKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TurnLayeredImageKind {
         Layered,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TurnLayeredImageKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Layered => f.write_str("Layered"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49392,17 +41966,14 @@ pub mod types {
         pub turn_id: EntityId,
     }
     ///`TurnOriginKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TurnOriginKind {
         Turn,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TurnOriginKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Turn => f.write_str("Turn"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49463,17 +42034,14 @@ pub mod types {
         pub turn_id: EntityId,
     }
     ///`TurnStartedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TurnStartedEventEvent {
         TurnStarted,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TurnStartedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::TurnStarted => f.write_str("TurnStarted"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49499,14 +42067,12 @@ pub mod types {
         }
     }
     ///`TurnState`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TurnState {
         Offered,
         Running,
         Completed,
         Failed,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for TurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -49515,7 +42081,6 @@ pub mod types {
                 Self::Running => f.write_str("Running"),
                 Self::Completed => f.write_str("Completed"),
                 Self::Failed => f.write_str("Failed"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49628,17 +42193,14 @@ pub mod types {
         pub window: TenantUsageWindow,
     }
     ///`UsageLimitReachedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum UsageLimitReachedEventEvent {
         UsageLimitReached,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for UsageLimitReachedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::UsageLimitReached => f.write_str("UsageLimitReached"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49682,17 +42244,14 @@ pub mod types {
         pub window: TenantUsageWindow,
     }
     ///`UsageNearLimitEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum UsageNearLimitEventEvent {
         UsageNearLimit,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for UsageNearLimitEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::UsageNearLimit => f.write_str("UsageNearLimit"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49723,17 +42282,14 @@ pub mod types {
         pub delivery: WebhookDeliveringDelivery,
     }
     ///`WebhookDeliveringDelivery`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum WebhookDeliveringDelivery {
         Delivering,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for WebhookDeliveringDelivery {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Delivering => f.write_str("Delivering"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49759,19 +42315,16 @@ pub mod types {
         }
     }
     ///Whether the control plane delivers a webhook endpoint's events.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum WebhookDelivery {
         Delivering,
         Failing,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for WebhookDelivery {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Delivering => f.write_str("Delivering"),
                 Self::Failing => f.write_str("Failing"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49798,12 +42351,11 @@ pub mod types {
         }
     }
     ///Whether a webhook endpoint receives its events, with how it fails when it does not.
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum WebhookDeliveryStatus {
         Delivering(WebhookDelivering),
         Failing(WebhookFailing),
-        Unknown(::serde_json::Value),
     }
     impl ::std::convert::From<WebhookDelivering> for WebhookDeliveryStatus {
         fn from(value: WebhookDelivering) -> Self {
@@ -49852,17 +42404,14 @@ pub mod types {
         pub failing_since: ::chrono::DateTime<::chrono::FixedOffset>,
     }
     ///`WebhookFailingDelivery`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum WebhookFailingDelivery {
         Failing,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for WebhookFailingDelivery {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Failing => f.write_str("Failing"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -49895,17 +42444,14 @@ pub mod types {
         pub public_key: WebhookSigningKeyPublicKey,
     }
     ///`WebhookSigningKeyAlgorithm`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum WebhookSigningKeyAlgorithm {
         Ed25519,
-        #[serde(untagged)]
-        Unknown(::std::string::String),
     }
     impl ::std::fmt::Display for WebhookSigningKeyAlgorithm {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Ed25519 => f.write_str("Ed25519"),
-                Self::Unknown(ref code) => f.write_str(code),
             }
         }
     }
@@ -50086,80 +42632,6 @@ pub mod types {
         pub principal: Principal,
         pub tenant: Tenant,
     }
-    ///A workflow file of the tenant's repositories, such as .github/workflows/tumpel-prebuild.yml.
-    #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    #[serde(transparent)]
-    pub struct WorkflowPath(::std::string::String);
-    impl WorkflowPath {
-        pub fn as_str(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::convert::AsRef<str> for WorkflowPath {
-        fn as_ref(&self) -> &str {
-            &self.0
-        }
-    }
-    impl ::std::fmt::Display for WorkflowPath {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            f.write_str(&self.0)
-        }
-    }
-    impl ::std::convert::AsRef<::std::ffi::OsStr> for WorkflowPath {
-        fn as_ref(&self) -> &::std::ffi::OsStr {
-            self.0.as_ref()
-        }
-    }
-    impl ::std::ops::Deref for WorkflowPath {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<WorkflowPath> for ::std::string::String {
-        fn from(value: WorkflowPath) -> Self {
-            value.0
-        }
-    }
-    impl ::std::str::FromStr for WorkflowPath {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 200usize {
-                return Err("WorkflowPath: longer than 200 characters".into());
-            }
-            static PATTERN: ::std::sync::LazyLock<::regress::Regex> = ::std::sync::LazyLock::new(|| {
-                ::regress::Regex::new("^\\.github/workflows/[A-Za-z0-9._-]+\\.ya?ml$").unwrap()
-            });
-            if PATTERN.find(value).is_none() {
-                return Err(
-                    "WorkflowPath: doesn't match pattern \"^\\.github/workflows/[A-Za-z0-9._-]+\\.ya?ml$\"".into(),
-                );
-            }
-            Ok(Self(value.to_string()))
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for WorkflowPath {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for WorkflowPath {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for WorkflowPath {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
-                .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
     /// Error types.
     pub mod error {
         /// Error from a `TryFrom` or `FromStr` implementation.
@@ -50184,1071 +42656,6 @@ pub mod types {
             fn from(value: String) -> Self {
                 Self(value.into())
             }
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for ClaudeSetupStatus {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Starting") => match ::serde_json::from_value::<ClaudeSetupStarting>(value.clone()) {
-                    Ok(known) => Self::Starting(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("AwaitingCode") => match ::serde_json::from_value::<ClaudeSetupAwaitingCode>(value.clone()) {
-                    Ok(known) => Self::AwaitingCode(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Minting") => match ::serde_json::from_value::<ClaudeSetupMinting>(value.clone()) {
-                    Ok(known) => Self::Minting(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Completed") => match ::serde_json::from_value::<ClaudeSetupCompleted>(value.clone()) {
-                    Ok(known) => Self::Completed(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Failed") => match ::serde_json::from_value::<ClaudeSetupFailed>(value.clone()) {
-                    Ok(known) => Self::Failed(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for ConfigFileWrite {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("source").and_then(::serde_json::Value::as_str) {
-                Some("Inline") => match ::serde_json::from_value::<InlineConfigFile>(value.clone()) {
-                    Ok(known) => Self::InlineConfigFile(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Stored") => match ::serde_json::from_value::<StoredConfigFile>(value.clone()) {
-                    Ok(known) => Self::StoredConfigFile(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for ConfigSecret {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Variable") => match ::serde_json::from_value::<ConfigSecretVariable>(value.clone()) {
-                    Ok(known) => Self::SecretVariable(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("ApiKey") => match ::serde_json::from_value::<ConfigApiKey>(value.clone()) {
-                    Ok(known) => Self::ApiKey(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("SubscriptionToken") => match ::serde_json::from_value::<ConfigSubscriptionToken>(value.clone()) {
-                    Ok(known) => Self::SubscriptionToken(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for ConnectionSummary {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Connected") => match ::serde_json::from_value::<ConnectedConnection>(value.clone()) {
-                    Ok(known) => Self::ConnectedConnection(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Expiring") => match ::serde_json::from_value::<ExpiringConnection>(value.clone()) {
-                    Ok(known) => Self::ExpiringConnection(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Expired") => match ::serde_json::from_value::<ExpiredConnection>(value.clone()) {
-                    Ok(known) => Self::ExpiredConnection(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("NotConnected") => match ::serde_json::from_value::<NotConnectedConnection>(value.clone()) {
-                    Ok(known) => Self::NotConnectedConnection(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("NotConfigured") => match ::serde_json::from_value::<NotConfiguredConnection>(value.clone()) {
-                    Ok(known) => Self::NotConfiguredConnection(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for Connector {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("auth").and_then(::serde_json::Value::as_str) {
-                Some("Static") => match ::serde_json::from_value::<StaticConnector>(value.clone()) {
-                    Ok(known) => Self::StaticConnector(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("OAuth") => match ::serde_json::from_value::<OAuthConnector>(value.clone()) {
-                    Ok(known) => Self::OAuthConnector(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for ConnectorStatus {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("NotConnected") => match ::serde_json::from_value::<ConnectorNotConnected>(value.clone()) {
-                    Ok(known) => Self::NotConnected(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Connected") => match ::serde_json::from_value::<ConnectorConnected>(value.clone()) {
-                    Ok(known) => Self::Connected(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Disconnected") => match ::serde_json::from_value::<ConnectorDisconnected>(value.clone()) {
-                    Ok(known) => Self::Disconnected(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("AuthorizationFailed") => {
-                    match ::serde_json::from_value::<ConnectorAuthorizationFailed>(value.clone()) {
-                        Ok(known) => Self::AuthorizationFailed(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for GitHubActionsLink {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Connected") => match ::serde_json::from_value::<GitHubActionsConnected>(value.clone()) {
-                    Ok(known) => Self::Connected(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("NotConnected") => match ::serde_json::from_value::<GitHubActionsNotConnected>(value.clone()) {
-                    Ok(known) => Self::NotConnected(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for GitHubAppState {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Ready") => match ::serde_json::from_value::<GitHubAppReady>(value.clone()) {
-                    Ok(known) => Self::Ready(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("AppMissing") => match ::serde_json::from_value::<GitHubAppMissing>(value.clone()) {
-                    Ok(known) => Self::Missing(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for GuestInput {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("type").and_then(::serde_json::Value::as_str) {
-                Some("TurnStart") => match ::serde_json::from_value::<GuestTurnStart>(value.clone()) {
-                    Ok(known) => Self::TurnStart(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("TurnCancel") => match ::serde_json::from_value::<GuestTurnCancel>(value.clone()) {
-                    Ok(known) => Self::TurnCancel(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("ClaudeSetupStart") => match ::serde_json::from_value::<GuestClaudeSetupStart>(value.clone()) {
-                    Ok(known) => Self::ClaudeSetupStart(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("ClaudeSetupCode") => match ::serde_json::from_value::<GuestClaudeSetupCode>(value.clone()) {
-                    Ok(known) => Self::ClaudeSetupCode(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for GuestMessage {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("type").and_then(::serde_json::Value::as_str) {
-                Some("GuestHello") => match ::serde_json::from_value::<GuestHello>(value.clone()) {
-                    Ok(known) => Self::Hello(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("TurnRepositoryReady") => {
-                    match ::serde_json::from_value::<GuestTurnRepositoryReady>(value.clone()) {
-                        Ok(known) => Self::TurnRepositoryReady(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                Some("TurnLine") => match ::serde_json::from_value::<GuestTurnLine>(value.clone()) {
-                    Ok(known) => Self::TurnLine(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("TurnRepositoryCloneFailed") => {
-                    match ::serde_json::from_value::<GuestTurnRepositoryCloneFailed>(value.clone()) {
-                        Ok(known) => Self::TurnRepositoryCloneFailed(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                Some("TurnEnd") => match ::serde_json::from_value::<GuestTurnEnd>(value.clone()) {
-                    Ok(known) => Self::TurnEnd(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("ClaudeSetupUrl") => match ::serde_json::from_value::<GuestClaudeSetupUrl>(value.clone()) {
-                    Ok(known) => Self::ClaudeSetupUrl(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("ClaudeSetupStored") => match ::serde_json::from_value::<GuestClaudeSetupStored>(value.clone()) {
-                    Ok(known) => Self::ClaudeSetupStored(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("ClaudeSetupFailed") => match ::serde_json::from_value::<GuestClaudeSetupFailed>(value.clone()) {
-                    Ok(known) => Self::ClaudeSetupFailed(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for HostChannelProtocol {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("NotReported") => match ::serde_json::from_value::<HostProtocolNotReported>(value.clone()) {
-                    Ok(known) => Self::ProtocolNotReported(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Reported") => match ::serde_json::from_value::<HostChannelProtocolReported>(value.clone()) {
-                    Ok(known) => Self::ChannelProtocolReported(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for HostGuestProtocol {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("NotReported") => match ::serde_json::from_value::<HostProtocolNotReported>(value.clone()) {
-                    Ok(known) => Self::ProtocolNotReported(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Reported") => match ::serde_json::from_value::<HostGuestProtocolReported>(value.clone()) {
-                    Ok(known) => Self::GuestProtocolReported(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for InstallRecipe {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Npm") => match ::serde_json::from_value::<NpmInstallRecipe>(value.clone()) {
-                    Ok(known) => Self::NpmInstallRecipe(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Archive") => match ::serde_json::from_value::<ArchiveInstallRecipe>(value.clone()) {
-                    Ok(known) => Self::ArchiveInstallRecipe(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for ModelSupport {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Listed") => match ::serde_json::from_value::<ModelSupportListed>(value.clone()) {
-                    Ok(known) => Self::Listed(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("ProviderChecked") => {
-                    match ::serde_json::from_value::<ModelSupportProviderChecked>(value.clone()) {
-                        Ok(known) => Self::ProviderChecked(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for NamespaceLink {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Connected") => match ::serde_json::from_value::<NamespaceConnected>(value.clone()) {
-                    Ok(known) => Self::Connected(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("NotConnected") => match ::serde_json::from_value::<NamespaceNotConnected>(value.clone()) {
-                    Ok(known) => Self::NotConnected(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("NotConfigured") => match ::serde_json::from_value::<NamespaceNotConfigured>(value.clone()) {
-                    Ok(known) => Self::NotConfigured(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for OAuthTokenRequest {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("grant_type").and_then(::serde_json::Value::as_str) {
-                Some("authorization_code") => {
-                    match ::serde_json::from_value::<OAuthAuthorizationCodeRequest>(value.clone()) {
-                        Ok(known) => Self::AuthorizationCodeRequest(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                Some("refresh_token") => match ::serde_json::from_value::<OAuthRefreshTokenRequest>(value.clone()) {
-                    Ok(known) => Self::RefreshTokenRequest(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for OpenRouterAuthorizationStatus {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("AwaitingCallback") => {
-                    match ::serde_json::from_value::<OpenRouterAuthorizationAwaitingCallback>(value.clone()) {
-                        Ok(known) => Self::AwaitingCallback(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                Some("Exchanging") => {
-                    match ::serde_json::from_value::<OpenRouterAuthorizationExchanging>(value.clone()) {
-                        Ok(known) => Self::Exchanging(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                Some("Completed") => {
-                    match ::serde_json::from_value::<OpenRouterAuthorizationCompleted>(value.clone()) {
-                        Ok(known) => Self::Completed(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                Some("Failed") => match ::serde_json::from_value::<OpenRouterAuthorizationFailed>(value.clone()) {
-                    Ok(known) => Self::Failed(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for PersonaFile {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("source").and_then(::serde_json::Value::as_str) {
-                Some("Inline") => match ::serde_json::from_value::<InlinePersonaFileRead>(value.clone()) {
-                    Ok(known) => Self::InlinePersonaFileRead(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Stored") => match ::serde_json::from_value::<StoredPersonaFileRead>(value.clone()) {
-                    Ok(known) => Self::StoredPersonaFileRead(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for PersonaFilePatch {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Put") => match ::serde_json::from_value::<PutPersonaFilePatch>(value.clone()) {
-                    Ok(known) => Self::PutPersonaFilePatch(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Remove") => match ::serde_json::from_value::<RemovePersonaFilePatch>(value.clone()) {
-                    Ok(known) => Self::RemovePersonaFilePatch(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Edit") => match ::serde_json::from_value::<EditPersonaFilePatch>(value.clone()) {
-                    Ok(known) => Self::EditPersonaFilePatch(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for PersonaFileWrite {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("source").and_then(::serde_json::Value::as_str) {
-                Some("Inline") => match ::serde_json::from_value::<InlinePersonaFile>(value.clone()) {
-                    Ok(known) => Self::InlinePersonaFile(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Stored") => match ::serde_json::from_value::<StoredPersonaFile>(value.clone()) {
-                    Ok(known) => Self::StoredPersonaFile(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for PrebuildPreviewRequest {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("source").and_then(::serde_json::Value::as_str) {
-                Some("RepositoryFile") => {
-                    match ::serde_json::from_value::<PrebuildPreviewOfRepository>(value.clone()) {
-                        Ok(known) => Self::Repository(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                Some("Supplied") => match ::serde_json::from_value::<PrebuildPreviewOfSupplied>(value.clone()) {
-                    Ok(known) => Self::Supplied(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for PrebuildStatus {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Dispatched") => match ::serde_json::from_value::<PrebuildDispatched>(value.clone()) {
-                    Ok(known) => Self::Dispatched(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Building") => match ::serde_json::from_value::<PrebuildBuilding>(value.clone()) {
-                    Ok(known) => Self::Building(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Converting") => match ::serde_json::from_value::<PrebuildConverting>(value.clone()) {
-                    Ok(known) => Self::Converting(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Done") => match ::serde_json::from_value::<PrebuildDone>(value.clone()) {
-                    Ok(known) => Self::Done(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Failed") => match ::serde_json::from_value::<PrebuildFailed>(value.clone()) {
-                    Ok(known) => Self::Failed(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SecretKey {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Variable") => match ::serde_json::from_value::<SecretVariableKey>(value.clone()) {
-                    Ok(known) => Self::SecretVariableKey(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("ApiKey") => match ::serde_json::from_value::<ApiKeyKey>(value.clone()) {
-                    Ok(known) => Self::ApiKeyKey(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("SubscriptionToken") => match ::serde_json::from_value::<SubscriptionTokenKey>(value.clone()) {
-                    Ok(known) => Self::SubscriptionTokenKey(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("CredentialFile") => match ::serde_json::from_value::<CredentialFileKey>(value.clone()) {
-                    Ok(known) => Self::CredentialFileKey(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SecretMemberUpdate {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Variable") => match ::serde_json::from_value::<SecretVariableUpdate>(value.clone()) {
-                    Ok(known) => Self::SecretVariableUpdate(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("ApiKey") => match ::serde_json::from_value::<ApiKeyUpdate>(value.clone()) {
-                    Ok(known) => Self::ApiKeyUpdate(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("SubscriptionToken") => match ::serde_json::from_value::<SubscriptionTokenUpdate>(value.clone()) {
-                    Ok(known) => Self::SubscriptionTokenUpdate(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("CredentialFile") => match ::serde_json::from_value::<CredentialFileUpdate>(value.clone()) {
-                    Ok(known) => Self::CredentialFileUpdate(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SecretValue {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Variable") => match ::serde_json::from_value::<SecretVariableValue>(value.clone()) {
-                    Ok(known) => Self::SecretVariableValue(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("ApiKey") => match ::serde_json::from_value::<ApiKeyValue>(value.clone()) {
-                    Ok(known) => Self::ApiKeyValue(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("SubscriptionToken") => match ::serde_json::from_value::<SubscriptionTokenValue>(value.clone()) {
-                    Ok(known) => Self::SubscriptionTokenValue(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("CredentialFile") => match ::serde_json::from_value::<CredentialFileValue>(value.clone()) {
-                    Ok(known) => Self::CredentialFileValue(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SessionOrigin {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Prompt") => match ::serde_json::from_value::<SessionPromptOrigin>(value.clone()) {
-                    Ok(known) => Self::PromptOrigin(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Issue") => match ::serde_json::from_value::<SessionIssueOrigin>(value.clone()) {
-                    Ok(known) => Self::IssueOrigin(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SessionPrebuildLayer {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("layer").and_then(::serde_json::Value::as_str) {
-                Some("Prebuild") => match ::serde_json::from_value::<SessionPrebuildLayerStored>(value.clone()) {
-                    Ok(known) => Self::Stored(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("None") => match ::serde_json::from_value::<SessionPrebuildLayerAbsent>(value.clone()) {
-                    Ok(known) => Self::Absent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SessionStartedBy {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Person") => match ::serde_json::from_value::<PersonOrigin>(value.clone()) {
-                    Ok(known) => Self::PersonOrigin(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Turn") => match ::serde_json::from_value::<TurnOrigin>(value.clone()) {
-                    Ok(known) => Self::TurnOrigin(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Trigger") => match ::serde_json::from_value::<TriggerOrigin>(value.clone()) {
-                    Ok(known) => Self::TriggerOrigin(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SnapshotEntry {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("File") => match ::serde_json::from_value::<SnapshotFileEntry>(value.clone()) {
-                    Ok(known) => Self::FileEntry(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Directory") => match ::serde_json::from_value::<SnapshotDirectoryEntry>(value.clone()) {
-                    Ok(known) => Self::DirectoryEntry(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("OpaqueDirectory") => {
-                    match ::serde_json::from_value::<SnapshotOpaqueDirectoryEntry>(value.clone()) {
-                        Ok(known) => Self::OpaqueDirectoryEntry(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                Some("Symlink") => match ::serde_json::from_value::<SnapshotSymlinkEntry>(value.clone()) {
-                    Ok(known) => Self::SymlinkEntry(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Whiteout") => match ::serde_json::from_value::<SnapshotWhiteoutEntry>(value.clone()) {
-                    Ok(known) => Self::WhiteoutEntry(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SnapshotOutcome {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Stored") => match ::serde_json::from_value::<SnapshotStored>(value.clone()) {
-                    Ok(known) => Self::Stored(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Failed") => match ::serde_json::from_value::<SnapshotFailure>(value.clone()) {
-                    Ok(known) => Self::Failure(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for Subscription {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Active") => match ::serde_json::from_value::<ActiveSubscription>(value.clone()) {
-                    Ok(known) => Self::ActiveSubscription(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Paused") => match ::serde_json::from_value::<PausedSubscription>(value.clone()) {
-                    Ok(known) => Self::PausedSubscription(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Ended") => match ::serde_json::from_value::<EndedSubscription>(value.clone()) {
-                    Ok(known) => Self::EndedSubscription(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SubscriptionPauseReason {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("ByRequest") => match ::serde_json::from_value::<SubscriptionPausedByRequest>(value.clone()) {
-                    Ok(known) => Self::ByRequest(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("DeliveryFailed") => {
-                    match ::serde_json::from_value::<SubscriptionPausedDeliveryFailed>(value.clone()) {
-                        Ok(known) => Self::DeliveryFailed(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                Some("CrewFailing") => match ::serde_json::from_value::<SubscriptionPausedCrewFailing>(value.clone()) {
-                    Ok(known) => Self::CrewFailing(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("CreditExhausted") => {
-                    match ::serde_json::from_value::<SubscriptionPausedCreditExhausted>(value.clone()) {
-                        Ok(known) => Self::CreditExhausted(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SupervisorHandoverBoxState {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Warm") => match ::serde_json::from_value::<SupervisorHandoverWarm>(value.clone()) {
-                    Ok(known) => Self::Warm(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Turn") => match ::serde_json::from_value::<SupervisorHandoverTurn>(value.clone()) {
-                    Ok(known) => Self::Turn(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SupervisorHandoverCommand {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Snapshot") => match ::serde_json::from_value::<SupervisorHandoverSnapshot>(value.clone()) {
-                    Ok(known) => Self::Snapshot(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Teardown") => match ::serde_json::from_value::<SupervisorHandoverTeardown>(value.clone()) {
-                    Ok(known) => Self::Teardown(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Discard") => match ::serde_json::from_value::<SupervisorHandoverDiscard>(value.clone()) {
-                    Ok(known) => Self::Discard(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SupervisorHandoverImage {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Full") => match ::serde_json::from_value::<SupervisorHandoverFullImage>(value.clone()) {
-                    Ok(known) => Self::FullImage(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Layered") => match ::serde_json::from_value::<SupervisorHandoverLayeredImage>(value.clone()) {
-                    Ok(known) => Self::LayeredImage(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SupervisorUpdateLatestFailure {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("NotReported") => match ::serde_json::from_value::<SupervisorUpdateNotReported>(value.clone()) {
-                    Ok(known) => Self::NotReported(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Reported") => match ::serde_json::from_value::<SupervisorUpdateFailureReported>(value.clone()) {
-                    Ok(known) => Self::FailureReported(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for SupervisorUpdateLatestStep {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("NotReported") => match ::serde_json::from_value::<SupervisorUpdateNotReported>(value.clone()) {
-                    Ok(known) => Self::NotReported(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Reported") => match ::serde_json::from_value::<SupervisorUpdateStepReported>(value.clone()) {
-                    Ok(known) => Self::StepReported(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for TenantEvent {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("event").and_then(::serde_json::Value::as_str) {
-                Some("TurnStarted") => match ::serde_json::from_value::<TurnStartedEvent>(value.clone()) {
-                    Ok(known) => Self::TurnStartedEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("TurnCompleted") => match ::serde_json::from_value::<TurnCompletedEvent>(value.clone()) {
-                    Ok(known) => Self::TurnCompletedEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("TurnFailed") => match ::serde_json::from_value::<TurnFailedEvent>(value.clone()) {
-                    Ok(known) => Self::TurnFailedEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("SessionIdle") => match ::serde_json::from_value::<SessionIdleEvent>(value.clone()) {
-                    Ok(known) => Self::SessionIdleEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("SessionStopped") => match ::serde_json::from_value::<SessionStoppedEvent>(value.clone()) {
-                    Ok(known) => Self::SessionStoppedEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("SessionFailed") => match ::serde_json::from_value::<SessionFailedEvent>(value.clone()) {
-                    Ok(known) => Self::SessionFailedEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("SessionArchived") => match ::serde_json::from_value::<SessionArchivedEvent>(value.clone()) {
-                    Ok(known) => Self::SessionArchivedEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("HostOnline") => match ::serde_json::from_value::<HostOnlineEvent>(value.clone()) {
-                    Ok(known) => Self::HostOnlineEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("HostOffline") => match ::serde_json::from_value::<HostOfflineEvent>(value.clone()) {
-                    Ok(known) => Self::HostOfflineEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("HostHealthChanged") => match ::serde_json::from_value::<HostHealthChangedEvent>(value.clone()) {
-                    Ok(known) => Self::HostHealthChangedEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("PrebuildDone") => match ::serde_json::from_value::<PrebuildDoneEvent>(value.clone()) {
-                    Ok(known) => Self::PrebuildDoneEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("PrebuildFailed") => match ::serde_json::from_value::<PrebuildFailedEvent>(value.clone()) {
-                    Ok(known) => Self::PrebuildFailedEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("SubscriptionPaused") => {
-                    match ::serde_json::from_value::<SubscriptionPausedEvent>(value.clone()) {
-                        Ok(known) => Self::SubscriptionPausedEvent(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                Some("SubscriptionEnded") => match ::serde_json::from_value::<SubscriptionEndedEvent>(value.clone()) {
-                    Ok(known) => Self::SubscriptionEndedEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("TriggerStartRefused") => {
-                    match ::serde_json::from_value::<TriggerStartRefusedEvent>(value.clone()) {
-                        Ok(known) => Self::TriggerStartRefusedEvent(known),
-                        Err(_) => Self::Unknown(value),
-                    }
-                }
-                Some("UsageNearLimit") => match ::serde_json::from_value::<UsageNearLimitEvent>(value.clone()) {
-                    Ok(known) => Self::UsageNearLimitEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("UsageLimitReached") => match ::serde_json::from_value::<UsageLimitReachedEvent>(value.clone()) {
-                    Ok(known) => Self::UsageLimitReachedEvent(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for TranscriptPage {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("form").and_then(::serde_json::Value::as_str) {
-                Some("Raw") => match ::serde_json::from_value::<RawTranscriptPage>(value.clone()) {
-                    Ok(known) => Self::RawTranscriptPage(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Compact") => match ::serde_json::from_value::<CompactTranscriptPage>(value.clone()) {
-                    Ok(known) => Self::CompactTranscriptPage(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for TriggerTest {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Stored") => match ::serde_json::from_value::<StoredTriggerTest>(value.clone()) {
-                    Ok(known) => Self::StoredTriggerTest(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Draft") => match ::serde_json::from_value::<DraftTriggerTest>(value.clone()) {
-                    Ok(known) => Self::DraftTriggerTest(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for Turn {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("state").and_then(::serde_json::Value::as_str) {
-                Some("Offered") => match ::serde_json::from_value::<OfferedTurn>(value.clone()) {
-                    Ok(known) => Self::OfferedTurn(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Running") => match ::serde_json::from_value::<RunningTurn>(value.clone()) {
-                    Ok(known) => Self::RunningTurn(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Completed") => match ::serde_json::from_value::<CompletedTurn>(value.clone()) {
-                    Ok(known) => Self::CompletedTurn(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Failed") => match ::serde_json::from_value::<FailedTurn>(value.clone()) {
-                    Ok(known) => Self::FailedTurn(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for TurnImage {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Full") => match ::serde_json::from_value::<TurnFullImage>(value.clone()) {
-                    Ok(known) => Self::FullImage(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Layered") => match ::serde_json::from_value::<TurnLayeredImage>(value.clone()) {
-                    Ok(known) => Self::LayeredImage(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
-        }
-    }
-    impl<'de> ::serde::Deserialize<'de> for WebhookDeliveryStatus {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
-            Ok(match value.get("delivery").and_then(::serde_json::Value::as_str) {
-                Some("Delivering") => match ::serde_json::from_value::<WebhookDelivering>(value.clone()) {
-                    Ok(known) => Self::Delivering(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                Some("Failing") => match ::serde_json::from_value::<WebhookFailing>(value.clone()) {
-                    Ok(known) => Self::Failing(known),
-                    Err(_) => Self::Unknown(value),
-                },
-                _ => Self::Unknown(value),
-            })
         }
     }
 }
@@ -51710,497 +43117,6 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Reads the tenant's CircleCI build provider connection, the orb and the config to commit; the API token is never answered.
-    ///
-    ///Sends a `GET` request to `/v1/circleci-connection`
-    ///
-    pub async fn circle_ci_connections_get<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<types::CircleCiConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_get",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Disconnects the tenant's CircleCI organization and deletes its project bindings and their webhooks; prebuilds already stored stay.
-    ///
-    ///Sends a `DELETE` request to `/v1/circleci-connection`
-    ///
-    pub async fn circle_ci_connections_delete<'a>(&'a self) -> Result<ResponseValue<()>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .delete(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_delete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Starts an authorization that connects the tenant's CircleCI organization through CircleCI's
-    ///OAuth consent page, registering the tenant's CircleCI client first when it has none. Answers it
-    ///AwaitingRedirect with the consent URL. Refused CircleCIRefused when CircleCI refuses the client
-    ///registration.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-connection/authorize`
-    ///
-    pub async fn circle_ci_connections_authorize<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<types::CircleCiAuthorization>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection/authorize", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_authorize",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Connects the organization a ChoosingOrganization authorization lists, with the token it holds,
-    ///replacing an earlier CircleCI connection; project bindings stay. Refused NotFound for another
-    ///principal's authorization, InvalidRequest when the organization is not listed, and
-    ///CircleCIAuthorizationNotWaiting unless the authorization is ChoosingOrganization.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-connection/choose`
-    ///
-    pub async fn circle_ci_connections_choose<'a>(
-        &'a self,
-        body: &'a types::CircleCiAuthorizationChoose,
-    ) -> Result<ResponseValue<types::CircleCiAuthorization>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection/choose", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_choose",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Takes the address the browser landed on, spends its code with the authorization's verifier at
-    ///CircleCI's token endpoint and reads the organizations the token reads. The connection takes
-    ///the token at once when it already names one of them, or when there is one; otherwise the
-    ///authorization is ChoosingOrganization. A denied consent, a refused code or no organization
-    ///ends it Failed. Refused NotFound for another principal's authorization, InvalidRequest when
-    ///the address is not the redirect address with a code or an error or carries another state,
-    ///leaving the authorization AwaitingRedirect, and CircleCIAuthorizationNotWaiting unless the
-    ///authorization is AwaitingRedirect.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-connection/complete`
-    ///
-    pub async fn circle_ci_connections_complete<'a>(
-        &'a self,
-        body: &'a types::CircleCiAuthorizationComplete,
-    ) -> Result<ResponseValue<types::CircleCiAuthorization>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection/complete", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_complete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Connects the tenant's CircleCI organization with a pasted personal API token, the fallback to
-    ///authorize, replacing an earlier CircleCI connection; project bindings stay. Refused
-    ///CircleCITokenRefused when GET /api/v2/me refuses the token.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-connection/start`
-    ///
-    pub async fn circle_ci_connections_start<'a>(
-        &'a self,
-        body: &'a types::CircleCiConnectionStart,
-    ) -> Result<ResponseValue<types::CircleCiConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-connection/start", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_connections_start",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Takes one workflow-completed event. Refused NotFound for an unknown tenant or project and Forbidden when the signature does not match.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-events/{tenantId}`
-    ///
-    pub async fn circle_ci_events_receive<'a>(
-        &'a self,
-        tenant_id: &'a types::EntityId,
-        circleci_signature: &'a types::Token,
-        body: &'a ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-    ) -> Result<ResponseValue<()>, Error<types::Problem>> {
-        let url = format!(
-            "{}/v1/circleci-events/{}",
-            self.baseurl,
-            encode_path(&tenant_id.to_string()),
-        );
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(2usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        header_map.append("circleci-signature", circleci_signature.to_string().try_into()?);
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_events_receive",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Lists the repositories bound to a CircleCI project, by repository.
-    ///
-    ///Sends a `GET` request to `/v1/circleci-projects`
-    ///
-    pub async fn circle_ci_projects_list<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<::std::vec::Vec<types::CircleCiProject>>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-projects", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_projects_list",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Binds a repository to its CircleCI project and pipeline definition, once per repository, and
-    ///registers a workflow-completed webhook on the project with a signing secret the control plane
-    ///generates and seals.
-    ///Refused NoBuildProvider while CircleCI is not connected, CircleCIProjectMissing when the slug
-    ///names no project of the connected organization, CircleCIDefinitionMismatch when the pipeline
-    ///definition is missing or checks out another repository, and Conflict when the repository is
-    ///already bound. CircleCITokenRefused or CircleCIRefused when CircleCI refuses the webhook.
-    ///
-    ///Sends a `POST` request to `/v1/circleci-projects`
-    ///
-    pub async fn circle_ci_projects_add<'a>(
-        &'a self,
-        body: &'a types::CircleCiProjectAdd,
-    ) -> Result<ResponseValue<types::CircleCiProject>, Error<types::Problem>> {
-        let url = format!("{}/v1/circleci-projects", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_projects_add",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Deletes a repository's CircleCI project binding and its webhook at CircleCI.
-    ///
-    ///Sends a `DELETE` request to `/v1/circleci-projects/{circleCIProjectId}`
-    ///
-    pub async fn circle_ci_projects_delete<'a>(
-        &'a self,
-        circle_ci_project_id: &'a types::EntityId,
-    ) -> Result<ResponseValue<()>, Error<types::Problem>> {
-        let url = format!(
-            "{}/v1/circleci-projects/{}",
-            self.baseurl,
-            encode_path(&circle_ci_project_id.to_string()),
-        );
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .delete(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "circle_ci_projects_delete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
     ///Lists the running Claude setups of one secret set, each read as get reads it: at most one, still Starting, AwaitingCode or Minting, for a client to resume.
     ///
     ///Sends a `GET` request to `/v1/claude-setups`
@@ -52467,7 +43383,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Lists one row per connection kind, the GitHub App and each build provider, with its state and, once Connected, the account it bills.
+    ///Lists one row per connection kind, the GitHub App and OpenRouter, with its state and, once Connected, the account.
     ///
     ///Sends a `GET` request to `/v1/connections`
     ///
@@ -53175,7 +44091,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Reads the tenant's events after afterEventId, waiting up to waitSeconds for one to match.
+    ///Reads the tenant's events after afterEventId and answers at once.
     ///With Accept: text/event-stream it answers a stream instead: one message per event, whose id
     ///is its eventId, resumed after the Last-Event-ID a reconnect sends.
     ///
@@ -53187,14 +44103,12 @@ impl Client {
     ///- `event`: Keep events of this type; repeat it for several types. Leave it out to keep every type.
     ///- `session_id`: Keep events of this session.
     ///- `trigger_id`: Keep events of this trigger.
-    ///- `wait_seconds`: The most seconds to wait when no event matches yet.
     pub async fn events_list<'a>(
         &'a self,
         after_event_id: Option<&'a types::Sequence>,
         event: Option<&'a ::std::vec::Vec<types::TenantEventType>>,
         session_id: Option<&'a types::EntityId>,
         trigger_id: Option<&'a types::EntityId>,
-        wait_seconds: i32,
     ) -> Result<ResponseValue<types::EventPage>, Error<types::EventProblem>> {
         let url = format!("{}/v1/events", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
@@ -53214,146 +44128,10 @@ impl Client {
             .query(&progenitor_client::QueryParam::new("event", &event))
             .query(&progenitor_client::QueryParam::new("sessionId", &session_id))
             .query(&progenitor_client::QueryParam::new("triggerId", &trigger_id))
-            .query(&progenitor_client::QueryParam::new("waitSeconds", &wait_seconds))
             .headers(header_map)
             .build()?;
         let info = OperationInfo {
             operation_id: "events_list",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Reads the tenant's GitHub Actions build provider connection: Connected with its caller workflow, or NotConnected.
-    ///
-    ///Sends a `GET` request to `/v1/github-actions-connection`
-    ///
-    pub async fn git_hub_actions_connections_get<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<types::GitHubActionsConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/github-actions-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "git_hub_actions_connections_get",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Disconnects the tenant's GitHub Actions account; prebuilds already stored stay.
-    ///
-    ///Sends a `DELETE` request to `/v1/github-actions-connection`
-    ///
-    pub async fn git_hub_actions_connections_delete<'a>(&'a self) -> Result<ResponseValue<()>, Error<types::Problem>> {
-        let url = format!("{}/v1/github-actions-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .delete(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "git_hub_actions_connections_delete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Connects the tenant's own GitHub Actions account, replacing an earlier GitHub Actions connection.
-    ///
-    ///Sends a `POST` request to `/v1/github-actions-connection/start`
-    ///
-    pub async fn git_hub_actions_connections_start<'a>(
-        &'a self,
-        body: &'a types::GitHubActionsConnectionStart,
-    ) -> Result<ResponseValue<types::GitHubActionsConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/github-actions-connection/start", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "git_hub_actions_connections_start",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;
@@ -54471,12 +45249,12 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Sets the limits the tenant runs under: a profile of its own, or the preset of a tier, which
-    ///drops the profile it had. Owner only. Refused InvalidRequest for a value past the deployment's
-    ///ceiling. A Free tenant may set values at or below the Free preset only; a request for the
-    ///Configured preset or a higher value is refused AboveFreeTier. Raising a tenant above Free is a
-    ///deployment operator action, through the deployment config, never through this operation. A
-    ///host channel takes the new frame limit when it next connects.
+    ///Sets the limits the tenant runs under: a profile of its own, or a reset, which drops the
+    ///profile it had so it runs under the preset of its tier. Owner only. Refused InvalidRequest for
+    ///a value past the deployment's ceiling. A Free tenant may set values at or below the Free
+    ///preset only; a higher value is refused AboveFreeTier. This operation never changes the tier:
+    ///moving a tenant between tiers is a deployment operator action. A host channel takes the new
+    ///frame limit when it next connects.
     ///
     ///Sends a `PUT` request to `/v1/limits`
     ///
@@ -54782,141 +45560,6 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "metrics_turns",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Reads the tenant's Namespace build provider connection: the issuer, the subject pattern and the audience Tumpel defines for Namespace, to register there, or NotConfigured while the stage has no issuer; start is refused IssuerMissing then.
-    ///
-    ///Sends a `GET` request to `/v1/namespace-connection`
-    ///
-    pub async fn namespace_connections_get<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<types::NamespaceConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/namespace-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "namespace_connections_get",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Disconnects the tenant's Namespace workspace; prebuilds already stored stay.
-    ///
-    ///Sends a `DELETE` request to `/v1/namespace-connection`
-    ///
-    pub async fn namespace_connections_delete<'a>(&'a self) -> Result<ResponseValue<()>, Error<types::Problem>> {
-        let url = format!("{}/v1/namespace-connection", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .delete(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "namespace_connections_delete",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Connects the tenant's own Namespace workspace, replacing an earlier Namespace connection.
-    ///
-    ///Sends a `POST` request to `/v1/namespace-connection/start`
-    ///
-    pub async fn namespace_connections_start<'a>(
-        &'a self,
-        body: &'a types::NamespaceConnectionStart,
-    ) -> Result<ResponseValue<types::NamespaceConnectionLink>, Error<types::Problem>> {
-        let url = format!("{}/v1/namespace-connection/start", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "namespace_connections_start",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;
@@ -55621,59 +46264,6 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Answers the inputs of the prebuild that waits for this run: the newest Dispatched GitHub
-    ///Actions prebuild of the token's repository whose start read the token's sha, or the prebuild
-    ///this run already took. The token must name the connection's caller workflow, the default
-    ///branch as ref, push or workflow_dispatch as event_name, and a job of
-    ///tumpel/workflows/.github/workflows/prebuild.yml at tag v2 or v2.x.y. The first call records
-    ///the token's run_id as the prebuild's run and moves it to Building. Refused JobTokenRefused
-    ///(401) naming the failed check, NotFound when no prebuild waits for a run at that commit,
-    ///JobTokenMismatch (403) naming the failed claim, and PrebuildNotUploading when the prebuild
-    ///is past Building.
-    ///
-    ///Sends a `POST` request to `/v1/prebuild-inputs`
-    ///
-    pub async fn prebuild_inputs_read<'a>(
-        &'a self,
-    ) -> Result<ResponseValue<types::PrebuildJobInputs>, Error<types::Problem>> {
-        let url = format!("{}/v1/prebuild-inputs", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "prebuild_inputs_read",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
     ///Lists every devcontainer.json template the control plane ships, by id, each with its versions newest first and the toolchains each version pins.
     ///
     ///Sends a `GET` request to `/v1/prebuild-templates`
@@ -55929,30 +46519,13 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Starts a prebuild of a repository's default branch on the named build provider. Answers the
+    ///Starts a prebuild of a repository's default branch. Answers the
     ///stored or running prebuild with the same key and starts no job, unless rebuild is true. Refused
-    ///before anything is stored: NoBuildProvider when the named provider is not connected,
-    ///HarnessNotInCatalog when the persona's harness has no version the tenant can run, NoRelease or
-    ///ImageNotReleased when the current release carries no Amd64 guest image of that version,
-    ///RepositoryUnreadable when GitHub refuses to show the inputs or no token reads them,
-    ///GitHubNotConnected when a GitHub Actions start finds no installation of the tenant on the
-    ///repository's owner, GitHubAppPermissionMissing when that installation cannot write Actions, or
-    ///Contents and Workflows while the caller workflow needs adding, CallerWorkflowRefused when
-    ///GitHub refuses that commit, CircleCIProjectMissing when a CircleCI start finds no project
-    ///binding for the repository, DispatchRefused when GitHub refuses the installation token, Actions
-    ///are disabled in the repository, the provider refuses the job or a CircleCI pipeline parameter
-    ///would pass 512 characters, and BuildProviderUnavailable while this control plane cannot
-    ///dispatch to the named provider. A GitHub Actions start reads the caller workflow on the
-    ///default branch with the installation token, each GitHub call within 10 s. When it is missing
-    ///or differs from the current example, the start commits the example, whose push trigger on its
-    ///own path starts the run, and reads the inputs at that commit; otherwise it reads them at the
-    ///branch's head and dispatches the caller workflow there with no inputs. The prebuild records
-    ///the commit it read; the run is picked up by that commit, from its workflow_run events or from
-    ///its call to prebuildInputs.read. Refused DevcontainerMissing, after the provider check, when the
-    ///default branch holds neither .devcontainer/devcontainer.json nor .devcontainer.json. A CircleCI start runs the binding's pipeline
-    ///definition with config and checkout on the default branch and the parameters
-    ///tumpel_prebuild_id, tumpel_tenant_id, tumpel_api_origin, tumpel_rootfs_url and
-    ///tumpel_image_digest, records the pipeline and answers it Building.
+    ///before anything is stored: HarnessNotInCatalog when the persona's harness has no version the
+    ///tenant can run, NoRelease or ImageNotReleased when the current release carries no Amd64 guest
+    ///image of that version, RepositoryUnreadable when GitHub refuses to show the inputs or no token
+    ///reads them, and DevcontainerMissing when the default branch holds neither
+    ///.devcontainer/devcontainer.json nor .devcontainer.json.
     ///
     ///Sends a `POST` request to `/v1/prebuilds`
     ///
@@ -56179,116 +46752,6 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "prebuilds_get_failure",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Records the layer's digest and size and exchanges the job token for one presigned PUT of the
-    ///layer to <tenantId>/prebuilds/<prebuildId>/layers/<digest> in the snapshot bucket, bound to
-    ///its sha256 and its size. Refused JobTokenRefused (401) naming the failed check, NotFound,
-    ///JobTokenMismatch (403) naming the failed claim, PrebuildNotUploading unless the prebuild
-    ///is Building, and Conflict when an earlier start of the same prebuild recorded another digest
-    ///or size; a repeat with the same digest and size answers a fresh grant.
-    ///
-    ///Sends a `POST` request to `/v1/prebuilds/{prebuildId}/uploads`
-    ///
-    pub async fn prebuild_uploads_start<'a>(
-        &'a self,
-        prebuild_id: &'a types::EntityId,
-        body: &'a types::PrebuildUploadStart,
-    ) -> Result<ResponseValue<types::PrebuildUploadGrant>, Error<types::Problem>> {
-        let url = format!(
-            "{}/v1/prebuilds/{}/uploads",
-            self.baseurl,
-            encode_path(&prebuild_id.to_string()),
-        );
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "prebuild_uploads_start",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Moves the prebuild to Converting once the bucket holds the layer its start recorded. Refused
-    ///as start is, and LayerNotUploaded when the bucket lacks it.
-    ///
-    ///Sends a `POST` request to `/v1/prebuilds/{prebuildId}/uploads/complete`
-    ///
-    pub async fn prebuild_uploads_complete<'a>(
-        &'a self,
-        prebuild_id: &'a types::EntityId,
-        body: &'a types::PrebuildUploadComplete,
-    ) -> Result<ResponseValue<types::Prebuild>, Error<types::Problem>> {
-        let url = format!(
-            "{}/v1/prebuilds/{}/uploads/complete",
-            self.baseurl,
-            encode_path(&prebuild_id.to_string()),
-        );
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .json(&body)
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "prebuild_uploads_complete",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;
@@ -58846,60 +49309,6 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Waits until one of the turns is Completed or Failed, or until timeoutSeconds pass, then reads
-    ///every turn in the order asked; answers at once when one has already ended. Refused NotFound,
-    ///naming the turn, when a turnId names no turn of the tenant.
-    ///
-    ///Sends a `GET` request to `/v1/turns/wait`
-    ///
-    ///Arguments:
-    ///- `timeout_seconds`: The most seconds to wait for one of the turns to end.
-    ///- `turn_id`: A turn to wait on; repeat it to wait on several turns of any of the tenant's sessions.
-    pub async fn turns_wait<'a>(
-        &'a self,
-        timeout_seconds: i32,
-        turn_id: &'a ::std::vec::Vec<types::EntityId>,
-    ) -> Result<ResponseValue<::std::vec::Vec<types::Turn>>, Error<types::Problem>> {
-        let url = format!("{}/v1/turns/wait", self.baseurl,);
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .get(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .query(&progenitor_client::QueryParam::new("timeoutSeconds", &timeout_seconds))
-            .query(&progenitor_client::QueryParam::new("turnId", &turn_id))
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "turns_wait",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
     ///Reads one turn; its state is Offered, Running, Completed or Failed.
     ///
     ///Sends a `GET` request to `/v1/turns/{turnId}`
@@ -59554,8 +49963,8 @@ impl types::ChannelCloseCode {
     pub const UNSUPPORTED_VERSION: u16 = 4426;
 }
 impl types::ChannelProtocol {
-    pub const OLDEST: u16 = 18;
-    pub const VERSION: u16 = 32;
+    pub const OLDEST: u16 = 34;
+    pub const VERSION: u16 = 34;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
@@ -59570,5 +49979,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 13;
+    pub const VERSION: u16 = 19;
 }

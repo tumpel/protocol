@@ -67,8 +67,8 @@ scalar Sha256Digest extends string;
 @TypeSpec.OpenAPI.extension("x-bound-names", #["Oldest", "Version"])
 scalar ChannelProtocol extends int32;
 
-const ChannelProtocolOldest = 18;
-const ChannelProtocolVersion = 32;
+const ChannelProtocolOldest = 34;
+const ChannelProtocolVersion = 34;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -136,10 +136,10 @@ enum BoxRetention {
   @doc("The control plane snapshots the box and tears it down as soon as the turn ends; the session reads Stopped, and its next turn boots a fresh box from the snapshot.")
   Off: "Off",
 
-  @doc("The box stays paused until a person stops or archives the session. Placement never evicts it.")
+  @doc("The box stays paused until a person stops or archives the session. Idleness never tears it down and placement never evicts it.")
   Warm: "Warm",
 
-  @doc("The box stays paused until placement evicts it to free room for another session's turn; the eviction snapshots the box when needed, tears it down and leaves the session Stopped.")
+  @doc("The box stays paused until it has been idle for the turn offer's idleSeconds, when the host tears it down and reports BoxGone, or until placement evicts it sooner to free room for another session's turn, when the eviction snapshots the box when needed and tears it down; either way the session reads Stopped.")
   Auto: "Auto",
 }
 
@@ -197,6 +197,9 @@ enum HostHealth {
 
   @doc("The host went RateLimited three times within an hour. It gets no offers until a person restores it or the host reconnects with a new Hello.")
   Unhealthy: "Unhealthy",
+
+  @doc("The host missed its heartbeat plus the grace period. It gets no offers until a heartbeat or a reconnect shows it is alive.")
+  Degraded: "Degraded",
 }
 
 @doc("The health a host reports of itself in its Heartbeat.")
@@ -448,6 +451,9 @@ enum TurnFailureReason {
   @doc("The host has no box slot, memory or disk budget left for the box, and no paused box with its last turn in a snapshot can be evicted to make room; the detail names what ran out, what the host holds and what the box asked for.")
   PoolExhausted: "PoolExhausted",
 
+  @doc("The tenant has hosts but none is healthy: every host missed its heartbeat plus the grace period and counts as Degraded until a heartbeat or reconnect shows otherwise, so the turn was refused.")
+  HostDegraded: "HostDegraded",
+
   SnapshotUnreadable: "SnapshotUnreadable",
   HarnessExited: "HarnessExited",
 
@@ -596,15 +602,11 @@ model TenantLimit {
 }
 
 @doc("""
-  Every limit one tenant runs under. The tenant Durable Object counts the request rates and the
-  usage budgets, the host channel counts the frames of each host, and the Worker checks the body
-  caps once it knows the tenant.
+  Every limit one tenant runs under. The tenant Durable Object counts the writing requests and the
+  usage budgets, and the host channel counts the frames of each host. A request rate is a usage
+  budget of Requests per Minute.
   """)
 model TenantLimitsProfile {
-  @doc("Requests a minute the tenant may send: API calls and MCP tool calls.")
-  @minValue(1)
-  readsPerMinute: int32;
-
   @doc("Requests a minute the tenant may send that change its state.")
   @minValue(1)
   writesPerMinute: int32;
@@ -612,18 +614,6 @@ model TenantLimitsProfile {
   @doc("Numbered channel frames a minute one host of the tenant may send, counted in memory by its host channel. Past it the control plane fails the host's running turns, snapshots and setups RateLimited, refuses its further frames with FrameRateLimited and offers it nothing until the next window.")
   @minValue(1)
   hostFramesPerMinute: int32;
-
-  @doc("Signed webhook deliveries a minute the tenant may receive, from GitHub and CircleCI.")
-  @minValue(1)
-  webhookDeliveriesPerMinute: int32;
-
-  @doc("The largest request body the tenant may send, in bytes.")
-  @minValue(1)
-  bodyBytes: int32;
-
-  @doc("The largest tenant config the tenant may plan or apply, in bytes.")
-  @minValue(1)
-  configBodyBytes: int32;
 
   @doc("The usage budgets of the tenant.")
   @maxItems(32)
@@ -648,14 +638,14 @@ model TenantLimits {
   profile: TenantLimitsProfile;
 }
 
-@doc("Runs the tenant under the preset profile of a tier and drops any profile set for it. A Free tenant may choose only Free.")
-model TenantLimitsPreset {
-  tier: TenantTier;
+@doc("Drops the profile set for the tenant, so it runs under the preset of the tier it has. It never changes the tier.")
+model TenantLimitsReset {
+  reset: true;
 }
 
-@doc("What a limits change sets: the preset of a tier, or a profile of the tenant's own.")
+@doc("What a limits change sets: a reset to the preset of the tenant's tier, or a profile of the tenant's own.")
 union TenantLimitsSet {
-  TenantLimitsPreset,
+  TenantLimitsReset,
   TenantLimitsProfile,
 }
 
@@ -664,8 +654,7 @@ union TenantLimitsSet {
   object. The free tier derives its limits from the Cloudflare free plan in the control plane's
   limits module; a configured tenant gets `configured`. The per-minute request rates are the
   limits of the Workers Rate Limiting bindings named beside them and must match them. A tenant
-  with a profile of its own runs under it instead; `defaultProfile` and `ceiling` bound what a
-  profile holds.
+  with a profile of its own runs under it instead; `ceiling` bounds what a profile holds.
   """)
 model ControlPlaneLimits {
   @doc("The tier a new tenant gets; an existing tenant keeps the tier it has.")
@@ -692,19 +681,12 @@ model ControlPlaneLimits {
   hostFramesPerMinute: int32;
 
   @doc("""
-    The profile a Configured tenant with no profile of its own runs under. Without it the control
-    plane builds that profile from `readsPerMinute`, `writesPerMinute`, `hostFramesPerMinute` and
-    `configured`, with its built-in webhook rate and body caps.
+    The most a profile set through the API may hold: each rate at most the ceiling's, and each usage
+    budget at most the ceiling's budget of the same measure and window. Its `writesPerMinute` and
+    any Requests per Minute budget must not pass `writesPerMinute` and `readsPerMinute`, the limits
+    of the Workers Rate Limiting bindings the Worker checks before it knows the tenant.
     """)
-  defaultProfile?: TenantLimitsProfile;
-
-  @doc("""
-    The most a profile set through the API may hold: each rate and body cap at most the ceiling's,
-    and each usage budget at most the ceiling's budget of the same measure and window. The request
-    rates must not pass the Workers Rate Limiting bindings, which the Worker checks before it knows
-    the tenant. Without it the default profile is the ceiling.
-    """)
-  ceiling?: TenantLimitsProfile;
+  ceiling: TenantLimitsProfile;
 }
 
 @doc("An account that owns principals, hosts and sessions.")
@@ -1663,10 +1645,6 @@ model ControlPlaneSettings {
   @minValue(1)
   dispatchGrantTtlSeconds: int32;
 
-  @doc("How long a session stays idle after a completed turn before the control plane asks for a snapshot. A turn sent sooner resets the wait.")
-  @minValue(0)
-  snapshotDelaySeconds: int32;
-
   @doc("How long the host may take to answer a SnapshotRequest before the snapshot fails NotAnswered; its presigned upload expires then too.")
   @minValue(1)
   snapshotDeadlineSeconds: int32;
@@ -1679,10 +1657,6 @@ model ControlPlaneSettings {
   @minValue(1)
   turnImageFetchBudgetSeconds: int32;
 
-  @doc("How long a turn may take from TurnRepositoryReady to its first line before it fails NoFirstOutput; it stays at or above firstLineSeconds of the host.")
-  @minValue(1)
-  turnFirstLineBudgetSeconds: int32;
-
   @doc("How long a claimed turn may run before it fails TurnTimedOut, and how long an unclaimed turn stays Offered before it fails Undelivered.")
   @minValue(1)
   turnTotalBudgetSeconds: int32;
@@ -1691,21 +1665,6 @@ model ControlPlaneSettings {
   @minValue(1)
   @maxValue(1000)
   transcriptChunkLines: int32;
-
-  @doc("How long the presigned PUTs a build job gets for its layer stay valid.")
-  @minValue(1)
-  @maxValue(604800)
-  prebuildUploadBudgetSeconds: int32;
-
-  @doc("How long a dispatched prebuild may wait for its run to start before it fails in phase Dispatch; the rootfs URL its dispatch hands the run stays valid for this plus prebuildBuildBudgetSeconds.")
-  @minValue(1)
-  @maxValue(86400)
-  prebuildDispatchBudgetSeconds: int32;
-
-  @doc("How long a prebuild may run from the start of its run to the completion of its layer upload before it fails in phase Build, or in phase Upload once its upload started.")
-  @minValue(1)
-  @maxValue(86400)
-  prebuildBuildBudgetSeconds: int32;
 
   @doc("How long a Claude setup box may take from its offer to printing the sign-in URL before the setup fails SetupUrlMissing; it covers the guest image fetch, the boot and claude setup-token starting.")
   @minValue(1)
@@ -1746,9 +1705,6 @@ model ControlPlaneSettings {
   @minValue(1)
   @maxValue(60)
   deviceSlowDownStepSeconds: int32;
-
-  @doc("The OIDC issuer of GitHub Actions job tokens, https://token.actions.githubusercontent.com on github.com; its keys are at <issuer>/.well-known/jwks.")
-  gitHubActionsIssuer: HttpUrl;
 }
 
 model Health {

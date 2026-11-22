@@ -277,19 +277,13 @@ model EventQuery {
   @doc("Keep events of this trigger.")
   @query
   triggerId?: EntityId;
-
-  @doc("The most seconds to wait when no event matches yet.")
-  @query
-  @minValue(0)
-  @maxValue(50)
-  waitSeconds: int32;
 }
 
 namespace V1 {
   @route("/events")
   interface Events {
     @doc("""
-      Reads the tenant's events after afterEventId, waiting up to waitSeconds for one to match.
+      Reads the tenant's events after afterEventId and answers at once.
       With Accept: text/event-stream it answers a stream instead: one message per event, whose id
       is its eventId, resumed after the Last-Event-ID a reconnect sends.
       """)

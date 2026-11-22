@@ -166,6 +166,10 @@ model HostHeartbeat {
   usage: HostUsage;
   @maxItems(1000) heldSessionIds: EntityId[];
 
+  @doc("The claudeSetupId of every Claude setup whose box the host holds, empty when it holds none; the control plane fails each live setup on the host that the list does not name.")
+  @maxItems(1000)
+  heldClaudeSetupIds: EntityId[];
+
   @doc("The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.")
   health?: HostReportedHealth;
 }
@@ -354,6 +358,17 @@ model TurnOffer {
   image: BootImage;
   gitAuthorName: DisplayName;
   gitAuthorEmail: EmailAddress;
+
+  @doc("What the host does with the session's box after the turn ends; BoxRetention defines how long the box stays.")
+  boxRetention: BoxRetention;
+
+  @doc("How long the claimed turn may run before the host fails it TurnTimedOut; the control plane's turnTotalBudgetSeconds.")
+  @minValue(1)
+  turnSeconds: int32;
+
+  @doc("The idle time after which an Auto box is torn down, as BoxRetention defines; the control plane's idle policy.")
+  @minValue(1)
+  idleSeconds: int32;
 
   @doc("""
     The memory in MiB the box boots with: the persona's boxMemoryMib, or BoxMemoryLimit.DefaultMib. A box
@@ -658,7 +673,8 @@ model SnapshotFailed {
 @doc("""
   Asks the host to tear down the box of a session once a snapshot holds its last completed turn:
   when a person stops or archives the session, after each turn of an Off session, and when placement
-  evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it. The host
+  evicts an Auto box. A host keeps a paused box until BoxTeardown or BoxDiscard names it, except that it
+  tears down an Auto box idle for the offer's idleSeconds itself and reports it with an unsolicited BoxGone. The host
   answers BoxGone, also when it runs no box of the session with that boxId, or BoxTeardownFailed.
   """)
 model BoxTeardown {
@@ -677,7 +693,7 @@ model BoxDiscard {
   boxId: EntityId;
 }
 
-@doc("The host runs no box of the session any more and returned its TAP device to the pool.")
+@doc("The host runs no box of the session any more and returned its TAP device to the pool. It answers BoxTeardown or BoxDiscard, or comes unsolicited after the host tore down an Auto box idle for the offer's idleSeconds.")
 model BoxGone {
   type: "BoxGone";
   sessionId: EntityId;
@@ -722,6 +738,16 @@ model ClaudeSetupBoxOffer {
   tokenUrl: HttpUrl;
   @minLength(43) tokenCredential: Token;
   expiresAt: offsetDateTime;
+
+  @doc("How long the box may take from this offer to printing the sign-in URL before the host fails the setup SetupUrlMissing.")
+  @minValue(1)
+  @maxValue(3600)
+  urlSeconds: int32;
+
+  @doc("How long the person may take from the sign-in URL to submitting the code before the host fails the setup SetupTimedOut.")
+  @minValue(1)
+  @maxValue(3600)
+  codeSeconds: int32;
 }
 
 @doc("""
