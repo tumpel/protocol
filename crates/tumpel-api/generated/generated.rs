@@ -17121,6 +17121,18 @@ pub mod types {
                 .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///A persona file's metadata, without its content or a download URL.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct PersonaFileMetadata {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub digest: Sha256Digest,
+        pub path: PersonaFilePath,
+        #[serde(rename = "sizeBytes")]
+        pub size_bytes: PersonaFileSize,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
     ///One change to one file of a persona; every other file is left as it is.
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
@@ -17377,6 +17389,64 @@ pub mod types {
     impl ::std::convert::From<StoredPersonaFile> for PersonaFileWrite {
         fn from(value: StoredPersonaFile) -> Self {
             Self::StoredPersonaFile(value)
+        }
+    }
+    ///A persona's metadata, with file paths, digests, sizes and timestamps and no file content or download URLs.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct PersonaMetadata {
+        ///The disk in MiB of each box the persona's sessions boot, from BoxDiskLimit.DefaultMib up to BoxDiskLimit.MaxMib; left
+        ///out, the boxes get BoxDiskLimit.DefaultMib. A host refuses a box whose disk does not fit its disk
+        ///budget, and a box already running keeps the disk it booted with.
+        #[serde(rename = "boxDiskMib", skip_serializing_if = "::std::option::Option::is_none")]
+        pub box_disk_mib: ::std::option::Option<i32>,
+        ///The memory in MiB of each box the persona's sessions boot, from BoxMemoryLimit.MinMib up to
+        ///BoxMemoryLimit.MaxMib; left out, the boxes get BoxMemoryLimit.DefaultMib. A session is placed only on a host
+        ///whose available memory holds it, and a box already running keeps the memory it booted with.
+        #[serde(rename = "boxMemoryMib", skip_serializing_if = "::std::option::Option::is_none")]
+        pub box_memory_mib: ::std::option::Option<i32>,
+        ///What happens to the box of each of the persona's sessions after each turn, unless the start names another mode.
+        #[serde(rename = "boxRetention")]
+        pub box_retention: BoxRetention,
+        ///The connectors every session of the persona reaches, each once; a repeated id is refused InvalidRequest and another tenant's NotFound. A session copies the list when it starts; a later edit changes later sessions only.
+        #[serde(rename = "connectorIds")]
+        pub connector_ids: ::std::vec::Vec<EntityId>,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub files: ::std::vec::Vec<PersonaFileMetadata>,
+        ///The harness every session of the persona runs, at the version the tenant pins. It is fixed when the persona is created.
+        pub harness: Harness,
+        pub name: DisplayName,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        ///The secret set every session of the persona runs on; its members are all a turn's box receives.
+        #[serde(rename = "secretSetId")]
+        pub secret_set_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        ///Whether every session of the persona reaches the Tumpel MCP server as the built-in connector `tumpel`, calling it with a token of its turn.
+        #[serde(rename = "tumpelMcp")]
+        pub tumpel_mcp: bool,
+        #[serde(rename = "updatedAt")]
+        pub updated_at: i64,
+    }
+    ///The tenant's personas with file metadata and no file content, at most 10,000 entries.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct PersonaMetadataList(pub ::std::vec::Vec<PersonaMetadata>);
+    impl ::std::ops::Deref for PersonaMetadataList {
+        type Target = ::std::vec::Vec<PersonaMetadata>;
+        fn deref(&self) -> &::std::vec::Vec<PersonaMetadata> {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<PersonaMetadataList> for ::std::vec::Vec<PersonaMetadata> {
+        fn from(value: PersonaMetadataList) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::From<::std::vec::Vec<PersonaMetadata>> for PersonaMetadataList {
+        fn from(value: ::std::vec::Vec<PersonaMetadata>) -> Self {
+            Self(value)
         }
     }
     ///Changes the persona fields it names and leaves every other field, and every file, as it is. The harness is fixed at create, and files change through a file patch.
@@ -54496,6 +54566,51 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "identity_list_tenants",
+        };
+        self.pre(&mut request, &info).await?;
+        let result = self.exec(request, &info).await;
+        self.post(&result, &info).await?;
+        let response = result?;
+        match response.status().as_u16() {
+            200u16 => ResponseValue::from_response(response).await,
+            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            _ => Err(Error::UnexpectedResponse(response)),
+        }
+    }
+    ///Lists the tenant's persona metadata and each file's path, digest, size and timestamps without content or download URLs. Read one persona to get file content.
+    ///
+    ///Sends a `GET` request to `/v2/personas`
+    ///
+    pub async fn personas_list_metadata<'a>(
+        &'a self,
+    ) -> Result<ResponseValue<types::PersonaMetadataList>, Error<types::Problem>> {
+        let url = format!("{}/v2/personas", self.baseurl,);
+        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+        header_map.append(
+            ::reqwest::header::HeaderName::from_static("api-version"),
+            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
+        );
+        #[allow(unused_mut)]
+        let mut request = self
+            .client
+            .get(url)
+            .header(
+                ::reqwest::header::ACCEPT,
+                ::reqwest::header::HeaderValue::from_static("application/json"),
+            )
+            .headers(header_map)
+            .build()?;
+        let info = OperationInfo {
+            operation_id: "personas_list_metadata",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;
