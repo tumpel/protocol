@@ -190,15 +190,35 @@ enum StartRefusedOperation {
   Send: "Send",
 }
 
+@doc("A refusal code that produces a StartRefused event.")
+enum StartRefusalCode {
+  ModelUnsupported: "ModelUnsupported",
+  HarnessNotInCatalog: "HarnessNotInCatalog",
+  ImageNotReleased: "ImageNotReleased",
+  PoolExhausted: "PoolExhausted",
+  NoHostAvailable: "NoHostAvailable",
+  HostDegraded: "HostDegraded",
+  HostOffline: "HostOffline",
+  NoCredential: "NoCredential",
+  CredentialExpired: "CredentialExpired",
+}
+
+@doc("A room refusal code that a CapacityAvailable event answers.")
+enum CapacityRefusalCode {
+  PoolExhausted: "PoolExhausted",
+  NoHostAvailable: "NoHostAvailable",
+  HostDegraded: "HostDegraded",
+  HostOffline: "HostOffline",
+}
+
 @doc("Why a session start or turn send was refused.")
 model StartRefusal {
-  code: ProblemCode;
+  code: StartRefusalCode;
   detail: Detail;
 }
 
 @doc("""
-  A refusal with code ModelUnsupported, HarnessNotInCatalog, ImageNotReleased, PoolExhausted,
-  NoHostAvailable, HostDegraded, HostOffline, NoCredential or CredentialExpired. It reaches the
+  A refused session start or turn send. It reaches the
   calling session's subscription, identified by the turn token's session, or a subscription whose
   crew tags the refused session would carry.
   Exhausted provider credit stays a turn failure with the CreditExhausted pause reason.
@@ -219,7 +239,7 @@ model StartRefusedEvent {
 
 @doc("""
   The host freed enough memory and disk for the refused box or came online. It reaches each
-  subscription with a pending PoolExhausted, NoHostAvailable, HostDegraded or HostOffline refusal.
+  subscription with a pending room refusal.
   """)
 model CapacityAvailableEvent {
   event: "CapacityAvailable";
@@ -228,7 +248,7 @@ model CapacityAvailableEvent {
   hostId: EntityId;
 
   @doc("The pending room refusal's code that this event answers.")
-  code: ProblemCode;
+  code: CapacityRefusalCode;
 }
 
 model UsageNearLimitEvent {

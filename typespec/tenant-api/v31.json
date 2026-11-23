@@ -461,13 +461,23 @@
         "code": {
           "allOf": [
             {
-              "$ref": "#/components/schemas/ProblemCode"
+              "$ref": "#/components/schemas/CapacityRefusalCode"
             }
           ],
           "description": "The pending room refusal's code that this event answers."
         }
       },
-      "description": "The host freed enough memory and disk for the refused box or came online. It reaches each\nsubscription with a pending PoolExhausted, NoHostAvailable, HostDegraded or HostOffline refusal."
+      "description": "The host freed enough memory and disk for the refused box or came online. It reaches each\nsubscription with a pending room refusal."
+    },
+    "CapacityRefusalCode": {
+      "type": "string",
+      "enum": [
+        "PoolExhausted",
+        "NoHostAvailable",
+        "HostDegraded",
+        "HostOffline"
+      ],
+      "description": "A room refusal code that a CapacityAvailable event answers."
     },
     "Channel.BaseImageDownload": {
       "type": "object",
@@ -6365,13 +6375,28 @@
       ],
       "properties": {
         "code": {
-          "$ref": "#/components/schemas/ProblemCode"
+          "$ref": "#/components/schemas/StartRefusalCode"
         },
         "detail": {
           "$ref": "#/components/schemas/Detail"
         }
       },
       "description": "Why a session start or turn send was refused."
+    },
+    "StartRefusalCode": {
+      "type": "string",
+      "enum": [
+        "ModelUnsupported",
+        "HarnessNotInCatalog",
+        "ImageNotReleased",
+        "PoolExhausted",
+        "NoHostAvailable",
+        "HostDegraded",
+        "HostOffline",
+        "NoCredential",
+        "CredentialExpired"
+      ],
+      "description": "A refusal code that produces a StartRefused event."
     },
     "StartRefusedEvent": {
       "type": "object",
@@ -6428,7 +6453,7 @@
           "description": "The crew tags the session would carry."
         }
       },
-      "description": "A refusal with code ModelUnsupported, HarnessNotInCatalog, ImageNotReleased, PoolExhausted,\nNoHostAvailable, HostDegraded, HostOffline, NoCredential or CredentialExpired. It reaches the\ncalling session's subscription, identified by the turn token's session, or a subscription whose\ncrew tags the refused session would carry.\nExhausted provider credit stays a turn failure with the CreditExhausted pause reason."
+      "description": "A refused session start or turn send. It reaches the\ncalling session's subscription, identified by the turn token's session, or a subscription whose\ncrew tags the refused session would carry.\nExhausted provider credit stays a turn failure with the CreditExhausted pause reason."
     },
     "StartRefusedOperation": {
       "type": "string",

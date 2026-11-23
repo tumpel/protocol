@@ -597,11 +597,11 @@ pub mod types {
         }
     }
     ///The host freed enough memory and disk for the refused box or came online. It reaches each
-    ///subscription with a pending PoolExhausted, NoHostAvailable, HostDegraded or HostOffline refusal.
+    ///subscription with a pending room refusal.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct CapacityAvailableEvent {
         ///The pending room refusal's code that this event answers.
-        pub code: ProblemCode,
+        pub code: CapacityRefusalCode,
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         pub event: CapacityAvailableEventEvent,
@@ -645,6 +645,51 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for CapacityAvailableEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A room refusal code that a CapacityAvailable event answers.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum CapacityRefusalCode {
+        PoolExhausted,
+        NoHostAvailable,
+        HostDegraded,
+        HostOffline,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for CapacityRefusalCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::PoolExhausted => f.write_str("PoolExhausted"),
+                Self::NoHostAvailable => f.write_str("NoHostAvailable"),
+                Self::HostDegraded => f.write_str("HostDegraded"),
+                Self::HostOffline => f.write_str("HostOffline"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for CapacityRefusalCode {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "PoolExhausted" => Ok(Self::PoolExhausted),
+                "NoHostAvailable" => Ok(Self::NoHostAvailable),
+                "HostDegraded" => Ok(Self::HostDegraded),
+                "HostOffline" => Ok(Self::HostOffline),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for CapacityRefusalCode {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for CapacityRefusalCode {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -23022,11 +23067,70 @@ pub mod types {
     ///Why a session start or turn send was refused.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct StartRefusal {
-        pub code: ProblemCode,
+        pub code: StartRefusalCode,
         pub detail: Detail,
     }
-    ///A refusal with code ModelUnsupported, HarnessNotInCatalog, ImageNotReleased, PoolExhausted,
-    ///NoHostAvailable, HostDegraded, HostOffline, NoCredential or CredentialExpired. It reaches the
+    ///A refusal code that produces a StartRefused event.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum StartRefusalCode {
+        ModelUnsupported,
+        HarnessNotInCatalog,
+        ImageNotReleased,
+        PoolExhausted,
+        NoHostAvailable,
+        HostDegraded,
+        HostOffline,
+        NoCredential,
+        CredentialExpired,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for StartRefusalCode {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::ModelUnsupported => f.write_str("ModelUnsupported"),
+                Self::HarnessNotInCatalog => f.write_str("HarnessNotInCatalog"),
+                Self::ImageNotReleased => f.write_str("ImageNotReleased"),
+                Self::PoolExhausted => f.write_str("PoolExhausted"),
+                Self::NoHostAvailable => f.write_str("NoHostAvailable"),
+                Self::HostDegraded => f.write_str("HostDegraded"),
+                Self::HostOffline => f.write_str("HostOffline"),
+                Self::NoCredential => f.write_str("NoCredential"),
+                Self::CredentialExpired => f.write_str("CredentialExpired"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for StartRefusalCode {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "ModelUnsupported" => Ok(Self::ModelUnsupported),
+                "HarnessNotInCatalog" => Ok(Self::HarnessNotInCatalog),
+                "ImageNotReleased" => Ok(Self::ImageNotReleased),
+                "PoolExhausted" => Ok(Self::PoolExhausted),
+                "NoHostAvailable" => Ok(Self::NoHostAvailable),
+                "HostDegraded" => Ok(Self::HostDegraded),
+                "HostOffline" => Ok(Self::HostOffline),
+                "NoCredential" => Ok(Self::NoCredential),
+                "CredentialExpired" => Ok(Self::CredentialExpired),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for StartRefusalCode {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for StartRefusalCode {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A refused session start or turn send. It reaches the
     ///calling session's subscription, identified by the turn token's session, or a subscription whose
     ///crew tags the refused session would carry.
     ///Exhausted provider credit stays a turn failure with the CreditExhausted pause reason.
