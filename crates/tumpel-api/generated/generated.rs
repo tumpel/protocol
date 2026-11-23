@@ -3049,7 +3049,8 @@ pub mod types {
     }
     ///A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
     ///the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-    ///connection that speaks another with UnsupportedVersion.
+    ///connection that speaks another with UnsupportedVersion. Versions 37 and 38 lack
+    ///`reusedPackDigests` on SnapshotPacks and `chunkCount` on SnapshotDone.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(transparent)]
     pub struct ChannelProtocol(pub i32);
@@ -3429,9 +3430,14 @@ pub mod types {
             value.parse()
         }
     }
-    ///The host stored the snapshot's packs and root. `uploadedBytes` counts the bytes it uploaded: the packs the tenant lacked, plus the root.
+    ///The host stored the snapshot's packs and root. `uploadedBytes` counts the bytes it uploaded: the
+    ///packs the tenant lacked, plus the root. `chunkCount` counts the chunk placements that the file
+    ///entries of the snapshot's SnapshotManifest list, a chunk once for every placement a file names it
+    ///at.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSnapshotDone {
+        #[serde(rename = "chunkCount")]
+        pub chunk_count: i32,
         #[serde(rename = "snapshotId")]
         pub snapshot_id: EntityId,
         #[serde(rename = "type")]
@@ -3646,15 +3652,20 @@ pub mod types {
     }
     ///Part `part` of the chunks a snapshot packed: where each chunk lies, at most
     ///ChunkExchange.DigestsPerPart of them, and the size of each pack they lie in. A pack whose chunks
-    ///run past one part is listed again in the next. The host sends part 1 once its packs are written,
-    ///and each next part once the answer to the one before arrived. The control plane keeps the
-    ///placements until SnapshotDone, counts each digest as referenced by the session, and answers
-    ///SnapshotPackUploads.
+    ///run past one part is listed again in the next. `reusedPackDigests` names packs the snapshot
+    ///references that it did not write, at most ChunkExchange.DigestsPerPart of them a part, each named
+    ///in one part only. Every pack the snapshot references is in `packs` or in `reusedPackDigests` of
+    ///some part, never in both. The host sends part 1 once its packs are written, also when it wrote
+    ///none, and each next part once the answer to the one before arrived, until every placement and
+    ///every reused pack is sent. The control plane keeps the placements and the reused packs until
+    ///SnapshotDone, counts each digest as referenced by the session, and answers SnapshotPackUploads.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSnapshotPacks {
         pub chunks: ::std::vec::Vec<ChannelChunkPlacement>,
         pub packs: ::std::vec::Vec<ChannelPack>,
         pub part: ::std::num::NonZeroU32,
+        #[serde(rename = "reusedPackDigests")]
+        pub reused_pack_digests: ::std::vec::Vec<Sha256Digest>,
         #[serde(rename = "snapshotId")]
         pub snapshot_id: EntityId,
         #[serde(rename = "type")]
@@ -54965,7 +54976,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 37;
-    pub const VERSION: u16 = 38;
+    pub const VERSION: u16 = 39;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
@@ -54980,5 +54991,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 30;
+    pub const VERSION: u16 = 31;
 }

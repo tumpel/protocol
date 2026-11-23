@@ -424,51 +424,6 @@
       ],
       "description": "What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode."
     },
-    "CapacityAvailableEvent": {
-      "type": "object",
-      "required": [
-        "event",
-        "eventId",
-        "tenantId",
-        "createdAt",
-        "subscriptionId",
-        "hostId",
-        "code"
-      ],
-      "properties": {
-        "event": {
-          "type": "string",
-          "enum": [
-            "CapacityAvailable"
-          ]
-        },
-        "eventId": {
-          "$ref": "#/components/schemas/Sequence"
-        },
-        "tenantId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "createdAt": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "subscriptionId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "hostId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "code": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/ProblemCode"
-            }
-          ],
-          "description": "The pending room refusal's code that this event answers."
-        }
-      },
-      "description": "The host freed enough memory and disk for the refused box or came online. It reaches each\nsubscription with a pending PoolExhausted, NoHostAvailable, HostDegraded or HostOffline refusal."
-    },
     "Channel.BaseImageDownload": {
       "type": "object",
       "required": [
@@ -1267,7 +1222,8 @@
       "required": [
         "type",
         "snapshotId",
-        "uploadedBytes"
+        "uploadedBytes",
+        "chunkCount"
       ],
       "properties": {
         "type": {
@@ -1283,9 +1239,14 @@
           "type": "integer",
           "format": "int64",
           "minimum": 0
+        },
+        "chunkCount": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 0
         }
       },
-      "description": "The host stored the snapshot's packs and root. `uploadedBytes` counts the bytes it uploaded: the packs the tenant lacked, plus the root."
+      "description": "The host stored the snapshot's packs and root. `uploadedBytes` counts the bytes it uploaded: the\npacks the tenant lacked, plus the root. `chunkCount` counts the chunk placements that the file\nentries of the snapshot's SnapshotManifest list, a chunk once for every placement a file names it\nat."
     },
     "Channel.SnapshotDownload": {
       "type": "object",
@@ -1368,7 +1329,8 @@
         "snapshotId",
         "part",
         "packs",
-        "chunks"
+        "chunks",
+        "reusedPackDigests"
       ],
       "properties": {
         "type": {
@@ -1398,9 +1360,16 @@
             "$ref": "#/components/schemas/Channel.ChunkPlacement"
           },
           "maxItems": 500
+        },
+        "reusedPackDigests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Sha256Digest"
+          },
+          "maxItems": 500
         }
       },
-      "description": "Part `part` of the chunks a snapshot packed: where each chunk lies, at most\nChunkExchange.DigestsPerPart of them, and the size of each pack they lie in. A pack whose chunks\nrun past one part is listed again in the next. The host sends part 1 once its packs are written,\nand each next part once the answer to the one before arrived. The control plane keeps the\nplacements until SnapshotDone, counts each digest as referenced by the session, and answers\nSnapshotPackUploads."
+      "description": "Part `part` of the chunks a snapshot packed: where each chunk lies, at most\nChunkExchange.DigestsPerPart of them, and the size of each pack they lie in. A pack whose chunks\nrun past one part is listed again in the next. `reusedPackDigests` names packs the snapshot\nreferences that it did not write, at most ChunkExchange.DigestsPerPart of them a part, each named\nin one part only. Every pack the snapshot references is in `packs` or in `reusedPackDigests` of\nsome part, never in both. The host sends part 1 once its packs are written, also when it wrote\nnone, and each next part once the answer to the one before arrived, until every placement and\nevery reused pack is sent. The control plane keeps the placements and the reused packs until\nSnapshotDone, counts each digest as referenced by the session, and answers SnapshotPackUploads."
     },
     "Channel.SnapshotPackUploads": {
       "type": "object",
@@ -6343,87 +6312,6 @@
         }
       }
     },
-    "StartRefusal": {
-      "type": "object",
-      "required": [
-        "code",
-        "detail"
-      ],
-      "properties": {
-        "code": {
-          "$ref": "#/components/schemas/ProblemCode"
-        },
-        "detail": {
-          "$ref": "#/components/schemas/Detail"
-        }
-      },
-      "description": "Why a session start or turn send was refused."
-    },
-    "StartRefusedEvent": {
-      "type": "object",
-      "required": [
-        "event",
-        "eventId",
-        "tenantId",
-        "createdAt",
-        "operation",
-        "refusal",
-        "personaId",
-        "model",
-        "harnessVersion",
-        "crewTags"
-      ],
-      "properties": {
-        "event": {
-          "type": "string",
-          "enum": [
-            "StartRefused"
-          ]
-        },
-        "eventId": {
-          "$ref": "#/components/schemas/Sequence"
-        },
-        "tenantId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "createdAt": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "operation": {
-          "$ref": "#/components/schemas/StartRefusedOperation"
-        },
-        "refusal": {
-          "$ref": "#/components/schemas/StartRefusal"
-        },
-        "personaId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "model": {
-          "$ref": "#/components/schemas/ModelName"
-        },
-        "harnessVersion": {
-          "$ref": "#/components/schemas/ShortText"
-        },
-        "crewTags": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/SessionTag"
-          },
-          "maxItems": 16,
-          "description": "The crew tags the session would carry."
-        }
-      },
-      "description": "A refusal with code ModelUnsupported, HarnessNotInCatalog, ImageNotReleased, PoolExhausted,\nNoHostAvailable, HostDegraded, HostOffline, NoCredential or CredentialExpired. It reaches the\ncalling session's subscription, identified by the turn token's session, or a subscription whose\ncrew tags the refused session would carry.\nExhausted provider credit stays a turn failure with the CreditExhausted pause reason."
-    },
-    "StartRefusedOperation": {
-      "type": "string",
-      "enum": [
-        "Start",
-        "Send"
-      ],
-      "description": "The operation that was refused."
-    },
     "StaticConnector": {
       "type": "object",
       "required": [
@@ -7031,7 +6919,7 @@
           "Ended": "#/components/schemas/EndedSubscription"
         }
       },
-      "description": "A plan and a goal tied to one session, which receives a delivery turn whenever a session of its\ncrew records one of the listed events. The crew is every other session that carries every crew\ntag at the moment of the event and holds no Active subscription itself. Each delivery turn holds\nthe plan and the events after the cursor, one JSON line each, and works toward the goal.\nStartRefused also reaches the calling session's subscription or one whose crew tags the refused\nsession would carry. CapacityAvailable reaches a subscription with a pending room refusal."
+      "description": "A plan and a goal tied to one session, which receives a delivery turn whenever a session of its\ncrew records one of the listed events. The crew is every other session that carries every crew\ntag at the moment of the event and holds no Active subscription itself. Each delivery turn holds\nthe plan and the events after the cursor, one JSON line each, and works toward the goal."
     },
     "SubscriptionCreate": {
       "type": "object",
@@ -7158,11 +7046,9 @@
         "SessionFailed",
         "SessionArchived",
         "SubscriptionPaused",
-        "SubscriptionEnded",
-        "StartRefused",
-        "CapacityAvailable"
+        "SubscriptionEnded"
       ],
-      "description": "An event type a subscription reacts to: a crew session event, a refused start or send, or room becoming available."
+      "description": "An event type a subscription reacts to: one whose event names a session."
     },
     "SubscriptionPausedByRequest": {
       "type": "object",
@@ -7280,21 +7166,6 @@
         }
       }
     },
-    "SubscriptionPausedStartsRefused": {
-      "type": "object",
-      "required": [
-        "kind"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "StartsRefused"
-          ]
-        }
-      },
-      "description": "10 CapacityAvailable deliveries reached the subscription without a successful start; it pauses instead of waking again."
-    },
     "SubscriptionPauseMessage": {
       "type": "string",
       "minLength": 1,
@@ -7315,9 +7186,6 @@
         },
         {
           "$ref": "#/components/schemas/SubscriptionPausedCreditExhausted"
-        },
-        {
-          "$ref": "#/components/schemas/SubscriptionPausedStartsRefused"
         }
       ],
       "discriminator": {
@@ -7326,8 +7194,7 @@
           "ByRequest": "#/components/schemas/SubscriptionPausedByRequest",
           "DeliveryFailed": "#/components/schemas/SubscriptionPausedDeliveryFailed",
           "CrewFailing": "#/components/schemas/SubscriptionPausedCrewFailing",
-          "CreditExhausted": "#/components/schemas/SubscriptionPausedCreditExhausted",
-          "StartsRefused": "#/components/schemas/SubscriptionPausedStartsRefused"
+          "CreditExhausted": "#/components/schemas/SubscriptionPausedCreditExhausted"
         }
       },
       "description": "Why a subscription is Paused."
@@ -19078,12 +18945,6 @@
           "$ref": "#/components/schemas/TriggerStartRefusedEvent"
         },
         {
-          "$ref": "#/components/schemas/StartRefusedEvent"
-        },
-        {
-          "$ref": "#/components/schemas/CapacityAvailableEvent"
-        },
-        {
           "$ref": "#/components/schemas/UsageNearLimitEvent"
         },
         {
@@ -19107,8 +18968,6 @@
           "SubscriptionPaused": "#/components/schemas/SubscriptionPausedEvent",
           "SubscriptionEnded": "#/components/schemas/SubscriptionEndedEvent",
           "TriggerStartRefused": "#/components/schemas/TriggerStartRefusedEvent",
-          "StartRefused": "#/components/schemas/StartRefusedEvent",
-          "CapacityAvailable": "#/components/schemas/CapacityAvailableEvent",
           "UsageNearLimit": "#/components/schemas/UsageNearLimitEvent",
           "UsageLimitReached": "#/components/schemas/UsageLimitReachedEvent"
         }
@@ -19132,8 +18991,6 @@
         "SubscriptionPaused",
         "SubscriptionEnded",
         "TriggerStartRefused",
-        "StartRefused",
-        "CapacityAvailable",
         "UsageNearLimit",
         "UsageLimitReached"
       ],
