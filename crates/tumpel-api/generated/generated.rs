@@ -572,6 +572,59 @@ pub mod types {
             value.parse()
         }
     }
+    ///The host freed enough memory and disk for the refused box or came online. It reaches each
+    ///subscription with a pending PoolExhausted, NoHostAvailable, HostDegraded or HostOffline refusal.
+    ///Each subscription holds at most one pending room refusal, upserted rather than appended.
+    ///Delivery clears that pending refusal; retries back off exponentially.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct CapacityAvailableEvent {
+        ///The pending room refusal's code that this event answers.
+        pub code: ProblemCode,
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        pub event: CapacityAvailableEventEvent,
+        #[serde(rename = "eventId")]
+        pub event_id: Sequence,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        #[serde(rename = "subscriptionId")]
+        pub subscription_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`CapacityAvailableEventEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum CapacityAvailableEventEvent {
+        CapacityAvailable,
+    }
+    impl ::std::fmt::Display for CapacityAvailableEventEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::CapacityAvailable => f.write_str("CapacityAvailable"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for CapacityAvailableEventEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "CapacityAvailable" => Ok(Self::CapacityAvailable),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for CapacityAvailableEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for CapacityAvailableEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///The control plane's answer to a host frame, sent once the frame's effect is stored.
     ///It travels outside frames, as Heartbeat does. The host drops its unacked frames up to `seq`. The
     ///control plane answers a resent frame it already applied with Ack again, and a frame that fails a
@@ -22194,6 +22247,106 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
+    ///Why a session start or turn send was refused.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct StartRefusal {
+        pub code: ProblemCode,
+        pub detail: Detail,
+    }
+    ///A refusal with code ModelUnsupported, HarnessNotInCatalog, ImageNotReleased, PoolExhausted,
+    ///NoHostAvailable, HostDegraded, HostOffline, NoCredential or CredentialExpired. It reaches the
+    ///calling session's subscription, identified by the turn token's session, or a subscription whose
+    ///crew tags the refused session would carry. Undelivered events coalesce per subscription and code.
+    ///Exhausted provider credit stays a turn failure with the CreditExhausted pause reason.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct StartRefusedEvent {
+        #[serde(rename = "createdAt")]
+        pub created_at: i64,
+        ///The crew tags the session would carry.
+        #[serde(rename = "crewTags")]
+        pub crew_tags: ::std::vec::Vec<SessionTag>,
+        pub event: StartRefusedEventEvent,
+        #[serde(rename = "eventId")]
+        pub event_id: Sequence,
+        #[serde(rename = "harnessVersion")]
+        pub harness_version: ShortText,
+        pub model: ModelName,
+        pub operation: StartRefusedOperation,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        pub refusal: StartRefusal,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`StartRefusedEventEvent`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum StartRefusedEventEvent {
+        StartRefused,
+    }
+    impl ::std::fmt::Display for StartRefusedEventEvent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::StartRefused => f.write_str("StartRefused"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for StartRefusedEventEvent {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "StartRefused" => Ok(Self::StartRefused),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for StartRefusedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for StartRefusedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The operation that was refused.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum StartRefusedOperation {
+        Start,
+        Send,
+    }
+    impl ::std::fmt::Display for StartRefusedOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Start => f.write_str("Start"),
+                Self::Send => f.write_str("Send"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for StartRefusedOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Start" => Ok(Self::Start),
+                "Send" => Ok(Self::Send),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for StartRefusedOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for StartRefusedOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///The answer to a start, sent before the harness writes anything.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct StartedSession {
@@ -22908,6 +23061,8 @@ pub mod types {
     ///crew records one of the listed events. The crew is every other session that carries every crew
     ///tag at the moment of the event and holds no Active subscription itself. Each delivery turn holds
     ///the plan and the events after the cursor, one JSON line each, and works toward the goal.
+    ///StartRefused also reaches the calling session's subscription or one whose crew tags the refused
+    ///session would carry. CapacityAvailable reaches a subscription with a pending room refusal.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum Subscription {
@@ -23077,7 +23232,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///An event type a subscription reacts to: one whose event names a session.
+    ///An event type a subscription reacts to: a crew session event, a refused start or send, or room becoming available.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionEventType {
         TurnStarted,
@@ -23089,6 +23244,8 @@ pub mod types {
         SessionArchived,
         SubscriptionPaused,
         SubscriptionEnded,
+        StartRefused,
+        CapacityAvailable,
     }
     impl ::std::fmt::Display for SubscriptionEventType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23102,6 +23259,8 @@ pub mod types {
                 Self::SessionArchived => f.write_str("SessionArchived"),
                 Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
                 Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
+                Self::StartRefused => f.write_str("StartRefused"),
+                Self::CapacityAvailable => f.write_str("CapacityAvailable"),
             }
         }
     }
@@ -23118,6 +23277,8 @@ pub mod types {
                 "SessionArchived" => Ok(Self::SessionArchived),
                 "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
                 "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
+                "StartRefused" => Ok(Self::StartRefused),
+                "CapacityAvailable" => Ok(Self::CapacityAvailable),
                 _ => Err("invalid value".into()),
             }
         }
@@ -23216,6 +23377,7 @@ pub mod types {
         DeliveryFailed(SubscriptionPausedDeliveryFailed),
         CrewFailing(SubscriptionPausedCrewFailing),
         CreditExhausted(SubscriptionPausedCreditExhausted),
+        StartsRefused(SubscriptionPausedStartsRefused),
     }
     impl ::std::convert::From<SubscriptionPausedByRequest> for SubscriptionPauseReason {
         fn from(value: SubscriptionPausedByRequest) -> Self {
@@ -23235,6 +23397,11 @@ pub mod types {
     impl ::std::convert::From<SubscriptionPausedCreditExhausted> for SubscriptionPauseReason {
         fn from(value: SubscriptionPausedCreditExhausted) -> Self {
             Self::CreditExhausted(value)
+        }
+    }
+    impl ::std::convert::From<SubscriptionPausedStartsRefused> for SubscriptionPauseReason {
+        fn from(value: SubscriptionPausedStartsRefused) -> Self {
+            Self::StartsRefused(value)
         }
     }
     ///Someone paused the subscription with Subscriptions_pause, leaving a message.
@@ -23439,6 +23606,44 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedEventEvent {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///10 CapacityAvailable deliveries reached the subscription without a successful start; it pauses instead of waking again.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct SubscriptionPausedStartsRefused {
+        pub kind: SubscriptionPausedStartsRefusedKind,
+    }
+    ///`SubscriptionPausedStartsRefusedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum SubscriptionPausedStartsRefusedKind {
+        StartsRefused,
+    }
+    impl ::std::fmt::Display for SubscriptionPausedStartsRefusedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::StartsRefused => f.write_str("StartsRefused"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for SubscriptionPausedStartsRefusedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "StartsRefused" => Ok(Self::StartsRefused),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for SubscriptionPausedStartsRefusedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedStartsRefusedKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -41427,6 +41632,8 @@ pub mod types {
         SubscriptionPausedEvent(SubscriptionPausedEvent),
         SubscriptionEndedEvent(SubscriptionEndedEvent),
         TriggerStartRefusedEvent(TriggerStartRefusedEvent),
+        StartRefusedEvent(StartRefusedEvent),
+        CapacityAvailableEvent(CapacityAvailableEvent),
         UsageNearLimitEvent(UsageNearLimitEvent),
         UsageLimitReachedEvent(UsageLimitReachedEvent),
     }
@@ -41500,6 +41707,16 @@ pub mod types {
             Self::TriggerStartRefusedEvent(value)
         }
     }
+    impl ::std::convert::From<StartRefusedEvent> for TenantEvent {
+        fn from(value: StartRefusedEvent) -> Self {
+            Self::StartRefusedEvent(value)
+        }
+    }
+    impl ::std::convert::From<CapacityAvailableEvent> for TenantEvent {
+        fn from(value: CapacityAvailableEvent) -> Self {
+            Self::CapacityAvailableEvent(value)
+        }
+    }
     impl ::std::convert::From<UsageNearLimitEvent> for TenantEvent {
         fn from(value: UsageNearLimitEvent) -> Self {
             Self::UsageNearLimitEvent(value)
@@ -41538,6 +41755,8 @@ pub mod types {
         SubscriptionPaused,
         SubscriptionEnded,
         TriggerStartRefused,
+        StartRefused,
+        CapacityAvailable,
         UsageNearLimit,
         UsageLimitReached,
     }
@@ -41558,6 +41777,8 @@ pub mod types {
                 Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
                 Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
                 Self::TriggerStartRefused => f.write_str("TriggerStartRefused"),
+                Self::StartRefused => f.write_str("StartRefused"),
+                Self::CapacityAvailable => f.write_str("CapacityAvailable"),
                 Self::UsageNearLimit => f.write_str("UsageNearLimit"),
                 Self::UsageLimitReached => f.write_str("UsageLimitReached"),
             }
@@ -41581,6 +41802,8 @@ pub mod types {
                 "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
                 "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
                 "TriggerStartRefused" => Ok(Self::TriggerStartRefused),
+                "StartRefused" => Ok(Self::StartRefused),
+                "CapacityAvailable" => Ok(Self::CapacityAvailable),
                 "UsageNearLimit" => Ok(Self::UsageNearLimit),
                 "UsageLimitReached" => Ok(Self::UsageLimitReached),
                 _ => Err("invalid value".into()),
@@ -48666,7 +48889,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Starts a session with its first prompt on the online host of the tenant with the most free box slots, then the most memory available. A slot is free when no running turn and no held box takes it; an Auto box that waits idle frees its slot for placement. When no host has a free slot, the start evicts the least recently used Auto box on one host until the new box fits there, and it refuses PoolExhausted when nothing frees room. The session runs its persona's harness at the pinned version, with the persona's files and secret set. Answers before the harness writes anything.
+    ///Starts a session with its first prompt on the online host of the tenant with the most free box slots, then the most memory available. A slot is free when no running turn and no held box takes it; an Auto box that waits idle frees its slot for placement. When no host has a free slot, the start evicts the least recently used Auto box on one host until the new box fits there, and it refuses PoolExhausted when nothing frees room. The session runs its persona's harness at the pinned version, with the persona's files and secret set. Answers before the harness writes anything. A refusal covered by StartRefused appends that event with the problem code and detail. It is delivered to the calling session's subscription, identified by the turn token's session, or a subscription whose crew tags the refused session would carry.
     ///
     ///Sends a `POST` request to `/v1/sessions`
     ///
@@ -49343,7 +49566,7 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Sends a session its next prompt; answers before any output. A turn sent while another turn of the session is in flight waits Offered, and waiting turns start in send order, each when the turn before it ends, with its time budget counted from its start. When the session's host is offline, the turn boots on another online host of the tenant if the snapshots hold the last completed turn, and is refused HostOffline, naming the turns they miss, if not.
+    ///Sends a session its next prompt; answers before any output. A turn sent while another turn of the session is in flight waits Offered, and waiting turns start in send order, each when the turn before it ends, with its time budget counted from its start. When the session's host is offline, the turn boots on another online host of the tenant if the snapshots hold the last completed turn, and is refused HostOffline, naming the turns they miss, if not. A refusal covered by StartRefused appends that event with the problem code and detail. It is delivered to the calling session's subscription, identified by the turn token's session, or a subscription whose crew tags the refused session would carry.
     ///
     ///Sends a `POST` request to `/v1/sessions/{sessionId}/turns`
     ///
@@ -51018,5 +51241,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 28;
+    pub const VERSION: u16 = 29;
 }

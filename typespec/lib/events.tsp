@@ -52,6 +52,12 @@ enum TenantEventType {
   @doc("A trigger matched a delivery and started no session.")
   TriggerStartRefused: "TriggerStartRefused",
 
+  @doc("A session start or turn send was refused.")
+  StartRefused: "StartRefused",
+
+  @doc("A host freed room or came online for a subscription with a pending room refusal.")
+  CapacityAvailable: "CapacityAvailable",
+
   @doc("The tenant used 80% of one of its limits in the current window.")
   UsageNearLimit: "UsageNearLimit",
 
@@ -178,6 +184,55 @@ model TriggerStartRefusedEvent {
   refusal: TriggerStartRefusal;
 }
 
+@doc("The operation that was refused.")
+enum StartRefusedOperation {
+  Start: "Start",
+  Send: "Send",
+}
+
+@doc("Why a session start or turn send was refused.")
+model StartRefusal {
+  code: ProblemCode;
+  detail: Detail;
+}
+
+@doc("""
+  A refusal with code ModelUnsupported, HarnessNotInCatalog, ImageNotReleased, PoolExhausted,
+  NoHostAvailable, HostDegraded, HostOffline, NoCredential or CredentialExpired. It reaches the
+  calling session's subscription, identified by the turn token's session, or a subscription whose
+  crew tags the refused session would carry. Undelivered events coalesce per subscription and code.
+  Exhausted provider credit stays a turn failure with the CreditExhausted pause reason.
+  """)
+model StartRefusedEvent {
+  event: "StartRefused";
+  ...TenantEventEnvelope;
+  operation: StartRefusedOperation;
+  refusal: StartRefusal;
+  personaId: EntityId;
+  `model`: ModelName;
+  harnessVersion: ShortText;
+
+  @doc("The crew tags the session would carry.")
+  @maxItems(16)
+  crewTags: SessionTag[];
+}
+
+@doc("""
+  The host freed enough memory and disk for the refused box or came online. It reaches each
+  subscription with a pending PoolExhausted, NoHostAvailable, HostDegraded or HostOffline refusal.
+  Each subscription holds at most one pending room refusal, upserted rather than appended.
+  Delivery clears that pending refusal; retries back off exponentially.
+  """)
+model CapacityAvailableEvent {
+  event: "CapacityAvailable";
+  ...TenantEventEnvelope;
+  subscriptionId: EntityId;
+  hostId: EntityId;
+
+  @doc("The pending room refusal's code that this event answers.")
+  code: ProblemCode;
+}
+
 model UsageNearLimitEvent {
   event: "UsageNearLimit";
   ...TenantEventEnvelope;
@@ -213,6 +268,8 @@ union TenantEvent {
   SubscriptionPaused: SubscriptionPausedEvent,
   SubscriptionEnded: SubscriptionEndedEvent,
   TriggerStartRefused: TriggerStartRefusedEvent,
+  StartRefused: StartRefusedEvent,
+  CapacityAvailable: CapacityAvailableEvent,
   UsageNearLimit: UsageNearLimitEvent,
   UsageLimitReached: UsageLimitReachedEvent,
 }

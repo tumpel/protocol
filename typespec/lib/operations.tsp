@@ -1066,7 +1066,7 @@ namespace V1 {
 
   @route("/sessions")
   interface Sessions {
-    @doc("Starts a session with its first prompt on the online host of the tenant with the most free box slots, then the most memory available. A slot is free when no running turn and no held box takes it; an Auto box that waits idle frees its slot for placement. When no host has a free slot, the start evicts the least recently used Auto box on one host until the new box fits there, and it refuses PoolExhausted when nothing frees room. The session runs its persona's harness at the pinned version, with the persona's files and secret set. Answers before the harness writes anything.")
+    @doc("Starts a session with its first prompt on the online host of the tenant with the most free box slots, then the most memory available. A slot is free when no running turn and no held box takes it; an Auto box that waits idle frees its slot for placement. When no host has a free slot, the start evicts the least recently used Auto box on one host until the new box fits there, and it refuses PoolExhausted when nothing frees room. The session runs its persona's harness at the pinned version, with the persona's files and secret set. Answers before the harness writes anything. A refusal covered by StartRefused appends that event with the problem code and detail. It is delivered to the calling session's subscription, identified by the turn token's session, or a subscription whose crew tags the refused session would carry.")
     @post
     start(@body body: SessionStart): StartedSession | ProblemResponse;
 
@@ -1141,7 +1141,7 @@ namespace V1 {
   }
 
   interface Turns {
-    @doc("Sends a session its next prompt; answers before any output. A turn sent while another turn of the session is in flight waits Offered, and waiting turns start in send order, each when the turn before it ends, with its time budget counted from its start. When the session's host is offline, the turn boots on another online host of the tenant if the snapshots hold the last completed turn, and is refused HostOffline, naming the turns they miss, if not.")
+    @doc("Sends a session its next prompt; answers before any output. A turn sent while another turn of the session is in flight waits Offered, and waiting turns start in send order, each when the turn before it ends, with its time budget counted from its start. When the session's host is offline, the turn boots on another online host of the tenant if the snapshots hold the last completed turn, and is refused HostOffline, naming the turns they miss, if not. A refusal covered by StartRefused appends that event with the problem code and detail. It is delivered to the calling session's subscription, identified by the turn token's session, or a subscription whose crew tags the refused session would carry.")
     @route("/sessions/{sessionId}/turns")
     @post
     send(...SessionPath, @body body: TurnSend): Turn | ProblemResponse;
