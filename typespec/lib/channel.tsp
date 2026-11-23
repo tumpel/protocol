@@ -644,10 +644,13 @@ model SnapshotChunksHeld {
 @doc("""
   Part `part` of the chunks a snapshot packed: where each chunk lies, at most
   ChunkExchange.DigestsPerPart of them, and the size of each pack they lie in. A pack whose chunks
-  run past one part is listed again in the next. The host sends part 1 once its packs are written,
-  and each next part once the answer to the one before arrived. The control plane keeps the
-  placements until SnapshotDone, counts each digest as referenced by the session, and answers
-  SnapshotPackUploads.
+  run past one part is listed again in the next. `reusedPackDigests` names packs the snapshot
+  references that it did not write, at most ChunkExchange.DigestsPerPart of them a part, each named
+  in one part only. Every pack the snapshot references is in `packs` or in `reusedPackDigests` of
+  some part, never in both. The host sends part 1 once its packs are written, also when it wrote
+  none, and each next part once the answer to the one before arrived, until every placement and
+  every reused pack is sent. The control plane keeps the placements and the reused packs until
+  SnapshotDone, counts each digest as referenced by the session, and answers SnapshotPackUploads.
   """)
 model SnapshotPacks {
   type: "SnapshotPacks";
@@ -655,6 +658,7 @@ model SnapshotPacks {
   @minValue(1) part: int32;
   @maxItems(DigestsPerPart) packs: Pack[];
   @maxItems(DigestsPerPart) chunks: ChunkPlacement[];
+  @maxItems(DigestsPerPart) reusedPackDigests: Sha256Digest[];
 }
 
 @doc("""
@@ -699,11 +703,17 @@ model RestoreDownloads {
   downloadExpiresAt: offsetDateTime;
 }
 
-@doc("The host stored the snapshot's packs and root. `uploadedBytes` counts the bytes it uploaded: the packs the tenant lacked, plus the root.")
+@doc("""
+  The host stored the snapshot's packs and root. `uploadedBytes` counts the bytes it uploaded: the
+  packs the tenant lacked, plus the root. `chunkCount` counts the chunk placements that the file
+  entries of the snapshot's SnapshotManifest list, a chunk once for every placement a file names it
+  at.
+  """)
 model SnapshotDone {
   type: "SnapshotDone";
   snapshotId: EntityId;
   @minValue(0) uploadedBytes: int64;
+  @minValue(0) chunkCount: int32;
 }
 
 @doc("Why the host could not store a snapshot.")

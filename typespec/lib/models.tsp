@@ -60,7 +60,8 @@ scalar Sha256Digest extends string;
 @doc("""
   A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
   the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-  connection that speaks another with UnsupportedVersion.
+  connection that speaks another with UnsupportedVersion. Versions 37 and 38 lack
+  `reusedPackDigests` on SnapshotPacks and `chunkCount` on SnapshotDone.
   """)
 @minValue(ChannelProtocolOldest)
 @maxValue(ChannelProtocolVersion)
@@ -68,7 +69,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 37;
-const ChannelProtocolVersion = 38;
+const ChannelProtocolVersion = 39;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
