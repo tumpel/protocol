@@ -23777,24 +23777,14 @@ pub mod types {
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
-    ///How many Welcomes the unacked host frame `seq` has been resent after without the control plane
-    ///acking it. The supervisor gives a frame up after 10.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct SupervisorChannelReplay {
-        pub replays: ::std::num::NonZeroU32,
-        pub seq: Sequence,
-    }
     ///The host side of the channel's sequencing, channel.json in the supervisor directory, written
     ///before every frame the host sends. `received` is the highest control-plane `seq` accepted with no
     ///gap, `sent` the highest `seq` the host assigned, and `unacked` every host frame the control plane
-    ///has not acked yet, in `seq` order. `replays` counts, for each unacked frame resent after a
-    ///Welcome, how many Welcomes it has been resent after; a file written before the count existed
-    ///leaves it out. A supervisor that finds this file missing exits with failure ChannelStateLost.
+    ///has not acked yet, in `seq` order. A supervisor that finds this file missing exits with failure
+    ///ChannelStateLost.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SupervisorChannelState {
         pub received: Sequence,
-        #[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
-        pub replays: ::std::vec::Vec<SupervisorChannelReplay>,
         pub sent: Sequence,
         pub unacked: ::std::vec::Vec<ChannelStoredHostFrame>,
     }
@@ -23900,9 +23890,6 @@ pub mod types {
         UsageUnreadable,
         GuestDriveUnwritable,
         UpdateNotOnline,
-        ChannelUnreachable,
-        FrameUndelivered,
-        RateLimited,
     }
     impl ::std::fmt::Display for SupervisorFailure {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23914,9 +23901,6 @@ pub mod types {
                 Self::UsageUnreadable => f.write_str("UsageUnreadable"),
                 Self::GuestDriveUnwritable => f.write_str("GuestDriveUnwritable"),
                 Self::UpdateNotOnline => f.write_str("UpdateNotOnline"),
-                Self::ChannelUnreachable => f.write_str("ChannelUnreachable"),
-                Self::FrameUndelivered => f.write_str("FrameUndelivered"),
-                Self::RateLimited => f.write_str("RateLimited"),
             }
         }
     }
@@ -23931,9 +23915,6 @@ pub mod types {
                 "UsageUnreadable" => Ok(Self::UsageUnreadable),
                 "GuestDriveUnwritable" => Ok(Self::GuestDriveUnwritable),
                 "UpdateNotOnline" => Ok(Self::UpdateNotOnline),
-                "ChannelUnreachable" => Ok(Self::ChannelUnreachable),
-                "FrameUndelivered" => Ok(Self::FrameUndelivered),
-                "RateLimited" => Ok(Self::RateLimited),
                 _ => Err("invalid value".into()),
             }
         }
@@ -46200,7 +46181,7 @@ impl Client {
     pub async fn hosts_enrol<'a>(
         &'a self,
         body: &'a types::HostEnrol,
-    ) -> Result<ResponseValue<types::Host>, Error<types::Problem>> {
+    ) -> Result<ResponseValue<types::TenantApiHostRecord>, Error<types::Problem>> {
         let url = format!("{}/v1/hosts/enrol", self.baseurl,);
         let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
         header_map.append(
@@ -51487,5 +51468,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 21;
+    pub const VERSION: u16 = 22;
 }
