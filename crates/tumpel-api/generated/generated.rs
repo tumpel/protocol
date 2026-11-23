@@ -572,6 +572,51 @@ pub mod types {
             value.parse()
         }
     }
+    ///The control plane's answer to a host frame on version 37, sent once the frame's effect is stored.
+    ///It travels outside frames, as Heartbeat does. The host drops its unacked frames up to `seq`. The
+    ///control plane answers a resent frame it already applied with Ack again, and a frame that fails a
+    ///check on its content with FrameRefused, which lets the host drop it as well. When the control
+    ///plane cannot store a frame's effect it closes the connection, and the host resends the frame
+    ///after its next Hello.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ChannelAck {
+        pub seq: Sequence,
+        #[serde(rename = "type")]
+        pub type_: ChannelAckType,
+    }
+    ///`ChannelAckType`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ChannelAckType {
+        Ack,
+    }
+    impl ::std::fmt::Display for ChannelAckType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Ack => f.write_str("Ack"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ChannelAckType {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Ack" => Ok(Self::Ack),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelAckType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelAckType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///The base image of a layered boot, the current release's ReleaseBaseImage for the host's
     ///architecture. `imageUrl`, `kernelUrl` and `manifestUrl` are presigned GETs of the ext4 image, the
     ///kernel and the BaseImageManifest document stored under `imageDigest`, `kernelDigest` and
@@ -1372,7 +1417,7 @@ pub mod types {
                 .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
-    ///Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, or a sequenced frame.
+    ///Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, Ack, or a sequenced frame.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ChannelControlEnvelope {
@@ -1382,6 +1427,7 @@ pub mod types {
         ReleasePublished(ChannelReleasePublished),
         FrameRefused(ChannelFrameRefused),
         FrameRateLimited(ChannelFrameRateLimited),
+        Ack(ChannelAck),
         ControlFrame(ChannelControlFrame),
     }
     impl ::std::convert::From<ChannelChallenge> for ChannelControlEnvelope {
@@ -1412,6 +1458,11 @@ pub mod types {
     impl ::std::convert::From<ChannelFrameRateLimited> for ChannelControlEnvelope {
         fn from(value: ChannelFrameRateLimited) -> Self {
             Self::FrameRateLimited(value)
+        }
+    }
+    impl ::std::convert::From<ChannelAck> for ChannelControlEnvelope {
+        fn from(value: ChannelAck) -> Self {
+            Self::Ack(value)
         }
     }
     impl ::std::convert::From<ChannelControlFrame> for ChannelControlEnvelope {
@@ -1943,8 +1994,12 @@ pub mod types {
         }
     }
     ///The control plane's answer to a host frame past the tenant's per-host frame limit. It travels
-    ///outside frames, as Heartbeat does. The control plane counts that `seq` as received and records
-    ///nothing for it, so the host drops the frame from its unacked frames and never resends it.
+    ///outside frames, as Heartbeat does. On version 36 and below the control plane counts that `seq`
+    ///as received and records nothing for it, so the host drops the frame from its unacked frames and
+    ///never resends it. On version 37 it counts and records nothing, and answers every later frame on
+    ///the connection the same way until `retryAfter`; the host keeps those frames and resends them in
+    ///order from `retryAfter`, so no output is lost. A frame that arrives past a gap after
+    ///`retryAfter` closes the connection, and the next Hello resends from the oldest unacked frame.
     ///`framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs
     ///off its sends until then and reports RateLimited in its Heartbeat. The control plane sends it
     ///only on a connection that speaks a protocol version of 32 or above, and FrameRefused below that.
@@ -2254,9 +2309,8 @@ pub mod types {
         #[serde(rename = "manifestUrl")]
         pub manifest_url: HttpUrl,
     }
-    ///The control plane sends one when it has sent nothing else for its heartbeat interval of 10
-    ///seconds. A side that has received nothing for 30 seconds treats the connection as dead and closes
-    ///it; the control plane then reads the host Offline.
+    ///The control plane answers every host Heartbeat with one, so it keeps no timer of its own. A side
+    ///that has received nothing for 30 seconds treats the connection as dead and closes it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelHeartbeat {
         #[serde(rename = "sentAt")]
@@ -2331,6 +2385,8 @@ pub mod types {
         pub host_id: EntityId,
         #[serde(rename = "protocolVersion")]
         pub protocol_version: ::std::num::NonZeroU32,
+        #[serde(rename = "resendFrom")]
+        pub resend_from: ::std::num::NonZeroU64,
         pub signature: ChannelHelloSignature,
         #[serde(rename = "supervisorVersion")]
         pub supervisor_version: ChannelHelloSupervisorVersion,
@@ -2587,6 +2643,10 @@ pub mod types {
     ///list does not name with BoxLost.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelHostHeartbeat {
+        ///The highest control plane `seq` the host has received with no gap before it, as a frame's
+        ///`ack`; the control plane drops its unacked frames up to it. A Heartbeat of version 36 or below
+        ///carries none.
+        pub ack: Sequence,
         ///The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub health: ::std::option::Option<HostReportedHealth>,
@@ -2604,6 +2664,12 @@ pub mod types {
         pub held_turn_ids: ::std::vec::Vec<EntityId>,
         #[serde(rename = "sentAt")]
         pub sent_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        ///The metric points the host gathered since its previous Heartbeat, including each turn's image
+        ///fetch and first output durations. The control plane writes them as it writes a TelemetryBatch.
+        ///A Heartbeat is never resent, so no point is counted twice, and a Heartbeat lost with its
+        ///connection loses its points. A Heartbeat of version 36 or below carries none, and the host sends
+        ///TelemetryBatch frames instead.
+        pub telemetry: MetricBatch,
         #[serde(rename = "type")]
         pub type_: ChannelHostHeartbeatType,
         pub usage: HostUsage,
@@ -2649,6 +2715,7 @@ pub mod types {
         TurnClaim(ChannelTurnClaim),
         TurnRepositoryReady(ChannelTurnRepositoryReady),
         TurnLine(ChannelTurnLine),
+        TurnLines(ChannelTurnLines),
         TurnComplete(ChannelTurnComplete),
         TurnRepositoryCloneFailed(ChannelTurnRepositoryCloneFailed),
         TurnFailed(ChannelTurnFailed),
@@ -2683,6 +2750,11 @@ pub mod types {
     impl ::std::convert::From<ChannelTurnLine> for ChannelHostMessage {
         fn from(value: ChannelTurnLine) -> Self {
             Self::TurnLine(value)
+        }
+    }
+    impl ::std::convert::From<ChannelTurnLines> for ChannelHostMessage {
+        fn from(value: ChannelTurnLines) -> Self {
+            Self::TurnLines(value)
         }
     }
     impl ::std::convert::From<ChannelTurnComplete> for ChannelHostMessage {
@@ -3111,11 +3183,20 @@ pub mod types {
     ///receiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as
     ///a protocol error that closes the connection. After Welcome each side resends, in order, every
     ///frame the other side has not acked, and the receiver drops the duplicates. The control plane
-    ///keeps both counters and its unacked frames in durable storage. The supervisor writes its
+    ///keeps its sent counter and its unacked frames in durable storage. The supervisor writes its
     ///counters and unacked frames to disk before it sends a frame; when it starts without that state
     ///it does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.
-    ///Challenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,
-    ///with no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know.
+    ///Challenge, Hello, Welcome, Heartbeat and Ack belong to one connection and travel outside frames,
+    ///with no `seq`. Each side ignores fields it does not know.
+    ///
+    ///On version 37 the control plane keeps no count of host frames: Hello names the host's oldest
+    ///unacked frame in `resendFrom`, the control plane applies the host's frames one at a time in
+    ///`seq` order, stores each frame's effect, and only then answers Ack with its `seq`. The host
+    ///acks control frames in every Heartbeat as well as in its frames. On version 37 the `ack` of a
+    ///control frame is the connection's cursor, the last host `seq` whose effect is stored, never the
+    ///highest `seq` received. On version 36 and below the
+    ///control plane keeps its count of host frames in durable storage and acks them in Welcome and in
+    ///its own frames.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSequenced {
         pub ack: Sequence,
@@ -3744,7 +3825,8 @@ pub mod types {
     ///personaId, secretSetId, provider and costBasis of the turn as it offered it, drops a turn.cost
     ///point whose costBasis is NotReported, and writes the batch to the tenant's metrics store. A batch
     ///the store refuses is logged as TelemetryRejected and still acked. The control plane refuses this
-    ///message on a connection that speaks a protocol version below 19.
+    ///message on a connection that speaks a protocol version below 19, and on version 37, where the
+    ///points ride on the host's Heartbeat.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelTelemetryBatch {
         pub instruments: ::std::vec::Vec<MetricInstrument>,
@@ -4270,7 +4352,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///One harness-native JSONL line. `lineSeq` continues the session's line count, so lines of a turn arrive in `lineSeq` order with no gap.
+    ///One harness-native JSONL line. `lineSeq` continues the session's line count, so lines of a turn arrive in `lineSeq` order with no gap. The control plane refuses it on version 37, where TurnLines replaces it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelTurnLine {
         #[serde(rename = "lineSeq")]
@@ -4309,6 +4391,55 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for ChannelTurnLineType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///Consecutive harness-native JSONL lines of one turn: the first has `lineSeq` `firstLineSeq` and
+    ///each next one the next `lineSeq`, continuing the session's line count. The supervisor sends one
+    ///at 200 lines, 256 KB of text, or 2 seconds after its first line, whichever comes first. The
+    ///control plane stores the lines before it acks the frame. A frame whose lines the turn already
+    ///holds is a duplicate it acks again, and a frame that starts past the turn's last stored line fails
+    ///the turn TranscriptGap. A connection on version 36 or below sends TurnLine instead.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ChannelTurnLines {
+        #[serde(rename = "firstLineSeq")]
+        pub first_line_seq: ::std::num::NonZeroU64,
+        pub lines: ::std::vec::Vec<LongText>,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+        #[serde(rename = "type")]
+        pub type_: ChannelTurnLinesType,
+    }
+    ///`ChannelTurnLinesType`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ChannelTurnLinesType {
+        TurnLines,
+    }
+    impl ::std::fmt::Display for ChannelTurnLinesType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::TurnLines => f.write_str("TurnLines"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ChannelTurnLinesType {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "TurnLines" => Ok(Self::TurnLines),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelTurnLinesType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelTurnLinesType {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -4683,7 +4814,8 @@ pub mod types {
     ///highest host `seq` the control plane has received with no gap before it. The host drops its
     ///unacked frames at or below it before it resends, so a frame the control plane took on an earlier
     ///connection is never counted as undelivered. A control plane that leaves it out acks only with its
-    ///next frame.
+    ///next frame. On version 37 the control plane leaves it out: the host resends from its
+    ///`resendFrom`, and the control plane answers each resent frame it already applied with Ack again.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelWelcome {
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -12618,32 +12750,29 @@ pub mod types {
             value.parse()
         }
     }
-    ///What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts
-    ///the paused boxes it holds, `loadAverage` is the one-minute load average of the host,
+    ///What a host holds at one moment, sent on Hello and on every host Heartbeat. `loadAverage` is the one-minute load average of the host,
     ///and `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the
     ///host gives box disks: the free disk under its dataDir and what its boxes already wrote, less the
     ///headroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host
-    ///admits a box only while its disk fits the budget beside the held ones; a supervisor older than
-    ///the box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal
+    ///admits a box only while its disk fits the budget beside the held ones. `memoryBudgetMib` is the memory the host gives boxes: MemTotal
     ///less the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it
     ///holds. A host admits a box only while its memory fits the budget beside the held ones, whatever
-    ///their count; a supervisor older than the memory budget sends neither.
+    ///their count. Version 36 and below carry `boxesWarm`, the paused boxes the host holds, and may
+    ///leave out the four budgets; the control plane decodes them with the version 36 shape.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct HostUsage {
-        #[serde(rename = "boxesWarm")]
-        pub boxes_warm: i32,
-        #[serde(rename = "diskBudgetMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub disk_budget_mib: ::std::option::Option<i64>,
-        #[serde(rename = "diskHeldMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub disk_held_mib: ::std::option::Option<i64>,
+        #[serde(rename = "diskBudgetMib")]
+        pub disk_budget_mib: i64,
+        #[serde(rename = "diskHeldMib")]
+        pub disk_held_mib: i64,
         #[serde(rename = "loadAverage")]
         pub load_average: f64,
         #[serde(rename = "memoryAvailableMib")]
         pub memory_available_mib: i64,
-        #[serde(rename = "memoryBudgetMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub memory_budget_mib: ::std::option::Option<i64>,
-        #[serde(rename = "memoryHeldMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub memory_held_mib: ::std::option::Option<i64>,
+        #[serde(rename = "memoryBudgetMib")]
+        pub memory_budget_mib: i64,
+        #[serde(rename = "memoryHeldMib")]
+        pub memory_held_mib: i64,
     }
     ///A URL the API checks as one.
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -19600,7 +19729,7 @@ pub mod types {
     ///A host's box slots and its last reported usage, kept by its tenant from the host's Hello and
     ///Heartbeats. `boxCapacity` comes from Hello. `boxesRunning` counts the tenant's Offered and
     ///Running turns on the host. Placement counts the boxes a host holds from the tenant's own
-    ///sessions, never from the reported `boxesWarm`, which lags by a Heartbeat.
+    ///sessions.
     ///`channelProtocol` is the protocol version the host's latest Hello negotiated; the control plane
     ///closes the connection with UnsupportedVersion instead of sending a frame of a newer version,
     ///and resends it once the host reconnects on a version that speaks it. A host that has not connected since it enrolled has none.
@@ -19610,26 +19739,24 @@ pub mod types {
         pub box_capacity: ::std::num::NonZeroU32,
         #[serde(rename = "boxesRunning")]
         pub boxes_running: i32,
-        #[serde(rename = "boxesWarm")]
-        pub boxes_warm: i32,
         #[serde(rename = "channelProtocol")]
         pub channel_protocol: i32,
         #[serde(rename = "createdAt")]
         pub created_at: i64,
-        #[serde(rename = "diskBudgetMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub disk_budget_mib: ::std::option::Option<i64>,
-        #[serde(rename = "diskHeldMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub disk_held_mib: ::std::option::Option<i64>,
+        #[serde(rename = "diskBudgetMib")]
+        pub disk_budget_mib: i64,
+        #[serde(rename = "diskHeldMib")]
+        pub disk_held_mib: i64,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "loadAverage")]
         pub load_average: f64,
         #[serde(rename = "memoryAvailableMib")]
         pub memory_available_mib: i64,
-        #[serde(rename = "memoryBudgetMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub memory_budget_mib: ::std::option::Option<i64>,
-        #[serde(rename = "memoryHeldMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub memory_held_mib: ::std::option::Option<i64>,
+        #[serde(rename = "memoryBudgetMib")]
+        pub memory_budget_mib: i64,
+        #[serde(rename = "memoryHeldMib")]
+        pub memory_held_mib: i64,
         ///The health the host reported in its latest Heartbeat; Healthy until its first Heartbeat.
         #[serde(rename = "reportedHealth")]
         pub reported_health: HostReportedHealth,
@@ -30692,6 +30819,7 @@ pub mod types {
         TurnClaim(ChannelTurnClaim),
         TurnRepositoryReady(ChannelTurnRepositoryReady),
         TurnLine(ChannelTurnLine),
+        TurnLines(ChannelTurnLines),
         TurnComplete(ChannelTurnComplete),
         TurnRepositoryCloneFailed(ChannelTurnRepositoryCloneFailed),
         TurnFailed(ChannelTurnFailed),
@@ -30723,6 +30851,11 @@ pub mod types {
     impl ::std::convert::From<ChannelTurnLine> for TenantApiHostMessageInputMessage {
         fn from(value: ChannelTurnLine) -> Self {
             Self::TurnLine(value)
+        }
+    }
+    impl ::std::convert::From<ChannelTurnLines> for TenantApiHostMessageInputMessage {
+        fn from(value: ChannelTurnLines) -> Self {
+            Self::TurnLines(value)
         }
     }
     impl ::std::convert::From<ChannelTurnComplete> for TenantApiHostMessageInputMessage {
@@ -51290,7 +51423,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 34;
-    pub const VERSION: u16 = 36;
+    pub const VERSION: u16 = 37;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
@@ -51305,5 +51438,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 25;
+    pub const VERSION: u16 = 26;
 }

@@ -24,11 +24,20 @@ enum CloseCode {
   receiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as
   a protocol error that closes the connection. After Welcome each side resends, in order, every
   frame the other side has not acked, and the receiver drops the duplicates. The control plane
-  keeps both counters and its unacked frames in durable storage. The supervisor writes its
+  keeps its sent counter and its unacked frames in durable storage. The supervisor writes its
   counters and unacked frames to disk before it sends a frame; when it starts without that state
   it does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.
-  Challenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,
-  with no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know.
+  Challenge, Hello, Welcome, Heartbeat and Ack belong to one connection and travel outside frames,
+  with no `seq`. Each side ignores fields it does not know.
+
+  On version 37 the control plane keeps no count of host frames: Hello names the host's oldest
+  unacked frame in `resendFrom`, the control plane applies the host's frames one at a time in
+  `seq` order, stores each frame's effect, and only then answers Ack with its `seq`. The host
+  acks control frames in every Heartbeat as well as in its frames. On version 37 the `ack` of a
+  control frame is the connection's cursor, the last host `seq` whose effect is stored, never the
+  highest `seq` received. On version 36 and below the
+  control plane keeps its count of host frames in durable storage and acks them in Welcome and in
+  its own frames.
   """)
 model Sequenced {
   seq: Sequence;
@@ -75,6 +84,14 @@ model Hello {
   usage: HostUsage;
   guestProtocol?: GuestProtocolRange;
   @maxItems(1000) heldTurnIds: EntityId[];
+
+  @doc("""
+    The `seq` of the oldest frame the host holds unacked, or its next `seq` when it holds none. The
+    control plane takes every host frame below it as applied and expects this one next. A Hello of
+    version 36 or below carries none.
+    """)
+  @minValue(1)
+  resendFrom: Sequence;
 }
 
 @doc("""
@@ -82,7 +99,8 @@ model Hello {
   highest host `seq` the control plane has received with no gap before it. The host drops its
   unacked frames at or below it before it resends, so a frame the control plane took on an earlier
   connection is never counted as undelivered. A control plane that leaves it out acks only with its
-  next frame.
+  next frame. On version 37 the control plane leaves it out: the host resends from its
+  `resendFrom`, and the control plane answers each resent frame it already applied with Ack again.
   """)
 model Welcome {
   type: "Welcome";
@@ -92,9 +110,8 @@ model Welcome {
 }
 
 @doc("""
-  The control plane sends one when it has sent nothing else for its heartbeat interval of 10
-  seconds. A side that has received nothing for 30 seconds treats the connection as dead and closes
-  it; the control plane then reads the host Offline.
+  The control plane answers every host Heartbeat with one, so it keeps no timer of its own. A side
+  that has received nothing for 30 seconds treats the connection as dead and closes it.
   """)
 model Heartbeat {
   type: "Heartbeat";
@@ -131,8 +148,12 @@ model FrameRefused {
 
 @doc("""
   The control plane's answer to a host frame past the tenant's per-host frame limit. It travels
-  outside frames, as Heartbeat does. The control plane counts that `seq` as received and records
-  nothing for it, so the host drops the frame from its unacked frames and never resends it.
+  outside frames, as Heartbeat does. On version 36 and below the control plane counts that `seq`
+  as received and records nothing for it, so the host drops the frame from its unacked frames and
+  never resends it. On version 37 it counts and records nothing, and answers every later frame on
+  the connection the same way until `retryAfter`; the host keeps those frames and resends them in
+  order from `retryAfter`, so no output is lost. A frame that arrives past a gap after
+  `retryAfter` closes the connection, and the next Hello resends from the oldest unacked frame.
   `framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs
   off its sends until then and reports RateLimited in its Heartbeat. The control plane sends it
   only on a connection that speaks a protocol version of 32 or above, and FrameRefused below that.
@@ -143,6 +164,19 @@ model FrameRateLimited {
   @minLength(1) reason: Detail;
   @minValue(1) framesPerMinute: int32;
   retryAfter: offsetDateTime;
+}
+
+@doc("""
+  The control plane's answer to a host frame on version 37, sent once the frame's effect is stored.
+  It travels outside frames, as Heartbeat does. The host drops its unacked frames up to `seq`. The
+  control plane answers a resent frame it already applied with Ack again, and a frame that fails a
+  check on its content with FrameRefused, which lets the host drop it as well. When the control
+  plane cannot store a frame's effect it closes the connection, and the host resends the frame
+  after its next Hello.
+  """)
+model Ack {
+  type: "Ack";
+  seq: Sequence;
 }
 
 @doc("""
@@ -188,6 +222,22 @@ model HostHeartbeat {
 
   @doc("The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.")
   health?: HostReportedHealth;
+
+  @doc("""
+    The highest control plane `seq` the host has received with no gap before it, as a frame's
+    `ack`; the control plane drops its unacked frames up to it. A Heartbeat of version 36 or below
+    carries none.
+    """)
+  ack: Sequence;
+
+  @doc("""
+    The metric points the host gathered since its previous Heartbeat, including each turn's image
+    fetch and first output durations. The control plane writes them as it writes a TelemetryBatch.
+    A Heartbeat is never resent, so no point is counted twice, and a Heartbeat lost with its
+    connection loses its points. A Heartbeat of version 36 or below carries none, and the host sends
+    TelemetryBatch frames instead.
+    """)
+  telemetry: MetricBatch;
 }
 
 @doc("One environment variable for one turn: a secret set member's value. It lives in box memory only and is never written to the host's disk.")
@@ -466,12 +516,27 @@ model TurnRepositoryReady {
   turnId: EntityId;
 }
 
-@doc("One harness-native JSONL line. `lineSeq` continues the session's line count, so lines of a turn arrive in `lineSeq` order with no gap.")
+@doc("One harness-native JSONL line. `lineSeq` continues the session's line count, so lines of a turn arrive in `lineSeq` order with no gap. The control plane refuses it on version 37, where TurnLines replaces it.")
 model TurnLine {
   type: "TurnLine";
   turnId: EntityId;
   lineSeq: Sequence;
   text: LongText;
+}
+
+@doc("""
+  Consecutive harness-native JSONL lines of one turn: the first has `lineSeq` `firstLineSeq` and
+  each next one the next `lineSeq`, continuing the session's line count. The supervisor sends one
+  at 200 lines, 256 KB of text, or 2 seconds after its first line, whichever comes first. The
+  control plane stores the lines before it acks the frame. A frame whose lines the turn already
+  holds is a duplicate it acks again, and a frame that starts past the turn's last stored line fails
+  the turn TranscriptGap. A connection on version 36 or below sends TurnLine instead.
+  """)
+model TurnLines {
+  type: "TurnLines";
+  turnId: EntityId;
+  @minValue(1) firstLineSeq: Sequence;
+  @minItems(1) @maxItems(200) lines: LongText[];
 }
 
 @doc("The harness finished the turn. `lastLineSeq` is the turn's final line; the control plane holds every line up to it and stores the snapshot after it before the turn reads Completed, and fails the turn SnapshotNotStored when that snapshot is not stored.")
@@ -838,7 +903,8 @@ model SupervisorUpdateFailed {
   personaId, secretSetId, provider and costBasis of the turn as it offered it, drops a turn.cost
   point whose costBasis is NotReported, and writes the batch to the tenant's metrics store. A batch
   the store refuses is logged as TelemetryRejected and still acked. The control plane refuses this
-  message on a connection that speaks a protocol version below 19.
+  message on a connection that speaks a protocol version below 19, and on version 37, where the
+  points ride on the host's Heartbeat.
   """)
 model TelemetryBatch {
   type: "TelemetryBatch";
@@ -851,6 +917,7 @@ union HostMessage {
   TurnClaim: TurnClaim,
   TurnRepositoryReady: TurnRepositoryReady,
   TurnLine: TurnLine,
+  TurnLines: TurnLines,
   TurnComplete: TurnComplete,
   TurnRepositoryCloneFailed: TurnRepositoryCloneFailed,
   TurnFailed: TurnFailed,
@@ -912,7 +979,7 @@ union HostEnvelope {
   Frame: HostFrame,
 }
 
-@doc("Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, or a sequenced frame.")
+@doc("Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, Ack, or a sequenced frame.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "type" })
 union ControlEnvelope {
   Challenge: Challenge,
@@ -921,5 +988,6 @@ union ControlEnvelope {
   ReleasePublished: ReleasePublished,
   FrameRefused: FrameRefused,
   FrameRateLimited: FrameRateLimited,
+  Ack: Ack,
   Frame: ControlFrame,
 }
