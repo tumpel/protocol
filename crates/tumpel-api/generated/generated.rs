@@ -19630,6 +19630,9 @@ pub mod types {
         pub memory_budget_mib: ::std::option::Option<i64>,
         #[serde(rename = "memoryHeldMib", skip_serializing_if = "::std::option::Option::is_none")]
         pub memory_held_mib: ::std::option::Option<i64>,
+        ///The health the host reported in its latest Heartbeat; Healthy until its first Heartbeat.
+        #[serde(rename = "reportedHealth")]
+        pub reported_health: HostReportedHealth,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
         #[serde(rename = "updatedAt")]
@@ -30298,6 +30301,101 @@ pub mod types {
         #[serde(deserialize_with = "::std::option::Option::deserialize")]
         pub prebuild: ::std::option::Option<Prebuild>,
     }
+    ///`TenantApiHeldTurns`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiHeldTurns {
+        NotReported(TenantApiHeldTurnsNotReported),
+        Reported(TenantApiHeldTurnsReported),
+    }
+    impl ::std::convert::From<TenantApiHeldTurnsNotReported> for TenantApiHeldTurns {
+        fn from(value: TenantApiHeldTurnsNotReported) -> Self {
+            Self::NotReported(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiHeldTurnsReported> for TenantApiHeldTurns {
+        fn from(value: TenantApiHeldTurnsReported) -> Self {
+            Self::Reported(value)
+        }
+    }
+    ///The host speaks channel 34, whose Hello and Heartbeat name no held turns, so the tenant judges no turn of it.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiHeldTurnsNotReported {
+        pub state: TenantApiHeldTurnsNotReportedState,
+    }
+    ///`TenantApiHeldTurnsNotReportedState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiHeldTurnsNotReportedState {
+        NotReported,
+    }
+    impl ::std::fmt::Display for TenantApiHeldTurnsNotReportedState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::NotReported => f.write_str("NotReported"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiHeldTurnsNotReportedState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "NotReported" => Ok(Self::NotReported),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiHeldTurnsNotReportedState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHeldTurnsNotReportedState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The turns a host named in its Hello or Heartbeat; the tenant fails each turn of the host the list leaves out.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiHeldTurnsReported {
+        #[serde(rename = "heldTurnIds")]
+        pub held_turn_ids: ::std::vec::Vec<EntityId>,
+        pub state: TenantApiHeldTurnsReportedState,
+    }
+    ///`TenantApiHeldTurnsReportedState`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiHeldTurnsReportedState {
+        Reported,
+    }
+    impl ::std::fmt::Display for TenantApiHeldTurnsReportedState {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Reported => f.write_str("Reported"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiHeldTurnsReportedState {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Reported" => Ok(Self::Reported),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiHeldTurnsReportedState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHeldTurnsReportedState {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///Whether a host's channel is connected, as the control plane records it on connect and close. Read presence comes from the host's heardAt instead.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum TenantApiHostConnectionState {
@@ -30447,6 +30545,94 @@ pub mod types {
             Self(value)
         }
     }
+    ///One host Heartbeat: the tenant stores the report and reconciles the turns, sessions and Claude setups of the host against the held lists in one write.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiHostHeartbeatInput {
+        #[serde(rename = "boxCapacity")]
+        pub box_capacity: i32,
+        #[serde(rename = "channelProtocol")]
+        pub channel_protocol: i32,
+        #[serde(rename = "heldClaudeSetupIds")]
+        pub held_claude_setup_ids: ::std::vec::Vec<EntityId>,
+        #[serde(rename = "heldSessionIds")]
+        pub held_session_ids: ::std::vec::Vec<EntityId>,
+        #[serde(rename = "heldTurns")]
+        pub held_turns: TenantApiHeldTurns,
+        #[serde(rename = "hostId")]
+        pub host_id: EntityId,
+        pub now: i64,
+        #[serde(rename = "reportedHealth")]
+        pub reported_health: HostReportedHealth,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+        pub usage: HostUsage,
+    }
+    ///`TenantApiHostHeartbeatRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiHostHeartbeatRequest {
+        pub input: TenantApiHostHeartbeatInput,
+        pub operation: TenantApiHostHeartbeatRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiHostHeartbeatRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiHostHeartbeatRequestOperation {
+        #[serde(rename = "hostHeartbeat")]
+        HostHeartbeat,
+    }
+    impl ::std::fmt::Display for TenantApiHostHeartbeatRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::HostHeartbeat => f.write_str("hostHeartbeat"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiHostHeartbeatRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "hostHeartbeat" => Ok(Self::HostHeartbeat),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiHostHeartbeatRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHostHeartbeatRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiHostHeartbeatResult`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct TenantApiHostHeartbeatResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
+    impl ::std::ops::Deref for TenantApiHostHeartbeatResult {
+        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
+        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TenantApiHostHeartbeatResult>
+        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
+    {
+        fn from(value: TenantApiHostHeartbeatResult) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
+        for TenantApiHostHeartbeatResult
+    {
+        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
+            Self(value)
+        }
+    }
     ///`TenantApiHostHelloInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiHostHelloInput {
@@ -30454,8 +30640,8 @@ pub mod types {
         pub box_capacity: i32,
         #[serde(rename = "channelProtocol")]
         pub channel_protocol: i32,
-        #[serde(rename = "heldTurnIds")]
-        pub held_turn_ids: ::std::vec::Vec<EntityId>,
+        #[serde(rename = "heldTurns")]
+        pub held_turns: TenantApiHeldTurns,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         pub now: i64,
@@ -30986,76 +31172,6 @@ pub mod types {
             ::std::string::String::deserialize(deserializer)?
                 .parse()
                 .map_err(|e: self::error::ConversionError| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
-    ///`TenantApiHostUsageInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiHostUsageInput {
-        #[serde(rename = "hostId")]
-        pub host_id: EntityId,
-        pub now: i64,
-        pub usage: HostUsage,
-    }
-    ///`TenantApiHostUsageRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiHostUsageRequest {
-        pub input: TenantApiHostUsageInput,
-        pub operation: TenantApiHostUsageRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiHostUsageRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiHostUsageRequestOperation {
-        #[serde(rename = "hostUsage")]
-        HostUsage,
-    }
-    impl ::std::fmt::Display for TenantApiHostUsageRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::HostUsage => f.write_str("hostUsage"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiHostUsageRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "hostUsage" => Ok(Self::HostUsage),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiHostUsageRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHostUsageRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiHostUsageResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiHostUsageResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiHostUsageResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiHostUsageResult> for ::serde_json::Map<::std::string::String, ::serde_json::Value> {
-        fn from(value: TenantApiHostUsageResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>> for TenantApiHostUsageResult {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
         }
     }
     ///`TenantApiImageAvailability`
@@ -34254,87 +34370,6 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiReadUsageResult {
         pub usage: TenantUsage,
-    }
-    ///`TenantApiReconcileHostHoldingsInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiReconcileHostHoldingsInput {
-        #[serde(rename = "heldClaudeSetupIds")]
-        pub held_claude_setup_ids: ::std::vec::Vec<EntityId>,
-        #[serde(rename = "heldSessionIds")]
-        pub held_session_ids: ::std::vec::Vec<EntityId>,
-        #[serde(rename = "heldTurnIds")]
-        pub held_turn_ids: ::std::vec::Vec<EntityId>,
-        #[serde(rename = "hostId")]
-        pub host_id: EntityId,
-        pub now: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiReconcileHostHoldingsRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiReconcileHostHoldingsRequest {
-        pub input: TenantApiReconcileHostHoldingsInput,
-        pub operation: TenantApiReconcileHostHoldingsRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiReconcileHostHoldingsRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiReconcileHostHoldingsRequestOperation {
-        #[serde(rename = "reconcileHostHoldings")]
-        ReconcileHostHoldings,
-    }
-    impl ::std::fmt::Display for TenantApiReconcileHostHoldingsRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::ReconcileHostHoldings => f.write_str("reconcileHostHoldings"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiReconcileHostHoldingsRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "reconcileHostHoldings" => Ok(Self::ReconcileHostHoldings),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiReconcileHostHoldingsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiReconcileHostHoldingsRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiReconcileHostHoldingsResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiReconcileHostHoldingsResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiReconcileHostHoldingsResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiReconcileHostHoldingsResult>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiReconcileHostHoldingsResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiReconcileHostHoldingsResult
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
     }
     ///`TenantApiRecordPrebuildBuildingInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -38737,8 +38772,7 @@ pub mod types {
         TranscriptCursorRequest(TenantApiTranscriptCursorRequest),
         OfferSentRequest(TenantApiOfferSentRequest),
         HostHelloRequest(TenantApiHostHelloRequest),
-        HostUsageRequest(TenantApiHostUsageRequest),
-        ReconcileHostHoldingsRequest(TenantApiReconcileHostHoldingsRequest),
+        HostHeartbeatRequest(TenantApiHostHeartbeatRequest),
         ForgetHostUsageRequest(TenantApiForgetHostUsageRequest),
         RunningTurnsByHostRequest(TenantApiRunningTurnsByHostRequest),
         ListHostUsageRequest(TenantApiListHostUsageRequest),
@@ -39258,14 +39292,9 @@ pub mod types {
             Self::HostHelloRequest(value)
         }
     }
-    impl ::std::convert::From<TenantApiHostUsageRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiHostUsageRequest) -> Self {
-            Self::HostUsageRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiReconcileHostHoldingsRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiReconcileHostHoldingsRequest) -> Self {
-            Self::ReconcileHostHoldingsRequest(value)
+    impl ::std::convert::From<TenantApiHostHeartbeatRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiHostHeartbeatRequest) -> Self {
+            Self::HostHeartbeatRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiForgetHostUsageRequest> for TenantApiTenantRequest {
@@ -51468,5 +51497,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 22;
+    pub const VERSION: u16 = 23;
 }
