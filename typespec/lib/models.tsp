@@ -60,19 +60,15 @@ scalar Sha256Digest extends string;
 @doc("""
   A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
   the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-  connection that speaks another with UnsupportedVersion. Version 34 lacks `heldTurnIds` on Hello
-  and Heartbeat and the TurnFailureReason members HostDropped and HostRevoked; version 35 lacks
-  HostRevoked. A speaker of 36 downgrades to 34 or 35 by sending that version's shape: it leaves
-  out the fields the version lacks and never sends a member it lacks. No host sends HostDropped or
-  HostRevoked, since the control plane records both, so the reason needs no mapping on the wire.
+  connection that speaks another with UnsupportedVersion.
   """)
 @minValue(ChannelProtocolOldest)
 @maxValue(ChannelProtocolVersion)
 @TypeSpec.OpenAPI.extension("x-bound-names", #["Oldest", "Version"])
 scalar ChannelProtocol extends int32;
 
-const ChannelProtocolOldest = 35;
-const ChannelProtocolVersion = 37;
+const ChannelProtocolOldest = 37;
+const ChannelProtocolVersion = 38;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -372,8 +368,7 @@ enum HostArchitecture {
   admits a box only while its disk fits the budget beside the held ones. `memoryBudgetMib` is the memory the host gives boxes: MemTotal
   less the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it
   holds. A host admits a box only while its memory fits the budget beside the held ones, whatever
-  their count. Version 36 and below carry `boxesWarm`, the paused boxes the host holds, and may
-  leave out the four budgets; the control plane decodes them with the version 36 shape.
+  their count.
   """)
 model HostUsage {
   @minValue(0) loadAverage: float64;
