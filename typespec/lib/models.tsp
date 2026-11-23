@@ -401,6 +401,10 @@ model ReportedHostUsage {
   @minValue(1) @maxValue(256) boxCapacity: int32;
   @minValue(0) boxesRunning: int32;
   ...HostUsage;
+  @doc("The health the host reported in its latest Heartbeat; Healthy until its first Heartbeat.")
+  @visibility(Lifecycle.Read)
+  reportedHealth: HostReportedHealth;
+
   @visibility(Lifecycle.Read) channelProtocol: int32;
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;

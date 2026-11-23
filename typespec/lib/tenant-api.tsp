@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 22;
+const TenantApiVersion = 23;
 
 namespace TenantApi {
 
@@ -931,6 +931,23 @@ model OfferSentInput {
   turnId: EntityId;
 }
 
+@doc("The turns a host named in its Hello or Heartbeat; the tenant fails each turn of the host the list leaves out.")
+model HeldTurnsReported {
+  state: "Reported";
+  @maxItems(1000) heldTurnIds: EntityId[];
+}
+
+@doc("The host speaks channel 34, whose Hello and Heartbeat name no held turns, so the tenant judges no turn of it.")
+model HeldTurnsNotReported {
+  state: "NotReported";
+}
+
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
+union HeldTurns {
+  NotReported: HeldTurnsNotReported,
+  Reported: HeldTurnsReported,
+}
+
 model HostHelloInput {
   tenantId: EntityId;
   hostId: EntityId;
@@ -938,22 +955,21 @@ model HostHelloInput {
   usage: HostUsage;
   now: int64;
   channelProtocol: int32;
-  @maxItems(1000) heldTurnIds: EntityId[];
+  heldTurns: HeldTurns;
 }
 
-model HostUsageInput {
-  hostId: EntityId;
-  usage: HostUsage;
-  now: int64;
-}
-
-model ReconcileHostHoldingsInput {
+@doc("One host Heartbeat: the tenant stores the report and reconciles the turns, sessions and Claude setups of the host against the held lists in one write.")
+model HostHeartbeatInput {
   tenantId: EntityId;
   hostId: EntityId;
+  boxCapacity: int32;
+  usage: HostUsage;
+  reportedHealth: HostReportedHealth;
+  now: int64;
+  channelProtocol: int32;
   @maxItems(1000) heldSessionIds: EntityId[];
   @maxItems(1000) heldClaudeSetupIds: EntityId[];
-  @maxItems(1000) heldTurnIds: EntityId[];
-  now: int64;
+  heldTurns: HeldTurns;
 }
 
 model ForgetHostUsageInput {
@@ -1655,16 +1671,10 @@ model HostHelloRequest {
   input: HostHelloInput;
 }
 
-model HostUsageRequest {
+model HostHeartbeatRequest {
   tenantApiVersion: TenantApiProtocol;
-  operation: "hostUsage";
-  input: HostUsageInput;
-}
-
-model ReconcileHostHoldingsRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "reconcileHostHoldings";
-  input: ReconcileHostHoldingsInput;
+  operation: "hostHeartbeat";
+  input: HostHeartbeatInput;
 }
 
 model ForgetHostUsageRequest {
@@ -1849,8 +1859,7 @@ union TenantRequest {
   transcriptCursor: TranscriptCursorRequest,
   offerSent: OfferSentRequest,
   hostHello: HostHelloRequest,
-  hostUsage: HostUsageRequest,
-  reconcileHostHoldings: ReconcileHostHoldingsRequest,
+  hostHeartbeat: HostHeartbeatRequest,
   forgetHostUsage: ForgetHostUsageRequest,
   runningTurnsByHost: RunningTurnsByHostRequest,
   listHostUsage: ListHostUsageRequest,
@@ -2937,9 +2946,7 @@ model OfferSentResult {}
 
 model HostHelloResult {}
 
-model HostUsageResult {}
-
-model ReconcileHostHoldingsResult {}
+model HostHeartbeatResult {}
 
 model ForgetHostUsageResult {}
 
