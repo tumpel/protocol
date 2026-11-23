@@ -2995,8 +2995,7 @@ pub mod types {
     }
     ///A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
     ///the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-    ///connection that speaks another with UnsupportedVersion. Versions 37 and 38 lack
-    ///`reusedPackDigests` on SnapshotPacks and `chunkCount` on SnapshotDone.
+    ///connection that speaks another with UnsupportedVersion.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(transparent)]
     pub struct ChannelProtocol(pub i32);
@@ -54731,7 +54730,7 @@ impl types::ChannelCloseCode {
     pub const UNSUPPORTED_VERSION: u16 = 4426;
 }
 impl types::ChannelProtocol {
-    pub const OLDEST: u16 = 37;
+    pub const OLDEST: u16 = 39;
     pub const VERSION: u16 = 39;
 }
 impl types::ChunkExchange {
