@@ -72,7 +72,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 34;
-const ChannelProtocolVersion = 36;
+const ChannelProtocolVersion = 37;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most

@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 25;
+const TenantApiVersion = 26;
 
 namespace TenantApi {
 
@@ -1019,7 +1019,7 @@ model HostHealthInput {
 model HostMessageInput {
   tenantId: EntityId;
   hostId: EntityId;
-  message: Channel.TurnImageFetching | Channel.TurnClaim | Channel.TurnRepositoryReady | Channel.TurnLine | Channel.TurnComplete | Channel.TurnRepositoryCloneFailed | Channel.TurnFailed | Channel.SnapshotChunks | Channel.SnapshotPacks | Channel.RestoreChunks | Channel.SnapshotDone | Channel.SnapshotFailed | Channel.BoxGone | Channel.BoxTeardownFailed | Channel.ClaudeSetupBoxUrl | Channel.ClaudeSetupBoxFailed;
+  message: Channel.TurnImageFetching | Channel.TurnClaim | Channel.TurnRepositoryReady | Channel.TurnLine | Channel.TurnLines | Channel.TurnComplete | Channel.TurnRepositoryCloneFailed | Channel.TurnFailed | Channel.SnapshotChunks | Channel.SnapshotPacks | Channel.RestoreChunks | Channel.SnapshotDone | Channel.SnapshotFailed | Channel.BoxGone | Channel.BoxTeardownFailed | Channel.ClaudeSetupBoxUrl | Channel.ClaudeSetupBoxFailed;
 }
 
 model TurnDeadline {
