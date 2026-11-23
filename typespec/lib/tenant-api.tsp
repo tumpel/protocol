@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 26;
+const TenantApiVersion = 27;
 
 namespace TenantApi {
 
@@ -927,23 +927,6 @@ model TranscriptCursorInput {
   maxBytes?: int64;
 }
 
-@doc("The turns a host named in its Hello or Heartbeat; the tenant fails each turn of the host the list leaves out.")
-model HeldTurnsReported {
-  state: "Reported";
-  @maxItems(1000) heldTurnIds: EntityId[];
-}
-
-@doc("The host speaks channel 34, whose Hello and Heartbeat name no held turns, so the tenant judges no turn of it.")
-model HeldTurnsNotReported {
-  state: "NotReported";
-}
-
-@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
-union HeldTurns {
-  NotReported: HeldTurnsNotReported,
-  Reported: HeldTurnsReported,
-}
-
 model HostHelloInput {
   tenantId: EntityId;
   hostId: EntityId;
@@ -951,7 +934,7 @@ model HostHelloInput {
   usage: HostUsage;
   now: int64;
   channelProtocol: int32;
-  heldTurns: HeldTurns;
+  @maxItems(1000) heldTurnIds: EntityId[];
 }
 
 @doc("One host Heartbeat: the tenant stores the report and reconciles the turns, sessions and Claude setups of the host against the held lists in one write.")
@@ -965,7 +948,7 @@ model HostHeartbeatInput {
   channelProtocol: int32;
   @maxItems(1000) heldSessionIds: EntityId[];
   @maxItems(1000) heldClaudeSetupIds: EntityId[];
-  heldTurns: HeldTurns;
+  @maxItems(1000) heldTurnIds: EntityId[];
 }
 
 model ForgetHostUsageInput {
