@@ -1,10 +1,10 @@
 # RFC: Host channel and tenant operations as sequences
 
-| Field   | Value                                                                                                                                     |
-| ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Status  | Draft (2026-11-23)                                                                                                                        |
-| Scope   | Review only; the code as built at control-plane bdd61a1 plus control-plane PR 149 (open), supervisor 8d051d3, channel protocol version 37 |
-| Related | [channel.tsp](../../typespec/lib/channel.tsp), [tenant-api.tsp](../../typespec/lib/tenant-api.tsp)                                        |
+| Field   | Value                                                                                                                                                 |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status  | Draft (2026-11-23)                                                                                                                                    |
+| Scope   | Review only; the code as built at control-plane bdd61a1 plus control-plane PR 149 (open, at b06ed20), supervisor 8d051d3, channel protocol version 37 |
+| Related | [channel.tsp](../../typespec/lib/channel.tsp), [tenant-api.tsp](../../typespec/lib/tenant-api.tsp)                                                    |
 
 ## Summary
 
@@ -99,7 +99,8 @@ sequenceDiagram
   T->>T: fail HostDropped: an omitted Running turn, or an omitted Offered turn already at 1
   T->>H: BoxDiscard, or SnapshotRequest then teardown, for a held box no session needs
   H->>H: ledger row: unacked += BoxDiscard
-  T->>T: UPDATE sessions Idle to Stopped for each box not held, INSERT events SessionStopped
+  T->>T: UPDATE sessions Stopped for each Idle box not held, and each Stopping box not held with no open snapshot request
+  T->>T: INSERT events SessionStopped
   T->>T: move snapshot_requests of boxes not held to snapshot_failures, fail their turns
   T->>T: fail each live Claude setup not in heldClaudeSetupIds
   T-->>H: done
@@ -328,10 +329,16 @@ sequenceDiagram
       T->>T: INSERT snapshot_requests, then section 6, then BoxTeardown
     end
   end
-  S->>S: stop the box, free its memory and disk
-  S->>H: Frame BoxGone(seq g, sessionId, boxId)
-  H->>T: hostMessage BoxGone
-  T->>T: UPDATE sessions Stopped, INSERT events SessionStopped
+  alt the host answers BoxGone
+    S->>S: stop the box, free its memory and disk
+    S->>H: Frame BoxGone(seq g, sessionId, boxId)
+    H->>T: hostMessage BoxGone
+    T->>T: UPDATE sessions Stopped, INSERT events SessionStopped
+  else a Heartbeat omits the box, no open snapshot request
+    S->>H: Heartbeat(heldSessionIds without the session)
+    H->>T: hostHeartbeat
+    T->>T: UPDATE sessions Stopping to Stopped, INSERT events SessionStopped
+  end
   loop each Offered turn on this host with offer_sent 0, oldest first
     Note over T: held memory and disk from host_reports and session rows
     alt held memory and disk within the host budget
@@ -345,13 +352,16 @@ sequenceDiagram
       T->>T: fail PoolExhausted: turns, turn_failures, events
     end
   end
-  T-->>H: no reply to BoxGone
-  H->>S: Ack(g)
+  alt BoxGone
+    H->>S: Ack(g)
+  else Heartbeat
+    H->>S: Heartbeat
+  end
 ```
 
 The offer of the waiting turn is stored and sent before the Ack of the BoxGone that made room for it. The same loop runs after every Heartbeat reconcile, so a waiting turn is offered as soon as the session rows and the host report leave room.
 
-BoxTeardownFailed inserts `stop_failures` and returns the session to Idle. Its box still holds memory and no session is Stopping, so the next Heartbeat fails the waiting turn PoolExhausted. A teardown that never answers keeps its session Stopping, and the waiting turn waits for its BoxGone.
+BoxTeardownFailed inserts `stop_failures` and returns the session to Idle. Its box still holds memory and no session is Stopping, so the next Heartbeat fails the waiting turn PoolExhausted. A teardown that never answers settles on the next Heartbeat that omits the box: reconcile moves the Stopping session to Stopped and runs the loop. A Stopping session with an open snapshot request waits instead for that request to fail BoxNotFound, which returns it to Idle.
 
 Code and design differ on main: without PR 149, BoxGone re-runs only the evicted session's own queue, so the waiting turn's offer is never sent.
 
@@ -509,7 +519,7 @@ Excluding the session's own box from eviction comes from PR 149; on main a send 
 The control plane cannot tell a resent TurnClaim from a lost reply, so it answers again with no write.
 
 **Can a turn wait forever for room?**
-Yes, while a teardown never answers. Its session stays Stopping, and the waiting turn waits for a BoxGone that never comes.
+No. A teardown that never answers settles on the next Heartbeat that omits the box. A Stopping session with an open snapshot request waits for that request to fail BoxNotFound on the same Heartbeat path, and the loop then offers the turn or fails it PoolExhausted.
 
 **Where do credentials live after an offer?**
 In box memory on the host. The `ledger` row stores the offer without them, and each resend mints new ones.
