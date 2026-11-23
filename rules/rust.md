@@ -9,3 +9,7 @@
 7. Use the API types generated into `tumpel-api`. Never hand-write one. `npm run generate` rebuilds them from TypeSpec.
 8. Silence a lint with `#[expect(lint, reason = "...")]` on the narrowest item. Only generated code carries `#[allow]`.
 9. `npm run clippy` (pedantic, warnings as errors) and `npm run fmt:check` pass. `npm run fix` formats.
+
+## Client compatibility
+
+Clients ship before the back end. Every generated Rust enum must decode an unknown value into an explicit Unrecognised variant and preserve its wire value. Discriminated unions must select known variants by their discriminator and propagate errors for malformed known payloads. Retain payloads with unmatched discriminators for clients to report an update without crashing.
