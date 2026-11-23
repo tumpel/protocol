@@ -30396,42 +30396,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///Whether a host's channel is connected, as the control plane records it on connect and close. Read presence comes from the host's heardAt instead.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiHostConnectionState {
-        Online,
-        Offline,
-    }
-    impl ::std::fmt::Display for TenantApiHostConnectionState {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Online => f.write_str("Online"),
-                Self::Offline => f.write_str("Offline"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiHostConnectionState {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Online" => Ok(Self::Online),
-                "Offline" => Ok(Self::Offline),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiHostConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHostConnectionState {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///`TenantApiHostFrameRefused`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiHostFrameRefused {
@@ -30929,82 +30893,6 @@ pub mod types {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
-        }
-    }
-    ///`TenantApiHostPresenceInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiHostPresenceInput {
-        #[serde(rename = "hostId")]
-        pub host_id: EntityId,
-        pub now: i64,
-        pub presence: TenantApiHostConnectionState,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiHostPresenceRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiHostPresenceRequest {
-        pub input: TenantApiHostPresenceInput,
-        pub operation: TenantApiHostPresenceRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiHostPresenceRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiHostPresenceRequestOperation {
-        #[serde(rename = "hostPresence")]
-        HostPresence,
-    }
-    impl ::std::fmt::Display for TenantApiHostPresenceRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::HostPresence => f.write_str("hostPresence"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiHostPresenceRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "hostPresence" => Ok(Self::HostPresence),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiHostPresenceRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHostPresenceRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiHostPresenceResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiHostPresenceResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiHostPresenceResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiHostPresenceResult>
-        for ::serde_json::Map<::std::string::String, ::serde_json::Value>
-    {
-        fn from(value: TenantApiHostPresenceResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>>
-        for TenantApiHostPresenceResult
-    {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
         }
     }
     ///A host as the control plane stores it, without its supervisor update reports and protocol ranges.
@@ -38713,7 +38601,6 @@ pub mod types {
         DeferredOffersRequest(TenantApiDeferredOffersRequest),
         TurnMetricDimensionsRequest(TenantApiTurnMetricDimensionsRequest),
         PrepareOfferRequest(TenantApiPrepareOfferRequest),
-        HostPresenceRequest(TenantApiHostPresenceRequest),
         HostHealthRequest(TenantApiHostHealthRequest),
         HostMessageRequest(TenantApiHostMessageRequest),
         DeadlineReachedRequest(TenantApiDeadlineReachedRequest),
@@ -39266,11 +39153,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiPrepareOfferRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiPrepareOfferRequest) -> Self {
             Self::PrepareOfferRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiHostPresenceRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiHostPresenceRequest) -> Self {
-            Self::HostPresenceRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiHostHealthRequest> for TenantApiTenantRequest {
@@ -51423,5 +51305,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 24;
+    pub const VERSION: u16 = 25;
 }
