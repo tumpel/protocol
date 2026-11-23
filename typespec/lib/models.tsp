@@ -1545,6 +1545,15 @@ model Persona {
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
 
+@doc("A persona's metadata, with file paths, digests, sizes and timestamps and no file content or download URLs.")
+model PersonaMetadata {
+  ...OmitProperties<Persona, "files">;
+  @maxItems(100) files: PersonaFileMetadata[];
+}
+
+@doc("A persona file's metadata, without its content or a download URL.")
+model PersonaFileMetadata is PickProperties<InlinePersonaFileRead, "path" | "digest" | "sizeBytes" | "createdAt" | "updatedAt">;
+
 enum PersonaFileSource {
   @doc("The file's bytes travel in the request, base64, up to PersonaFileLimit.InlineFileBytes.")
   Inline: "Inline",

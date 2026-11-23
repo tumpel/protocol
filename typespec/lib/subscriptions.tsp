@@ -91,7 +91,7 @@ model SubscriptionBase {
   @visibility(Lifecycle.Read, Lifecycle.Create)
   sessionId: EntityId;
 
-  @doc("The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.")
+  @doc("The plan, sent at the top of every delivery turn. Creation and delivery share a 100,000-character message limit. The plan, goal and delivery instructions must leave room for one event or its reference.")
   @visibility(Lifecycle.Read, Lifecycle.Create)
   prompt: Prompt;
 
