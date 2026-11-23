@@ -1246,7 +1246,7 @@
           "minimum": 0
         }
       },
-      "description": "The host stored the snapshot's packs and root. `uploadedBytes` counts the bytes it uploaded: the\npacks the tenant lacked, plus the root. `chunkCount` counts the chunk placements the file entries\nof the snapshot's SnapshotManifest list, a chunk once for every placement a file names it at, so\nthe control plane sizes the snapshot's chunk index without reading the manifest. A host on\nversion 38 sends no `chunkCount`."
+      "description": "The host stored the snapshot's packs and root. `uploadedBytes` counts the bytes it uploaded: the\npacks the tenant lacked, plus the root. `chunkCount` counts the chunk placements that the file\nentries of the snapshot's SnapshotManifest list, a chunk once for every placement a file names it\nat."
     },
     "Channel.SnapshotDownload": {
       "type": "object",
@@ -1369,7 +1369,7 @@
           "maxItems": 500
         }
       },
-      "description": "Part `part` of the chunks a snapshot packed: where each chunk lies, at most\nChunkExchange.DigestsPerPart of them, and the size of each pack they lie in. A pack whose chunks\nrun past one part is listed again in the next. `reusedPackDigests` names packs the snapshot\nreferences that it did not write, at most ChunkExchange.DigestsPerPart of them a part, each named\nin one part only. Every pack the snapshot references is in `packs` or in `reusedPackDigests` of\nsome part, never in both. The host sends part 1 once its packs are written, also when it wrote\nnone, and each next part once the answer to the one before arrived, until every placement and\nevery reused pack is sent. The control plane keeps the placements and the reused packs until\nSnapshotDone, counts each digest as referenced by the session, and answers SnapshotPackUploads. A\nhost on version 38 sends no `reusedPackDigests`."
+      "description": "Part `part` of the chunks a snapshot packed: where each chunk lies, at most\nChunkExchange.DigestsPerPart of them, and the size of each pack they lie in. A pack whose chunks\nrun past one part is listed again in the next. `reusedPackDigests` names packs the snapshot\nreferences that it did not write, at most ChunkExchange.DigestsPerPart of them a part, each named\nin one part only. Every pack the snapshot references is in `packs` or in `reusedPackDigests` of\nsome part, never in both. The host sends part 1 once its packs are written, also when it wrote\nnone, and each next part once the answer to the one before arrived, until every placement and\nevery reused pack is sent. The control plane keeps the placements and the reused packs until\nSnapshotDone, counts each digest as referenced by the session, and answers SnapshotPackUploads."
     },
     "Channel.SnapshotPackUploads": {
       "type": "object",

@@ -2995,7 +2995,8 @@ pub mod types {
     }
     ///A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
     ///the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-    ///connection that speaks another with UnsupportedVersion.
+    ///connection that speaks another with UnsupportedVersion. Versions 37 and 38 lack
+    ///`reusedPackDigests` on SnapshotPacks and `chunkCount` on SnapshotDone.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(transparent)]
     pub struct ChannelProtocol(pub i32);
@@ -3376,10 +3377,9 @@ pub mod types {
         }
     }
     ///The host stored the snapshot's packs and root. `uploadedBytes` counts the bytes it uploaded: the
-    ///packs the tenant lacked, plus the root. `chunkCount` counts the chunk placements the file entries
-    ///of the snapshot's SnapshotManifest list, a chunk once for every placement a file names it at, so
-    ///the control plane sizes the snapshot's chunk index without reading the manifest. A host on
-    ///version 38 sends no `chunkCount`.
+    ///packs the tenant lacked, plus the root. `chunkCount` counts the chunk placements that the file
+    ///entries of the snapshot's SnapshotManifest list, a chunk once for every placement a file names it
+    ///at.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSnapshotDone {
         #[serde(rename = "chunkCount")]
@@ -3604,8 +3604,7 @@ pub mod types {
     ///some part, never in both. The host sends part 1 once its packs are written, also when it wrote
     ///none, and each next part once the answer to the one before arrived, until every placement and
     ///every reused pack is sent. The control plane keeps the placements and the reused packs until
-    ///SnapshotDone, counts each digest as referenced by the session, and answers SnapshotPackUploads. A
-    ///host on version 38 sends no `reusedPackDigests`.
+    ///SnapshotDone, counts each digest as referenced by the session, and answers SnapshotPackUploads.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSnapshotPacks {
         pub chunks: ::std::vec::Vec<ChannelChunkPlacement>,
