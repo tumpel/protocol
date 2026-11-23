@@ -200,7 +200,7 @@ model StartRefusal {
   A refusal with code ModelUnsupported, HarnessNotInCatalog, ImageNotReleased, PoolExhausted,
   NoHostAvailable, HostDegraded, HostOffline, NoCredential or CredentialExpired. It reaches the
   calling session's subscription, identified by the turn token's session, or a subscription whose
-  crew tags the refused session would carry. Undelivered events coalesce per subscription and code.
+  crew tags the refused session would carry.
   Exhausted provider credit stays a turn failure with the CreditExhausted pause reason.
   """)
 model StartRefusedEvent {
@@ -220,8 +220,6 @@ model StartRefusedEvent {
 @doc("""
   The host freed enough memory and disk for the refused box or came online. It reaches each
   subscription with a pending PoolExhausted, NoHostAvailable, HostDegraded or HostOffline refusal.
-  Each subscription holds at most one pending room refusal, upserted rather than appended.
-  Delivery clears that pending refusal; retries back off exponentially.
   """)
 model CapacityAvailableEvent {
   event: "CapacityAvailable";
