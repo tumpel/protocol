@@ -185,8 +185,10 @@ namespace V1 {
     @doc("""
       Creates an Active subscription whose cursor starts at the end of the event log. Only a person
       creates one: a call with a turn token is refused Forbidden. Refused InvalidRequest when the
-      session's harness takes no goal, or when the plan and the goal leave no room for one event;
-      SessionArchived or SessionFailed when the session is.
+      session's harness takes no goal, when the plan and the goal leave no room for one event, or
+      when crewTags is not empty and the session's persona has tumpelMcp disabled. That problem's
+      detail names the persona and its fix says to enable tumpelMcp on it before trying again.
+      Refused SessionArchived or SessionFailed when the session is.
       """)
     @post
     create(@body body: SubscriptionCreate): Subscription | ProblemResponse;
@@ -215,6 +217,9 @@ namespace V1 {
       its cursor. Resuming an Active subscription answers it as it is. Only a person resumes one: a
       call with a turn token is refused Forbidden. Refused SubscriptionEnded when it is Ended, and
       SubscriptionCursorExpired when its cursor is older than the event log keeps.
+      Refused InvalidRequest before activating a Paused subscription when crewTags is not empty
+      and the session's persona has tumpelMcp disabled. That problem's detail names the persona
+      and its fix says to enable tumpelMcp on it before trying again. The subscription stays Paused.
       """)
     @route("/{subscriptionId}/resume")
     @post

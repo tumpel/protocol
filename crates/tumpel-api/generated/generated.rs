@@ -28277,6 +28277,7 @@ pub mod types {
         SessionNotFound(TenantApiSessionNotFound),
         SessionArchivedState(TenantApiSessionArchivedState),
         SessionFailedState(TenantApiSessionFailedState),
+        SubscriptionPersonaLacksTumpelMcp(TenantApiSubscriptionPersonaLacksTumpelMcp),
     }
     impl ::std::convert::From<TenantApiSubscriptionCreatedOk> for TenantApiCreateSubscriptionResultCreated {
         fn from(value: TenantApiSubscriptionCreatedOk) -> Self {
@@ -28296,6 +28297,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiSessionFailedState> for TenantApiCreateSubscriptionResultCreated {
         fn from(value: TenantApiSessionFailedState) -> Self {
             Self::SessionFailedState(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSubscriptionPersonaLacksTumpelMcp> for TenantApiCreateSubscriptionResultCreated {
+        fn from(value: TenantApiSubscriptionPersonaLacksTumpelMcp) -> Self {
+            Self::SubscriptionPersonaLacksTumpelMcp(value)
         }
     }
     ///`TenantApiCreateTriggerInput`
@@ -34659,6 +34665,7 @@ pub mod types {
         NotFound(TenantApiSubscriptionNotFound),
         EndedState(TenantApiSubscriptionEndedState),
         CursorExpired(TenantApiSubscriptionCursorExpired),
+        PersonaLacksTumpelMcp(TenantApiSubscriptionPersonaLacksTumpelMcp),
     }
     impl ::std::convert::From<TenantApiSubscriptionChangedOk> for TenantApiResumeSubscriptionResultResumed {
         fn from(value: TenantApiSubscriptionChangedOk) -> Self {
@@ -34678,6 +34685,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiSubscriptionCursorExpired> for TenantApiResumeSubscriptionResultResumed {
         fn from(value: TenantApiSubscriptionCursorExpired) -> Self {
             Self::CursorExpired(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSubscriptionPersonaLacksTumpelMcp> for TenantApiResumeSubscriptionResultResumed {
+        fn from(value: TenantApiSubscriptionPersonaLacksTumpelMcp) -> Self {
+            Self::PersonaLacksTumpelMcp(value)
         }
     }
     ///`TenantApiRewriteSecretSetWrite`
@@ -38139,6 +38151,48 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiSubscriptionNotFoundKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A crew subscription cannot be created or resumed because the session's persona has tumpelMcp disabled. Enable tumpelMcp on the named persona before trying again.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSubscriptionPersonaLacksTumpelMcp {
+        pub kind: TenantApiSubscriptionPersonaLacksTumpelMcpKind,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+        #[serde(rename = "personaName")]
+        pub persona_name: DisplayName,
+    }
+    ///`TenantApiSubscriptionPersonaLacksTumpelMcpKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSubscriptionPersonaLacksTumpelMcpKind {
+        PersonaLacksTumpelMcp,
+    }
+    impl ::std::fmt::Display for TenantApiSubscriptionPersonaLacksTumpelMcpKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::PersonaLacksTumpelMcp => f.write_str("PersonaLacksTumpelMcp"),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSubscriptionPersonaLacksTumpelMcpKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "PersonaLacksTumpelMcp" => Ok(Self::PersonaLacksTumpelMcp),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSubscriptionPersonaLacksTumpelMcpKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSubscriptionPersonaLacksTumpelMcpKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -49919,8 +49973,10 @@ impl Client {
     }
     ///Creates an Active subscription whose cursor starts at the end of the event log. Only a person
     ///creates one: a call with a turn token is refused Forbidden. Refused InvalidRequest when the
-    ///session's harness takes no goal, or when the plan and the goal leave no room for one event;
-    ///SessionArchived or SessionFailed when the session is.
+    ///session's harness takes no goal, when the plan and the goal leave no room for one event, or
+    ///when crewTags is not empty and the session's persona has tumpelMcp disabled. That problem's
+    ///detail names the persona and its fix says to enable tumpelMcp on it before trying again.
+    ///Refused SessionArchived or SessionFailed when the session is.
     ///
     ///Sends a `POST` request to `/v1/subscriptions`
     ///
@@ -50177,6 +50233,9 @@ impl Client {
     ///its cursor. Resuming an Active subscription answers it as it is. Only a person resumes one: a
     ///call with a turn token is refused Forbidden. Refused SubscriptionEnded when it is Ended, and
     ///SubscriptionCursorExpired when its cursor is older than the event log keeps.
+    ///Refused InvalidRequest before activating a Paused subscription when crewTags is not empty
+    ///and the session's persona has tumpelMcp disabled. That problem's detail names the persona
+    ///and its fix says to enable tumpelMcp on it before trying again. The subscription stays Paused.
     ///
     ///Sends a `POST` request to `/v1/subscriptions/{subscriptionId}/resume`
     ///
@@ -51340,5 +51399,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 27;
+    pub const VERSION: u16 = 28;
 }
