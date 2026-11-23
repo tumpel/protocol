@@ -3389,16 +3389,14 @@
     "HostUsage": {
       "type": "object",
       "required": [
-        "boxesWarm",
         "loadAverage",
-        "memoryAvailableMib"
+        "memoryAvailableMib",
+        "diskBudgetMib",
+        "diskHeldMib",
+        "memoryBudgetMib",
+        "memoryHeldMib"
       ],
       "properties": {
-        "boxesWarm": {
-          "type": "integer",
-          "format": "int32",
-          "minimum": 0
-        },
         "loadAverage": {
           "type": "number",
           "format": "double",
@@ -3430,7 +3428,7 @@
           "minimum": 0
         }
       },
-      "description": "What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts\nthe paused boxes it holds, `loadAverage` is the one-minute load average of the host,\nand `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the\nhost gives box disks: the free disk under its dataDir and what its boxes already wrote, less the\nheadroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host\nadmits a box only while its disk fits the budget beside the held ones; a supervisor older than\nthe box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal\nless the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it\nholds. A host admits a box only while its memory fits the budget beside the held ones, whatever\ntheir count; a supervisor older than the memory budget sends neither."
+      "description": "What a host holds at one moment, sent on Hello and on every host Heartbeat. `loadAverage` is the one-minute load average of the host,\nand `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the\nhost gives box disks: the free disk under its dataDir and what its boxes already wrote, less the\nheadroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host\nadmits a box only while its disk fits the budget beside the held ones. `memoryBudgetMib` is the memory the host gives boxes: MemTotal\nless the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it\nholds. A host admits a box only while its memory fits the budget beside the held ones, whatever\ntheir count. Version 36 and below carry `boxesWarm`, the paused boxes the host holds, and may\nleave out the four budgets; the control plane decodes them with the version 36 shape."
     },
     "HttpUrl": {
       "type": "string",
@@ -4854,9 +4852,12 @@
         "tenantId",
         "boxCapacity",
         "boxesRunning",
-        "boxesWarm",
         "loadAverage",
         "memoryAvailableMib",
+        "diskBudgetMib",
+        "diskHeldMib",
+        "memoryBudgetMib",
+        "memoryHeldMib",
         "reportedHealth",
         "channelProtocol",
         "createdAt",
@@ -4886,11 +4887,6 @@
           "maximum": 256
         },
         "boxesRunning": {
-          "type": "integer",
-          "format": "int32",
-          "minimum": 0
-        },
-        "boxesWarm": {
           "type": "integer",
           "format": "int32",
           "minimum": 0
@@ -4950,7 +4946,7 @@
           "readOnly": true
         }
       },
-      "description": "A host's box slots and its last reported usage, kept by its tenant from the host's Hello and\nHeartbeats. `boxCapacity` comes from Hello. `boxesRunning` counts the tenant's Offered and\nRunning turns on the host. Placement counts the boxes a host holds from the tenant's own\nsessions, never from the reported `boxesWarm`, which lags by a Heartbeat.\n`channelProtocol` is the protocol version the host's latest Hello negotiated; the control plane\ncloses the connection with UnsupportedVersion instead of sending a frame of a newer version,\nand resends it once the host reconnects on a version that speaks it. A host that has not connected since it enrolled has none."
+      "description": "A host's box slots and its last reported usage, kept by its tenant from the host's Hello and\nHeartbeats. `boxCapacity` comes from Hello. `boxesRunning` counts the tenant's Offered and\nRunning turns on the host. Placement counts the boxes a host holds from the tenant's own\nsessions.\n`channelProtocol` is the protocol version the host's latest Hello negotiated; the control plane\ncloses the connection with UnsupportedVersion instead of sending a frame of a newer version,\nand resends it once the host reconnects on a version that speaks it. A host that has not connected since it enrolled has none."
     },
     "RepositoryCloneFailureCause": {
       "type": "string",

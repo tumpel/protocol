@@ -33,7 +33,9 @@ enum CloseCode {
   On version 37 the control plane keeps no count of host frames: Hello names the host's oldest
   unacked frame in `resendFrom`, the control plane applies the host's frames one at a time in
   `seq` order, stores each frame's effect, and only then answers Ack with its `seq`. The host
-  acks control frames in every Heartbeat as well as in its frames. On version 36 and below the
+  acks control frames in every Heartbeat as well as in its frames. On version 37 the `ack` of a
+  control frame is the connection's cursor, the last host `seq` whose effect is stored, never the
+  highest `seq` received. On version 36 and below the
   control plane keeps its count of host frames in durable storage and acks them in Welcome and in
   its own frames.
   """)
@@ -108,9 +110,8 @@ model Welcome {
 }
 
 @doc("""
-  The control plane sends one when it has sent nothing else for its heartbeat interval of 10
-  seconds. A side that has received nothing for 30 seconds treats the connection as dead and closes
-  it; the control plane then reads the host Offline.
+  The control plane answers every host Heartbeat with one, so it keeps no timer of its own. A side
+  that has received nothing for 30 seconds treats the connection as dead and closes it.
   """)
 model Heartbeat {
   type: "Heartbeat";

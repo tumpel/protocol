@@ -2309,9 +2309,8 @@ pub mod types {
         #[serde(rename = "manifestUrl")]
         pub manifest_url: HttpUrl,
     }
-    ///The control plane sends one when it has sent nothing else for its heartbeat interval of 10
-    ///seconds. A side that has received nothing for 30 seconds treats the connection as dead and closes
-    ///it; the control plane then reads the host Offline.
+    ///The control plane answers every host Heartbeat with one, so it keeps no timer of its own. A side
+    ///that has received nothing for 30 seconds treats the connection as dead and closes it.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelHeartbeat {
         #[serde(rename = "sentAt")]
@@ -3193,7 +3192,9 @@ pub mod types {
     ///On version 37 the control plane keeps no count of host frames: Hello names the host's oldest
     ///unacked frame in `resendFrom`, the control plane applies the host's frames one at a time in
     ///`seq` order, stores each frame's effect, and only then answers Ack with its `seq`. The host
-    ///acks control frames in every Heartbeat as well as in its frames. On version 36 and below the
+    ///acks control frames in every Heartbeat as well as in its frames. On version 37 the `ack` of a
+    ///control frame is the connection's cursor, the last host `seq` whose effect is stored, never the
+    ///highest `seq` received. On version 36 and below the
     ///control plane keeps its count of host frames in durable storage and acks them in Welcome and in
     ///its own frames.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -12749,32 +12750,29 @@ pub mod types {
             value.parse()
         }
     }
-    ///What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts
-    ///the paused boxes it holds, `loadAverage` is the one-minute load average of the host,
+    ///What a host holds at one moment, sent on Hello and on every host Heartbeat. `loadAverage` is the one-minute load average of the host,
     ///and `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the
     ///host gives box disks: the free disk under its dataDir and what its boxes already wrote, less the
     ///headroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host
-    ///admits a box only while its disk fits the budget beside the held ones; a supervisor older than
-    ///the box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal
+    ///admits a box only while its disk fits the budget beside the held ones. `memoryBudgetMib` is the memory the host gives boxes: MemTotal
     ///less the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it
     ///holds. A host admits a box only while its memory fits the budget beside the held ones, whatever
-    ///their count; a supervisor older than the memory budget sends neither.
+    ///their count. Version 36 and below carry `boxesWarm`, the paused boxes the host holds, and may
+    ///leave out the four budgets; the control plane decodes them with the version 36 shape.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct HostUsage {
-        #[serde(rename = "boxesWarm")]
-        pub boxes_warm: i32,
-        #[serde(rename = "diskBudgetMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub disk_budget_mib: ::std::option::Option<i64>,
-        #[serde(rename = "diskHeldMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub disk_held_mib: ::std::option::Option<i64>,
+        #[serde(rename = "diskBudgetMib")]
+        pub disk_budget_mib: i64,
+        #[serde(rename = "diskHeldMib")]
+        pub disk_held_mib: i64,
         #[serde(rename = "loadAverage")]
         pub load_average: f64,
         #[serde(rename = "memoryAvailableMib")]
         pub memory_available_mib: i64,
-        #[serde(rename = "memoryBudgetMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub memory_budget_mib: ::std::option::Option<i64>,
-        #[serde(rename = "memoryHeldMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub memory_held_mib: ::std::option::Option<i64>,
+        #[serde(rename = "memoryBudgetMib")]
+        pub memory_budget_mib: i64,
+        #[serde(rename = "memoryHeldMib")]
+        pub memory_held_mib: i64,
     }
     ///A URL the API checks as one.
     #[derive(::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -19731,7 +19729,7 @@ pub mod types {
     ///A host's box slots and its last reported usage, kept by its tenant from the host's Hello and
     ///Heartbeats. `boxCapacity` comes from Hello. `boxesRunning` counts the tenant's Offered and
     ///Running turns on the host. Placement counts the boxes a host holds from the tenant's own
-    ///sessions, never from the reported `boxesWarm`, which lags by a Heartbeat.
+    ///sessions.
     ///`channelProtocol` is the protocol version the host's latest Hello negotiated; the control plane
     ///closes the connection with UnsupportedVersion instead of sending a frame of a newer version,
     ///and resends it once the host reconnects on a version that speaks it. A host that has not connected since it enrolled has none.
@@ -19741,26 +19739,24 @@ pub mod types {
         pub box_capacity: ::std::num::NonZeroU32,
         #[serde(rename = "boxesRunning")]
         pub boxes_running: i32,
-        #[serde(rename = "boxesWarm")]
-        pub boxes_warm: i32,
         #[serde(rename = "channelProtocol")]
         pub channel_protocol: i32,
         #[serde(rename = "createdAt")]
         pub created_at: i64,
-        #[serde(rename = "diskBudgetMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub disk_budget_mib: ::std::option::Option<i64>,
-        #[serde(rename = "diskHeldMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub disk_held_mib: ::std::option::Option<i64>,
+        #[serde(rename = "diskBudgetMib")]
+        pub disk_budget_mib: i64,
+        #[serde(rename = "diskHeldMib")]
+        pub disk_held_mib: i64,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "loadAverage")]
         pub load_average: f64,
         #[serde(rename = "memoryAvailableMib")]
         pub memory_available_mib: i64,
-        #[serde(rename = "memoryBudgetMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub memory_budget_mib: ::std::option::Option<i64>,
-        #[serde(rename = "memoryHeldMib", skip_serializing_if = "::std::option::Option::is_none")]
-        pub memory_held_mib: ::std::option::Option<i64>,
+        #[serde(rename = "memoryBudgetMib")]
+        pub memory_budget_mib: i64,
+        #[serde(rename = "memoryHeldMib")]
+        pub memory_held_mib: i64,
         ///The health the host reported in its latest Heartbeat; Healthy until its first Heartbeat.
         #[serde(rename = "reportedHealth")]
         pub reported_health: HostReportedHealth,

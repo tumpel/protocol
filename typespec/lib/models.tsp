@@ -365,32 +365,30 @@ enum HostArchitecture {
 }
 
 @doc("""
-  What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts
-  the paused boxes it holds, `loadAverage` is the one-minute load average of the host,
+  What a host holds at one moment, sent on Hello and on every host Heartbeat. `loadAverage` is the one-minute load average of the host,
   and `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the
   host gives box disks: the free disk under its dataDir and what its boxes already wrote, less the
   headroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host
-  admits a box only while its disk fits the budget beside the held ones; a supervisor older than
-  the box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal
+  admits a box only while its disk fits the budget beside the held ones. `memoryBudgetMib` is the memory the host gives boxes: MemTotal
   less the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it
   holds. A host admits a box only while its memory fits the budget beside the held ones, whatever
-  their count; a supervisor older than the memory budget sends neither.
+  their count. Version 36 and below carry `boxesWarm`, the paused boxes the host holds, and may
+  leave out the four budgets; the control plane decodes them with the version 36 shape.
   """)
 model HostUsage {
-  @minValue(0) boxesWarm: int32;
   @minValue(0) loadAverage: float64;
   @minValue(0) memoryAvailableMib: int64;
-  @minValue(0) diskBudgetMib?: int64;
-  @minValue(0) diskHeldMib?: int64;
-  @minValue(0) memoryBudgetMib?: int64;
-  @minValue(0) memoryHeldMib?: int64;
+  @minValue(0) diskBudgetMib: int64;
+  @minValue(0) diskHeldMib: int64;
+  @minValue(0) memoryBudgetMib: int64;
+  @minValue(0) memoryHeldMib: int64;
 }
 
 @doc("""
   A host's box slots and its last reported usage, kept by its tenant from the host's Hello and
   Heartbeats. `boxCapacity` comes from Hello. `boxesRunning` counts the tenant's Offered and
   Running turns on the host. Placement counts the boxes a host holds from the tenant's own
-  sessions, never from the reported `boxesWarm`, which lags by a Heartbeat.
+  sessions.
   `channelProtocol` is the protocol version the host's latest Hello negotiated; the control plane
   closes the connection with UnsupportedVersion instead of sending a frame of a newer version,
   and resends it once the host reconnects on a version that speaks it. A host that has not connected since it enrolled has none.

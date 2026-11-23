@@ -866,7 +866,7 @@
           "format": "date-time"
         }
       },
-      "description": "The control plane sends one when it has sent nothing else for its heartbeat interval of 10\nseconds. A side that has received nothing for 30 seconds treats the connection as dead and closes\nit; the control plane then reads the host Offline."
+      "description": "The control plane answers every host Heartbeat with one, so it keeps no timer of its own. A side\nthat has received nothing for 30 seconds treats the connection as dead and closes it."
     },
     "Channel.Hello": {
       "type": "object",
@@ -1376,7 +1376,7 @@
           "$ref": "#/components/schemas/Sequence"
         }
       },
-      "description": "Each direction of a host's channel numbers its frames from 1 in `seq`, and the count survives\nreconnects and restarts. `ack` is the highest `seq` the sender has received from the other side\nwith no gap before it, 0 before the first one; it advances only with the sender's next frame. A\nreceiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as\na protocol error that closes the connection. After Welcome each side resends, in order, every\nframe the other side has not acked, and the receiver drops the duplicates. The control plane\nkeeps its sent counter and its unacked frames in durable storage. The supervisor writes its\ncounters and unacked frames to disk before it sends a frame; when it starts without that state\nit does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.\nChallenge, Hello, Welcome, Heartbeat and Ack belong to one connection and travel outside frames,\nwith no `seq`. Each side ignores fields it does not know.\n\nOn version 37 the control plane keeps no count of host frames: Hello names the host's oldest\nunacked frame in `resendFrom`, the control plane applies the host's frames one at a time in\n`seq` order, stores each frame's effect, and only then answers Ack with its `seq`. The host\nacks control frames in every Heartbeat as well as in its frames. On version 36 and below the\ncontrol plane keeps its count of host frames in durable storage and acks them in Welcome and in\nits own frames."
+      "description": "Each direction of a host's channel numbers its frames from 1 in `seq`, and the count survives\nreconnects and restarts. `ack` is the highest `seq` the sender has received from the other side\nwith no gap before it, 0 before the first one; it advances only with the sender's next frame. A\nreceiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as\na protocol error that closes the connection. After Welcome each side resends, in order, every\nframe the other side has not acked, and the receiver drops the duplicates. The control plane\nkeeps its sent counter and its unacked frames in durable storage. The supervisor writes its\ncounters and unacked frames to disk before it sends a frame; when it starts without that state\nit does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.\nChallenge, Hello, Welcome, Heartbeat and Ack belong to one connection and travel outside frames,\nwith no `seq`. Each side ignores fields it does not know.\n\nOn version 37 the control plane keeps no count of host frames: Hello names the host's oldest\nunacked frame in `resendFrom`, the control plane applies the host's frames one at a time in\n`seq` order, stores each frame's effect, and only then answers Ack with its `seq`. The host\nacks control frames in every Heartbeat as well as in its frames. On version 37 the `ack` of a\ncontrol frame is the connection's cursor, the last host `seq` whose effect is stored, never the\nhighest `seq` received. On version 36 and below the\ncontrol plane keeps its count of host frames in durable storage and acks them in Welcome and in\nits own frames."
     },
     "Channel.SnapshotChunks": {
       "type": "object",
@@ -2397,16 +2397,14 @@
     "HostUsage": {
       "type": "object",
       "required": [
-        "boxesWarm",
         "loadAverage",
-        "memoryAvailableMib"
+        "memoryAvailableMib",
+        "diskBudgetMib",
+        "diskHeldMib",
+        "memoryBudgetMib",
+        "memoryHeldMib"
       ],
       "properties": {
-        "boxesWarm": {
-          "type": "integer",
-          "format": "int32",
-          "minimum": 0
-        },
         "loadAverage": {
           "type": "number",
           "format": "double",
@@ -2438,7 +2436,7 @@
           "minimum": 0
         }
       },
-      "description": "What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts\nthe paused boxes it holds, `loadAverage` is the one-minute load average of the host,\nand `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the\nhost gives box disks: the free disk under its dataDir and what its boxes already wrote, less the\nheadroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host\nadmits a box only while its disk fits the budget beside the held ones; a supervisor older than\nthe box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal\nless the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it\nholds. A host admits a box only while its memory fits the budget beside the held ones, whatever\ntheir count; a supervisor older than the memory budget sends neither."
+      "description": "What a host holds at one moment, sent on Hello and on every host Heartbeat. `loadAverage` is the one-minute load average of the host,\nand `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the\nhost gives box disks: the free disk under its dataDir and what its boxes already wrote, less the\nheadroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host\nadmits a box only while its disk fits the budget beside the held ones. `memoryBudgetMib` is the memory the host gives boxes: MemTotal\nless the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it\nholds. A host admits a box only while its memory fits the budget beside the held ones, whatever\ntheir count. Version 36 and below carry `boxesWarm`, the paused boxes the host holds, and may\nleave out the four budgets; the control plane decodes them with the version 36 shape."
     },
     "HttpUrl": {
       "type": "string",
