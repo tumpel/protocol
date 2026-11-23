@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use progenitor_client::{encode_path, ClientHooks, OperationInfo, RequestBuilderExt};
 #[allow(unused_imports)]
-pub use progenitor_client::{ByteStream, ClientInfo, Error, ResponseValue};
+pub use progenitor_client::{ByteStream, ClientInfo, Error};
 /// Types used as operation parameters and responses.
 #[allow(clippy::all)]
 pub mod types {
@@ -47,7 +47,7 @@ pub mod types {
     pub enum ActiveSubscriptionState {
         Active,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ActiveSubscriptionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -92,7 +92,7 @@ pub mod types {
     pub enum ApiKeyKeyKind {
         ApiKey,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ApiKeyKeyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -135,7 +135,7 @@ pub mod types {
     pub enum ApiKeyMemberKind {
         ApiKey,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ApiKeyMemberKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -184,7 +184,7 @@ pub mod types {
     pub enum ApiKeyUpdateKind {
         ApiKey,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ApiKeyUpdateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -228,7 +228,7 @@ pub mod types {
     pub enum ApiKeyValueKind {
         ApiKey,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ApiKeyValueKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -273,7 +273,7 @@ pub mod types {
     pub enum ArchiveInstallRecipeKind {
         Archive,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ArchiveInstallRecipeKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -366,7 +366,7 @@ pub mod types {
     pub enum ArchivedSessionState {
         Archived,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ArchivedSessionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -561,7 +561,7 @@ pub mod types {
         Warm,
         Auto,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for BoxRetention {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -613,7 +613,7 @@ pub mod types {
     pub enum ChannelAckType {
         Ack,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelAckType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -667,9 +667,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ChannelBootImage {
-        GuestImageDownload(ChannelGuestImageDownload),
-        LayeredImageDownload(ChannelLayeredImageDownload),
-        Unrecognised(::serde_json::Value),
+        GuestImageDownload(#[serde(deserialize_with = "crate::response::attempt")] ChannelGuestImageDownload),
+        LayeredImageDownload(#[serde(deserialize_with = "crate::response::attempt")] ChannelLayeredImageDownload),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ChannelGuestImageDownload> for ChannelBootImage {
         fn from(value: ChannelGuestImageDownload) -> Self {
@@ -697,7 +697,7 @@ pub mod types {
     pub enum ChannelBoxDiscardType {
         BoxDiscard,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxDiscardType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -743,7 +743,7 @@ pub mod types {
     pub enum ChannelBoxGoneType {
         BoxGone,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxGoneType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -807,7 +807,7 @@ pub mod types {
     pub enum ChannelBoxTeardownFailedType {
         BoxTeardownFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxTeardownFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -843,7 +843,7 @@ pub mod types {
     pub enum ChannelBoxTeardownFailureReason {
         BoxDirty,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxTeardownFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -879,7 +879,7 @@ pub mod types {
     pub enum ChannelBoxTeardownType {
         BoxTeardown,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelBoxTeardownType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -993,7 +993,7 @@ pub mod types {
     pub enum ChannelChallengeType {
         Challenge,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelChallengeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -1056,7 +1056,7 @@ pub mod types {
     pub enum ChannelClaudeSetupBoxCodeType {
         ClaudeSetupBoxCode,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxCodeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -1103,7 +1103,7 @@ pub mod types {
     pub enum ChannelClaudeSetupBoxDiscardType {
         ClaudeSetupBoxDiscard,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxDiscardType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -1152,7 +1152,7 @@ pub mod types {
     pub enum ChannelClaudeSetupBoxFailedType {
         ClaudeSetupBoxFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -1294,7 +1294,7 @@ pub mod types {
     pub enum ChannelClaudeSetupBoxOfferType {
         ClaudeSetupBoxOffer,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxOfferType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -1342,7 +1342,7 @@ pub mod types {
     pub enum ChannelClaudeSetupBoxUrlType {
         ClaudeSetupBoxUrl,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelClaudeSetupBoxUrlType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -1482,15 +1482,15 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ChannelControlEnvelope {
-        Challenge(ChannelChallenge),
-        Welcome(ChannelWelcome),
-        Heartbeat(ChannelHeartbeat),
-        ReleasePublished(ChannelReleasePublished),
-        FrameRefused(ChannelFrameRefused),
-        FrameRateLimited(ChannelFrameRateLimited),
-        Ack(ChannelAck),
-        ControlFrame(ChannelControlFrame),
-        Unrecognised(::serde_json::Value),
+        Challenge(#[serde(deserialize_with = "crate::response::attempt")] ChannelChallenge),
+        Welcome(#[serde(deserialize_with = "crate::response::attempt")] ChannelWelcome),
+        Heartbeat(#[serde(deserialize_with = "crate::response::attempt")] ChannelHeartbeat),
+        ReleasePublished(#[serde(deserialize_with = "crate::response::attempt")] ChannelReleasePublished),
+        FrameRefused(#[serde(deserialize_with = "crate::response::attempt")] ChannelFrameRefused),
+        FrameRateLimited(#[serde(deserialize_with = "crate::response::attempt")] ChannelFrameRateLimited),
+        Ack(#[serde(deserialize_with = "crate::response::attempt")] ChannelAck),
+        ControlFrame(#[serde(deserialize_with = "crate::response::attempt")] ChannelControlFrame),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ChannelChallenge> for ChannelControlEnvelope {
         fn from(value: ChannelChallenge) -> Self {
@@ -1546,7 +1546,7 @@ pub mod types {
     pub enum ChannelControlFrameType {
         Frame,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelControlFrameType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -1581,20 +1581,20 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ChannelControlMessage {
-        TurnOffer(ChannelTurnOffer),
-        TurnWithdrawn(ChannelTurnWithdrawn),
-        TurnClaimed(ChannelTurnClaimed),
-        TurnCancel(ChannelTurnCancel),
-        SnapshotRequest(ChannelSnapshotRequest),
-        SnapshotChunksHeld(ChannelSnapshotChunksHeld),
-        SnapshotPackUploads(ChannelSnapshotPackUploads),
-        RestoreDownloads(ChannelRestoreDownloads),
-        BoxTeardown(ChannelBoxTeardown),
-        BoxDiscard(ChannelBoxDiscard),
-        ClaudeSetupBoxOffer(ChannelClaudeSetupBoxOffer),
-        ClaudeSetupBoxCode(ChannelClaudeSetupBoxCode),
-        ClaudeSetupBoxDiscard(ChannelClaudeSetupBoxDiscard),
-        Unrecognised(::serde_json::Value),
+        TurnOffer(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnOffer),
+        TurnWithdrawn(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnWithdrawn),
+        TurnClaimed(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnClaimed),
+        TurnCancel(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnCancel),
+        SnapshotRequest(#[serde(deserialize_with = "crate::response::attempt")] ChannelSnapshotRequest),
+        SnapshotChunksHeld(#[serde(deserialize_with = "crate::response::attempt")] ChannelSnapshotChunksHeld),
+        SnapshotPackUploads(#[serde(deserialize_with = "crate::response::attempt")] ChannelSnapshotPackUploads),
+        RestoreDownloads(#[serde(deserialize_with = "crate::response::attempt")] ChannelRestoreDownloads),
+        BoxTeardown(#[serde(deserialize_with = "crate::response::attempt")] ChannelBoxTeardown),
+        BoxDiscard(#[serde(deserialize_with = "crate::response::attempt")] ChannelBoxDiscard),
+        ClaudeSetupBoxOffer(#[serde(deserialize_with = "crate::response::attempt")] ChannelClaudeSetupBoxOffer),
+        ClaudeSetupBoxCode(#[serde(deserialize_with = "crate::response::attempt")] ChannelClaudeSetupBoxCode),
+        ClaudeSetupBoxDiscard(#[serde(deserialize_with = "crate::response::attempt")] ChannelClaudeSetupBoxDiscard),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ChannelTurnOffer> for ChannelControlMessage {
         fn from(value: ChannelTurnOffer) -> Self {
@@ -2152,7 +2152,7 @@ pub mod types {
     pub enum ChannelFrameRateLimitedType {
         FrameRateLimited,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelFrameRateLimitedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -2271,7 +2271,7 @@ pub mod types {
     pub enum ChannelFrameRefusedType {
         FrameRefused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelFrameRefusedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -2339,7 +2339,7 @@ pub mod types {
     pub enum ChannelGuestImageDownloadKind {
         Full,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelGuestImageDownloadKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -2396,7 +2396,7 @@ pub mod types {
     pub enum ChannelHeartbeatType {
         Heartbeat,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHeartbeatType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -2610,7 +2610,7 @@ pub mod types {
     pub enum ChannelHelloType {
         Hello,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHelloType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -2648,10 +2648,10 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ChannelHostEnvelope {
-        Hello(ChannelHello),
-        HostHeartbeat(ChannelHostHeartbeat),
-        HostFrame(ChannelHostFrame),
-        Unrecognised(::serde_json::Value),
+        Hello(#[serde(deserialize_with = "crate::response::attempt")] ChannelHello),
+        HostHeartbeat(#[serde(deserialize_with = "crate::response::attempt")] ChannelHostHeartbeat),
+        HostFrame(#[serde(deserialize_with = "crate::response::attempt")] ChannelHostFrame),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ChannelHello> for ChannelHostEnvelope {
         fn from(value: ChannelHello) -> Self {
@@ -2682,7 +2682,7 @@ pub mod types {
     pub enum ChannelHostFrameType {
         Frame,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHostFrameType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -2759,7 +2759,7 @@ pub mod types {
     pub enum ChannelHostHeartbeatType {
         Heartbeat,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelHostHeartbeatType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -2794,25 +2794,27 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ChannelHostMessage {
-        TurnImageFetching(ChannelTurnImageFetching),
-        TurnClaim(ChannelTurnClaim),
-        TurnRepositoryReady(ChannelTurnRepositoryReady),
-        TurnLines(ChannelTurnLines),
-        TurnComplete(ChannelTurnComplete),
-        TurnRepositoryCloneFailed(ChannelTurnRepositoryCloneFailed),
-        TurnFailed(ChannelTurnFailed),
-        SnapshotChunks(ChannelSnapshotChunks),
-        SnapshotPacks(ChannelSnapshotPacks),
-        RestoreChunks(ChannelRestoreChunks),
-        SnapshotDone(ChannelSnapshotDone),
-        SnapshotFailed(ChannelSnapshotFailed),
-        BoxGone(ChannelBoxGone),
-        BoxTeardownFailed(ChannelBoxTeardownFailed),
-        ClaudeSetupBoxUrl(ChannelClaudeSetupBoxUrl),
-        ClaudeSetupBoxFailed(ChannelClaudeSetupBoxFailed),
-        SupervisorUpdateStep(ChannelSupervisorUpdateStep),
-        SupervisorUpdateFailed(ChannelSupervisorUpdateFailed),
-        Unrecognised(::serde_json::Value),
+        TurnImageFetching(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnImageFetching),
+        TurnClaim(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnClaim),
+        TurnRepositoryReady(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnRepositoryReady),
+        TurnLines(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnLines),
+        TurnComplete(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnComplete),
+        TurnRepositoryCloneFailed(
+            #[serde(deserialize_with = "crate::response::attempt")] ChannelTurnRepositoryCloneFailed,
+        ),
+        TurnFailed(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnFailed),
+        SnapshotChunks(#[serde(deserialize_with = "crate::response::attempt")] ChannelSnapshotChunks),
+        SnapshotPacks(#[serde(deserialize_with = "crate::response::attempt")] ChannelSnapshotPacks),
+        RestoreChunks(#[serde(deserialize_with = "crate::response::attempt")] ChannelRestoreChunks),
+        SnapshotDone(#[serde(deserialize_with = "crate::response::attempt")] ChannelSnapshotDone),
+        SnapshotFailed(#[serde(deserialize_with = "crate::response::attempt")] ChannelSnapshotFailed),
+        BoxGone(#[serde(deserialize_with = "crate::response::attempt")] ChannelBoxGone),
+        BoxTeardownFailed(#[serde(deserialize_with = "crate::response::attempt")] ChannelBoxTeardownFailed),
+        ClaudeSetupBoxUrl(#[serde(deserialize_with = "crate::response::attempt")] ChannelClaudeSetupBoxUrl),
+        ClaudeSetupBoxFailed(#[serde(deserialize_with = "crate::response::attempt")] ChannelClaudeSetupBoxFailed),
+        SupervisorUpdateStep(#[serde(deserialize_with = "crate::response::attempt")] ChannelSupervisorUpdateStep),
+        SupervisorUpdateFailed(#[serde(deserialize_with = "crate::response::attempt")] ChannelSupervisorUpdateFailed),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ChannelTurnImageFetching> for ChannelHostMessage {
         fn from(value: ChannelTurnImageFetching) -> Self {
@@ -2929,7 +2931,7 @@ pub mod types {
     pub enum ChannelLayeredImageDownloadKind {
         Layered,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelLayeredImageDownloadKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3126,7 +3128,7 @@ pub mod types {
     pub enum ChannelReleasePublishedType {
         ReleasePublished,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelReleasePublishedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3176,7 +3178,7 @@ pub mod types {
     pub enum ChannelRestoreChunksType {
         RestoreChunks,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelRestoreChunksType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3227,7 +3229,7 @@ pub mod types {
     pub enum ChannelRestoreDownloadsType {
         RestoreDownloads,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelRestoreDownloadsType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3309,7 +3311,7 @@ pub mod types {
     pub enum ChannelSnapshotChunksHeldType {
         SnapshotChunksHeld,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotChunksHeldType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3345,7 +3347,7 @@ pub mod types {
     pub enum ChannelSnapshotChunksType {
         SnapshotChunks,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotChunksType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3396,7 +3398,7 @@ pub mod types {
     pub enum ChannelSnapshotDoneType {
         SnapshotDone,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotDoneType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3460,7 +3462,7 @@ pub mod types {
     pub enum ChannelSnapshotFailedType {
         SnapshotFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3502,7 +3504,7 @@ pub mod types {
         NotAnswered,
         RateLimited,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3565,7 +3567,7 @@ pub mod types {
     pub enum ChannelSnapshotPackUploadsType {
         SnapshotPackUploads,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotPackUploadsType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3622,7 +3624,7 @@ pub mod types {
     pub enum ChannelSnapshotPacksType {
         SnapshotPacks,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotPacksType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3686,7 +3688,7 @@ pub mod types {
     pub enum ChannelSnapshotRequestType {
         SnapshotRequest,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSnapshotRequestType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3733,7 +3735,7 @@ pub mod types {
     pub enum ChannelStoredHostFrameType {
         Frame,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelStoredHostFrameType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3787,7 +3789,7 @@ pub mod types {
     pub enum ChannelSupervisorUpdateFailedType {
         SupervisorUpdateFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSupervisorUpdateFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3909,7 +3911,7 @@ pub mod types {
     pub enum ChannelSupervisorUpdateStepType {
         SupervisorUpdateStep,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelSupervisorUpdateStepType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -3957,7 +3959,7 @@ pub mod types {
     pub enum ChannelTurnCancelType {
         TurnCancel,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnCancelType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4009,7 +4011,7 @@ pub mod types {
     pub enum ChannelTurnClaimType {
         TurnClaim,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnClaimType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4053,7 +4055,7 @@ pub mod types {
     pub enum ChannelTurnClaimedType {
         TurnClaimed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnClaimedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4174,7 +4176,7 @@ pub mod types {
     pub enum ChannelTurnCompleteType {
         TurnComplete,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnCompleteType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4362,7 +4364,7 @@ pub mod types {
     pub enum ChannelTurnFailedType {
         TurnFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4411,7 +4413,7 @@ pub mod types {
     pub enum ChannelTurnImageFetchingType {
         TurnImageFetching,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnImageFetchingType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4463,7 +4465,7 @@ pub mod types {
     pub enum ChannelTurnLinesType {
         TurnLines,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnLinesType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4701,7 +4703,7 @@ pub mod types {
     pub enum ChannelTurnOfferType {
         TurnOffer,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnOfferType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4749,7 +4751,7 @@ pub mod types {
     pub enum ChannelTurnRepositoryCloneFailedType {
         TurnRepositoryCloneFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnRepositoryCloneFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4793,7 +4795,7 @@ pub mod types {
     pub enum ChannelTurnRepositoryReadyType {
         TurnRepositoryReady,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnRepositoryReadyType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4840,7 +4842,7 @@ pub mod types {
     pub enum ChannelTurnWithdrawnType {
         TurnWithdrawn,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelTurnWithdrawnType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -4888,7 +4890,7 @@ pub mod types {
     pub enum ChannelWelcomeType {
         Welcome,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ChannelWelcomeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5001,7 +5003,7 @@ pub mod types {
     pub enum ClaudeSetupAwaitingCodeState {
         AwaitingCode,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupAwaitingCodeState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5124,7 +5126,7 @@ pub mod types {
     pub enum ClaudeSetupCompletedState {
         Completed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupCompletedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5170,7 +5172,7 @@ pub mod types {
     pub enum ClaudeSetupFailedState {
         Failed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupFailedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5213,7 +5215,7 @@ pub mod types {
         Superseded,
         RateLimited,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5264,7 +5266,7 @@ pub mod types {
         ClaudeCode,
         Codex,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupHarness {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5305,7 +5307,7 @@ pub mod types {
         #[serde(rename = "CODEX_AUTH_JSON")]
         CodexAuthJson,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupMember {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5351,7 +5353,7 @@ pub mod types {
     pub enum ClaudeSetupMintingState {
         Minting,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupMintingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5404,7 +5406,7 @@ pub mod types {
     pub enum ClaudeSetupStartingState {
         Starting,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupStartingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5444,7 +5446,7 @@ pub mod types {
         Completed,
         Failed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ClaudeSetupState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5487,12 +5489,12 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ClaudeSetupStatus {
-        Starting(ClaudeSetupStarting),
-        AwaitingCode(ClaudeSetupAwaitingCode),
-        Minting(ClaudeSetupMinting),
-        Completed(ClaudeSetupCompleted),
-        Failed(ClaudeSetupFailed),
-        Unrecognised(::serde_json::Value),
+        Starting(#[serde(deserialize_with = "crate::response::attempt")] ClaudeSetupStarting),
+        AwaitingCode(#[serde(deserialize_with = "crate::response::attempt")] ClaudeSetupAwaitingCode),
+        Minting(#[serde(deserialize_with = "crate::response::attempt")] ClaudeSetupMinting),
+        Completed(#[serde(deserialize_with = "crate::response::attempt")] ClaudeSetupCompleted),
+        Failed(#[serde(deserialize_with = "crate::response::attempt")] ClaudeSetupFailed),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ClaudeSetupStarting> for ClaudeSetupStatus {
         fn from(value: ClaudeSetupStarting) -> Self {
@@ -5846,7 +5848,7 @@ pub mod types {
     pub enum CompactTranscriptPageForm {
         Compact,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for CompactTranscriptPageForm {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -5919,7 +5921,7 @@ pub mod types {
     pub enum CompletedTurnState {
         Completed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for CompletedTurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6033,7 +6035,7 @@ pub mod types {
     pub enum ConfigApiKeyKind {
         ApiKey,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConfigApiKeyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6081,7 +6083,7 @@ pub mod types {
         Delete,
         Rewrite,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConfigChangeAction {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6122,9 +6124,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ConfigExpiry {
-        DateTime(::chrono::DateTime<::chrono::FixedOffset>),
-        SecretValueSource(SecretValueSource),
-        Unrecognised(::serde_json::Value),
+        DateTime(#[serde(deserialize_with = "crate::response::attempt")] ::chrono::DateTime<::chrono::FixedOffset>),
+        SecretValueSource(#[serde(deserialize_with = "crate::response::attempt")] SecretValueSource),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<::chrono::DateTime<::chrono::FixedOffset>> for ConfigExpiry {
         fn from(value: ::chrono::DateTime<::chrono::FixedOffset>) -> Self {
@@ -6157,9 +6159,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ConfigFileWrite {
-        InlineConfigFile(InlineConfigFile),
-        StoredConfigFile(StoredConfigFile),
-        Unrecognised(::serde_json::Value),
+        InlineConfigFile(#[serde(deserialize_with = "crate::response::attempt")] InlineConfigFile),
+        StoredConfigFile(#[serde(deserialize_with = "crate::response::attempt")] StoredConfigFile),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<InlineConfigFile> for ConfigFileWrite {
         fn from(value: InlineConfigFile) -> Self {
@@ -6229,7 +6231,7 @@ pub mod types {
         Host,
         Trigger,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConfigResource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6272,10 +6274,10 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ConfigSecret {
-        SecretVariable(ConfigSecretVariable),
-        ApiKey(ConfigApiKey),
-        SubscriptionToken(ConfigSubscriptionToken),
-        Unrecognised(::serde_json::Value),
+        SecretVariable(#[serde(deserialize_with = "crate::response::attempt")] ConfigSecretVariable),
+        ApiKey(#[serde(deserialize_with = "crate::response::attempt")] ConfigApiKey),
+        SubscriptionToken(#[serde(deserialize_with = "crate::response::attempt")] ConfigSubscriptionToken),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ConfigSecretVariable> for ConfigSecret {
         fn from(value: ConfigSecretVariable) -> Self {
@@ -6317,7 +6319,7 @@ pub mod types {
     pub enum ConfigSecretVariableKind {
         Variable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConfigSecretVariableKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6364,7 +6366,7 @@ pub mod types {
     pub enum ConfigSubscriptionTokenKind {
         SubscriptionToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConfigSubscriptionTokenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6423,7 +6425,7 @@ pub mod types {
     pub enum ConnectedConnectionState {
         Connected,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConnectedConnectionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6460,7 +6462,7 @@ pub mod types {
         GitHub,
         OpenRouter,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConnectionKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6500,7 +6502,7 @@ pub mod types {
         NotConnected,
         Connected,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConnectionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6539,10 +6541,10 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ConnectionSummary {
-        ConnectedConnection(ConnectedConnection),
-        NotConnectedConnection(NotConnectedConnection),
-        NotConfiguredConnection(NotConfiguredConnection),
-        Unrecognised(::serde_json::Value),
+        ConnectedConnection(#[serde(deserialize_with = "crate::response::attempt")] ConnectedConnection),
+        NotConnectedConnection(#[serde(deserialize_with = "crate::response::attempt")] NotConnectedConnection),
+        NotConfiguredConnection(#[serde(deserialize_with = "crate::response::attempt")] NotConfiguredConnection),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ConnectedConnection> for ConnectionSummary {
         fn from(value: ConnectedConnection) -> Self {
@@ -6563,9 +6565,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum Connector {
-        StaticConnector(StaticConnector),
-        OAuthConnector(OAuthConnector),
-        Unrecognised(::serde_json::Value),
+        StaticConnector(#[serde(deserialize_with = "crate::response::attempt")] StaticConnector),
+        OAuthConnector(#[serde(deserialize_with = "crate::response::attempt")] OAuthConnector),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<StaticConnector> for Connector {
         fn from(value: StaticConnector) -> Self {
@@ -6593,7 +6595,7 @@ pub mod types {
         Static,
         OAuth,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorAuth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6657,7 +6659,7 @@ pub mod types {
     pub enum ConnectorAuthorizationFailedState {
         AuthorizationFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorAuthorizationFailedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6696,7 +6698,7 @@ pub mod types {
         TokenExchangeFailed,
         RefreshRefused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorAuthorizationFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6745,7 +6747,7 @@ pub mod types {
     pub enum ConnectorConnectedState {
         Connected,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorConnectedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6788,7 +6790,7 @@ pub mod types {
     pub enum ConnectorDisconnectedState {
         Disconnected,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorDisconnectedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6844,7 +6846,7 @@ pub mod types {
     pub enum ConnectorNotConnectedState {
         NotConnected,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorNotConnectedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6883,7 +6885,7 @@ pub mod types {
         Disconnected,
         AuthorizationFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ConnectorState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -6924,11 +6926,11 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ConnectorStatus {
-        NotConnected(ConnectorNotConnected),
-        Connected(ConnectorConnected),
-        Disconnected(ConnectorDisconnected),
-        AuthorizationFailed(ConnectorAuthorizationFailed),
-        Unrecognised(::serde_json::Value),
+        NotConnected(#[serde(deserialize_with = "crate::response::attempt")] ConnectorNotConnected),
+        Connected(#[serde(deserialize_with = "crate::response::attempt")] ConnectorConnected),
+        Disconnected(#[serde(deserialize_with = "crate::response::attempt")] ConnectorDisconnected),
+        AuthorizationFailed(#[serde(deserialize_with = "crate::response::attempt")] ConnectorAuthorizationFailed),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ConnectorNotConnected> for ConnectorStatus {
         fn from(value: ConnectorNotConnected) -> Self {
@@ -7114,7 +7116,7 @@ pub mod types {
         NotBilled,
         NotReported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for CostBasis {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7155,7 +7157,7 @@ pub mod types {
         CatalogOrder,
         ModelProvider,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for CredentialChoice {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7205,7 +7207,7 @@ pub mod types {
     pub enum CredentialFileKeyKind {
         CredentialFile,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for CredentialFileKeyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7251,7 +7253,7 @@ pub mod types {
     pub enum CredentialFileMemberKind {
         CredentialFile,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for CredentialFileMemberKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7303,7 +7305,7 @@ pub mod types {
     pub enum CredentialFileUpdateKind {
         CredentialFile,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for CredentialFileUpdateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7350,7 +7352,7 @@ pub mod types {
     pub enum CredentialFileValueKind {
         CredentialFile,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for CredentialFileValueKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7412,7 +7414,7 @@ pub mod types {
         SubscriptionToken,
         CredentialFile,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for CredentialKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7563,7 +7565,7 @@ pub mod types {
     pub enum DegradedHostPresence {
         Degraded,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for DegradedHostPresence {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7940,7 +7942,7 @@ pub mod types {
         #[serde(rename = "urn:ietf:params:oauth:grant-type:device_code")]
         UrnIetfParamsOauthGrantTypeDeviceCode,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for DeviceTokenRequestGrantType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -7978,7 +7980,7 @@ pub mod types {
     pub enum DeviceTokenTokenType {
         Bearer,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for DeviceTokenTokenType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8090,7 +8092,7 @@ pub mod types {
     pub enum DraftTriggerTestKind {
         Draft,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for DraftTriggerTestKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8136,7 +8138,7 @@ pub mod types {
     pub enum EditPersonaFilePatchKind {
         Edit,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for EditPersonaFilePatchKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8358,7 +8360,7 @@ pub mod types {
     pub enum EndedSubscriptionState {
         Ended,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for EndedSubscriptionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8418,7 +8420,7 @@ pub mod types {
         Unused,
         Spent,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for EnrolmentTokenState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8606,7 +8608,7 @@ pub mod types {
     pub enum EventCursorExpiredProblemCode {
         EventCursorExpired,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for EventCursorExpiredProblemCode {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8649,9 +8651,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum EventProblem {
-        EventCursorExpiredProblem(EventCursorExpiredProblem),
-        Problem(Problem),
-        Unrecognised(::serde_json::Value),
+        EventCursorExpiredProblem(#[serde(deserialize_with = "crate::response::attempt")] EventCursorExpiredProblem),
+        Problem(#[serde(deserialize_with = "crate::response::attempt")] Problem),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<EventCursorExpiredProblem> for EventProblem {
         fn from(value: EventCursorExpiredProblem) -> Self {
@@ -8725,7 +8727,7 @@ pub mod types {
     pub enum FailedSessionState {
         Failed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for FailedSessionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8794,7 +8796,7 @@ pub mod types {
     pub enum FailedTurnState {
         Failed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for FailedTurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8906,7 +8908,7 @@ pub mod types {
         User,
         Organization,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GitHubAccountType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8951,7 +8953,7 @@ pub mod types {
     pub enum GitHubAppMissingState {
         AppMissing,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GitHubAppMissingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -8994,7 +8996,7 @@ pub mod types {
     pub enum GitHubAppReadyState {
         Ready,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GitHubAppReadyState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -9029,9 +9031,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum GitHubAppState {
-        Ready(GitHubAppReady),
-        Missing(GitHubAppMissing),
-        Unrecognised(::serde_json::Value),
+        Ready(#[serde(deserialize_with = "crate::response::attempt")] GitHubAppReady),
+        Missing(#[serde(deserialize_with = "crate::response::attempt")] GitHubAppMissing),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<GitHubAppReady> for GitHubAppState {
         fn from(value: GitHubAppReady) -> Self {
@@ -9100,7 +9102,7 @@ pub mod types {
         NotInstaller,
         InstallerUnknown,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GitHubInstallRefusal {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -9172,7 +9174,7 @@ pub mod types {
         Active,
         Suspended,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GitHubInstallationStatus {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -9427,7 +9429,7 @@ pub mod types {
         #[serde(rename = "issues")]
         Issues,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GitHubTriggerEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -9477,7 +9479,7 @@ pub mod types {
     pub enum GitHubTriggerSourceKind {
         GitHub,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GitHubTriggerSourceKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -9661,7 +9663,7 @@ pub mod types {
     pub enum GuestClaudeSetupCodeType {
         ClaudeSetupCode,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupCodeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -9707,7 +9709,7 @@ pub mod types {
     pub enum GuestClaudeSetupFailedType {
         ClaudeSetupFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -9747,7 +9749,7 @@ pub mod types {
         TokenNotStored,
         MintTimedOut,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -9881,7 +9883,7 @@ pub mod types {
     pub enum GuestClaudeSetupStartType {
         ClaudeSetupStart,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupStartType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -9925,7 +9927,7 @@ pub mod types {
     pub enum GuestClaudeSetupStoredType {
         ClaudeSetupStored,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupStoredType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -9973,7 +9975,7 @@ pub mod types {
     pub enum GuestClaudeSetupUrlType {
         ClaudeSetupUrl,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestClaudeSetupUrlType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -10391,7 +10393,7 @@ pub mod types {
         PromptOnStdin,
         CodexExecJson,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestHarnessProtocol {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -10659,7 +10661,7 @@ pub mod types {
     pub enum GuestHelloType {
         GuestHello,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestHelloType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -10857,11 +10859,11 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum GuestInput {
-        TurnStart(GuestTurnStart),
-        TurnCancel(GuestTurnCancel),
-        ClaudeSetupStart(GuestClaudeSetupStart),
-        ClaudeSetupCode(GuestClaudeSetupCode),
-        Unrecognised(::serde_json::Value),
+        TurnStart(#[serde(deserialize_with = "crate::response::attempt")] GuestTurnStart),
+        TurnCancel(#[serde(deserialize_with = "crate::response::attempt")] GuestTurnCancel),
+        ClaudeSetupStart(#[serde(deserialize_with = "crate::response::attempt")] GuestClaudeSetupStart),
+        ClaudeSetupCode(#[serde(deserialize_with = "crate::response::attempt")] GuestClaudeSetupCode),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<GuestTurnStart> for GuestInput {
         fn from(value: GuestTurnStart) -> Self {
@@ -10887,15 +10889,17 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum GuestMessage {
-        Hello(GuestHello),
-        TurnRepositoryReady(GuestTurnRepositoryReady),
-        TurnLine(GuestTurnLine),
-        TurnRepositoryCloneFailed(GuestTurnRepositoryCloneFailed),
-        TurnEnd(GuestTurnEnd),
-        ClaudeSetupUrl(GuestClaudeSetupUrl),
-        ClaudeSetupStored(GuestClaudeSetupStored),
-        ClaudeSetupFailed(GuestClaudeSetupFailed),
-        Unrecognised(::serde_json::Value),
+        Hello(#[serde(deserialize_with = "crate::response::attempt")] GuestHello),
+        TurnRepositoryReady(#[serde(deserialize_with = "crate::response::attempt")] GuestTurnRepositoryReady),
+        TurnLine(#[serde(deserialize_with = "crate::response::attempt")] GuestTurnLine),
+        TurnRepositoryCloneFailed(
+            #[serde(deserialize_with = "crate::response::attempt")] GuestTurnRepositoryCloneFailed,
+        ),
+        TurnEnd(#[serde(deserialize_with = "crate::response::attempt")] GuestTurnEnd),
+        ClaudeSetupUrl(#[serde(deserialize_with = "crate::response::attempt")] GuestClaudeSetupUrl),
+        ClaudeSetupStored(#[serde(deserialize_with = "crate::response::attempt")] GuestClaudeSetupStored),
+        ClaudeSetupFailed(#[serde(deserialize_with = "crate::response::attempt")] GuestClaudeSetupFailed),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<GuestHello> for GuestMessage {
         fn from(value: GuestHello) -> Self {
@@ -11229,7 +11233,7 @@ pub mod types {
     pub enum GuestTurnCancelType {
         TurnCancel,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnCancelType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -11360,7 +11364,7 @@ pub mod types {
         Cancelled,
         BoxDiskFull,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnEndReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -11406,7 +11410,7 @@ pub mod types {
     pub enum GuestTurnEndType {
         TurnEnd,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnEndType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -11522,7 +11526,7 @@ pub mod types {
     pub enum GuestTurnLineType {
         TurnLine,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnLineType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -11568,7 +11572,7 @@ pub mod types {
     pub enum GuestTurnRepositoryCloneFailedType {
         TurnRepositoryCloneFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnRepositoryCloneFailedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -11612,7 +11616,7 @@ pub mod types {
     pub enum GuestTurnRepositoryReadyType {
         TurnRepositoryReady,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnRepositoryReadyType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -11759,7 +11763,7 @@ pub mod types {
     pub enum GuestTurnStartType {
         TurnStart,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for GuestTurnStartType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -11799,7 +11803,7 @@ pub mod types {
         PiDev,
         MistralAgent,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for Harness {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -11991,7 +11995,7 @@ pub mod types {
     pub enum HealthStatus {
         Ok,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for HealthStatus {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12026,10 +12030,10 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum Host {
-        OnlineHost(OnlineHost),
-        DegradedHost(DegradedHost),
-        OfflineHost(OfflineHost),
-        Unrecognised(::serde_json::Value),
+        OnlineHost(#[serde(deserialize_with = "crate::response::attempt")] OnlineHost),
+        DegradedHost(#[serde(deserialize_with = "crate::response::attempt")] DegradedHost),
+        OfflineHost(#[serde(deserialize_with = "crate::response::attempt")] OfflineHost),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<OnlineHost> for Host {
         fn from(value: OnlineHost) -> Self {
@@ -12052,7 +12056,7 @@ pub mod types {
         Amd64,
         Arm64,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for HostArchitecture {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12268,9 +12272,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum HostChannelProtocol {
-        ProtocolNotReported(HostProtocolNotReported),
-        ChannelProtocolReported(HostChannelProtocolReported),
-        Unrecognised(::serde_json::Value),
+        ProtocolNotReported(#[serde(deserialize_with = "crate::response::attempt")] HostProtocolNotReported),
+        ChannelProtocolReported(#[serde(deserialize_with = "crate::response::attempt")] HostChannelProtocolReported),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<HostProtocolNotReported> for HostChannelProtocol {
         fn from(value: HostProtocolNotReported) -> Self {
@@ -12296,7 +12300,7 @@ pub mod types {
     pub enum HostChannelProtocolReportedState {
         Reported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for HostChannelProtocolReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12554,9 +12558,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum HostGuestProtocol {
-        ProtocolNotReported(HostProtocolNotReported),
-        GuestProtocolReported(HostGuestProtocolReported),
-        Unrecognised(::serde_json::Value),
+        ProtocolNotReported(#[serde(deserialize_with = "crate::response::attempt")] HostProtocolNotReported),
+        GuestProtocolReported(#[serde(deserialize_with = "crate::response::attempt")] HostGuestProtocolReported),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<HostProtocolNotReported> for HostGuestProtocol {
         fn from(value: HostProtocolNotReported) -> Self {
@@ -12582,7 +12586,7 @@ pub mod types {
     pub enum HostGuestProtocolReportedState {
         Reported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for HostGuestProtocolReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12618,7 +12622,7 @@ pub mod types {
     pub enum HostHealth {
         Healthy,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for HostHealth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12753,7 +12757,7 @@ pub mod types {
     pub enum HostOfflineEventEvent {
         HostOffline,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for HostOfflineEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12802,7 +12806,7 @@ pub mod types {
     pub enum HostOnlineEventEvent {
         HostOnline,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for HostOnlineEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12840,7 +12844,7 @@ pub mod types {
         Degraded,
         Offline,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for HostPresence {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12885,7 +12889,7 @@ pub mod types {
     pub enum HostProtocolNotReportedState {
         NotReported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for HostProtocolNotReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12922,7 +12926,7 @@ pub mod types {
         Healthy,
         RateLimited,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for HostReportedHealth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -12963,7 +12967,7 @@ pub mod types {
         Offline,
         Revoked,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for HostState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -13151,7 +13155,7 @@ pub mod types {
     pub enum IdleSessionState {
         Idle,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for IdleSessionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -13192,7 +13196,7 @@ pub mod types {
         MistralAgent,
         Shell,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ImageHarness {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -13410,7 +13414,7 @@ pub mod types {
     pub enum InlineConfigFileSource {
         Inline,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for InlineConfigFileSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -13467,7 +13471,7 @@ pub mod types {
     pub enum InlinePersonaFileReadSource {
         Inline,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for InlinePersonaFileReadSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -13503,7 +13507,7 @@ pub mod types {
     pub enum InlinePersonaFileSource {
         Inline,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for InlinePersonaFileSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -13690,9 +13694,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum InstallRecipe {
-        NpmInstallRecipe(NpmInstallRecipe),
-        ArchiveInstallRecipe(ArchiveInstallRecipe),
-        Unrecognised(::serde_json::Value),
+        NpmInstallRecipe(#[serde(deserialize_with = "crate::response::attempt")] NpmInstallRecipe),
+        ArchiveInstallRecipe(#[serde(deserialize_with = "crate::response::attempt")] ArchiveInstallRecipe),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<NpmInstallRecipe> for InstallRecipe {
         fn from(value: NpmInstallRecipe) -> Self {
@@ -13829,7 +13833,7 @@ pub mod types {
         #[serde(rename = "RS256")]
         Rs256,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for IssuerJwkAlg {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -13935,7 +13939,7 @@ pub mod types {
         #[serde(rename = "RSA")]
         Rsa,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for IssuerJwkKty {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -14041,7 +14045,7 @@ pub mod types {
         #[serde(rename = "sig")]
         Sig,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for IssuerJwkUse {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -14308,7 +14312,7 @@ pub mod types {
         Hour,
         Day,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for MetricBucket {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -14660,7 +14664,7 @@ pub mod types {
         Turn,
         Sample,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for MetricKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -14899,7 +14903,7 @@ pub mod types {
         Google,
         OpenRouter,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ModelProvider {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -14942,9 +14946,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum ModelSupport {
-        Listed(ModelSupportListed),
-        ProviderChecked(ModelSupportProviderChecked),
-        Unrecognised(::serde_json::Value),
+        Listed(#[serde(deserialize_with = "crate::response::attempt")] ModelSupportListed),
+        ProviderChecked(#[serde(deserialize_with = "crate::response::attempt")] ModelSupportProviderChecked),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ModelSupportListed> for ModelSupport {
         fn from(value: ModelSupportListed) -> Self {
@@ -14967,7 +14971,7 @@ pub mod types {
     pub enum ModelSupportListedKind {
         Listed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ModelSupportListedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15008,7 +15012,7 @@ pub mod types {
     pub enum ModelSupportProviderCheckedKind {
         ProviderChecked,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ModelSupportProviderCheckedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15050,7 +15054,7 @@ pub mod types {
     pub enum NotConfiguredConnectionState {
         NotConfigured,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for NotConfiguredConnectionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15092,7 +15096,7 @@ pub mod types {
     pub enum NotConnectedConnectionState {
         NotConnected,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for NotConnectedConnectionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15136,7 +15140,7 @@ pub mod types {
     pub enum NpmInstallRecipeKind {
         Npm,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for NpmInstallRecipeKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15322,7 +15326,7 @@ pub mod types {
         #[serde(rename = "authorization_code")]
         AuthorizationCode,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OAuthAuthorizationCodeRequestGrantType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15378,7 +15382,7 @@ pub mod types {
         #[serde(rename = "none")]
         None,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OAuthClientTokenEndpointAuthMethod {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15432,7 +15436,7 @@ pub mod types {
     pub enum OAuthConnectorAuth {
         OAuth,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OAuthConnectorAuth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15505,7 +15509,7 @@ pub mod types {
         #[serde(rename = "expired_token")]
         ExpiredToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OAuthErrorCode {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15592,7 +15596,7 @@ pub mod types {
         #[serde(rename = "refresh_token")]
         RefreshToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OAuthRefreshTokenRequestGrantType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15644,9 +15648,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum OAuthTokenRequest {
-        AuthorizationCodeRequest(OAuthAuthorizationCodeRequest),
-        RefreshTokenRequest(OAuthRefreshTokenRequest),
-        Unrecognised(::serde_json::Value),
+        AuthorizationCodeRequest(#[serde(deserialize_with = "crate::response::attempt")] OAuthAuthorizationCodeRequest),
+        RefreshTokenRequest(#[serde(deserialize_with = "crate::response::attempt")] OAuthRefreshTokenRequest),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<OAuthAuthorizationCodeRequest> for OAuthTokenRequest {
         fn from(value: OAuthAuthorizationCodeRequest) -> Self {
@@ -15663,7 +15667,7 @@ pub mod types {
     pub enum OAuthTokenTokenType {
         Bearer,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OAuthTokenTokenType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15727,7 +15731,7 @@ pub mod types {
     pub enum OfferedTurnState {
         Offered,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OfferedTurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -15805,7 +15809,7 @@ pub mod types {
     pub enum OfflineHostPresence {
         Offline,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OfflineHostPresence {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16024,7 +16028,7 @@ pub mod types {
     pub enum OnlineHostPresence {
         Online,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OnlineHostPresence {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16224,7 +16228,7 @@ pub mod types {
         #[serde(rename = "jti")]
         Jti,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OpenIdConfigurationClaimsSupportedItem {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16273,7 +16277,7 @@ pub mod types {
         #[serde(rename = "RS256")]
         Rs256,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OpenIdConfigurationIdTokenSigningAlgValuesSupportedItem {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16310,7 +16314,7 @@ pub mod types {
         #[serde(rename = "id_token")]
         IdToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OpenIdConfigurationResponseTypesSupportedItem {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16347,7 +16351,7 @@ pub mod types {
         #[serde(rename = "openid")]
         Openid,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OpenIdConfigurationScopesSupportedItem {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16384,7 +16388,7 @@ pub mod types {
         #[serde(rename = "public")]
         Public,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OpenIdConfigurationSubjectTypesSupportedItem {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16452,7 +16456,7 @@ pub mod types {
     pub enum OpenRouterAuthorizationAwaitingCallbackState {
         AwaitingCallback,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationAwaitingCallbackState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16498,7 +16502,7 @@ pub mod types {
     pub enum OpenRouterAuthorizationCompletedState {
         Completed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationCompletedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16542,7 +16546,7 @@ pub mod types {
     pub enum OpenRouterAuthorizationExchangingState {
         Exchanging,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationExchangingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16588,7 +16592,7 @@ pub mod types {
     pub enum OpenRouterAuthorizationFailedState {
         Failed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationFailedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16628,7 +16632,7 @@ pub mod types {
         ExchangeFailed,
         KeyNotStored,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16681,7 +16685,7 @@ pub mod types {
         Completed,
         Failed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for OpenRouterAuthorizationState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16722,11 +16726,13 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum OpenRouterAuthorizationStatus {
-        AwaitingCallback(OpenRouterAuthorizationAwaitingCallback),
-        Exchanging(OpenRouterAuthorizationExchanging),
-        Completed(OpenRouterAuthorizationCompleted),
-        Failed(OpenRouterAuthorizationFailed),
-        Unrecognised(::serde_json::Value),
+        AwaitingCallback(
+            #[serde(deserialize_with = "crate::response::attempt")] OpenRouterAuthorizationAwaitingCallback,
+        ),
+        Exchanging(#[serde(deserialize_with = "crate::response::attempt")] OpenRouterAuthorizationExchanging),
+        Completed(#[serde(deserialize_with = "crate::response::attempt")] OpenRouterAuthorizationCompleted),
+        Failed(#[serde(deserialize_with = "crate::response::attempt")] OpenRouterAuthorizationFailed),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<OpenRouterAuthorizationAwaitingCallback> for OpenRouterAuthorizationStatus {
         fn from(value: OpenRouterAuthorizationAwaitingCallback) -> Self {
@@ -16864,7 +16870,7 @@ pub mod types {
     pub enum PausedSubscriptionState {
         Paused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PausedSubscriptionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -16907,7 +16913,7 @@ pub mod types {
     pub enum PersonOriginKind {
         Person,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PersonOriginKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17016,9 +17022,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum PersonaFile {
-        InlinePersonaFileRead(InlinePersonaFileRead),
-        StoredPersonaFileRead(StoredPersonaFileRead),
-        Unrecognised(::serde_json::Value),
+        InlinePersonaFileRead(#[serde(deserialize_with = "crate::response::attempt")] InlinePersonaFileRead),
+        StoredPersonaFileRead(#[serde(deserialize_with = "crate::response::attempt")] StoredPersonaFileRead),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<InlinePersonaFileRead> for PersonaFile {
         fn from(value: InlinePersonaFileRead) -> Self {
@@ -17148,10 +17154,10 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum PersonaFilePatch {
-        PutPersonaFilePatch(PutPersonaFilePatch),
-        RemovePersonaFilePatch(RemovePersonaFilePatch),
-        EditPersonaFilePatch(EditPersonaFilePatch),
-        Unrecognised(::serde_json::Value),
+        PutPersonaFilePatch(#[serde(deserialize_with = "crate::response::attempt")] PutPersonaFilePatch),
+        RemovePersonaFilePatch(#[serde(deserialize_with = "crate::response::attempt")] RemovePersonaFilePatch),
+        EditPersonaFilePatch(#[serde(deserialize_with = "crate::response::attempt")] EditPersonaFilePatch),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<PutPersonaFilePatch> for PersonaFilePatch {
         fn from(value: PutPersonaFilePatch) -> Self {
@@ -17175,7 +17181,7 @@ pub mod types {
         Remove,
         Edit,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PersonaFilePatchKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17330,7 +17336,7 @@ pub mod types {
         Inline,
         Stored,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PersonaFileSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17388,9 +17394,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum PersonaFileWrite {
-        InlinePersonaFile(InlinePersonaFile),
-        StoredPersonaFile(StoredPersonaFile),
-        Unrecognised(::serde_json::Value),
+        InlinePersonaFile(#[serde(deserialize_with = "crate::response::attempt")] InlinePersonaFile),
+        StoredPersonaFile(#[serde(deserialize_with = "crate::response::attempt")] StoredPersonaFile),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<InlinePersonaFile> for PersonaFileWrite {
         fn from(value: InlinePersonaFile) -> Self {
@@ -17569,7 +17575,7 @@ pub mod types {
     pub enum PrebuildBuildingState {
         Building,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildBuildingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17606,7 +17612,7 @@ pub mod types {
         RepositoryFile,
         Default,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildConfigSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17656,7 +17662,7 @@ pub mod types {
     pub enum PrebuildConvertingState {
         Converting,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildConvertingState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17697,7 +17703,7 @@ pub mod types {
     pub enum PrebuildDispatchedState {
         Dispatched,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildDispatchedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17759,7 +17765,7 @@ pub mod types {
     pub enum PrebuildDoneEventEvent {
         PrebuildDone,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildDoneEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17795,7 +17801,7 @@ pub mod types {
     pub enum PrebuildDoneState {
         Done,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildDoneState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17854,7 +17860,7 @@ pub mod types {
     pub enum PrebuildFailedEventEvent {
         PrebuildFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildFailedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17890,7 +17896,7 @@ pub mod types {
     pub enum PrebuildFailedState {
         Failed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildFailedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17944,7 +17950,7 @@ pub mod types {
         Upload,
         Conversion,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildFailurePhase {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -17998,7 +18004,7 @@ pub mod types {
         PrebuildFeaturesUnsupported,
         ToolchainMismatch,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildFindingCode {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18045,7 +18051,7 @@ pub mod types {
         OtherGuestImage,
         NotRecorded,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildLayerAbsence {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18094,7 +18100,7 @@ pub mod types {
         PostCreateCommand,
         PostStartCommand,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildLifecycleCommand {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18173,7 +18179,7 @@ pub mod types {
     pub enum PrebuildPreviewOfRepositorySource {
         RepositoryFile,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildPreviewOfRepositorySource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18287,7 +18293,7 @@ pub mod types {
     pub enum PrebuildPreviewOfSuppliedSource {
         Supplied,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildPreviewOfSuppliedSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18322,9 +18328,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum PrebuildPreviewRequest {
-        Repository(PrebuildPreviewOfRepository),
-        Supplied(PrebuildPreviewOfSupplied),
-        Unrecognised(::serde_json::Value),
+        Repository(#[serde(deserialize_with = "crate::response::attempt")] PrebuildPreviewOfRepository),
+        Supplied(#[serde(deserialize_with = "crate::response::attempt")] PrebuildPreviewOfSupplied),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<PrebuildPreviewOfRepository> for PrebuildPreviewRequest {
         fn from(value: PrebuildPreviewOfRepository) -> Self {
@@ -18342,7 +18348,7 @@ pub mod types {
         RepositoryFile,
         Supplied,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildPreviewSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18396,7 +18402,7 @@ pub mod types {
         Done,
         Failed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrebuildState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18439,12 +18445,12 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum PrebuildStatus {
-        Dispatched(PrebuildDispatched),
-        Building(PrebuildBuilding),
-        Converting(PrebuildConverting),
-        Done(PrebuildDone),
-        Failed(PrebuildFailed),
-        Unrecognised(::serde_json::Value),
+        Dispatched(#[serde(deserialize_with = "crate::response::attempt")] PrebuildDispatched),
+        Building(#[serde(deserialize_with = "crate::response::attempt")] PrebuildBuilding),
+        Converting(#[serde(deserialize_with = "crate::response::attempt")] PrebuildConverting),
+        Done(#[serde(deserialize_with = "crate::response::attempt")] PrebuildDone),
+        Failed(#[serde(deserialize_with = "crate::response::attempt")] PrebuildFailed),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<PrebuildDispatched> for PrebuildStatus {
         fn from(value: PrebuildDispatched) -> Self {
@@ -18823,7 +18829,7 @@ pub mod types {
         Owner,
         Member,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PrincipalRole {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -18937,7 +18943,7 @@ pub mod types {
         UsageLimitReached,
         AboveFreeTier,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for ProblemCode {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -19189,7 +19195,7 @@ pub mod types {
         Merged,
         Closed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PullRequestState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -19632,7 +19638,7 @@ pub mod types {
     pub enum PutPersonaFilePatchKind {
         Put,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for PutPersonaFilePatchKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -19678,7 +19684,7 @@ pub mod types {
     pub enum RawTranscriptPageForm {
         Raw,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for RawTranscriptPageForm {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20206,7 +20212,7 @@ pub mod types {
     pub enum RemovePersonaFilePatchKind {
         Remove,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for RemovePersonaFilePatchKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20284,7 +20290,7 @@ pub mod types {
         DirectoryNotEmpty,
         Other,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for RepositoryCloneFailureCause {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20328,7 +20334,7 @@ pub mod types {
         SecretSet,
         None,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for RepositoryCredentialSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20513,7 +20519,7 @@ pub mod types {
     pub enum RunningSessionState {
         Running,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for RunningSessionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20577,7 +20583,7 @@ pub mod types {
     pub enum RunningTurnState {
         Running,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for RunningTurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20620,11 +20626,11 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SecretKey {
-        SecretVariableKey(SecretVariableKey),
-        ApiKeyKey(ApiKeyKey),
-        SubscriptionTokenKey(SubscriptionTokenKey),
-        CredentialFileKey(CredentialFileKey),
-        Unrecognised(::serde_json::Value),
+        SecretVariableKey(#[serde(deserialize_with = "crate::response::attempt")] SecretVariableKey),
+        ApiKeyKey(#[serde(deserialize_with = "crate::response::attempt")] ApiKeyKey),
+        SubscriptionTokenKey(#[serde(deserialize_with = "crate::response::attempt")] SubscriptionTokenKey),
+        CredentialFileKey(#[serde(deserialize_with = "crate::response::attempt")] CredentialFileKey),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SecretVariableKey> for SecretKey {
         fn from(value: SecretVariableKey) -> Self {
@@ -20657,7 +20663,7 @@ pub mod types {
         SubscriptionToken,
         CredentialFile,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SecretKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20698,11 +20704,11 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SecretMemberUpdate {
-        SecretVariableUpdate(SecretVariableUpdate),
-        ApiKeyUpdate(ApiKeyUpdate),
-        SubscriptionTokenUpdate(SubscriptionTokenUpdate),
-        CredentialFileUpdate(CredentialFileUpdate),
-        Unrecognised(::serde_json::Value),
+        SecretVariableUpdate(#[serde(deserialize_with = "crate::response::attempt")] SecretVariableUpdate),
+        ApiKeyUpdate(#[serde(deserialize_with = "crate::response::attempt")] ApiKeyUpdate),
+        SubscriptionTokenUpdate(#[serde(deserialize_with = "crate::response::attempt")] SubscriptionTokenUpdate),
+        CredentialFileUpdate(#[serde(deserialize_with = "crate::response::attempt")] CredentialFileUpdate),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SecretVariableUpdate> for SecretMemberUpdate {
         fn from(value: SecretVariableUpdate) -> Self {
@@ -20906,11 +20912,11 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SecretValue {
-        SecretVariableValue(SecretVariableValue),
-        ApiKeyValue(ApiKeyValue),
-        SubscriptionTokenValue(SubscriptionTokenValue),
-        CredentialFileValue(CredentialFileValue),
-        Unrecognised(::serde_json::Value),
+        SecretVariableValue(#[serde(deserialize_with = "crate::response::attempt")] SecretVariableValue),
+        ApiKeyValue(#[serde(deserialize_with = "crate::response::attempt")] ApiKeyValue),
+        SubscriptionTokenValue(#[serde(deserialize_with = "crate::response::attempt")] SubscriptionTokenValue),
+        CredentialFileValue(#[serde(deserialize_with = "crate::response::attempt")] CredentialFileValue),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SecretVariableValue> for SecretValue {
         fn from(value: SecretVariableValue) -> Self {
@@ -20950,7 +20956,7 @@ pub mod types {
     pub enum SecretVariableKeyKind {
         Variable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SecretVariableKeyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -20992,7 +20998,7 @@ pub mod types {
     pub enum SecretVariableMemberKind {
         Variable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SecretVariableMemberKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21040,7 +21046,7 @@ pub mod types {
     pub enum SecretVariableUpdateKind {
         Variable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SecretVariableUpdateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21083,7 +21089,7 @@ pub mod types {
     pub enum SecretVariableValueKind {
         Variable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SecretVariableValueKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21161,15 +21167,15 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum Session {
-        StartingSession(StartingSession),
-        IdleSession(IdleSession),
-        RunningSession(RunningSession),
-        StoppingSession(StoppingSession),
-        StoppedSession(StoppedSession),
-        ArchivedSession(ArchivedSession),
-        FailedSession(FailedSession),
-        UnknownSession(UnknownSession),
-        Unrecognised(::serde_json::Value),
+        StartingSession(#[serde(deserialize_with = "crate::response::attempt")] StartingSession),
+        IdleSession(#[serde(deserialize_with = "crate::response::attempt")] IdleSession),
+        RunningSession(#[serde(deserialize_with = "crate::response::attempt")] RunningSession),
+        StoppingSession(#[serde(deserialize_with = "crate::response::attempt")] StoppingSession),
+        StoppedSession(#[serde(deserialize_with = "crate::response::attempt")] StoppedSession),
+        ArchivedSession(#[serde(deserialize_with = "crate::response::attempt")] ArchivedSession),
+        FailedSession(#[serde(deserialize_with = "crate::response::attempt")] FailedSession),
+        UnknownSession(#[serde(deserialize_with = "crate::response::attempt")] UnknownSession),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<StartingSession> for Session {
         fn from(value: StartingSession) -> Self {
@@ -21229,7 +21235,7 @@ pub mod types {
     pub enum SessionArchivedEventEvent {
         SessionArchived,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SessionArchivedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21334,7 +21340,7 @@ pub mod types {
     pub enum SessionFailedEventEvent {
         SessionFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SessionFailedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21386,7 +21392,7 @@ pub mod types {
     pub enum SessionIdleEventEvent {
         SessionIdle,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SessionIdleEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21445,7 +21451,7 @@ pub mod types {
     pub enum SessionIssueOriginKind {
         Issue,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SessionIssueOriginKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21480,9 +21486,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SessionOrigin {
-        PromptOrigin(SessionPromptOrigin),
-        IssueOrigin(SessionIssueOrigin),
-        Unrecognised(::serde_json::Value),
+        PromptOrigin(#[serde(deserialize_with = "crate::response::attempt")] SessionPromptOrigin),
+        IssueOrigin(#[serde(deserialize_with = "crate::response::attempt")] SessionIssueOrigin),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SessionPromptOrigin> for SessionOrigin {
         fn from(value: SessionPromptOrigin) -> Self {
@@ -21498,9 +21504,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SessionPrebuildLayer {
-        Stored(SessionPrebuildLayerStored),
-        Absent(SessionPrebuildLayerAbsent),
-        Unrecognised(::serde_json::Value),
+        Stored(#[serde(deserialize_with = "crate::response::attempt")] SessionPrebuildLayerStored),
+        Absent(#[serde(deserialize_with = "crate::response::attempt")] SessionPrebuildLayerAbsent),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SessionPrebuildLayerStored> for SessionPrebuildLayer {
         fn from(value: SessionPrebuildLayerStored) -> Self {
@@ -21524,7 +21530,7 @@ pub mod types {
     pub enum SessionPrebuildLayerAbsentLayer {
         None,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SessionPrebuildLayerAbsentLayer {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21570,7 +21576,7 @@ pub mod types {
     pub enum SessionPrebuildLayerStoredLayer {
         Prebuild,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SessionPrebuildLayerStoredLayer {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21611,7 +21617,7 @@ pub mod types {
     pub enum SessionPromptOriginKind {
         Prompt,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SessionPromptOriginKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21679,10 +21685,10 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SessionStartedBy {
-        PersonOrigin(PersonOrigin),
-        TurnOrigin(TurnOrigin),
-        TriggerOrigin(TriggerOrigin),
-        Unrecognised(::serde_json::Value),
+        PersonOrigin(#[serde(deserialize_with = "crate::response::attempt")] PersonOrigin),
+        TurnOrigin(#[serde(deserialize_with = "crate::response::attempt")] TurnOrigin),
+        TriggerOrigin(#[serde(deserialize_with = "crate::response::attempt")] TriggerOrigin),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<PersonOrigin> for SessionStartedBy {
         fn from(value: PersonOrigin) -> Self {
@@ -21711,7 +21717,7 @@ pub mod types {
         Failed,
         Unknown,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SessionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -21774,7 +21780,7 @@ pub mod types {
     pub enum SessionStoppedEventEvent {
         SessionStopped,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SessionStoppedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -22079,7 +22085,7 @@ pub mod types {
     pub enum SnapshotDirectoryEntryKind {
         Directory,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotDirectoryEntryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -22183,12 +22189,12 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SnapshotEntry {
-        FileEntry(SnapshotFileEntry),
-        DirectoryEntry(SnapshotDirectoryEntry),
-        OpaqueDirectoryEntry(SnapshotOpaqueDirectoryEntry),
-        SymlinkEntry(SnapshotSymlinkEntry),
-        WhiteoutEntry(SnapshotWhiteoutEntry),
-        Unrecognised(::serde_json::Value),
+        FileEntry(#[serde(deserialize_with = "crate::response::attempt")] SnapshotFileEntry),
+        DirectoryEntry(#[serde(deserialize_with = "crate::response::attempt")] SnapshotDirectoryEntry),
+        OpaqueDirectoryEntry(#[serde(deserialize_with = "crate::response::attempt")] SnapshotOpaqueDirectoryEntry),
+        SymlinkEntry(#[serde(deserialize_with = "crate::response::attempt")] SnapshotSymlinkEntry),
+        WhiteoutEntry(#[serde(deserialize_with = "crate::response::attempt")] SnapshotWhiteoutEntry),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SnapshotFileEntry> for SnapshotEntry {
         fn from(value: SnapshotFileEntry) -> Self {
@@ -22312,7 +22318,7 @@ pub mod types {
     pub enum SnapshotFailureState {
         Failed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotFailureState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -22364,7 +22370,7 @@ pub mod types {
     pub enum SnapshotFileEntryKind {
         File,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotFileEntryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -22491,7 +22497,7 @@ pub mod types {
     pub enum SnapshotOpaqueDirectoryEntryKind {
         OpaqueDirectory,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotOpaqueDirectoryEntryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -22595,9 +22601,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SnapshotOutcome {
-        Stored(SnapshotStored),
-        Failure(SnapshotFailure),
-        Unrecognised(::serde_json::Value),
+        Stored(#[serde(deserialize_with = "crate::response::attempt")] SnapshotStored),
+        Failure(#[serde(deserialize_with = "crate::response::attempt")] SnapshotFailure),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SnapshotStored> for SnapshotOutcome {
         fn from(value: SnapshotStored) -> Self {
@@ -22629,7 +22635,7 @@ pub mod types {
     pub enum SnapshotStoredState {
         Stored,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotStoredState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -22679,7 +22685,7 @@ pub mod types {
     pub enum SnapshotSymlinkEntryKind {
         Symlink,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotSymlinkEntryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -22866,7 +22872,7 @@ pub mod types {
     pub enum SnapshotWhiteoutEntryKind {
         Whiteout,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SnapshotWhiteoutEntryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23041,7 +23047,7 @@ pub mod types {
     pub enum StartingSessionState {
         Starting,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for StartingSessionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23095,7 +23101,7 @@ pub mod types {
     pub enum StaticConnectorAuth {
         Static,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for StaticConnectorAuth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23163,7 +23169,7 @@ pub mod types {
         Delivered,
         TurnEnded,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SteerState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23221,7 +23227,7 @@ pub mod types {
         BoxDirty,
         NotAnswered,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for StopFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23316,7 +23322,7 @@ pub mod types {
     pub enum StoppedSessionState {
         Stopped,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for StoppedSessionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23409,7 +23415,7 @@ pub mod types {
     pub enum StoppingSessionState {
         Stopping,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for StoppingSessionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23523,7 +23529,7 @@ pub mod types {
     pub enum StoredConfigFileSource {
         Stored,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for StoredConfigFileSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23585,7 +23591,7 @@ pub mod types {
     pub enum StoredPersonaFileReadSource {
         Stored,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for StoredPersonaFileReadSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23621,7 +23627,7 @@ pub mod types {
     pub enum StoredPersonaFileSource {
         Stored,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for StoredPersonaFileSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23665,7 +23671,7 @@ pub mod types {
     pub enum StoredTriggerTestKind {
         Stored,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for StoredTriggerTestKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23713,10 +23719,10 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum Subscription {
-        ActiveSubscription(ActiveSubscription),
-        PausedSubscription(PausedSubscription),
-        EndedSubscription(EndedSubscription),
-        Unrecognised(::serde_json::Value),
+        ActiveSubscription(#[serde(deserialize_with = "crate::response::attempt")] ActiveSubscription),
+        PausedSubscription(#[serde(deserialize_with = "crate::response::attempt")] PausedSubscription),
+        EndedSubscription(#[serde(deserialize_with = "crate::response::attempt")] EndedSubscription),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ActiveSubscription> for Subscription {
         fn from(value: ActiveSubscription) -> Self {
@@ -23796,7 +23802,7 @@ pub mod types {
         Expired,
         GoalMet,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionEndReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23855,7 +23861,7 @@ pub mod types {
     pub enum SubscriptionEndedEventEvent {
         SubscriptionEnded,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionEndedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -23899,7 +23905,7 @@ pub mod types {
         SubscriptionPaused,
         SubscriptionEnded,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionEventType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24024,11 +24030,11 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SubscriptionPauseReason {
-        ByRequest(SubscriptionPausedByRequest),
-        DeliveryFailed(SubscriptionPausedDeliveryFailed),
-        CrewFailing(SubscriptionPausedCrewFailing),
-        CreditExhausted(SubscriptionPausedCreditExhausted),
-        Unrecognised(::serde_json::Value),
+        ByRequest(#[serde(deserialize_with = "crate::response::attempt")] SubscriptionPausedByRequest),
+        DeliveryFailed(#[serde(deserialize_with = "crate::response::attempt")] SubscriptionPausedDeliveryFailed),
+        CrewFailing(#[serde(deserialize_with = "crate::response::attempt")] SubscriptionPausedCrewFailing),
+        CreditExhausted(#[serde(deserialize_with = "crate::response::attempt")] SubscriptionPausedCreditExhausted),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SubscriptionPausedByRequest> for SubscriptionPauseReason {
         fn from(value: SubscriptionPausedByRequest) -> Self {
@@ -24061,7 +24067,7 @@ pub mod types {
     pub enum SubscriptionPausedByRequestKind {
         ByRequest,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionPausedByRequestKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24104,7 +24110,7 @@ pub mod types {
     pub enum SubscriptionPausedCreditExhaustedKind {
         CreditExhausted,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionPausedCreditExhaustedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24145,7 +24151,7 @@ pub mod types {
     pub enum SubscriptionPausedCrewFailingKind {
         CrewFailing,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionPausedCrewFailingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24188,7 +24194,7 @@ pub mod types {
     pub enum SubscriptionPausedDeliveryFailedKind {
         DeliveryFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionPausedDeliveryFailedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24241,7 +24247,7 @@ pub mod types {
     pub enum SubscriptionPausedEventEvent {
         SubscriptionPaused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionPausedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24279,7 +24285,7 @@ pub mod types {
         Paused,
         Ended,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24331,7 +24337,7 @@ pub mod types {
     pub enum SubscriptionTokenKeyKind {
         SubscriptionToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionTokenKeyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24377,7 +24383,7 @@ pub mod types {
     pub enum SubscriptionTokenMemberKind {
         SubscriptionToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionTokenMemberKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24429,7 +24435,7 @@ pub mod types {
     pub enum SubscriptionTokenUpdateKind {
         SubscriptionToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionTokenUpdateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24476,7 +24482,7 @@ pub mod types {
     pub enum SubscriptionTokenValueKind {
         SubscriptionToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SubscriptionTokenValueKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24687,7 +24693,7 @@ pub mod types {
         GuestDriveUnwritable,
         UpdateNotOnline,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorFailure {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24774,9 +24780,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SupervisorHandoverBoxState {
-        Warm(SupervisorHandoverWarm),
-        Turn(SupervisorHandoverTurn),
-        Unrecognised(::serde_json::Value),
+        Warm(#[serde(deserialize_with = "crate::response::attempt")] SupervisorHandoverWarm),
+        Turn(#[serde(deserialize_with = "crate::response::attempt")] SupervisorHandoverTurn),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SupervisorHandoverWarm> for SupervisorHandoverBoxState {
         fn from(value: SupervisorHandoverWarm) -> Self {
@@ -24792,10 +24798,10 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SupervisorHandoverCommand {
-        Snapshot(SupervisorHandoverSnapshot),
-        Teardown(SupervisorHandoverTeardown),
-        Discard(SupervisorHandoverDiscard),
-        Unrecognised(::serde_json::Value),
+        Snapshot(#[serde(deserialize_with = "crate::response::attempt")] SupervisorHandoverSnapshot),
+        Teardown(#[serde(deserialize_with = "crate::response::attempt")] SupervisorHandoverTeardown),
+        Discard(#[serde(deserialize_with = "crate::response::attempt")] SupervisorHandoverDiscard),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SupervisorHandoverSnapshot> for SupervisorHandoverCommand {
         fn from(value: SupervisorHandoverSnapshot) -> Self {
@@ -24822,7 +24828,7 @@ pub mod types {
     pub enum SupervisorHandoverDiscardKind {
         Discard,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverDiscardKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24864,7 +24870,7 @@ pub mod types {
     pub enum SupervisorHandoverFullImageKind {
         Full,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverFullImageKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24899,9 +24905,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SupervisorHandoverImage {
-        FullImage(SupervisorHandoverFullImage),
-        LayeredImage(SupervisorHandoverLayeredImage),
-        Unrecognised(::serde_json::Value),
+        FullImage(#[serde(deserialize_with = "crate::response::attempt")] SupervisorHandoverFullImage),
+        LayeredImage(#[serde(deserialize_with = "crate::response::attempt")] SupervisorHandoverLayeredImage),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SupervisorHandoverFullImage> for SupervisorHandoverImage {
         fn from(value: SupervisorHandoverFullImage) -> Self {
@@ -24927,7 +24933,7 @@ pub mod types {
     pub enum SupervisorHandoverLayeredImageKind {
         Layered,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverLayeredImageKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -24998,7 +25004,7 @@ pub mod types {
     pub enum SupervisorHandoverSnapshotKind {
         Snapshot,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverSnapshotKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -25039,7 +25045,7 @@ pub mod types {
     pub enum SupervisorHandoverTeardownKind {
         Teardown,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverTeardownKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -25103,7 +25109,7 @@ pub mod types {
     pub enum SupervisorHandoverTurnKind {
         Turn,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverTurnKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -25144,7 +25150,7 @@ pub mod types {
     pub enum SupervisorHandoverWarmKind {
         Warm,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorHandoverWarmKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -25769,7 +25775,7 @@ pub mod types {
         SupervisorUpdateSwapFailed,
         SupervisorUpdateRolledBack,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdateFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -25839,7 +25845,7 @@ pub mod types {
     pub enum SupervisorUpdateFailureReportedState {
         Reported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdateFailureReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -25874,9 +25880,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SupervisorUpdateLatestFailure {
-        NotReported(SupervisorUpdateNotReported),
-        FailureReported(SupervisorUpdateFailureReported),
-        Unrecognised(::serde_json::Value),
+        NotReported(#[serde(deserialize_with = "crate::response::attempt")] SupervisorUpdateNotReported),
+        FailureReported(#[serde(deserialize_with = "crate::response::attempt")] SupervisorUpdateFailureReported),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SupervisorUpdateNotReported> for SupervisorUpdateLatestFailure {
         fn from(value: SupervisorUpdateNotReported) -> Self {
@@ -25892,9 +25898,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum SupervisorUpdateLatestStep {
-        NotReported(SupervisorUpdateNotReported),
-        StepReported(SupervisorUpdateStepReported),
-        Unrecognised(::serde_json::Value),
+        NotReported(#[serde(deserialize_with = "crate::response::attempt")] SupervisorUpdateNotReported),
+        StepReported(#[serde(deserialize_with = "crate::response::attempt")] SupervisorUpdateStepReported),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<SupervisorUpdateNotReported> for SupervisorUpdateLatestStep {
         fn from(value: SupervisorUpdateNotReported) -> Self {
@@ -25916,7 +25922,7 @@ pub mod types {
     pub enum SupervisorUpdateNotReportedState {
         NotReported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdateNotReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -25976,7 +25982,7 @@ pub mod types {
         Restarting,
         Online,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdatePhase {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26124,7 +26130,7 @@ pub mod types {
     pub enum SupervisorUpdateStepReportedState {
         Reported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for SupervisorUpdateStepReportedState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26190,7 +26196,7 @@ pub mod types {
         #[serde(rename = "applyConfig")]
         ApplyConfig,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiApplyConfigRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26230,10 +26236,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiApplyConfigResultApplied {
-        Applied(TenantApiConfigApplied),
-        Conflict(TenantApiConfigConflict),
-        ResourceDeleted(TenantApiConfigResourceDeleted),
-        Unrecognised(::serde_json::Value),
+        Applied(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConfigApplied),
+        Conflict(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConfigConflict),
+        ResourceDeleted(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConfigResourceDeleted),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConfigApplied> for TenantApiApplyConfigResultApplied {
         fn from(value: TenantApiConfigApplied) -> Self {
@@ -26273,7 +26279,7 @@ pub mod types {
         #[serde(rename = "archiveSession")]
         ArchiveSession,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiArchiveSessionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26313,10 +26319,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiArchiveSessionResultArchived {
-        ArchivedOk(TenantApiSessionArchivedOk),
-        NotFound(TenantApiSessionNotFound),
-        NotStopped(TenantApiSessionNotStopped),
-        Unrecognised(::serde_json::Value),
+        ArchivedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionArchivedOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionNotFound),
+        NotStopped(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionNotStopped),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionArchivedOk> for TenantApiArchiveSessionResultArchived {
         fn from(value: TenantApiSessionArchivedOk) -> Self {
@@ -26343,7 +26349,7 @@ pub mod types {
     pub enum TenantApiAuthorizationNoSecretSetKind {
         NoSecretSet,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiAuthorizationNoSecretSetKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26384,7 +26390,7 @@ pub mod types {
     pub enum TenantApiAuthorizationNotFoundKind {
         NotFound,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiAuthorizationNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26426,7 +26432,7 @@ pub mod types {
     pub enum TenantApiAuthorizationNotWaitingKind {
         NotWaiting,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiAuthorizationNotWaitingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26468,7 +26474,7 @@ pub mod types {
     pub enum TenantApiAuthorizationOtherCredentialKind {
         OtherCredential,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiAuthorizationOtherCredentialKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26530,7 +26536,7 @@ pub mod types {
         #[serde(rename = "cancelTurn")]
         CancelTurn,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCancelTurnRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26570,10 +26576,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiCancelTurnResultCancelled {
-        CancelledOk(TenantApiTurnCancelledOk),
-        NotFound(TenantApiTurnNotFound),
-        NotWaiting(TenantApiTurnNotWaiting),
-        Unrecognised(::serde_json::Value),
+        CancelledOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTurnCancelledOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTurnNotFound),
+        NotWaiting(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTurnNotWaiting),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTurnCancelledOk> for TenantApiCancelTurnResultCancelled {
         fn from(value: TenantApiTurnCancelledOk) -> Self {
@@ -26603,7 +26609,7 @@ pub mod types {
     pub enum TenantApiCancelUnspokenKind {
         CancelUnspoken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCancelUnspokenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26645,7 +26651,7 @@ pub mod types {
     pub enum TenantApiClaudeSetupCodedOkKind {
         Coded,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupCodedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26704,7 +26710,7 @@ pub mod types {
         #[serde(rename = "claudeSetupDeadlineReached")]
         ClaudeSetupDeadlineReached,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupDeadlineReachedRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26772,7 +26778,7 @@ pub mod types {
     pub enum TenantApiClaudeSetupNotStoredKind {
         NotStored,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupNotStoredKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26814,7 +26820,7 @@ pub mod types {
     pub enum TenantApiClaudeSetupReadyKind {
         Ready,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupReadyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26849,9 +26855,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiClaudeSetupReadyMessage {
-        Offer(ChannelClaudeSetupBoxOffer),
-        Code(ChannelClaudeSetupBoxCode),
-        Unrecognised(::serde_json::Value),
+        Offer(#[serde(deserialize_with = "crate::response::attempt")] ChannelClaudeSetupBoxOffer),
+        Code(#[serde(deserialize_with = "crate::response::attempt")] ChannelClaudeSetupBoxCode),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ChannelClaudeSetupBoxOffer> for TenantApiClaudeSetupReadyMessage {
         fn from(value: ChannelClaudeSetupBoxOffer) -> Self {
@@ -26873,7 +26879,7 @@ pub mod types {
     pub enum TenantApiClaudeSetupRefusedKind {
         Refused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupRefusedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26915,7 +26921,7 @@ pub mod types {
     pub enum TenantApiClaudeSetupReleaseUnreadableKind {
         ReleaseUnreadable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupReleaseUnreadableKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26957,7 +26963,7 @@ pub mod types {
     pub enum TenantApiClaudeSetupStartedOkKind {
         Started,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupStartedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -26998,7 +27004,7 @@ pub mod types {
     pub enum TenantApiClaudeSetupStoredOkKind {
         Stored,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupStoredOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27040,7 +27046,7 @@ pub mod types {
     pub enum TenantApiClaudeSetupUnplacedKind {
         Unplaced,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupUnplacedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27082,7 +27088,7 @@ pub mod types {
     pub enum TenantApiClaudeSetupWithdrawnKind {
         Withdrawn,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClaudeSetupWithdrawnKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27138,7 +27144,7 @@ pub mod types {
         #[serde(rename = "clearConnectorCredential")]
         ClearConnectorCredential,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiClearConnectorCredentialRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27178,11 +27184,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiClearConnectorCredentialResultWritten {
-        WrittenOk(TenantApiConnectorWrittenOk),
-        NotFound(TenantApiConnectorNotFound),
-        NameTaken(TenantApiConnectorNameTaken),
-        Changed(TenantApiConnectorChanged),
-        Unrecognised(::serde_json::Value),
+        WrittenOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorWrittenOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNotFound),
+        NameTaken(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNameTaken),
+        Changed(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorChanged),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorWrittenOk> for TenantApiClearConnectorCredentialResultWritten {
         fn from(value: TenantApiConnectorWrittenOk) -> Self {
@@ -27227,7 +27233,7 @@ pub mod types {
         #[serde(rename = "completeSubscription")]
         CompleteSubscription,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCompleteSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27267,10 +27273,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiCompleteSubscriptionResultCompleted {
-        ChangedOk(TenantApiSubscriptionChangedOk),
-        NotFound(TenantApiSubscriptionNotFound),
-        EndedState(TenantApiSubscriptionEndedState),
-        Unrecognised(::serde_json::Value),
+        ChangedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionChangedOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionNotFound),
+        EndedState(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionEndedState),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSubscriptionChangedOk> for TenantApiCompleteSubscriptionResultCompleted {
         fn from(value: TenantApiSubscriptionChangedOk) -> Self {
@@ -27297,7 +27303,7 @@ pub mod types {
     pub enum TenantApiConfigAppliedKind {
         Applied,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConfigAppliedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27339,7 +27345,7 @@ pub mod types {
     pub enum TenantApiConfigConflictKind {
         Conflict,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConfigConflictKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27381,7 +27387,7 @@ pub mod types {
     pub enum TenantApiConfigResourceDeletedKind {
         Deleted,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConfigResourceDeletedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27416,18 +27422,18 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiConfigWrite {
-        CreateSecretSetWrite(TenantApiCreateSecretSetWrite),
-        RewriteSecretSetWrite(TenantApiRewriteSecretSetWrite),
-        DeleteSecretSetWrite(TenantApiDeleteSecretSetWrite),
-        CreatePersonaWrite(TenantApiCreatePersonaWrite),
-        UpdatePersonaWrite(TenantApiUpdatePersonaWrite),
-        DeletePersonaWrite(TenantApiDeletePersonaWrite),
-        PinWrite(TenantApiPinWrite),
-        UnpinWrite(TenantApiUnpinWrite),
-        CreateTriggerWrite(TenantApiCreateTriggerWrite),
-        UpdateTriggerWrite(TenantApiUpdateTriggerWrite),
-        DeleteTriggerWrite(TenantApiDeleteTriggerWrite),
-        Unrecognised(::serde_json::Value),
+        CreateSecretSetWrite(#[serde(deserialize_with = "crate::response::attempt")] TenantApiCreateSecretSetWrite),
+        RewriteSecretSetWrite(#[serde(deserialize_with = "crate::response::attempt")] TenantApiRewriteSecretSetWrite),
+        DeleteSecretSetWrite(#[serde(deserialize_with = "crate::response::attempt")] TenantApiDeleteSecretSetWrite),
+        CreatePersonaWrite(#[serde(deserialize_with = "crate::response::attempt")] TenantApiCreatePersonaWrite),
+        UpdatePersonaWrite(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUpdatePersonaWrite),
+        DeletePersonaWrite(#[serde(deserialize_with = "crate::response::attempt")] TenantApiDeletePersonaWrite),
+        PinWrite(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPinWrite),
+        UnpinWrite(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUnpinWrite),
+        CreateTriggerWrite(#[serde(deserialize_with = "crate::response::attempt")] TenantApiCreateTriggerWrite),
+        UpdateTriggerWrite(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUpdateTriggerWrite),
+        DeleteTriggerWrite(#[serde(deserialize_with = "crate::response::attempt")] TenantApiDeleteTriggerWrite),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiCreateSecretSetWrite> for TenantApiConfigWrite {
         fn from(value: TenantApiCreateSecretSetWrite) -> Self {
@@ -27495,7 +27501,7 @@ pub mod types {
     pub enum TenantApiConnectorAuthorizeStartedOkKind {
         Started,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorAuthorizeStartedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27539,7 +27545,7 @@ pub mod types {
     pub enum TenantApiConnectorCallbackCodeKind {
         Code,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorCallbackCodeKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27581,7 +27587,7 @@ pub mod types {
     pub enum TenantApiConnectorCallbackConnectedKind {
         Connected,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorCallbackConnectedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27623,7 +27629,7 @@ pub mod types {
     pub enum TenantApiConnectorCallbackErrorKind {
         Error,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorCallbackErrorKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27669,9 +27675,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiConnectorCallbackInputCallback {
-        Code(TenantApiConnectorCallbackCode),
-        Error(TenantApiConnectorCallbackError),
-        Unrecognised(::serde_json::Value),
+        Code(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorCallbackCode),
+        Error(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorCallbackError),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorCallbackCode> for TenantApiConnectorCallbackInputCallback {
         fn from(value: TenantApiConnectorCallbackCode) -> Self {
@@ -27694,7 +27700,7 @@ pub mod types {
     pub enum TenantApiConnectorCallbackNotConnectedKind {
         NotConnected,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorCallbackNotConnectedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27739,7 +27745,7 @@ pub mod types {
         #[serde(rename = "connectorCallback")]
         ConnectorCallback,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorCallbackRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27779,9 +27785,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiConnectorCallbackResultSettled {
-        Connected(TenantApiConnectorCallbackConnected),
-        NotConnected(TenantApiConnectorCallbackNotConnected),
-        Unrecognised(::serde_json::Value),
+        Connected(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorCallbackConnected),
+        NotConnected(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorCallbackNotConnected),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorCallbackConnected> for TenantApiConnectorCallbackResultSettled {
         fn from(value: TenantApiConnectorCallbackConnected) -> Self {
@@ -27803,7 +27809,7 @@ pub mod types {
     pub enum TenantApiConnectorChangedKind {
         Changed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorChangedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27844,7 +27850,7 @@ pub mod types {
     pub enum TenantApiConnectorDeletedOkKind {
         Deleted,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorDeletedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27886,7 +27892,7 @@ pub mod types {
     pub enum TenantApiConnectorDiscoveryFailedKind {
         DiscoveryFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorDiscoveryFailedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27928,7 +27934,7 @@ pub mod types {
     pub enum TenantApiConnectorInUseKind {
         InUse,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorInUseKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -27969,7 +27975,7 @@ pub mod types {
     pub enum TenantApiConnectorNameTakenKind {
         NameTaken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorNameTakenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28011,7 +28017,7 @@ pub mod types {
     pub enum TenantApiConnectorNoCredentialKind {
         NoCredential,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorNoCredentialKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28052,7 +28058,7 @@ pub mod types {
     pub enum TenantApiConnectorNotFoundKind {
         NotFound,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28094,7 +28100,7 @@ pub mod types {
     pub enum TenantApiConnectorRefreshFailedKind {
         RefreshFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorRefreshFailedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28136,7 +28142,7 @@ pub mod types {
     pub enum TenantApiConnectorRegistrationUnsupportedKind {
         RegistrationUnsupported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorRegistrationUnsupportedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28392,7 +28398,7 @@ pub mod types {
     pub enum TenantApiConnectorStateClaimsPurpose {
         ConnectorAuthorization,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorStateClaimsPurpose {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28502,7 +28508,7 @@ pub mod types {
     pub enum TenantApiConnectorTokenRefusedKind {
         Refused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorTokenRefusedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28544,7 +28550,7 @@ pub mod types {
     pub enum TenantApiConnectorTokenServedOkKind {
         Served,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorTokenServedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28585,7 +28591,7 @@ pub mod types {
     pub enum TenantApiConnectorTurnNotRunningKind {
         NotRunning,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorTurnNotRunningKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28627,7 +28633,7 @@ pub mod types {
     pub enum TenantApiConnectorWrittenOkKind {
         Written,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiConnectorWrittenOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28667,11 +28673,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiConnectorWrittenResultWritten {
-        WrittenOk(TenantApiConnectorWrittenOk),
-        NotFound(TenantApiConnectorNotFound),
-        NameTaken(TenantApiConnectorNameTaken),
-        Changed(TenantApiConnectorChanged),
-        Unrecognised(::serde_json::Value),
+        WrittenOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorWrittenOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNotFound),
+        NameTaken(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNameTaken),
+        Changed(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorChanged),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorWrittenOk> for TenantApiConnectorWrittenResultWritten {
         fn from(value: TenantApiConnectorWrittenOk) -> Self {
@@ -28717,7 +28723,7 @@ pub mod types {
         #[serde(rename = "createConnector")]
         CreateConnector,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateConnectorRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28757,11 +28763,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiCreateConnectorResultWritten {
-        WrittenOk(TenantApiConnectorWrittenOk),
-        NotFound(TenantApiConnectorNotFound),
-        NameTaken(TenantApiConnectorNameTaken),
-        Changed(TenantApiConnectorChanged),
-        Unrecognised(::serde_json::Value),
+        WrittenOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorWrittenOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNotFound),
+        NameTaken(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNameTaken),
+        Changed(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorChanged),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorWrittenOk> for TenantApiCreateConnectorResultWritten {
         fn from(value: TenantApiConnectorWrittenOk) -> Self {
@@ -28805,7 +28811,7 @@ pub mod types {
         #[serde(rename = "createPersona")]
         CreatePersona,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreatePersonaRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28845,9 +28851,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiCreatePersonaResultWritten {
-        PersonaWritten(TenantApiPersonaWritten),
-        WriteConflict(TenantApiWriteConflict),
-        Unrecognised(::serde_json::Value),
+        PersonaWritten(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPersonaWritten),
+        WriteConflict(#[serde(deserialize_with = "crate::response::attempt")] TenantApiWriteConflict),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiPersonaWritten> for TenantApiCreatePersonaResultWritten {
         fn from(value: TenantApiPersonaWritten) -> Self {
@@ -28870,7 +28876,7 @@ pub mod types {
     pub enum TenantApiCreatePersonaWriteKind {
         CreatePersona,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreatePersonaWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28925,7 +28931,7 @@ pub mod types {
         #[serde(rename = "createPushSubscription")]
         CreatePushSubscription,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreatePushSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -28986,7 +28992,7 @@ pub mod types {
         #[serde(rename = "createSecretSet")]
         CreateSecretSet,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateSecretSetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29026,9 +29032,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiCreateSecretSetResultWritten {
-        SecretSetWritten(TenantApiSecretSetWritten),
-        WriteConflict(TenantApiWriteConflict),
-        Unrecognised(::serde_json::Value),
+        SecretSetWritten(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetWritten),
+        WriteConflict(#[serde(deserialize_with = "crate::response::attempt")] TenantApiWriteConflict),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetWritten> for TenantApiCreateSecretSetResultWritten {
         fn from(value: TenantApiSecretSetWritten) -> Self {
@@ -29056,7 +29062,7 @@ pub mod types {
     pub enum TenantApiCreateSecretSetWriteKind {
         CreateSecretSet,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateSecretSetWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29109,7 +29115,7 @@ pub mod types {
         #[serde(rename = "createSubscription")]
         CreateSubscription,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29149,12 +29155,14 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiCreateSubscriptionResultCreated {
-        SubscriptionCreatedOk(TenantApiSubscriptionCreatedOk),
-        SessionNotFound(TenantApiSessionNotFound),
-        SessionArchivedState(TenantApiSessionArchivedState),
-        SessionFailedState(TenantApiSessionFailedState),
-        SubscriptionPersonaLacksTumpelMcp(TenantApiSubscriptionPersonaLacksTumpelMcp),
-        Unrecognised(::serde_json::Value),
+        SubscriptionCreatedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionCreatedOk),
+        SessionNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionNotFound),
+        SessionArchivedState(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionArchivedState),
+        SessionFailedState(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionFailedState),
+        SubscriptionPersonaLacksTumpelMcp(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionPersonaLacksTumpelMcp,
+        ),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSubscriptionCreatedOk> for TenantApiCreateSubscriptionResultCreated {
         fn from(value: TenantApiSubscriptionCreatedOk) -> Self {
@@ -29206,7 +29214,7 @@ pub mod types {
         #[serde(rename = "createTrigger")]
         CreateTrigger,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateTriggerRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29246,10 +29254,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiCreateTriggerResultCreated {
-        CreatedOk(TenantApiTriggerCreatedOk),
-        NameTaken(TenantApiTriggerNameTaken),
-        PersonaNotFound(TenantApiTriggerPersonaNotFound),
-        Unrecognised(::serde_json::Value),
+        CreatedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerCreatedOk),
+        NameTaken(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerNameTaken),
+        PersonaNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerPersonaNotFound),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTriggerCreatedOk> for TenantApiCreateTriggerResultCreated {
         fn from(value: TenantApiTriggerCreatedOk) -> Self {
@@ -29279,7 +29287,7 @@ pub mod types {
     pub enum TenantApiCreateTriggerWriteKind {
         CreateTrigger,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateTriggerWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29332,7 +29340,7 @@ pub mod types {
         #[serde(rename = "createWebhookEndpoint")]
         CreateWebhookEndpoint,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiCreateWebhookEndpointRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29390,7 +29398,7 @@ pub mod types {
         #[serde(rename = "deadlineReached")]
         DeadlineReached,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeadlineReachedRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29467,7 +29475,7 @@ pub mod types {
         #[serde(rename = "deferredOffers")]
         DeferredOffers,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeferredOffersRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29525,7 +29533,7 @@ pub mod types {
         #[serde(rename = "deleteConnector")]
         DeleteConnector,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteConnectorRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29565,11 +29573,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiDeleteConnectorResultDeleted {
-        DeletedOk(TenantApiConnectorDeletedOk),
-        NotFound(TenantApiConnectorNotFound),
-        Changed(TenantApiConnectorChanged),
-        InUse(TenantApiConnectorInUse),
-        Unrecognised(::serde_json::Value),
+        DeletedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorDeletedOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNotFound),
+        Changed(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorChanged),
+        InUse(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorInUse),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorDeletedOk> for TenantApiDeleteConnectorResultDeleted {
         fn from(value: TenantApiConnectorDeletedOk) -> Self {
@@ -29613,7 +29621,7 @@ pub mod types {
         #[serde(rename = "deletePersona")]
         DeletePersona,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeletePersonaRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29653,10 +29661,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiDeletePersonaResultDeleted {
-        Deleted(TenantApiPersonaDeleted),
-        NotFound(TenantApiPersonaNotFound),
-        InUse(TenantApiPersonaInUse),
-        Unrecognised(::serde_json::Value),
+        Deleted(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPersonaDeleted),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPersonaNotFound),
+        InUse(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPersonaInUse),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiPersonaDeleted> for TenantApiDeletePersonaResultDeleted {
         fn from(value: TenantApiPersonaDeleted) -> Self {
@@ -29685,7 +29693,7 @@ pub mod types {
     pub enum TenantApiDeletePersonaWriteKind {
         DeletePersona,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeletePersonaWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29740,7 +29748,7 @@ pub mod types {
         #[serde(rename = "deletePushSubscription")]
         DeletePushSubscription,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeletePushSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29797,7 +29805,7 @@ pub mod types {
         #[serde(rename = "deleteSecretSet")]
         DeleteSecretSet,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteSecretSetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29837,10 +29845,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiDeleteSecretSetResultDeleted {
-        Deleted(TenantApiSecretSetDeleted),
-        NotFound(TenantApiSecretSetNotFound),
-        InUse(TenantApiSecretSetInUse),
-        Unrecognised(::serde_json::Value),
+        Deleted(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetDeleted),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetNotFound),
+        InUse(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetInUse),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetDeleted> for TenantApiDeleteSecretSetResultDeleted {
         fn from(value: TenantApiSecretSetDeleted) -> Self {
@@ -29869,7 +29877,7 @@ pub mod types {
     pub enum TenantApiDeleteSecretSetWriteKind {
         DeleteSecretSet,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteSecretSetWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29922,7 +29930,7 @@ pub mod types {
         #[serde(rename = "deleteSession")]
         DeleteSession,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteSessionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -29962,10 +29970,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiDeleteSessionResultDeleted {
-        Deleted(TenantApiSessionDeleted),
-        NotFound(TenantApiSessionNotFound),
-        NotStopped(TenantApiSessionNotStopped),
-        Unrecognised(::serde_json::Value),
+        Deleted(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionDeleted),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionNotFound),
+        NotStopped(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionNotStopped),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionDeleted> for TenantApiDeleteSessionResultDeleted {
         fn from(value: TenantApiSessionDeleted) -> Self {
@@ -30005,7 +30013,7 @@ pub mod types {
         #[serde(rename = "deleteSubscription")]
         DeleteSubscription,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30065,7 +30073,7 @@ pub mod types {
         #[serde(rename = "deleteTrigger")]
         DeleteTrigger,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteTriggerRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30114,7 +30122,7 @@ pub mod types {
     pub enum TenantApiDeleteTriggerWriteKind {
         DeleteTrigger,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteTriggerWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30167,7 +30175,7 @@ pub mod types {
         #[serde(rename = "deleteWebhookEndpoint")]
         DeleteWebhookEndpoint,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiDeleteWebhookEndpointRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30216,7 +30224,7 @@ pub mod types {
     pub enum TenantApiEventCursorExpiredKind {
         CursorExpired,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiEventCursorExpiredKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30258,7 +30266,7 @@ pub mod types {
     pub enum TenantApiEventsReadKind {
         Read,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiEventsReadKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30302,7 +30310,7 @@ pub mod types {
     pub enum TenantApiExpiredCredentialRefusalKind {
         Expired,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiExpiredCredentialRefusalKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30353,7 +30361,7 @@ pub mod types {
         #[serde(rename = "forgetHostUsage")]
         ForgetHostUsage,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiForgetHostUsageRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30430,7 +30438,7 @@ pub mod types {
         #[serde(rename = "forgetPushSubscription")]
         ForgetPushSubscription,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiForgetPushSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30508,7 +30516,7 @@ pub mod types {
         #[serde(rename = "getClaudeSetup")]
         GetClaudeSetup,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetClaudeSetupRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30568,7 +30576,7 @@ pub mod types {
         #[serde(rename = "getConnector")]
         GetConnector,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetConnectorRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30629,7 +30637,7 @@ pub mod types {
         #[serde(rename = "getOpenRouterAuthorization")]
         GetOpenRouterAuthorization,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetOpenRouterAuthorizationRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30669,9 +30677,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiGetOpenRouterAuthorizationResultRead {
-        OpenRouterAuthorizationFound(TenantApiOpenRouterAuthorizationFound),
-        AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        Unrecognised(::serde_json::Value),
+        OpenRouterAuthorizationFound(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiOpenRouterAuthorizationFound,
+        ),
+        AuthorizationNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiAuthorizationNotFound),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiOpenRouterAuthorizationFound> for TenantApiGetOpenRouterAuthorizationResultRead {
         fn from(value: TenantApiOpenRouterAuthorizationFound) -> Self {
@@ -30705,7 +30715,7 @@ pub mod types {
         #[serde(rename = "getPersona")]
         GetPersona,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetPersonaRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30764,7 +30774,7 @@ pub mod types {
         #[serde(rename = "getPrebuildFailure")]
         GetPrebuildFailure,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetPrebuildFailureRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30823,7 +30833,7 @@ pub mod types {
         #[serde(rename = "getPrebuild")]
         GetPrebuild,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetPrebuildRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30882,7 +30892,7 @@ pub mod types {
         #[serde(rename = "getSecretSet")]
         GetSecretSet,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetSecretSetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -30922,10 +30932,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiGetSecretSetResultRead {
-        Found(TenantApiSecretSetFound),
-        NotFound(TenantApiSecretSetNotFound),
-        Unreadable(TenantApiSecretSetUnreadable),
-        Unrecognised(::serde_json::Value),
+        Found(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetFound),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetNotFound),
+        Unreadable(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetUnreadable),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetFound> for TenantApiGetSecretSetResultRead {
         fn from(value: TenantApiSecretSetFound) -> Self {
@@ -30964,7 +30974,7 @@ pub mod types {
         #[serde(rename = "getSession")]
         GetSession,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetSessionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31023,7 +31033,7 @@ pub mod types {
         #[serde(rename = "getSnapshot")]
         GetSnapshot,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetSnapshotRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31082,7 +31092,7 @@ pub mod types {
         #[serde(rename = "getSubscription")]
         GetSubscription,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31142,7 +31152,7 @@ pub mod types {
         #[serde(rename = "getTrigger")]
         GetTrigger,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetTriggerRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31202,7 +31212,7 @@ pub mod types {
         #[serde(rename = "getTurnFailure")]
         GetTurnFailure,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetTurnFailureRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31261,7 +31271,7 @@ pub mod types {
         #[serde(rename = "getTurn")]
         GetTurn,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetTurnRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31320,7 +31330,7 @@ pub mod types {
         #[serde(rename = "getWebhookEndpoint")]
         GetWebhookEndpoint,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiGetWebhookEndpointRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31386,7 +31396,7 @@ pub mod types {
         #[serde(rename = "heldPrebuild")]
         HeldPrebuild,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHeldPrebuildRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31435,7 +31445,7 @@ pub mod types {
     pub enum TenantApiHostFrameRefusedType {
         Refused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostFrameRefusedType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31502,7 +31512,7 @@ pub mod types {
         #[serde(rename = "hostHeartbeat")]
         HostHeartbeat,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostHeartbeatRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31587,7 +31597,7 @@ pub mod types {
         #[serde(rename = "hostHello")]
         HostHello,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostHelloRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31651,23 +31661,25 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiHostMessageInputMessage {
-        TurnImageFetching(ChannelTurnImageFetching),
-        TurnClaim(ChannelTurnClaim),
-        TurnRepositoryReady(ChannelTurnRepositoryReady),
-        TurnLines(ChannelTurnLines),
-        TurnComplete(ChannelTurnComplete),
-        TurnRepositoryCloneFailed(ChannelTurnRepositoryCloneFailed),
-        TurnFailed(ChannelTurnFailed),
-        SnapshotChunks(ChannelSnapshotChunks),
-        SnapshotPacks(ChannelSnapshotPacks),
-        RestoreChunks(ChannelRestoreChunks),
-        SnapshotDone(ChannelSnapshotDone),
-        SnapshotFailed(ChannelSnapshotFailed),
-        BoxGone(ChannelBoxGone),
-        BoxTeardownFailed(ChannelBoxTeardownFailed),
-        ClaudeSetupBoxUrl(ChannelClaudeSetupBoxUrl),
-        ClaudeSetupBoxFailed(ChannelClaudeSetupBoxFailed),
-        Unrecognised(::serde_json::Value),
+        TurnImageFetching(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnImageFetching),
+        TurnClaim(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnClaim),
+        TurnRepositoryReady(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnRepositoryReady),
+        TurnLines(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnLines),
+        TurnComplete(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnComplete),
+        TurnRepositoryCloneFailed(
+            #[serde(deserialize_with = "crate::response::attempt")] ChannelTurnRepositoryCloneFailed,
+        ),
+        TurnFailed(#[serde(deserialize_with = "crate::response::attempt")] ChannelTurnFailed),
+        SnapshotChunks(#[serde(deserialize_with = "crate::response::attempt")] ChannelSnapshotChunks),
+        SnapshotPacks(#[serde(deserialize_with = "crate::response::attempt")] ChannelSnapshotPacks),
+        RestoreChunks(#[serde(deserialize_with = "crate::response::attempt")] ChannelRestoreChunks),
+        SnapshotDone(#[serde(deserialize_with = "crate::response::attempt")] ChannelSnapshotDone),
+        SnapshotFailed(#[serde(deserialize_with = "crate::response::attempt")] ChannelSnapshotFailed),
+        BoxGone(#[serde(deserialize_with = "crate::response::attempt")] ChannelBoxGone),
+        BoxTeardownFailed(#[serde(deserialize_with = "crate::response::attempt")] ChannelBoxTeardownFailed),
+        ClaudeSetupBoxUrl(#[serde(deserialize_with = "crate::response::attempt")] ChannelClaudeSetupBoxUrl),
+        ClaudeSetupBoxFailed(#[serde(deserialize_with = "crate::response::attempt")] ChannelClaudeSetupBoxFailed),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ChannelTurnImageFetching> for TenantApiHostMessageInputMessage {
         fn from(value: ChannelTurnImageFetching) -> Self {
@@ -31763,7 +31775,7 @@ pub mod types {
         #[serde(rename = "hostMessage")]
         HostMessage,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostMessageRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -31834,7 +31846,7 @@ pub mod types {
     pub enum TenantApiHostPrebuildStartedKind {
         Started,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiHostPrebuildStartedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32073,7 +32085,7 @@ pub mod types {
         #[serde(rename = "listClaudeSetups")]
         ListClaudeSetups,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListClaudeSetupsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32130,7 +32142,7 @@ pub mod types {
         #[serde(rename = "listConnectors")]
         ListConnectors,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListConnectorsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32188,7 +32200,7 @@ pub mod types {
         #[serde(rename = "listCredentialHandovers")]
         ListCredentialHandovers,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListCredentialHandoversRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32256,7 +32268,7 @@ pub mod types {
         #[serde(rename = "listEvents")]
         ListEvents,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListEventsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32296,9 +32308,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiListEventsResultListed {
-        EventsRead(TenantApiEventsRead),
-        EventCursorExpired(TenantApiEventCursorExpired),
-        Unrecognised(::serde_json::Value),
+        EventsRead(#[serde(deserialize_with = "crate::response::attempt")] TenantApiEventsRead),
+        EventCursorExpired(#[serde(deserialize_with = "crate::response::attempt")] TenantApiEventCursorExpired),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiEventsRead> for TenantApiListEventsResultListed {
         fn from(value: TenantApiEventsRead) -> Self {
@@ -32330,7 +32342,7 @@ pub mod types {
         #[serde(rename = "listHostUsage")]
         ListHostUsage,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListHostUsageRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32386,7 +32398,7 @@ pub mod types {
         #[serde(rename = "listLatestPrebuilds")]
         ListLatestPrebuilds,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListLatestPrebuildsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32442,7 +32454,7 @@ pub mod types {
         #[serde(rename = "listPersonas")]
         ListPersonas,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListPersonasRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32512,7 +32524,7 @@ pub mod types {
         #[serde(rename = "listPins")]
         ListPins,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListPinsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32570,7 +32582,7 @@ pub mod types {
         #[serde(rename = "listPrebuilds")]
         ListPrebuilds,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListPrebuildsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32628,7 +32640,7 @@ pub mod types {
         #[serde(rename = "listPushSubscriptions")]
         ListPushSubscriptions,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListPushSubscriptionsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32684,7 +32696,7 @@ pub mod types {
         #[serde(rename = "listSecretSets")]
         ListSecretSets,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListSecretSetsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32724,9 +32736,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiListSecretSetsResultRead {
-        SetsRead(TenantApiSecretSetsRead),
-        SetUnreadable(TenantApiSecretSetUnreadable),
-        Unrecognised(::serde_json::Value),
+        SetsRead(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetsRead),
+        SetUnreadable(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetUnreadable),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetsRead> for TenantApiListSecretSetsResultRead {
         fn from(value: TenantApiSecretSetsRead) -> Self {
@@ -32759,7 +32771,7 @@ pub mod types {
         #[serde(rename = "listSessions")]
         ListSessions,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListSessionsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32817,7 +32829,7 @@ pub mod types {
         #[serde(rename = "listSnapshots")]
         ListSnapshots,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListSnapshotsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32876,7 +32888,7 @@ pub mod types {
         #[serde(rename = "listSteers")]
         ListSteers,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListSteersRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32935,7 +32947,7 @@ pub mod types {
         #[serde(rename = "listStopFailures")]
         ListStopFailures,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListStopFailuresRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -32993,7 +33005,7 @@ pub mod types {
         #[serde(rename = "listSubscriptions")]
         ListSubscriptions,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListSubscriptionsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33049,7 +33061,7 @@ pub mod types {
         #[serde(rename = "listTriggers")]
         ListTriggers,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListTriggersRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33107,7 +33119,7 @@ pub mod types {
         #[serde(rename = "listTurns")]
         ListTurns,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListTurnsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33164,7 +33176,7 @@ pub mod types {
         #[serde(rename = "listWebhookEndpoints")]
         ListWebhookEndpoints,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiListWebhookEndpointsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33215,7 +33227,7 @@ pub mod types {
     pub enum TenantApiModelUnsupportedCredentialRefusalKind {
         ModelUnsupported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiModelUnsupportedCredentialRefusalKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33292,7 +33304,7 @@ pub mod types {
     pub enum TenantApiNoCredentialRefusalKind {
         NoCredential,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiNoCredentialRefusalKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33336,7 +33348,7 @@ pub mod types {
     pub enum TenantApiNoModelCredentialRefusalKind {
         NoModelCredential,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiNoModelCredentialRefusalKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33388,7 +33400,7 @@ pub mod types {
     pub enum TenantApiOfferReadyKind {
         Ready,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOfferReadyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33429,7 +33441,7 @@ pub mod types {
     pub enum TenantApiOfferWithdrawnKind {
         Withdrawn,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOfferWithdrawnKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33481,7 +33493,7 @@ pub mod types {
         #[serde(rename = "open")]
         Open,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33558,7 +33570,7 @@ pub mod types {
         #[serde(rename = "openRouterAuthorizationDeadlineReached")]
         OpenRouterAuthorizationDeadlineReached,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterAuthorizationDeadlineReachedRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33628,7 +33640,7 @@ pub mod types {
     pub enum TenantApiOpenRouterAuthorizationFoundKind {
         Found,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterAuthorizationFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33670,7 +33682,7 @@ pub mod types {
     pub enum TenantApiOpenRouterAuthorizationStartedOkKind {
         Started,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterAuthorizationStartedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33712,7 +33724,7 @@ pub mod types {
     pub enum TenantApiOpenRouterCallbackCodeKind {
         Code,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterCallbackCodeKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33757,9 +33769,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiOpenRouterCallbackInputCallback {
-        Code(TenantApiOpenRouterCallbackCode),
-        NoCode(TenantApiOpenRouterCallbackNoCode),
-        Unrecognised(::serde_json::Value),
+        Code(#[serde(deserialize_with = "crate::response::attempt")] TenantApiOpenRouterCallbackCode),
+        NoCode(#[serde(deserialize_with = "crate::response::attempt")] TenantApiOpenRouterCallbackNoCode),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiOpenRouterCallbackCode> for TenantApiOpenRouterCallbackInputCallback {
         fn from(value: TenantApiOpenRouterCallbackCode) -> Self {
@@ -33781,7 +33793,7 @@ pub mod types {
     pub enum TenantApiOpenRouterCallbackNoCodeKind {
         NoCode,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterCallbackNoCodeKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33826,7 +33838,7 @@ pub mod types {
         #[serde(rename = "openRouterCallback")]
         OpenRouterCallback,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterCallbackRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33866,9 +33878,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiOpenRouterCallbackResultSettled {
-        OpenRouterReturned(TenantApiOpenRouterReturned),
-        AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        Unrecognised(::serde_json::Value),
+        OpenRouterReturned(#[serde(deserialize_with = "crate::response::attempt")] TenantApiOpenRouterReturned),
+        AuthorizationNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiAuthorizationNotFound),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiOpenRouterReturned> for TenantApiOpenRouterCallbackResultSettled {
         fn from(value: TenantApiOpenRouterReturned) -> Self {
@@ -33892,7 +33904,7 @@ pub mod types {
     pub enum TenantApiOpenRouterReturnedKind {
         Returned,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterReturnedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -33961,7 +33973,7 @@ pub mod types {
         #[serde(rename = "openRouterSecretSets")]
         OpenRouterSecretSets,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiOpenRouterSecretSetsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34021,7 +34033,7 @@ pub mod types {
         #[serde(rename = "patchPersona")]
         PatchPersona,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPatchPersonaRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34061,9 +34073,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiPatchPersonaResultWritten {
-        PersonaUpdated(TenantApiPersonaUpdated),
-        WriteConflict(TenantApiWriteConflict),
-        Unrecognised(::serde_json::Value),
+        PersonaUpdated(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPersonaUpdated),
+        WriteConflict(#[serde(deserialize_with = "crate::response::attempt")] TenantApiWriteConflict),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiPersonaUpdated> for TenantApiPatchPersonaResultWritten {
         fn from(value: TenantApiPersonaUpdated) -> Self {
@@ -34101,7 +34113,7 @@ pub mod types {
         #[serde(rename = "patchSecretSet")]
         PatchSecretSet,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPatchSecretSetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34141,12 +34153,12 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiPatchSecretSetResultPatched {
-        Updated(TenantApiSecretSetUpdated),
-        Missing(TenantApiSecretSetMissing),
-        Conflict(TenantApiSecretSetConflict),
-        NoStoredValue(TenantApiSecretSetNoStoredValue),
-        UncheckedToken(TenantApiSecretSetUncheckedToken),
-        Unrecognised(::serde_json::Value),
+        Updated(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetUpdated),
+        Missing(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetMissing),
+        Conflict(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetConflict),
+        NoStoredValue(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetNoStoredValue),
+        UncheckedToken(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetUncheckedToken),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetUpdated> for TenantApiPatchSecretSetResultPatched {
         fn from(value: TenantApiSecretSetUpdated) -> Self {
@@ -34197,7 +34209,7 @@ pub mod types {
         #[serde(rename = "patchSessionTags")]
         PatchSessionTags,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPatchSessionTagsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34237,10 +34249,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiPatchSessionTagsResultTagged {
-        Tagged(TenantApiSessionTagged),
-        NotFound(TenantApiSessionNotFound),
-        TagsOverLimit(TenantApiSessionTagsOverLimit),
-        Unrecognised(::serde_json::Value),
+        Tagged(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionTagged),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionNotFound),
+        TagsOverLimit(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionTagsOverLimit),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionTagged> for TenantApiPatchSessionTagsResultTagged {
         fn from(value: TenantApiSessionTagged) -> Self {
@@ -34281,7 +34293,7 @@ pub mod types {
         #[serde(rename = "pauseSubscription")]
         PauseSubscription,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPauseSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34321,10 +34333,10 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiPauseSubscriptionResultPaused {
-        ChangedOk(TenantApiSubscriptionChangedOk),
-        NotFound(TenantApiSubscriptionNotFound),
-        EndedState(TenantApiSubscriptionEndedState),
-        Unrecognised(::serde_json::Value),
+        ChangedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionChangedOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionNotFound),
+        EndedState(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionEndedState),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSubscriptionChangedOk> for TenantApiPauseSubscriptionResultPaused {
         fn from(value: TenantApiSubscriptionChangedOk) -> Self {
@@ -34369,7 +34381,7 @@ pub mod types {
     pub enum TenantApiPersonaDeletedKind {
         Deleted,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPersonaDeletedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34411,7 +34423,7 @@ pub mod types {
     pub enum TenantApiPersonaInUseKind {
         InUse,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPersonaInUseKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34452,7 +34464,7 @@ pub mod types {
     pub enum TenantApiPersonaNotFoundKind {
         NotFound,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPersonaNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34554,7 +34566,7 @@ pub mod types {
         #[serde(rename = "pin")]
         Pin,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPinRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34601,7 +34613,7 @@ pub mod types {
     pub enum TenantApiPinWriteKind {
         Pin,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPinWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34643,7 +34655,7 @@ pub mod types {
     pub enum TenantApiPrebuildBuildDueName {
         PrebuildBuild,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrebuildBuildDueName {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34710,9 +34722,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiPrebuildDeadlineReachedInputDue {
-        DispatchDue(TenantApiPrebuildDispatchDue),
-        BuildDue(TenantApiPrebuildBuildDue),
-        Unrecognised(::serde_json::Value),
+        DispatchDue(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPrebuildDispatchDue),
+        BuildDue(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPrebuildBuildDue),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiPrebuildDispatchDue> for TenantApiPrebuildDeadlineReachedInputDue {
         fn from(value: TenantApiPrebuildDispatchDue) -> Self {
@@ -34738,7 +34750,7 @@ pub mod types {
         #[serde(rename = "prebuildDeadlineReached")]
         PrebuildDeadlineReached,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrebuildDeadlineReachedRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34806,7 +34818,7 @@ pub mod types {
     pub enum TenantApiPrebuildDispatchDueName {
         PrebuildDispatch,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrebuildDispatchDueName {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34857,7 +34869,7 @@ pub mod types {
     pub enum TenantApiPrebuildRefusedKind {
         Refused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrebuildRefusedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34902,9 +34914,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiPrepareClaudeSetupInputStored {
-        Offer(TenantApiStoredClaudeSetupOffer),
-        Code(TenantApiStoredClaudeSetupCode),
-        Unrecognised(::serde_json::Value),
+        Offer(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStoredClaudeSetupOffer),
+        Code(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStoredClaudeSetupCode),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiStoredClaudeSetupOffer> for TenantApiPrepareClaudeSetupInputStored {
         fn from(value: TenantApiStoredClaudeSetupOffer) -> Self {
@@ -34930,7 +34942,7 @@ pub mod types {
         #[serde(rename = "prepareClaudeSetup")]
         PrepareClaudeSetup,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrepareClaudeSetupRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -34970,9 +34982,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiPrepareClaudeSetupResultPrepared {
-        Ready(TenantApiClaudeSetupReady),
-        Withdrawn(TenantApiClaudeSetupWithdrawn),
-        Unrecognised(::serde_json::Value),
+        Ready(#[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupReady),
+        Withdrawn(#[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupWithdrawn),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiClaudeSetupReady> for TenantApiPrepareClaudeSetupResultPrepared {
         fn from(value: TenantApiClaudeSetupReady) -> Self {
@@ -35009,7 +35021,7 @@ pub mod types {
         #[serde(rename = "prepareOffer")]
         PrepareOffer,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPrepareOfferRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35049,9 +35061,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiPrepareOfferResultPrepared {
-        Ready(TenantApiOfferReady),
-        Withdrawn(TenantApiOfferWithdrawn),
-        Unrecognised(::serde_json::Value),
+        Ready(#[serde(deserialize_with = "crate::response::attempt")] TenantApiOfferReady),
+        Withdrawn(#[serde(deserialize_with = "crate::response::attempt")] TenantApiOfferWithdrawn),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiOfferReady> for TenantApiPrepareOfferResultPrepared {
         fn from(value: TenantApiOfferReady) -> Self {
@@ -35137,7 +35149,7 @@ pub mod types {
         #[serde(rename = "pushTarget")]
         PushTarget,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiPushTargetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35195,7 +35207,7 @@ pub mod types {
         #[serde(rename = "readLimits")]
         ReadLimits,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiReadLimitsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35242,7 +35254,7 @@ pub mod types {
     pub enum TenantApiReadTokenOkKind {
         Token,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiReadTokenOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35293,7 +35305,7 @@ pub mod types {
         #[serde(rename = "readUsage")]
         ReadUsage,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiReadUsageRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35352,7 +35364,7 @@ pub mod types {
         #[serde(rename = "recordPrebuildBuilding")]
         RecordPrebuildBuilding,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRecordPrebuildBuildingRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35431,7 +35443,7 @@ pub mod types {
         #[serde(rename = "removeSecretMember")]
         RemoveSecretMember,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRemoveSecretMemberRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35471,11 +35483,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiRemoveSecretMemberResultRemoved {
-        MemberRemoved(TenantApiSecretMemberRemoved),
-        SetMissing(TenantApiSecretSetMissing),
-        MemberNotFound(TenantApiSecretMemberNotFound),
-        SetUnreadable(TenantApiSecretSetUnreadable),
-        Unrecognised(::serde_json::Value),
+        MemberRemoved(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretMemberRemoved),
+        SetMissing(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetMissing),
+        MemberNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretMemberNotFound),
+        SetUnreadable(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetUnreadable),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretMemberRemoved> for TenantApiRemoveSecretMemberResultRemoved {
         fn from(value: TenantApiSecretMemberRemoved) -> Self {
@@ -35523,7 +35535,7 @@ pub mod types {
         #[serde(rename = "renameConnector")]
         RenameConnector,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRenameConnectorRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35563,11 +35575,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiRenameConnectorResultWritten {
-        WrittenOk(TenantApiConnectorWrittenOk),
-        NotFound(TenantApiConnectorNotFound),
-        NameTaken(TenantApiConnectorNameTaken),
-        Changed(TenantApiConnectorChanged),
-        Unrecognised(::serde_json::Value),
+        WrittenOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorWrittenOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNotFound),
+        NameTaken(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNameTaken),
+        Changed(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorChanged),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorWrittenOk> for TenantApiRenameConnectorResultWritten {
         fn from(value: TenantApiConnectorWrittenOk) -> Self {
@@ -35609,7 +35621,7 @@ pub mod types {
         #[serde(rename = "write")]
         Write,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRepositoryReadTokenInputPermissionsValue {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35656,7 +35668,7 @@ pub mod types {
         #[serde(rename = "repositoryReadToken")]
         RepositoryReadToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRepositoryReadTokenRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35696,9 +35708,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiRepositoryReadTokenResultRead {
-        ReadTokenOk(TenantApiReadTokenOk),
-        PrebuildRefused(TenantApiPrebuildRefused),
-        Unrecognised(::serde_json::Value),
+        ReadTokenOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiReadTokenOk),
+        PrebuildRefused(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPrebuildRefused),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiReadTokenOk> for TenantApiRepositoryReadTokenResultRead {
         fn from(value: TenantApiReadTokenOk) -> Self {
@@ -35739,7 +35751,7 @@ pub mod types {
         #[serde(rename = "resumeSubscription")]
         ResumeSubscription,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiResumeSubscriptionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35779,12 +35791,14 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiResumeSubscriptionResultResumed {
-        ChangedOk(TenantApiSubscriptionChangedOk),
-        NotFound(TenantApiSubscriptionNotFound),
-        EndedState(TenantApiSubscriptionEndedState),
-        CursorExpired(TenantApiSubscriptionCursorExpired),
-        PersonaLacksTumpelMcp(TenantApiSubscriptionPersonaLacksTumpelMcp),
-        Unrecognised(::serde_json::Value),
+        ChangedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionChangedOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionNotFound),
+        EndedState(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionEndedState),
+        CursorExpired(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionCursorExpired),
+        PersonaLacksTumpelMcp(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiSubscriptionPersonaLacksTumpelMcp,
+        ),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSubscriptionChangedOk> for TenantApiResumeSubscriptionResultResumed {
         fn from(value: TenantApiSubscriptionChangedOk) -> Self {
@@ -35827,7 +35841,7 @@ pub mod types {
     pub enum TenantApiRewriteSecretSetWriteKind {
         RewriteSecretSet,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRewriteSecretSetWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35904,7 +35918,7 @@ pub mod types {
         #[serde(rename = "runningTurnsByHost")]
         RunningTurnsByHost,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiRunningTurnsByHostRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35950,7 +35964,7 @@ pub mod types {
     pub enum TenantApiSecretMemberNotFoundKind {
         MemberNotFound,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretMemberNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -35993,7 +36007,7 @@ pub mod types {
     pub enum TenantApiSecretMemberRemovedKind {
         Removed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretMemberRemovedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36036,7 +36050,7 @@ pub mod types {
     pub enum TenantApiSecretMemberWrittenKind {
         Set,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretMemberWrittenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36078,7 +36092,7 @@ pub mod types {
     pub enum TenantApiSecretSetConflictKind {
         Conflict,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetConflictKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36119,7 +36133,7 @@ pub mod types {
     pub enum TenantApiSecretSetDeletedKind {
         Deleted,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetDeletedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36162,7 +36176,7 @@ pub mod types {
     pub enum TenantApiSecretSetFoundKind {
         Found,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36204,7 +36218,7 @@ pub mod types {
     pub enum TenantApiSecretSetInUseKind {
         InUse,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetInUseKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36245,7 +36259,7 @@ pub mod types {
     pub enum TenantApiSecretSetMissingKind {
         SetNotFound,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetMissingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36288,7 +36302,7 @@ pub mod types {
     pub enum TenantApiSecretSetNoStoredValueKind {
         NoStoredValue,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetNoStoredValueKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36329,7 +36343,7 @@ pub mod types {
     pub enum TenantApiSecretSetNotFoundKind {
         NotFound,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36371,7 +36385,7 @@ pub mod types {
     pub enum TenantApiSecretSetUncheckedTokenKind {
         UncheckedToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetUncheckedTokenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36417,7 +36431,7 @@ pub mod types {
     pub enum TenantApiSecretSetUnreadableKind {
         Unreadable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetUnreadableKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36460,7 +36474,7 @@ pub mod types {
     pub enum TenantApiSecretSetUpdatedKind {
         Updated,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetUpdatedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36509,7 +36523,7 @@ pub mod types {
     pub enum TenantApiSecretSetsReadKind {
         Read,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSecretSetsReadKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36565,7 +36579,7 @@ pub mod types {
         #[serde(rename = "sendTurn")]
         SendTurn,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSendTurnRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36605,18 +36619,22 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiSendTurnResultSent {
-        TurnSentOk(TenantApiTurnSentOk),
-        StartDraining(TenantApiStartDraining),
-        TurnStranded(TenantApiTurnStranded),
-        StartUnplaced(TenantApiStartUnplaced),
-        StartConnectorDisconnected(TenantApiStartConnectorDisconnected),
-        ClaudeSetupReleaseUnreadable(TenantApiClaudeSetupReleaseUnreadable),
-        SessionNotFound(TenantApiSessionNotFound),
-        SessionStopping(TenantApiSessionStopping),
-        SessionArchivedState(TenantApiSessionArchivedState),
-        SessionFailedState(TenantApiSessionFailedState),
-        TurnCredentialRefused(TenantApiTurnCredentialRefused),
-        Unrecognised(::serde_json::Value),
+        TurnSentOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTurnSentOk),
+        StartDraining(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStartDraining),
+        TurnStranded(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTurnStranded),
+        StartUnplaced(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStartUnplaced),
+        StartConnectorDisconnected(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiStartConnectorDisconnected,
+        ),
+        ClaudeSetupReleaseUnreadable(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupReleaseUnreadable,
+        ),
+        SessionNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionNotFound),
+        SessionStopping(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionStopping),
+        SessionArchivedState(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionArchivedState),
+        SessionFailedState(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionFailedState),
+        TurnCredentialRefused(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTurnCredentialRefused),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTurnSentOk> for TenantApiSendTurnResultSent {
         fn from(value: TenantApiTurnSentOk) -> Self {
@@ -36696,7 +36714,7 @@ pub mod types {
         #[serde(rename = "serveConnectorToken")]
         ServeConnectorToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiServeConnectorTokenRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36736,12 +36754,12 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiServeConnectorTokenResultServed {
-        TokenServedOk(TenantApiConnectorTokenServedOk),
-        TokenRefused(TenantApiConnectorTokenRefused),
-        TurnNotRunning(TenantApiConnectorTurnNotRunning),
-        NoCredential(TenantApiConnectorNoCredential),
-        RefreshFailed(TenantApiConnectorRefreshFailed),
-        Unrecognised(::serde_json::Value),
+        TokenServedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorTokenServedOk),
+        TokenRefused(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorTokenRefused),
+        TurnNotRunning(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorTurnNotRunning),
+        NoCredential(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNoCredential),
+        RefreshFailed(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorRefreshFailed),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorTokenServedOk> for TenantApiServeConnectorTokenResultServed {
         fn from(value: TenantApiConnectorTokenServedOk) -> Self {
@@ -36779,7 +36797,7 @@ pub mod types {
     pub enum TenantApiSessionArchivedOkKind {
         Archived,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionArchivedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36820,7 +36838,7 @@ pub mod types {
     pub enum TenantApiSessionArchivedStateKind {
         Archived,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionArchivedStateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36862,7 +36880,7 @@ pub mod types {
         TeardownAnswer,
         HostOffline,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionDeadlineName {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36915,7 +36933,7 @@ pub mod types {
     pub enum TenantApiSessionDeletedKind {
         Deleted,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionDeletedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -36962,7 +36980,7 @@ pub mod types {
     pub enum TenantApiSessionFailedStateKind {
         Failed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionFailedStateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37020,7 +37038,7 @@ pub mod types {
     pub enum TenantApiSessionFromIssueStartedOkKind {
         Started,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionFromIssueStartedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37061,7 +37079,7 @@ pub mod types {
     pub enum TenantApiSessionNotFoundKind {
         NotFound,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37103,7 +37121,7 @@ pub mod types {
     pub enum TenantApiSessionNotStoppedKind {
         NotStopped,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionNotStoppedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37145,7 +37163,7 @@ pub mod types {
     pub enum TenantApiSessionStartedOkKind {
         Started,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionStartedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37186,7 +37204,7 @@ pub mod types {
     pub enum TenantApiSessionStoppingKind {
         Stopping,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionStoppingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37228,7 +37246,7 @@ pub mod types {
     pub enum TenantApiSessionStoppingWithKind {
         Stopping,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionStoppingWithKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37270,7 +37288,7 @@ pub mod types {
     pub enum TenantApiSessionTaggedKind {
         Tagged,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionTaggedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37312,7 +37330,7 @@ pub mod types {
     pub enum TenantApiSessionTagsOverLimitKind {
         TagsOverLimit,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSessionTagsOverLimitKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37365,7 +37383,7 @@ pub mod types {
         #[serde(rename = "setLimits")]
         SetLimits,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSetLimitsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37427,7 +37445,7 @@ pub mod types {
         #[serde(rename = "setSecretMember")]
         SetSecretMember,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSetSecretMemberRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37467,11 +37485,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiSetSecretMemberResultSet {
-        MemberWritten(TenantApiSecretMemberWritten),
-        SetMissing(TenantApiSecretSetMissing),
-        SetConflict(TenantApiSecretSetConflict),
-        SetUnreadable(TenantApiSecretSetUnreadable),
-        Unrecognised(::serde_json::Value),
+        MemberWritten(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretMemberWritten),
+        SetMissing(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetMissing),
+        SetConflict(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetConflict),
+        SetUnreadable(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetUnreadable),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretMemberWritten> for TenantApiSetSecretMemberResultSet {
         fn from(value: TenantApiSecretMemberWritten) -> Self {
@@ -37517,7 +37535,7 @@ pub mod types {
         #[serde(rename = "setSessionTags")]
         SetSessionTags,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSetSessionTagsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37557,9 +37575,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiSetSessionTagsResultTagged {
-        Tagged(TenantApiSessionTagged),
-        NotFound(TenantApiSessionNotFound),
-        Unrecognised(::serde_json::Value),
+        Tagged(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionTagged),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionNotFound),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionTagged> for TenantApiSetSessionTagsResultTagged {
         fn from(value: TenantApiSessionTagged) -> Self {
@@ -37597,7 +37615,7 @@ pub mod types {
         #[serde(rename = "setStaticToken")]
         SetStaticToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSetStaticTokenRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37637,11 +37655,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiSetStaticTokenResultWritten {
-        WrittenOk(TenantApiConnectorWrittenOk),
-        NotFound(TenantApiConnectorNotFound),
-        NameTaken(TenantApiConnectorNameTaken),
-        Changed(TenantApiConnectorChanged),
-        Unrecognised(::serde_json::Value),
+        WrittenOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorWrittenOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNotFound),
+        NameTaken(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNameTaken),
+        Changed(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorChanged),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorWrittenOk> for TenantApiSetStaticTokenResultWritten {
         fn from(value: TenantApiConnectorWrittenOk) -> Self {
@@ -37686,7 +37704,7 @@ pub mod types {
         #[serde(rename = "setWebhookEndpointStatus")]
         SetWebhookEndpointStatus,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSetWebhookEndpointStatusRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37765,7 +37783,7 @@ pub mod types {
         #[serde(rename = "startClaudeSetup")]
         StartClaudeSetup,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartClaudeSetupRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37805,12 +37823,18 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiStartClaudeSetupResultStarted {
-        ClaudeSetupStartedOk(TenantApiClaudeSetupStartedOk),
-        ClaudeSetupUnplaced(TenantApiClaudeSetupUnplaced),
-        ClaudeSetupReleaseUnreadable(TenantApiClaudeSetupReleaseUnreadable),
-        AuthorizationNoSecretSet(TenantApiAuthorizationNoSecretSet),
-        AuthorizationOtherCredential(TenantApiAuthorizationOtherCredential),
-        Unrecognised(::serde_json::Value),
+        ClaudeSetupStartedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupStartedOk),
+        ClaudeSetupUnplaced(#[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupUnplaced),
+        ClaudeSetupReleaseUnreadable(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupReleaseUnreadable,
+        ),
+        AuthorizationNoSecretSet(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiAuthorizationNoSecretSet,
+        ),
+        AuthorizationOtherCredential(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiAuthorizationOtherCredential,
+        ),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiClaudeSetupStartedOk> for TenantApiStartClaudeSetupResultStarted {
         fn from(value: TenantApiClaudeSetupStartedOk) -> Self {
@@ -37866,7 +37890,7 @@ pub mod types {
         #[serde(rename = "startConnectorAuthorization")]
         StartConnectorAuthorization,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartConnectorAuthorizationRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37906,12 +37930,16 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiStartConnectorAuthorizationResultStarted {
-        AuthorizeStartedOk(TenantApiConnectorAuthorizeStartedOk),
-        NotFound(TenantApiConnectorNotFound),
-        Changed(TenantApiConnectorChanged),
-        DiscoveryFailed(TenantApiConnectorDiscoveryFailed),
-        RegistrationUnsupported(TenantApiConnectorRegistrationUnsupported),
-        Unrecognised(::serde_json::Value),
+        AuthorizeStartedOk(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorAuthorizeStartedOk,
+        ),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorNotFound),
+        Changed(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorChanged),
+        DiscoveryFailed(#[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorDiscoveryFailed),
+        RegistrationUnsupported(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorRegistrationUnsupported,
+        ),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiConnectorAuthorizeStartedOk> for TenantApiStartConnectorAuthorizationResultStarted {
         fn from(value: TenantApiConnectorAuthorizeStartedOk) -> Self {
@@ -37951,7 +37979,7 @@ pub mod types {
     pub enum TenantApiStartConnectorDisconnectedKind {
         ConnectorDisconnected,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartConnectorDisconnectedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -37992,7 +38020,7 @@ pub mod types {
     pub enum TenantApiStartDrainingKind {
         Draining,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartDrainingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38048,7 +38076,7 @@ pub mod types {
         #[serde(rename = "startHostPrebuild")]
         StartHostPrebuild,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartHostPrebuildRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38088,12 +38116,16 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiStartHostPrebuildResultStarted {
-        HostPrebuildStarted(TenantApiHostPrebuildStarted),
-        StartDraining(TenantApiStartDraining),
-        StartUnplaced(TenantApiStartUnplaced),
-        StartConnectorDisconnected(TenantApiStartConnectorDisconnected),
-        ClaudeSetupReleaseUnreadable(TenantApiClaudeSetupReleaseUnreadable),
-        Unrecognised(::serde_json::Value),
+        HostPrebuildStarted(#[serde(deserialize_with = "crate::response::attempt")] TenantApiHostPrebuildStarted),
+        StartDraining(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStartDraining),
+        StartUnplaced(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStartUnplaced),
+        StartConnectorDisconnected(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiStartConnectorDisconnected,
+        ),
+        ClaudeSetupReleaseUnreadable(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupReleaseUnreadable,
+        ),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiHostPrebuildStarted> for TenantApiStartHostPrebuildResultStarted {
         fn from(value: TenantApiHostPrebuildStarted) -> Self {
@@ -38144,7 +38176,7 @@ pub mod types {
         #[serde(rename = "startOpenRouterAuthorization")]
         StartOpenRouterAuthorization,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartOpenRouterAuthorizationRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38184,10 +38216,16 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiStartOpenRouterAuthorizationResultStarted {
-        OpenRouterAuthorizationStartedOk(TenantApiOpenRouterAuthorizationStartedOk),
-        AuthorizationNoSecretSet(TenantApiAuthorizationNoSecretSet),
-        AuthorizationOtherCredential(TenantApiAuthorizationOtherCredential),
-        Unrecognised(::serde_json::Value),
+        OpenRouterAuthorizationStartedOk(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiOpenRouterAuthorizationStartedOk,
+        ),
+        AuthorizationNoSecretSet(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiAuthorizationNoSecretSet,
+        ),
+        AuthorizationOtherCredential(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiAuthorizationOtherCredential,
+        ),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiOpenRouterAuthorizationStartedOk>
         for TenantApiStartOpenRouterAuthorizationResultStarted
@@ -38231,7 +38269,7 @@ pub mod types {
         #[serde(rename = "startSessionFromIssue")]
         StartSessionFromIssue,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartSessionFromIssueRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38271,13 +38309,19 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiStartSessionFromIssueResultStarted {
-        SessionFromIssueStartedOk(TenantApiSessionFromIssueStartedOk),
-        StartDraining(TenantApiStartDraining),
-        StartUnplaced(TenantApiStartUnplaced),
-        StartConnectorDisconnected(TenantApiStartConnectorDisconnected),
-        ClaudeSetupReleaseUnreadable(TenantApiClaudeSetupReleaseUnreadable),
-        SessionTagsOverLimit(TenantApiSessionTagsOverLimit),
-        Unrecognised(::serde_json::Value),
+        SessionFromIssueStartedOk(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionFromIssueStartedOk,
+        ),
+        StartDraining(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStartDraining),
+        StartUnplaced(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStartUnplaced),
+        StartConnectorDisconnected(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiStartConnectorDisconnected,
+        ),
+        ClaudeSetupReleaseUnreadable(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupReleaseUnreadable,
+        ),
+        SessionTagsOverLimit(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionTagsOverLimit),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionFromIssueStartedOk> for TenantApiStartSessionFromIssueResultStarted {
         fn from(value: TenantApiSessionFromIssueStartedOk) -> Self {
@@ -38331,7 +38375,7 @@ pub mod types {
         #[serde(rename = "startSession")]
         StartSession,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartSessionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38371,13 +38415,17 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiStartSessionResultStarted {
-        SessionStartedOk(TenantApiSessionStartedOk),
-        StartDraining(TenantApiStartDraining),
-        StartUnplaced(TenantApiStartUnplaced),
-        StartConnectorDisconnected(TenantApiStartConnectorDisconnected),
-        ClaudeSetupReleaseUnreadable(TenantApiClaudeSetupReleaseUnreadable),
-        SessionTagsOverLimit(TenantApiSessionTagsOverLimit),
-        Unrecognised(::serde_json::Value),
+        SessionStartedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionStartedOk),
+        StartDraining(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStartDraining),
+        StartUnplaced(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStartUnplaced),
+        StartConnectorDisconnected(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiStartConnectorDisconnected,
+        ),
+        ClaudeSetupReleaseUnreadable(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupReleaseUnreadable,
+        ),
+        SessionTagsOverLimit(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionTagsOverLimit),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionStartedOk> for TenantApiStartSessionResultStarted {
         fn from(value: TenantApiSessionStartedOk) -> Self {
@@ -38420,7 +38468,7 @@ pub mod types {
     pub enum TenantApiStartUnplacedKind {
         Unplaced,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStartUnplacedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38461,7 +38509,7 @@ pub mod types {
     pub enum TenantApiSteerInboxClosedKind {
         Closed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSteerInboxClosedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38503,7 +38551,7 @@ pub mod types {
     pub enum TenantApiSteerSentOkKind {
         Sent,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSteerSentOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38558,7 +38606,7 @@ pub mod types {
         #[serde(rename = "steerTurn")]
         SteerTurn,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSteerTurnRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38598,11 +38646,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiSteerTurnResultSent {
-        SteerSentOk(TenantApiSteerSentOk),
-        TurnNotFound(TenantApiTurnNotFound),
-        TurnNotRunning(TenantApiTurnNotRunning),
-        SteerUnsupported(TenantApiSteerUnsupported),
-        Unrecognised(::serde_json::Value),
+        SteerSentOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSteerSentOk),
+        TurnNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTurnNotFound),
+        TurnNotRunning(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTurnNotRunning),
+        SteerUnsupported(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSteerUnsupported),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSteerSentOk> for TenantApiSteerTurnResultSent {
         fn from(value: TenantApiSteerSentOk) -> Self {
@@ -38634,7 +38682,7 @@ pub mod types {
     pub enum TenantApiSteerUnsupportedKind {
         Unsupported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSteerUnsupportedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38676,7 +38724,7 @@ pub mod types {
     pub enum TenantApiSteersTakenKind {
         Taken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSteersTakenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38732,7 +38780,7 @@ pub mod types {
         #[serde(rename = "stopSession")]
         StopSession,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStopSessionRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38772,12 +38820,12 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiStopSessionResultStopped {
-        SessionStoppingWith(TenantApiSessionStoppingWith),
-        SessionNotFound(TenantApiSessionNotFound),
-        TurnInFlight(TenantApiTurnInFlight),
-        CancelUnspoken(TenantApiCancelUnspoken),
-        SessionArchivedState(TenantApiSessionArchivedState),
-        Unrecognised(::serde_json::Value),
+        SessionStoppingWith(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionStoppingWith),
+        SessionNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionNotFound),
+        TurnInFlight(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTurnInFlight),
+        CancelUnspoken(#[serde(deserialize_with = "crate::response::attempt")] TenantApiCancelUnspoken),
+        SessionArchivedState(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionArchivedState),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionStoppingWith> for TenantApiStopSessionResultStopped {
         fn from(value: TenantApiSessionStoppingWith) -> Self {
@@ -38819,7 +38867,7 @@ pub mod types {
     pub enum TenantApiStoredClaudeSetupCodeType {
         ClaudeSetupBoxCode,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStoredClaudeSetupCodeType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -38865,7 +38913,7 @@ pub mod types {
     pub enum TenantApiStoredClaudeSetupOfferType {
         ClaudeSetupBoxOffer,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStoredClaudeSetupOfferType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39134,7 +39182,7 @@ pub mod types {
     pub enum TenantApiStoredTurnOfferType {
         TurnOffer,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiStoredTurnOfferType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39189,7 +39237,7 @@ pub mod types {
         #[serde(rename = "submitClaudeSetupCode")]
         SubmitClaudeSetupCode,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubmitClaudeSetupCodeRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39229,10 +39277,12 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiSubmitClaudeSetupCodeResultCoded {
-        ClaudeSetupCodedOk(TenantApiClaudeSetupCodedOk),
-        AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        AuthorizationNotWaiting(TenantApiAuthorizationNotWaiting),
-        Unrecognised(::serde_json::Value),
+        ClaudeSetupCodedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupCodedOk),
+        AuthorizationNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiAuthorizationNotFound),
+        AuthorizationNotWaiting(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiAuthorizationNotWaiting,
+        ),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiClaudeSetupCodedOk> for TenantApiSubmitClaudeSetupCodeResultCoded {
         fn from(value: TenantApiClaudeSetupCodedOk) -> Self {
@@ -39260,7 +39310,7 @@ pub mod types {
     pub enum TenantApiSubscriptionChangedOkKind {
         Changed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubscriptionChangedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39302,7 +39352,7 @@ pub mod types {
     pub enum TenantApiSubscriptionCreatedOkKind {
         Created,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubscriptionCreatedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39347,7 +39397,7 @@ pub mod types {
     pub enum TenantApiSubscriptionCursorExpiredKind {
         CursorExpired,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubscriptionCursorExpiredKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39389,7 +39439,7 @@ pub mod types {
     pub enum TenantApiSubscriptionEndedStateKind {
         Ended,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubscriptionEndedStateKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39438,7 +39488,7 @@ pub mod types {
     pub enum TenantApiSubscriptionNotFoundKind {
         NotFound,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubscriptionNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39483,7 +39533,7 @@ pub mod types {
     pub enum TenantApiSubscriptionPersonaLacksTumpelMcpKind {
         PersonaLacksTumpelMcp,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSubscriptionPersonaLacksTumpelMcpKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39525,9 +39575,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiSupervisorUpdateInputMessage {
-        Step(ChannelSupervisorUpdateStep),
-        Failed(ChannelSupervisorUpdateFailed),
-        Unrecognised(::serde_json::Value),
+        Step(#[serde(deserialize_with = "crate::response::attempt")] ChannelSupervisorUpdateStep),
+        Failed(#[serde(deserialize_with = "crate::response::attempt")] ChannelSupervisorUpdateFailed),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<ChannelSupervisorUpdateStep> for TenantApiSupervisorUpdateInputMessage {
         fn from(value: ChannelSupervisorUpdateStep) -> Self {
@@ -39553,7 +39603,7 @@ pub mod types {
         #[serde(rename = "supervisorUpdate")]
         SupervisorUpdate,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSupervisorUpdateRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39636,7 +39686,7 @@ pub mod types {
         #[serde(rename = "supervisorUpdates")]
         SupervisorUpdates,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiSupervisorUpdatesRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39694,7 +39744,7 @@ pub mod types {
         #[serde(rename = "takeSteers")]
         TakeSteers,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTakeSteersRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39734,9 +39784,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiTakeSteersResultTaken {
-        SteersTaken(TenantApiSteersTaken),
-        SteerInboxClosed(TenantApiSteerInboxClosed),
-        Unrecognised(::serde_json::Value),
+        SteersTaken(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSteersTaken),
+        SteerInboxClosed(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSteerInboxClosed),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSteersTaken> for TenantApiTakeSteersResultTaken {
         fn from(value: TenantApiSteersTaken) -> Self {
@@ -39762,7 +39812,7 @@ pub mod types {
     pub enum TenantApiTenantApiVersionUnsupportedRefusal {
         TenantApiVersionUnsupported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTenantApiVersionUnsupportedRefusal {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39810,7 +39860,7 @@ pub mod types {
     pub enum TenantApiTenantLimitReachedRefusal {
         TenantLimitReached,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTenantLimitReachedRefusal {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39852,7 +39902,7 @@ pub mod types {
     pub enum TenantApiTenantOperationUnknownRefusal {
         TenantOperationUnknown,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTenantOperationUnknownRefusal {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -39887,11 +39937,13 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiTenantRefusal {
-        ApiVersionUnsupported(TenantApiTenantApiVersionUnsupported),
-        OperationUnknown(TenantApiTenantOperationUnknown),
-        RequestInvalid(TenantApiTenantRequestInvalid),
-        LimitReached(TenantApiTenantLimitReached),
-        Unrecognised(::serde_json::Value),
+        ApiVersionUnsupported(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiTenantApiVersionUnsupported,
+        ),
+        OperationUnknown(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTenantOperationUnknown),
+        RequestInvalid(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTenantRequestInvalid),
+        LimitReached(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTenantLimitReached),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTenantApiVersionUnsupported> for TenantApiTenantRefusal {
         fn from(value: TenantApiTenantApiVersionUnsupported) -> Self {
@@ -39917,119 +39969,214 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiTenantRequest {
-        ListPersonasRequest(TenantApiListPersonasRequest),
-        GetPersonaRequest(TenantApiGetPersonaRequest),
-        CreatePersonaRequest(TenantApiCreatePersonaRequest),
-        UpdatePersonaRequest(TenantApiUpdatePersonaRequest),
-        PatchPersonaRequest(TenantApiPatchPersonaRequest),
-        DeletePersonaRequest(TenantApiDeletePersonaRequest),
-        OpenRequest(TenantApiOpenRequest),
-        SupervisorUpdateRequest(TenantApiSupervisorUpdateRequest),
-        SupervisorUpdatesRequest(TenantApiSupervisorUpdatesRequest),
-        ListSecretSetsRequest(TenantApiListSecretSetsRequest),
-        GetSecretSetRequest(TenantApiGetSecretSetRequest),
-        CreateSecretSetRequest(TenantApiCreateSecretSetRequest),
-        UpdateSecretSetRequest(TenantApiUpdateSecretSetRequest),
-        PatchSecretSetRequest(TenantApiPatchSecretSetRequest),
-        SetSecretMemberRequest(TenantApiSetSecretMemberRequest),
-        RemoveSecretMemberRequest(TenantApiRemoveSecretMemberRequest),
-        DeleteSecretSetRequest(TenantApiDeleteSecretSetRequest),
-        ApplyConfigRequest(TenantApiApplyConfigRequest),
-        ListPinsRequest(TenantApiListPinsRequest),
-        PinRequest(TenantApiPinRequest),
-        UnpinRequest(TenantApiUnpinRequest),
-        ListConnectorsRequest(TenantApiListConnectorsRequest),
-        GetConnectorRequest(TenantApiGetConnectorRequest),
-        CreateConnectorRequest(TenantApiCreateConnectorRequest),
-        RenameConnectorRequest(TenantApiRenameConnectorRequest),
-        DeleteConnectorRequest(TenantApiDeleteConnectorRequest),
-        SetStaticTokenRequest(TenantApiSetStaticTokenRequest),
-        ClearConnectorCredentialRequest(TenantApiClearConnectorCredentialRequest),
-        StartConnectorAuthorizationRequest(TenantApiStartConnectorAuthorizationRequest),
-        ConnectorCallbackRequest(TenantApiConnectorCallbackRequest),
-        ServeConnectorTokenRequest(TenantApiServeConnectorTokenRequest),
-        UnknownConnectorsRequest(TenantApiUnknownConnectorsRequest),
-        StartOpenRouterAuthorizationRequest(TenantApiStartOpenRouterAuthorizationRequest),
-        GetOpenRouterAuthorizationRequest(TenantApiGetOpenRouterAuthorizationRequest),
-        OpenRouterCallbackRequest(TenantApiOpenRouterCallbackRequest),
-        OpenRouterAuthorizationDeadlineReachedRequest(TenantApiOpenRouterAuthorizationDeadlineReachedRequest),
-        OpenRouterSecretSetsRequest(TenantApiOpenRouterSecretSetsRequest),
-        StartClaudeSetupRequest(TenantApiStartClaudeSetupRequest),
-        GetClaudeSetupRequest(TenantApiGetClaudeSetupRequest),
-        ListClaudeSetupsRequest(TenantApiListClaudeSetupsRequest),
-        SubmitClaudeSetupCodeRequest(TenantApiSubmitClaudeSetupCodeRequest),
-        WriteClaudeSetupTokenRequest(TenantApiWriteClaudeSetupTokenRequest),
-        ClaudeSetupDeadlineReachedRequest(TenantApiClaudeSetupDeadlineReachedRequest),
-        PrepareClaudeSetupRequest(TenantApiPrepareClaudeSetupRequest),
-        ListPrebuildsRequest(TenantApiListPrebuildsRequest),
-        ListLatestPrebuildsRequest(TenantApiListLatestPrebuildsRequest),
-        GetPrebuildRequest(TenantApiGetPrebuildRequest),
-        HeldPrebuildRequest(TenantApiHeldPrebuildRequest),
-        RecordPrebuildBuildingRequest(TenantApiRecordPrebuildBuildingRequest),
-        PrebuildDeadlineReachedRequest(TenantApiPrebuildDeadlineReachedRequest),
-        StartHostPrebuildRequest(TenantApiStartHostPrebuildRequest),
-        GetPrebuildFailureRequest(TenantApiGetPrebuildFailureRequest),
-        RepositoryReadTokenRequest(TenantApiRepositoryReadTokenRequest),
-        StartSessionRequest(TenantApiStartSessionRequest),
-        StartSessionFromIssueRequest(TenantApiStartSessionFromIssueRequest),
-        SendTurnRequest(TenantApiSendTurnRequest),
-        StopSessionRequest(TenantApiStopSessionRequest),
-        ArchiveSessionRequest(TenantApiArchiveSessionRequest),
-        SetSessionTagsRequest(TenantApiSetSessionTagsRequest),
-        PatchSessionTagsRequest(TenantApiPatchSessionTagsRequest),
-        DeleteSessionRequest(TenantApiDeleteSessionRequest),
-        GetSessionRequest(TenantApiGetSessionRequest),
-        ListSessionsRequest(TenantApiListSessionsRequest),
-        ListTurnsRequest(TenantApiListTurnsRequest),
-        GetTurnRequest(TenantApiGetTurnRequest),
-        CancelTurnRequest(TenantApiCancelTurnRequest),
-        SteerTurnRequest(TenantApiSteerTurnRequest),
-        ListSteersRequest(TenantApiListSteersRequest),
-        TakeSteersRequest(TenantApiTakeSteersRequest),
-        ListEventsRequest(TenantApiListEventsRequest),
-        ListWebhookEndpointsRequest(TenantApiListWebhookEndpointsRequest),
-        CreateWebhookEndpointRequest(TenantApiCreateWebhookEndpointRequest),
-        GetWebhookEndpointRequest(TenantApiGetWebhookEndpointRequest),
-        DeleteWebhookEndpointRequest(TenantApiDeleteWebhookEndpointRequest),
-        SetWebhookEndpointStatusRequest(TenantApiSetWebhookEndpointStatusRequest),
-        ListPushSubscriptionsRequest(TenantApiListPushSubscriptionsRequest),
-        CreatePushSubscriptionRequest(TenantApiCreatePushSubscriptionRequest),
-        DeletePushSubscriptionRequest(TenantApiDeletePushSubscriptionRequest),
-        ForgetPushSubscriptionRequest(TenantApiForgetPushSubscriptionRequest),
-        PushTargetRequest(TenantApiPushTargetRequest),
-        CreateSubscriptionRequest(TenantApiCreateSubscriptionRequest),
-        ListSubscriptionsRequest(TenantApiListSubscriptionsRequest),
-        GetSubscriptionRequest(TenantApiGetSubscriptionRequest),
-        PauseSubscriptionRequest(TenantApiPauseSubscriptionRequest),
-        ResumeSubscriptionRequest(TenantApiResumeSubscriptionRequest),
-        DeleteSubscriptionRequest(TenantApiDeleteSubscriptionRequest),
-        CompleteSubscriptionRequest(TenantApiCompleteSubscriptionRequest),
-        CreateTriggerRequest(TenantApiCreateTriggerRequest),
-        ListTriggersRequest(TenantApiListTriggersRequest),
-        GetTriggerRequest(TenantApiGetTriggerRequest),
-        UpdateTriggerRequest(TenantApiUpdateTriggerRequest),
-        DeleteTriggerRequest(TenantApiDeleteTriggerRequest),
-        TriggerFiredRequest(TenantApiTriggerFiredRequest),
-        GetTurnFailureRequest(TenantApiGetTurnFailureRequest),
-        ListStopFailuresRequest(TenantApiListStopFailuresRequest),
-        ListSnapshotsRequest(TenantApiListSnapshotsRequest),
-        ListCredentialHandoversRequest(TenantApiListCredentialHandoversRequest),
-        GetSnapshotRequest(TenantApiGetSnapshotRequest),
-        TranscriptCursorRequest(TenantApiTranscriptCursorRequest),
-        HostHelloRequest(TenantApiHostHelloRequest),
-        HostHeartbeatRequest(TenantApiHostHeartbeatRequest),
-        ForgetHostUsageRequest(TenantApiForgetHostUsageRequest),
-        RunningTurnsByHostRequest(TenantApiRunningTurnsByHostRequest),
-        ListHostUsageRequest(TenantApiListHostUsageRequest),
-        ReadUsageRequest(TenantApiReadUsageRequest),
-        ReadLimitsRequest(TenantApiReadLimitsRequest),
-        SetLimitsRequest(TenantApiSetLimitsRequest),
-        DeferredOffersRequest(TenantApiDeferredOffersRequest),
-        TurnMetricDimensionsRequest(TenantApiTurnMetricDimensionsRequest),
-        PrepareOfferRequest(TenantApiPrepareOfferRequest),
-        HostMessageRequest(TenantApiHostMessageRequest),
-        DeadlineReachedRequest(TenantApiDeadlineReachedRequest),
-        Unrecognised(::serde_json::Value),
+        ListPersonasRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListPersonasRequest),
+        GetPersonaRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiGetPersonaRequest),
+        CreatePersonaRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiCreatePersonaRequest),
+        UpdatePersonaRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUpdatePersonaRequest),
+        PatchPersonaRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPatchPersonaRequest),
+        DeletePersonaRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiDeletePersonaRequest),
+        OpenRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiOpenRequest),
+        SupervisorUpdateRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiSupervisorUpdateRequest,
+        ),
+        SupervisorUpdatesRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiSupervisorUpdatesRequest,
+        ),
+        ListSecretSetsRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListSecretSetsRequest),
+        GetSecretSetRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiGetSecretSetRequest),
+        CreateSecretSetRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiCreateSecretSetRequest),
+        UpdateSecretSetRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUpdateSecretSetRequest),
+        PatchSecretSetRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPatchSecretSetRequest),
+        SetSecretMemberRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSetSecretMemberRequest),
+        RemoveSecretMemberRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiRemoveSecretMemberRequest,
+        ),
+        DeleteSecretSetRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiDeleteSecretSetRequest),
+        ApplyConfigRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiApplyConfigRequest),
+        ListPinsRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListPinsRequest),
+        PinRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPinRequest),
+        UnpinRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUnpinRequest),
+        ListConnectorsRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListConnectorsRequest),
+        GetConnectorRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiGetConnectorRequest),
+        CreateConnectorRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiCreateConnectorRequest),
+        RenameConnectorRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiRenameConnectorRequest),
+        DeleteConnectorRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiDeleteConnectorRequest),
+        SetStaticTokenRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSetStaticTokenRequest),
+        ClearConnectorCredentialRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiClearConnectorCredentialRequest,
+        ),
+        StartConnectorAuthorizationRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiStartConnectorAuthorizationRequest,
+        ),
+        ConnectorCallbackRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiConnectorCallbackRequest,
+        ),
+        ServeConnectorTokenRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiServeConnectorTokenRequest,
+        ),
+        UnknownConnectorsRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiUnknownConnectorsRequest,
+        ),
+        StartOpenRouterAuthorizationRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiStartOpenRouterAuthorizationRequest,
+        ),
+        GetOpenRouterAuthorizationRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiGetOpenRouterAuthorizationRequest,
+        ),
+        OpenRouterCallbackRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiOpenRouterCallbackRequest,
+        ),
+        OpenRouterAuthorizationDeadlineReachedRequest(
+            #[serde(deserialize_with = "crate::response::attempt")]
+            TenantApiOpenRouterAuthorizationDeadlineReachedRequest,
+        ),
+        OpenRouterSecretSetsRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiOpenRouterSecretSetsRequest,
+        ),
+        StartClaudeSetupRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiStartClaudeSetupRequest,
+        ),
+        GetClaudeSetupRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiGetClaudeSetupRequest),
+        ListClaudeSetupsRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiListClaudeSetupsRequest,
+        ),
+        SubmitClaudeSetupCodeRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiSubmitClaudeSetupCodeRequest,
+        ),
+        WriteClaudeSetupTokenRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiWriteClaudeSetupTokenRequest,
+        ),
+        ClaudeSetupDeadlineReachedRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupDeadlineReachedRequest,
+        ),
+        PrepareClaudeSetupRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiPrepareClaudeSetupRequest,
+        ),
+        ListPrebuildsRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListPrebuildsRequest),
+        ListLatestPrebuildsRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiListLatestPrebuildsRequest,
+        ),
+        GetPrebuildRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiGetPrebuildRequest),
+        HeldPrebuildRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiHeldPrebuildRequest),
+        RecordPrebuildBuildingRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiRecordPrebuildBuildingRequest,
+        ),
+        PrebuildDeadlineReachedRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiPrebuildDeadlineReachedRequest,
+        ),
+        StartHostPrebuildRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiStartHostPrebuildRequest,
+        ),
+        GetPrebuildFailureRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiGetPrebuildFailureRequest,
+        ),
+        RepositoryReadTokenRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiRepositoryReadTokenRequest,
+        ),
+        StartSessionRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStartSessionRequest),
+        StartSessionFromIssueRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiStartSessionFromIssueRequest,
+        ),
+        SendTurnRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSendTurnRequest),
+        StopSessionRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiStopSessionRequest),
+        ArchiveSessionRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiArchiveSessionRequest),
+        SetSessionTagsRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSetSessionTagsRequest),
+        PatchSessionTagsRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiPatchSessionTagsRequest,
+        ),
+        DeleteSessionRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiDeleteSessionRequest),
+        GetSessionRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiGetSessionRequest),
+        ListSessionsRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListSessionsRequest),
+        ListTurnsRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListTurnsRequest),
+        GetTurnRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiGetTurnRequest),
+        CancelTurnRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiCancelTurnRequest),
+        SteerTurnRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSteerTurnRequest),
+        ListSteersRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListSteersRequest),
+        TakeSteersRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTakeSteersRequest),
+        ListEventsRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListEventsRequest),
+        ListWebhookEndpointsRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiListWebhookEndpointsRequest,
+        ),
+        CreateWebhookEndpointRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiCreateWebhookEndpointRequest,
+        ),
+        GetWebhookEndpointRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiGetWebhookEndpointRequest,
+        ),
+        DeleteWebhookEndpointRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiDeleteWebhookEndpointRequest,
+        ),
+        SetWebhookEndpointStatusRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiSetWebhookEndpointStatusRequest,
+        ),
+        ListPushSubscriptionsRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiListPushSubscriptionsRequest,
+        ),
+        CreatePushSubscriptionRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiCreatePushSubscriptionRequest,
+        ),
+        DeletePushSubscriptionRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiDeletePushSubscriptionRequest,
+        ),
+        ForgetPushSubscriptionRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiForgetPushSubscriptionRequest,
+        ),
+        PushTargetRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPushTargetRequest),
+        CreateSubscriptionRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiCreateSubscriptionRequest,
+        ),
+        ListSubscriptionsRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiListSubscriptionsRequest,
+        ),
+        GetSubscriptionRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiGetSubscriptionRequest),
+        PauseSubscriptionRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiPauseSubscriptionRequest,
+        ),
+        ResumeSubscriptionRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiResumeSubscriptionRequest,
+        ),
+        DeleteSubscriptionRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiDeleteSubscriptionRequest,
+        ),
+        CompleteSubscriptionRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiCompleteSubscriptionRequest,
+        ),
+        CreateTriggerRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiCreateTriggerRequest),
+        ListTriggersRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListTriggersRequest),
+        GetTriggerRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiGetTriggerRequest),
+        UpdateTriggerRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUpdateTriggerRequest),
+        DeleteTriggerRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiDeleteTriggerRequest),
+        TriggerFiredRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerFiredRequest),
+        GetTurnFailureRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiGetTurnFailureRequest),
+        ListStopFailuresRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiListStopFailuresRequest,
+        ),
+        ListSnapshotsRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListSnapshotsRequest),
+        ListCredentialHandoversRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiListCredentialHandoversRequest,
+        ),
+        GetSnapshotRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiGetSnapshotRequest),
+        TranscriptCursorRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiTranscriptCursorRequest,
+        ),
+        HostHelloRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiHostHelloRequest),
+        HostHeartbeatRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiHostHeartbeatRequest),
+        ForgetHostUsageRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiForgetHostUsageRequest),
+        RunningTurnsByHostRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiRunningTurnsByHostRequest,
+        ),
+        ListHostUsageRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiListHostUsageRequest),
+        ReadUsageRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiReadUsageRequest),
+        ReadLimitsRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiReadLimitsRequest),
+        SetLimitsRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSetLimitsRequest),
+        DeferredOffersRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiDeferredOffersRequest),
+        TurnMetricDimensionsRequest(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiTurnMetricDimensionsRequest,
+        ),
+        PrepareOfferRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPrepareOfferRequest),
+        HostMessageRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiHostMessageRequest),
+        DeadlineReachedRequest(#[serde(deserialize_with = "crate::response::attempt")] TenantApiDeadlineReachedRequest),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiListPersonasRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiListPersonasRequest) -> Self {
@@ -40603,7 +40750,7 @@ pub mod types {
     pub enum TenantApiTenantRequestInvalidRefusal {
         TenantRequestInvalid,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTenantRequestInvalidRefusal {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -40654,7 +40801,7 @@ pub mod types {
     pub enum TenantApiTranscriptChunkKind {
         Chunk,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTranscriptChunkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -40710,7 +40857,7 @@ pub mod types {
         #[serde(rename = "transcriptCursor")]
         TranscriptCursor,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTranscriptCursorRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -40771,7 +40918,7 @@ pub mod types {
     pub enum TenantApiTranscriptLinesKind {
         Lines,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTranscriptLinesKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -40813,7 +40960,7 @@ pub mod types {
     pub enum TenantApiTriggerCreatedOkKind {
         Created,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerCreatedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -40856,7 +41003,7 @@ pub mod types {
     pub enum TenantApiTriggerDeliveryRepeatedKind {
         Repeated,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerDeliveryRepeatedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -40906,9 +41053,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiTriggerFiredInputFired {
-        Matched(TenantApiTriggerFiredMatched),
-        Refused(TenantApiTriggerFiredRefused),
-        Unrecognised(::serde_json::Value),
+        Matched(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerFiredMatched),
+        Refused(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerFiredRefused),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTriggerFiredMatched> for TenantApiTriggerFiredInputFired {
         fn from(value: TenantApiTriggerFiredMatched) -> Self {
@@ -40934,7 +41081,7 @@ pub mod types {
     pub enum TenantApiTriggerFiredMatchedKind {
         Matched,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerFiredMatchedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -40976,7 +41123,7 @@ pub mod types {
     pub enum TenantApiTriggerFiredRefusedKind {
         Refused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerFiredRefusedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41021,7 +41168,7 @@ pub mod types {
         #[serde(rename = "triggerFired")]
         TriggerFired,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerFiredRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41061,11 +41208,13 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiTriggerFiredResultFired {
-        SessionStartedOk(TenantApiSessionStartedOk),
-        TriggerDeliveryRepeated(TenantApiTriggerDeliveryRepeated),
-        TriggerNotFound(TenantApiTriggerNotFound),
-        TriggerStartRefusedOk(TenantApiTriggerStartRefusedOk),
-        Unrecognised(::serde_json::Value),
+        SessionStartedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSessionStartedOk),
+        TriggerDeliveryRepeated(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerDeliveryRepeated,
+        ),
+        TriggerNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerNotFound),
+        TriggerStartRefusedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerStartRefusedOk),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionStartedOk> for TenantApiTriggerFiredResultFired {
         fn from(value: TenantApiSessionStartedOk) -> Self {
@@ -41097,7 +41246,7 @@ pub mod types {
     pub enum TenantApiTriggerNameTakenKind {
         NameTaken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerNameTakenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41138,7 +41287,7 @@ pub mod types {
     pub enum TenantApiTriggerNotFoundKind {
         NotFound,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41179,7 +41328,7 @@ pub mod types {
     pub enum TenantApiTriggerPersonaNotFoundKind {
         PersonaNotFound,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerPersonaNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41221,7 +41370,7 @@ pub mod types {
     pub enum TenantApiTriggerStartRefusedOkKind {
         Refused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerStartRefusedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41263,7 +41412,7 @@ pub mod types {
     pub enum TenantApiTriggerUpdatedOkKind {
         Updated,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTriggerUpdatedOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41305,7 +41454,7 @@ pub mod types {
     pub enum TenantApiTurnCancelledOkKind {
         Cancelled,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnCancelledOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41349,7 +41498,7 @@ pub mod types {
     pub enum TenantApiTurnCredentialRefusedKind {
         CredentialRefused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnCredentialRefusedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41384,12 +41533,20 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiTurnCredentialRefusedRefusal {
-        NoCredentialRefusal(TenantApiNoCredentialRefusal),
-        NoModelCredentialRefusal(TenantApiNoModelCredentialRefusal),
-        UnsupportedCredentialRefusal(TenantApiUnsupportedCredentialRefusal),
-        ModelUnsupportedCredentialRefusal(TenantApiModelUnsupportedCredentialRefusal),
-        ExpiredCredentialRefusal(TenantApiExpiredCredentialRefusal),
-        Unrecognised(::serde_json::Value),
+        NoCredentialRefusal(#[serde(deserialize_with = "crate::response::attempt")] TenantApiNoCredentialRefusal),
+        NoModelCredentialRefusal(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiNoModelCredentialRefusal,
+        ),
+        UnsupportedCredentialRefusal(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiUnsupportedCredentialRefusal,
+        ),
+        ModelUnsupportedCredentialRefusal(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiModelUnsupportedCredentialRefusal,
+        ),
+        ExpiredCredentialRefusal(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiExpiredCredentialRefusal,
+        ),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiNoCredentialRefusal> for TenantApiTurnCredentialRefusedRefusal {
         fn from(value: TenantApiNoCredentialRefusal) -> Self {
@@ -41437,7 +41594,7 @@ pub mod types {
     pub enum TenantApiTurnHandoffType {
         TurnHandoff,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnHandoffType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41480,7 +41637,7 @@ pub mod types {
     pub enum TenantApiTurnInFlightKind {
         InFlight,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnInFlightKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41555,7 +41712,7 @@ pub mod types {
         #[serde(rename = "turnMetricDimensions")]
         TurnMetricDimensions,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnMetricDimensionsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41601,7 +41758,7 @@ pub mod types {
     pub enum TenantApiTurnNotFoundKind {
         NotFound,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnNotFoundKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41643,7 +41800,7 @@ pub mod types {
     pub enum TenantApiTurnNotRunningKind {
         NotRunning,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnNotRunningKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41685,7 +41842,7 @@ pub mod types {
     pub enum TenantApiTurnNotWaitingKind {
         NotWaiting,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnNotWaitingKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41727,7 +41884,7 @@ pub mod types {
     pub enum TenantApiTurnSentOkKind {
         Sent,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnSentOkKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41770,7 +41927,7 @@ pub mod types {
     pub enum TenantApiTurnStrandedKind {
         Stranded,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiTurnStrandedKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41821,7 +41978,7 @@ pub mod types {
         #[serde(rename = "unknownConnectors")]
         UnknownConnectors,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnknownConnectorsRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41877,7 +42034,7 @@ pub mod types {
         #[serde(rename = "unpin")]
         Unpin,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnpinRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41924,7 +42081,7 @@ pub mod types {
     pub enum TenantApiUnpinWriteKind {
         Unpin,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnpinWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -41959,15 +42116,15 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiUnplaceable {
-        NotOnline(TenantApiUnplaceableNotOnline),
-        NotHealthy(TenantApiUnplaceableNotHealthy),
-        NoImage(TenantApiUnplaceableNoImage),
-        Full(TenantApiUnplaceableFull),
-        MemoryFull(TenantApiUnplaceableMemoryFull),
-        NoMemory(TenantApiUnplaceableNoMemory),
-        NoDisk(TenantApiUnplaceableNoDisk),
-        NoConnectors(TenantApiUnplaceableNoConnectors),
-        Unrecognised(::serde_json::Value),
+        NotOnline(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUnplaceableNotOnline),
+        NotHealthy(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUnplaceableNotHealthy),
+        NoImage(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUnplaceableNoImage),
+        Full(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUnplaceableFull),
+        MemoryFull(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUnplaceableMemoryFull),
+        NoMemory(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUnplaceableNoMemory),
+        NoDisk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUnplaceableNoDisk),
+        NoConnectors(#[serde(deserialize_with = "crate::response::attempt")] TenantApiUnplaceableNoConnectors),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiUnplaceableNotOnline> for TenantApiUnplaceable {
         fn from(value: TenantApiUnplaceableNotOnline) -> Self {
@@ -42022,7 +42179,7 @@ pub mod types {
     pub enum TenantApiUnplaceableFullKind {
         Unplaceable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableFullKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42058,7 +42215,7 @@ pub mod types {
     pub enum TenantApiUnplaceableFullReason {
         Full,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableFullReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42104,7 +42261,7 @@ pub mod types {
     pub enum TenantApiUnplaceableMemoryFullKind {
         Unplaceable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableMemoryFullKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42140,7 +42297,7 @@ pub mod types {
     pub enum TenantApiUnplaceableMemoryFullReason {
         MemoryFull,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableMemoryFullReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42184,7 +42341,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNoConnectorsKind {
         Unplaceable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoConnectorsKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42220,7 +42377,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNoConnectorsReason {
         NoConnectors,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoConnectorsReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42266,7 +42423,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNoDiskKind {
         Unplaceable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoDiskKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42302,7 +42459,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNoDiskReason {
         NoDisk,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoDiskReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42346,7 +42503,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNoImageKind {
         Unplaceable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoImageKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42382,7 +42539,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNoImageReason {
         NoImage,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoImageReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42428,7 +42585,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNoMemoryKind {
         Unplaceable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoMemoryKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42464,7 +42621,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNoMemoryReason {
         NoMemory,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNoMemoryReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42507,7 +42664,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNotHealthyKind {
         Unplaceable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNotHealthyKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42543,7 +42700,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNotHealthyReason {
         NotHealthy,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNotHealthyReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42586,7 +42743,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNotOnlineKind {
         Unplaceable,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNotOnlineKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42622,7 +42779,7 @@ pub mod types {
     pub enum TenantApiUnplaceableNotOnlineReason {
         NotOnline,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnplaceableNotOnlineReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42667,7 +42824,7 @@ pub mod types {
     pub enum TenantApiUnsupportedCredentialRefusalKind {
         Unsupported,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUnsupportedCredentialRefusalKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42722,7 +42879,7 @@ pub mod types {
         #[serde(rename = "updatePersona")]
         UpdatePersona,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUpdatePersonaRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42762,9 +42919,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiUpdatePersonaResultWritten {
-        PersonaUpdated(TenantApiPersonaUpdated),
-        WriteConflict(TenantApiWriteConflict),
-        Unrecognised(::serde_json::Value),
+        PersonaUpdated(#[serde(deserialize_with = "crate::response::attempt")] TenantApiPersonaUpdated),
+        WriteConflict(#[serde(deserialize_with = "crate::response::attempt")] TenantApiWriteConflict),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiPersonaUpdated> for TenantApiUpdatePersonaResultWritten {
         fn from(value: TenantApiPersonaUpdated) -> Self {
@@ -42789,7 +42946,7 @@ pub mod types {
     pub enum TenantApiUpdatePersonaWriteKind {
         UpdatePersona,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUpdatePersonaWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42846,7 +43003,7 @@ pub mod types {
         #[serde(rename = "updateSecretSet")]
         UpdateSecretSet,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUpdateSecretSetRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42886,12 +43043,12 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiUpdateSecretSetResultUpdated {
-        Updated(TenantApiSecretSetUpdated),
-        Missing(TenantApiSecretSetMissing),
-        Conflict(TenantApiSecretSetConflict),
-        NoStoredValue(TenantApiSecretSetNoStoredValue),
-        UncheckedToken(TenantApiSecretSetUncheckedToken),
-        Unrecognised(::serde_json::Value),
+        Updated(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetUpdated),
+        Missing(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetMissing),
+        Conflict(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetConflict),
+        NoStoredValue(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetNoStoredValue),
+        UncheckedToken(#[serde(deserialize_with = "crate::response::attempt")] TenantApiSecretSetUncheckedToken),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSecretSetUpdated> for TenantApiUpdateSecretSetResultUpdated {
         fn from(value: TenantApiSecretSetUpdated) -> Self {
@@ -42945,7 +43102,7 @@ pub mod types {
         #[serde(rename = "updateTrigger")]
         UpdateTrigger,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUpdateTriggerRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -42985,11 +43142,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiUpdateTriggerResultUpdated {
-        UpdatedOk(TenantApiTriggerUpdatedOk),
-        NotFound(TenantApiTriggerNotFound),
-        NameTaken(TenantApiTriggerNameTaken),
-        PersonaNotFound(TenantApiTriggerPersonaNotFound),
-        Unrecognised(::serde_json::Value),
+        UpdatedOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerUpdatedOk),
+        NotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerNotFound),
+        NameTaken(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerNameTaken),
+        PersonaNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiTriggerPersonaNotFound),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTriggerUpdatedOk> for TenantApiUpdateTriggerResultUpdated {
         fn from(value: TenantApiTriggerUpdatedOk) -> Self {
@@ -43026,7 +43183,7 @@ pub mod types {
     pub enum TenantApiUpdateTriggerWriteKind {
         UpdateTrigger,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiUpdateTriggerWriteKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -43084,7 +43241,7 @@ pub mod types {
         #[serde(rename = "writeClaudeSetupToken")]
         WriteClaudeSetupToken,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantApiWriteClaudeSetupTokenRequestOperation {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -43124,12 +43281,14 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiWriteClaudeSetupTokenResultStored {
-        ClaudeSetupStoredOk(TenantApiClaudeSetupStoredOk),
-        AuthorizationNotFound(TenantApiAuthorizationNotFound),
-        ClaudeSetupRefused(TenantApiClaudeSetupRefused),
-        AuthorizationNotWaiting(TenantApiAuthorizationNotWaiting),
-        ClaudeSetupNotStored(TenantApiClaudeSetupNotStored),
-        Unrecognised(::serde_json::Value),
+        ClaudeSetupStoredOk(#[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupStoredOk),
+        AuthorizationNotFound(#[serde(deserialize_with = "crate::response::attempt")] TenantApiAuthorizationNotFound),
+        ClaudeSetupRefused(#[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupRefused),
+        AuthorizationNotWaiting(
+            #[serde(deserialize_with = "crate::response::attempt")] TenantApiAuthorizationNotWaiting,
+        ),
+        ClaudeSetupNotStored(#[serde(deserialize_with = "crate::response::attempt")] TenantApiClaudeSetupNotStored),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiClaudeSetupStoredOk> for TenantApiWriteClaudeSetupTokenResultStored {
         fn from(value: TenantApiClaudeSetupStoredOk) -> Self {
@@ -43216,23 +43375,23 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantEvent {
-        TurnStartedEvent(TurnStartedEvent),
-        TurnCompletedEvent(TurnCompletedEvent),
-        TurnFailedEvent(TurnFailedEvent),
-        SessionIdleEvent(SessionIdleEvent),
-        SessionStoppedEvent(SessionStoppedEvent),
-        SessionFailedEvent(SessionFailedEvent),
-        SessionArchivedEvent(SessionArchivedEvent),
-        HostOnlineEvent(HostOnlineEvent),
-        HostOfflineEvent(HostOfflineEvent),
-        PrebuildDoneEvent(PrebuildDoneEvent),
-        PrebuildFailedEvent(PrebuildFailedEvent),
-        SubscriptionPausedEvent(SubscriptionPausedEvent),
-        SubscriptionEndedEvent(SubscriptionEndedEvent),
-        TriggerStartRefusedEvent(TriggerStartRefusedEvent),
-        UsageNearLimitEvent(UsageNearLimitEvent),
-        UsageLimitReachedEvent(UsageLimitReachedEvent),
-        Unrecognised(::serde_json::Value),
+        TurnStartedEvent(#[serde(deserialize_with = "crate::response::attempt")] TurnStartedEvent),
+        TurnCompletedEvent(#[serde(deserialize_with = "crate::response::attempt")] TurnCompletedEvent),
+        TurnFailedEvent(#[serde(deserialize_with = "crate::response::attempt")] TurnFailedEvent),
+        SessionIdleEvent(#[serde(deserialize_with = "crate::response::attempt")] SessionIdleEvent),
+        SessionStoppedEvent(#[serde(deserialize_with = "crate::response::attempt")] SessionStoppedEvent),
+        SessionFailedEvent(#[serde(deserialize_with = "crate::response::attempt")] SessionFailedEvent),
+        SessionArchivedEvent(#[serde(deserialize_with = "crate::response::attempt")] SessionArchivedEvent),
+        HostOnlineEvent(#[serde(deserialize_with = "crate::response::attempt")] HostOnlineEvent),
+        HostOfflineEvent(#[serde(deserialize_with = "crate::response::attempt")] HostOfflineEvent),
+        PrebuildDoneEvent(#[serde(deserialize_with = "crate::response::attempt")] PrebuildDoneEvent),
+        PrebuildFailedEvent(#[serde(deserialize_with = "crate::response::attempt")] PrebuildFailedEvent),
+        SubscriptionPausedEvent(#[serde(deserialize_with = "crate::response::attempt")] SubscriptionPausedEvent),
+        SubscriptionEndedEvent(#[serde(deserialize_with = "crate::response::attempt")] SubscriptionEndedEvent),
+        TriggerStartRefusedEvent(#[serde(deserialize_with = "crate::response::attempt")] TriggerStartRefusedEvent),
+        UsageNearLimitEvent(#[serde(deserialize_with = "crate::response::attempt")] UsageNearLimitEvent),
+        UsageLimitReachedEvent(#[serde(deserialize_with = "crate::response::attempt")] UsageLimitReachedEvent),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TurnStartedEvent> for TenantEvent {
         fn from(value: TurnStartedEvent) -> Self {
@@ -43345,7 +43504,7 @@ pub mod types {
         UsageNearLimit,
         UsageLimitReached,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantEventType {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -43442,9 +43601,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantLimitsSet {
-        Reset(TenantLimitsReset),
-        Profile(TenantLimitsProfile),
-        Unrecognised(::serde_json::Value),
+        Reset(#[serde(deserialize_with = "crate::response::attempt")] TenantLimitsReset),
+        Profile(#[serde(deserialize_with = "crate::response::attempt")] TenantLimitsProfile),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TenantLimitsReset> for TenantLimitsSet {
         fn from(value: TenantLimitsReset) -> Self {
@@ -43463,7 +43622,7 @@ pub mod types {
         Configured,
         Custom,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantLimitsSource {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -43512,7 +43671,7 @@ pub mod types {
         Free,
         Configured,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantTier {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -43570,7 +43729,7 @@ pub mod types {
         RowsWritten,
         RowsRead,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantUsageMeasure {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -43614,7 +43773,7 @@ pub mod types {
         Hour,
         Day,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TenantUsageWindow {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -43723,7 +43882,7 @@ pub mod types {
         CacheRead,
         CacheWrite,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TokenKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -43767,7 +43926,7 @@ pub mod types {
         Rust,
         Python,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for Toolchain {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -43825,9 +43984,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TranscriptPage {
-        RawTranscriptPage(RawTranscriptPage),
-        CompactTranscriptPage(CompactTranscriptPage),
-        Unrecognised(::serde_json::Value),
+        RawTranscriptPage(#[serde(deserialize_with = "crate::response::attempt")] RawTranscriptPage),
+        CompactTranscriptPage(#[serde(deserialize_with = "crate::response::attempt")] CompactTranscriptPage),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<RawTranscriptPage> for TranscriptPage {
         fn from(value: RawTranscriptPage) -> Self {
@@ -44130,7 +44289,7 @@ pub mod types {
     pub enum TriggerOriginKind {
         Trigger,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TriggerOriginKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -44250,7 +44409,7 @@ pub mod types {
     pub enum TriggerStartRefusedEventEvent {
         TriggerStartRefused,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TriggerStartRefusedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -44285,9 +44444,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TriggerTest {
-        StoredTriggerTest(StoredTriggerTest),
-        DraftTriggerTest(DraftTriggerTest),
-        Unrecognised(::serde_json::Value),
+        StoredTriggerTest(#[serde(deserialize_with = "crate::response::attempt")] StoredTriggerTest),
+        DraftTriggerTest(#[serde(deserialize_with = "crate::response::attempt")] DraftTriggerTest),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<StoredTriggerTest> for TriggerTest {
         fn from(value: StoredTriggerTest) -> Self {
@@ -44315,12 +44474,12 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum Turn {
-        OfferedTurn(OfferedTurn),
-        RunningTurn(RunningTurn),
-        CompletedTurn(CompletedTurn),
-        FailedTurn(FailedTurn),
-        UnknownTurn(UnknownTurn),
-        Unrecognised(::serde_json::Value),
+        OfferedTurn(#[serde(deserialize_with = "crate::response::attempt")] OfferedTurn),
+        RunningTurn(#[serde(deserialize_with = "crate::response::attempt")] RunningTurn),
+        CompletedTurn(#[serde(deserialize_with = "crate::response::attempt")] CompletedTurn),
+        FailedTurn(#[serde(deserialize_with = "crate::response::attempt")] FailedTurn),
+        UnknownTurn(#[serde(deserialize_with = "crate::response::attempt")] UnknownTurn),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<OfferedTurn> for Turn {
         fn from(value: OfferedTurn) -> Self {
@@ -44394,7 +44553,7 @@ pub mod types {
     pub enum TurnCompletedEventEvent {
         TurnCompleted,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TurnCompletedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -44448,7 +44607,7 @@ pub mod types {
     pub enum TurnFailedEventEvent {
         TurnFailed,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TurnFailedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -44533,7 +44692,7 @@ pub mod types {
         SnapshotNotStored,
         RateLimited,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TurnFailureReason {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -44640,7 +44799,7 @@ pub mod types {
     pub enum TurnFullImageKind {
         Full,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TurnFullImageKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -44675,9 +44834,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TurnImage {
-        FullImage(TurnFullImage),
-        LayeredImage(TurnLayeredImage),
-        Unrecognised(::serde_json::Value),
+        FullImage(#[serde(deserialize_with = "crate::response::attempt")] TurnFullImage),
+        LayeredImage(#[serde(deserialize_with = "crate::response::attempt")] TurnLayeredImage),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<TurnFullImage> for TurnImage {
         fn from(value: TurnFullImage) -> Self {
@@ -44703,7 +44862,7 @@ pub mod types {
     pub enum TurnLayeredImageKind {
         Layered,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TurnLayeredImageKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -44748,7 +44907,7 @@ pub mod types {
     pub enum TurnOriginKind {
         Turn,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TurnOriginKind {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -44819,7 +44978,7 @@ pub mod types {
     pub enum TurnStartedEventEvent {
         TurnStarted,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TurnStartedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -44859,7 +45018,7 @@ pub mod types {
         Failed,
         Unknown,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for TurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -44963,7 +45122,7 @@ pub mod types {
     pub enum UnknownSessionState {
         Unknown,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for UnknownSessionState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -45032,7 +45191,7 @@ pub mod types {
     pub enum UnknownTurnState {
         Unknown,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for UnknownTurnState {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -45152,7 +45311,7 @@ pub mod types {
     pub enum UsageLimitReachedEventEvent {
         UsageLimitReached,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for UsageLimitReachedEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -45206,7 +45365,7 @@ pub mod types {
     pub enum UsageNearLimitEventEvent {
         UsageNearLimit,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for UsageNearLimitEventEvent {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -45247,7 +45406,7 @@ pub mod types {
     pub enum WebhookDeliveringDelivery {
         Delivering,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for WebhookDeliveringDelivery {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -45284,7 +45443,7 @@ pub mod types {
         Delivering,
         Failing,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for WebhookDelivery {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -45321,9 +45480,9 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum WebhookDeliveryStatus {
-        Delivering(WebhookDelivering),
-        Failing(WebhookFailing),
-        Unrecognised(::serde_json::Value),
+        Delivering(#[serde(deserialize_with = "crate::response::attempt")] WebhookDelivering),
+        Failing(#[serde(deserialize_with = "crate::response::attempt")] WebhookFailing),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::serde_json::Value),
     }
     impl ::std::convert::From<WebhookDelivering> for WebhookDeliveryStatus {
         fn from(value: WebhookDelivering) -> Self {
@@ -45376,7 +45535,7 @@ pub mod types {
     pub enum WebhookFailingDelivery {
         Failing,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for WebhookFailingDelivery {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -45419,7 +45578,7 @@ pub mod types {
     pub enum WebhookSigningKeyAlgorithm {
         Ed25519,
         #[serde(untagged)]
-        Unrecognised(::std::string::String),
+        Unrecognised(#[serde(deserialize_with = "crate::response::unrecognised")] ::std::string::String),
     }
     impl ::std::fmt::Display for WebhookSigningKeyAlgorithm {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
@@ -45647,7 +45806,7 @@ pub mod types {
                     ::serde_json::from_value::<ChannelLayeredImageDownload>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -45686,7 +45845,7 @@ pub mod types {
                     ::serde_json::from_value::<ChannelControlFrame>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -45746,7 +45905,7 @@ pub mod types {
                     ::serde_json::from_value::<ChannelClaudeSetupBoxDiscard>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -45767,7 +45926,7 @@ pub mod types {
                 Some("Frame") => Self::HostFrame(
                     ::serde_json::from_value::<ChannelHostFrame>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -45846,7 +46005,7 @@ pub mod types {
                     ::serde_json::from_value::<ChannelSupervisorUpdateFailed>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -45876,7 +46035,7 @@ pub mod types {
                 Some("Failed") => Self::Failed(
                     ::serde_json::from_value::<ClaudeSetupFailed>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -45893,7 +46052,7 @@ pub mod types {
                 Some("Stored") => Self::StoredConfigFile(
                     ::serde_json::from_value::<StoredConfigFile>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -45915,7 +46074,7 @@ pub mod types {
                     ::serde_json::from_value::<ConfigSubscriptionToken>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -45938,7 +46097,7 @@ pub mod types {
                     ::serde_json::from_value::<NotConfiguredConnection>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -45955,7 +46114,7 @@ pub mod types {
                 Some("OAuth") => Self::OAuthConnector(
                     ::serde_json::from_value::<OAuthConnector>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -45982,7 +46141,7 @@ pub mod types {
                     ::serde_json::from_value::<ConnectorAuthorizationFailed>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -45999,7 +46158,7 @@ pub mod types {
                 Some("AppMissing") => Self::Missing(
                     ::serde_json::from_value::<GitHubAppMissing>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46024,7 +46183,7 @@ pub mod types {
                     ::serde_json::from_value::<GuestClaudeSetupCode>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46064,7 +46223,7 @@ pub mod types {
                     ::serde_json::from_value::<GuestClaudeSetupFailed>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46084,7 +46243,7 @@ pub mod types {
                 Some("Offline") => Self::OfflineHost(
                     ::serde_json::from_value::<OfflineHost>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46103,7 +46262,7 @@ pub mod types {
                     ::serde_json::from_value::<HostChannelProtocolReported>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46122,7 +46281,7 @@ pub mod types {
                     ::serde_json::from_value::<HostGuestProtocolReported>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46140,7 +46299,7 @@ pub mod types {
                     ::serde_json::from_value::<ArchiveInstallRecipe>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46159,7 +46318,7 @@ pub mod types {
                     ::serde_json::from_value::<ModelSupportProviderChecked>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46178,7 +46337,7 @@ pub mod types {
                     ::serde_json::from_value::<OAuthRefreshTokenRequest>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46205,7 +46364,7 @@ pub mod types {
                     ::serde_json::from_value::<OpenRouterAuthorizationFailed>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46224,7 +46383,7 @@ pub mod types {
                     ::serde_json::from_value::<StoredPersonaFileRead>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46247,7 +46406,7 @@ pub mod types {
                     ::serde_json::from_value::<EditPersonaFilePatch>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46264,7 +46423,7 @@ pub mod types {
                 Some("Stored") => Self::StoredPersonaFile(
                     ::serde_json::from_value::<StoredPersonaFile>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46283,7 +46442,7 @@ pub mod types {
                     ::serde_json::from_value::<PrebuildPreviewOfSupplied>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46311,7 +46470,7 @@ pub mod types {
                 Some("Failed") => Self::Failed(
                     ::serde_json::from_value::<PrebuildFailed>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46335,7 +46494,7 @@ pub mod types {
                 Some("CredentialFile") => Self::CredentialFileKey(
                     ::serde_json::from_value::<CredentialFileKey>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46361,7 +46520,7 @@ pub mod types {
                     ::serde_json::from_value::<CredentialFileUpdate>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46387,7 +46546,7 @@ pub mod types {
                     ::serde_json::from_value::<CredentialFileValue>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46422,7 +46581,7 @@ pub mod types {
                 Some("Unknown") => Self::UnknownSession(
                     ::serde_json::from_value::<UnknownSession>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46441,7 +46600,7 @@ pub mod types {
                     ::serde_json::from_value::<SessionIssueOrigin>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46460,7 +46619,7 @@ pub mod types {
                     ::serde_json::from_value::<SessionPrebuildLayerAbsent>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46480,7 +46639,7 @@ pub mod types {
                 Some("Trigger") => Self::TriggerOrigin(
                     ::serde_json::from_value::<TriggerOrigin>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46510,7 +46669,7 @@ pub mod types {
                     ::serde_json::from_value::<SnapshotWhiteoutEntry>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46527,7 +46686,7 @@ pub mod types {
                 Some("Failed") => Self::Failure(
                     ::serde_json::from_value::<SnapshotFailure>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46549,7 +46708,7 @@ pub mod types {
                 Some("Ended") => Self::EndedSubscription(
                     ::serde_json::from_value::<EndedSubscription>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46576,7 +46735,7 @@ pub mod types {
                     ::serde_json::from_value::<SubscriptionPausedCreditExhausted>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46595,7 +46754,7 @@ pub mod types {
                     ::serde_json::from_value::<SupervisorHandoverTurn>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46618,7 +46777,7 @@ pub mod types {
                     ::serde_json::from_value::<SupervisorHandoverDiscard>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46637,7 +46796,7 @@ pub mod types {
                     ::serde_json::from_value::<SupervisorHandoverLayeredImage>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46656,7 +46815,7 @@ pub mod types {
                     ::serde_json::from_value::<SupervisorUpdateFailureReported>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46675,7 +46834,7 @@ pub mod types {
                     ::serde_json::from_value::<SupervisorUpdateStepReported>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46729,7 +46888,7 @@ pub mod types {
                     ::serde_json::from_value::<TenantApiDeleteTriggerWrite>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -46756,7 +46915,7 @@ pub mod types {
                     ::serde_json::from_value::<TenantApiTenantLimitReached>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -47215,7 +47374,7 @@ pub mod types {
                     ::serde_json::from_value::<TenantApiDeadlineReachedRequest>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -47258,7 +47417,7 @@ pub mod types {
                     ::serde_json::from_value::<TenantApiUnplaceableNoConnectors>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -47327,7 +47486,7 @@ pub mod types {
                     ::serde_json::from_value::<UsageLimitReachedEvent>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -47345,7 +47504,7 @@ pub mod types {
                     ::serde_json::from_value::<CompactTranscriptPage>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -47362,7 +47521,7 @@ pub mod types {
                 Some("Draft") => Self::DraftTriggerTest(
                     ::serde_json::from_value::<DraftTriggerTest>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -47388,7 +47547,7 @@ pub mod types {
                 Some("Unknown") => Self::UnknownTurn(
                     ::serde_json::from_value::<UnknownTurn>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -47405,7 +47564,7 @@ pub mod types {
                 Some("Layered") => Self::LayeredImage(
                     ::serde_json::from_value::<TurnLayeredImage>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -47422,7 +47581,7 @@ pub mod types {
                 Some("Failing") => Self::Failing(
                     ::serde_json::from_value::<WebhookFailing>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
-                _ => Self::Unrecognised(value),
+                _ => crate::response::mark_unrecognised(Self::Unrecognised(value)),
             })
         }
     }
@@ -47758,16 +47917,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200..=299 => Ok(ResponseValue::stream(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -47803,9 +47982,15 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             201u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            405u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            405u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -47841,9 +48026,15 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            405u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            405u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -47879,9 +48070,15 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            405u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            405u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -47919,16 +48116,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -47978,16 +48195,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48028,16 +48265,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48082,16 +48339,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48138,16 +48415,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48183,16 +48480,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48228,16 +48545,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48278,16 +48615,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48332,16 +48689,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48386,16 +48763,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48442,16 +48839,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48489,16 +48906,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48534,9 +48971,15 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            405u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            405u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48574,16 +49017,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48619,9 +49082,15 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            405u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            405u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48657,16 +49126,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48703,16 +49192,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48748,16 +49257,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48796,16 +49325,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48846,16 +49395,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48907,16 +49476,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48952,16 +49541,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -48997,16 +49606,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49047,16 +49676,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49092,16 +49741,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49144,16 +49813,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49208,16 +49897,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49253,16 +49962,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49298,16 +50027,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49345,16 +50094,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49395,16 +50164,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49440,16 +50229,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49487,16 +50296,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49532,16 +50361,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49578,16 +50427,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49626,16 +50495,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49674,16 +50563,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49720,16 +50629,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49765,16 +50694,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49813,16 +50762,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49861,16 +50830,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49911,16 +50900,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -49954,16 +50963,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50006,16 +51035,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50051,16 +51100,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50098,16 +51167,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50153,16 +51242,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50222,16 +51331,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50285,16 +51414,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50332,16 +51481,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50388,16 +51557,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50433,16 +51622,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50483,16 +51692,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50533,16 +51762,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50586,16 +51835,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50631,16 +51900,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50678,16 +51967,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50725,16 +52034,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50771,16 +52100,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50819,16 +52168,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50865,16 +52234,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50913,16 +52302,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -50969,16 +52378,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51014,16 +52443,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51066,16 +52515,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51123,16 +52592,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51175,16 +52664,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51224,16 +52733,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51277,16 +52806,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51322,16 +52871,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51377,16 +52946,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51427,16 +53016,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51477,16 +53086,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51520,16 +53149,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51565,16 +53214,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51612,16 +53281,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51662,16 +53351,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51704,16 +53413,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200..=299 => Ok(ResponseValue::stream(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51749,16 +53478,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51784,16 +53533,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => Ok(ResponseValue::stream(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51829,16 +53598,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51871,16 +53660,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200..=299 => Ok(ResponseValue::stream(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51916,16 +53725,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -51963,16 +53792,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52013,16 +53862,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52065,16 +53934,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52115,16 +54004,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52167,16 +54076,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52219,16 +54148,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52271,16 +54220,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52332,16 +54301,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52379,16 +54368,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52430,16 +54439,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52476,16 +54505,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52524,16 +54573,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52577,16 +54646,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52627,16 +54716,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52677,16 +54786,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52737,16 +54866,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52787,16 +54936,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52839,16 +55008,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52891,16 +55080,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -52959,16 +55168,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53009,16 +55238,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53061,16 +55310,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53111,16 +55380,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53158,16 +55447,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53212,16 +55521,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53261,16 +55590,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53313,16 +55662,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53363,16 +55732,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53413,16 +55802,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53464,16 +55873,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53519,16 +55948,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53575,16 +56024,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53632,16 +56101,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53685,16 +56174,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53734,16 +56243,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53779,16 +56308,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53829,16 +56378,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53878,16 +56447,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53924,16 +56513,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -53970,16 +56579,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54019,16 +56648,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54065,16 +56714,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54114,16 +56783,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54171,16 +56860,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54221,16 +56930,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54267,16 +56996,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54318,16 +57067,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54363,16 +57132,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54410,16 +57199,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54460,16 +57269,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54510,16 +57339,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             204u16 => Ok(ResponseValue::empty(response)),
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54555,16 +57404,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54600,16 +57469,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54646,16 +57535,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54691,16 +57600,36 @@ impl Client {
         let response = result?;
         match response.status().as_u16() {
             200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
+            400u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            401u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            403u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            404u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            409u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            410u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            413u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            422u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            429u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
+            503u16 => Err(Error::ErrorResponse(
+                progenitor_client::ResponseValue::from_response(response).await?,
+            )),
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
@@ -54749,3 +57678,4 @@ impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
     pub const VERSION: u16 = 30;
 }
+use crate::ResponseValue;

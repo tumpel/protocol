@@ -8,3 +8,6 @@ pub use generated::*;
 pub mod frozen;
 
 pub const TENANT_CONFIG_SCHEMA: &str = include_str!("../generated/TenantConfig.json");
+
+mod response;
+pub use response::ResponseValue;

@@ -556,10 +556,122 @@ fn generate_frozen(root: &Path) -> Result<(), String> {
     fs::write(&output, modules).map_err(|e| format!("writing {}: {e}.", output.display()))
 }
 
+struct TrackUnrecognised;
+
+impl syn::visit_mut::VisitMut for TrackUnrecognised {
+    fn visit_expr_mut(&mut self, expression: &mut syn::Expr) {
+        syn::visit_mut::visit_expr_mut(self, expression);
+        let syn::Expr::Call(call) = expression else {
+            return;
+        };
+        let syn::Expr::Path(function) = &*call.func else {
+            return;
+        };
+        if function
+            .path
+            .segments
+            .last()
+            .is_some_and(|segment| segment.ident == "Unrecognised")
+        {
+            *expression = syn::parse_quote!(crate::response::mark_unrecognised(#expression));
+        }
+    }
+}
+
+fn track_decoding(file: &mut syn::File) -> Result<(), String> {
+    for item in types_module(file)? {
+        match item {
+            syn::Item::Enum(declared) => {
+                for variant in &mut declared.variants {
+                    let decoder = if variant.ident == "Unrecognised" {
+                        "crate::response::unrecognised"
+                    } else {
+                        "crate::response::attempt"
+                    };
+                    for field in &mut variant.fields {
+                        field
+                            .attrs
+                            .push(syn::parse_quote!(#[serde(deserialize_with = #decoder)]));
+                    }
+                }
+            }
+            syn::Item::Impl(implemented)
+                if implemented.trait_.as_ref().is_some_and(|(path, _)| {
+                    path.segments
+                        .last()
+                        .is_some_and(|segment| segment.ident == "Deserialize")
+                }) =>
+            {
+                syn::visit_mut::VisitMut::visit_item_impl_mut(&mut TrackUnrecognised, implemented);
+            }
+            _ => {}
+        }
+    }
+    Ok(())
+}
+
+struct ResponseErrors;
+
+impl syn::visit_mut::VisitMut for ResponseErrors {
+    fn visit_expr_call_mut(&mut self, call: &mut syn::ExprCall) {
+        syn::visit_mut::visit_expr_call_mut(self, call);
+        let syn::Expr::Path(function) = &*call.func else {
+            return;
+        };
+        if function
+            .path
+            .segments
+            .last()
+            .is_none_or(|segment| segment.ident != "ErrorResponse")
+        {
+            return;
+        }
+        let Some(syn::Expr::Try(tried)) = call.args.first_mut() else {
+            return;
+        };
+        let syn::Expr::Await(awaited) = &mut *tried.expr else {
+            return;
+        };
+        let syn::Expr::Call(decoded) = &mut *awaited.base else {
+            return;
+        };
+        *decoded.func = syn::parse_quote!(progenitor_client::ResponseValue::from_response);
+    }
+}
+
+fn tracked_responses(file: &mut syn::File) {
+    for item in &mut file.items {
+        let syn::Item::Use(imported) = item else {
+            continue;
+        };
+        let syn::UseTree::Path(path) = &mut imported.tree else {
+            continue;
+        };
+        if path.ident != "progenitor_client" {
+            continue;
+        }
+        let syn::UseTree::Group(group) = &mut *path.tree else {
+            continue;
+        };
+        group.items = group
+            .items
+            .clone()
+            .into_iter()
+            .filter(|item| !matches!(item, syn::UseTree::Name(name) if name.ident == "ResponseValue"))
+            .collect();
+    }
+    file.items.push(syn::parse_quote!(
+        use crate::ResponseValue;
+    ));
+    syn::visit_mut::VisitMut::visit_file_mut(&mut ResponseErrors, file);
+}
+
 fn generate_api(root: &Path) -> Result<(), String> {
     let spec = read_spec(root)?;
     let mut file = generate_file(&spec)?;
     string_newtypes(types_module(&mut file)?)?;
+    track_decoding(&mut file)?;
+    tracked_responses(&mut file);
     let output = root.join(OUTPUT);
     fs::create_dir_all(&output).map_err(|e| format!("creating {}: {e}.", output.display()))?;
     write_file(&output.join("generated.rs"), &file)?;
