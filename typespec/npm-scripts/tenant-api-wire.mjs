@@ -30,11 +30,6 @@ const fail = (message) => {
 const base = baselineRef(root, fail);
 const baseline = baselineLockTexts(root, base, TENANT_API_LOCK_DIR_PATH);
 if (!baseline.ok) fail(`could not read ${TENANT_API_LOCK_DIR_PATH} at origin/main (${baseline.error})`);
-const committed = baselineLockTexts(root, "HEAD", TENANT_API_LOCK_DIR_PATH);
-if (!committed.ok) fail(`could not read ${TENANT_API_LOCK_DIR_PATH} at HEAD (${committed.error})`);
-for (const [version, text] of committed.locks) {
-  if (!baseline.locks.has(version)) baseline.locks.set(version, text);
-}
 const locks = new Map(
   readdirSync(lockDir)
     .filter((name) => lockVersion(name) !== undefined)
@@ -43,7 +38,7 @@ const locks = new Map(
 const frozen = [...locks].filter(([version, text]) => version < range.version && baseline.locks.get(version) !== text);
 if (frozen.length > 0)
   fail(
-    `the frozen locks ${frozen.map(([version]) => `v${version}`).join(", ")} differ from their committed base; restore them from origin/main or the branch that introduced them`,
+    `the frozen locks ${frozen.map(([version]) => `v${version}`).join(", ")} differ from origin/main; restore them with git checkout origin/main -- ${TENANT_API_LOCK_DIR_PATH}`,
   );
 const stale = [...locks.keys()].filter((version) => version < range.oldest || version > range.version);
 if (stale.length > 0)
