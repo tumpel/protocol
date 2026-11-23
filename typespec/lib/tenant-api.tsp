@@ -2237,7 +2237,7 @@ model UnplaceableNotOnline {
   reason: "NotOnline";
 }
 
-@doc("The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again.")
+@doc("The host reports itself rate limited, so it takes no new work until it reports Healthy again.")
 model UnplaceableNotHealthy {
   kind: "Unplaceable";
   host: HostRecord;
@@ -2864,13 +2864,13 @@ model TranscriptChunk {
   range: ByteRange;
 }
 
+@doc("No stored chunk holds a line after the cursor yet.")
 model TranscriptLines {
   kind: "Lines";
   sessionState: SessionState;
   harness: Harness;
   lastLineSeq: int64;
   inFlight: boolean;
-  @maxItems(10000) lines: TranscriptLine[];
 }
 
 model TranscriptCursorResult {

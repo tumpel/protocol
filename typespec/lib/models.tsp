@@ -191,12 +191,6 @@ enum HostState {
 enum HostHealth {
   @doc("The host stays within the tenant's limits and gets offers.")
   Healthy: "Healthy",
-
-  @doc("The host sent more channel frames in a minute than the tenant's limits allow. It gets no offers until a full window passes without a limit hit.")
-  RateLimited: "RateLimited",
-
-  @doc("The host went RateLimited three times within an hour. It gets no offers until a person restores it or the host reconnects with a new Hello.")
-  Unhealthy: "Unhealthy",
 }
 
 @doc("Whether the control plane has heard from a host lately, derived when read from the time of the host's latest Hello or Heartbeat. Nothing is written when it changes.")

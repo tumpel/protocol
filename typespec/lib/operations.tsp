@@ -1016,11 +1016,6 @@ namespace V1 {
     @post
     revoke(...HostPath): Host | ProblemResponse;
 
-    @doc("Restores an Unhealthy or RateLimited host to Healthy, so it gets offers again.")
-    @route("/{hostId}/restore-health")
-    @post
-    restoreHealth(...HostPath): Host | ProblemResponse;
-
     @doc("Replaces every label of a host.")
     @route("/{hostId}/labels")
     @put

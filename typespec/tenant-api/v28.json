@@ -3229,50 +3229,9 @@
     "HostHealth": {
       "type": "string",
       "enum": [
-        "Healthy",
-        "RateLimited",
-        "Unhealthy"
+        "Healthy"
       ],
       "description": "Whether the control plane offers a host work. It is the control plane's own judgement of the host, kept by its tenant and written once per change."
-    },
-    "HostHealthChangedEvent": {
-      "type": "object",
-      "required": [
-        "event",
-        "eventId",
-        "tenantId",
-        "createdAt",
-        "hostId",
-        "health",
-        "detail"
-      ],
-      "properties": {
-        "event": {
-          "type": "string",
-          "enum": [
-            "HostHealthChanged"
-          ]
-        },
-        "eventId": {
-          "$ref": "#/components/schemas/Sequence"
-        },
-        "tenantId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "createdAt": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "hostId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "health": {
-          "$ref": "#/components/schemas/HostHealth"
-        },
-        "detail": {
-          "$ref": "#/components/schemas/Detail"
-        }
-      }
     },
     "HostLabel": {
       "type": "string",
@@ -17546,8 +17505,7 @@
         "sessionState",
         "harness",
         "lastLineSeq",
-        "inFlight",
-        "lines"
+        "inFlight"
       ],
       "properties": {
         "kind": {
@@ -17568,15 +17526,9 @@
         },
         "inFlight": {
           "type": "boolean"
-        },
-        "lines": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/TranscriptLine"
-          },
-          "maxItems": 10000
         }
-      }
+      },
+      "description": "No stored chunk holds a line after the cursor yet."
     },
     "TenantApi.TriggerCreatedOk": {
       "type": "object",
@@ -18462,7 +18414,7 @@
           ]
         }
       },
-      "description": "The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again."
+      "description": "The host reports itself rate limited, so it takes no new work until it reports Healthy again."
     },
     "TenantApi.UnplaceableNotOnline": {
       "type": "object",
@@ -18935,9 +18887,6 @@
           "$ref": "#/components/schemas/HostOfflineEvent"
         },
         {
-          "$ref": "#/components/schemas/HostHealthChangedEvent"
-        },
-        {
           "$ref": "#/components/schemas/PrebuildDoneEvent"
         },
         {
@@ -18971,7 +18920,6 @@
           "SessionArchived": "#/components/schemas/SessionArchivedEvent",
           "HostOnline": "#/components/schemas/HostOnlineEvent",
           "HostOffline": "#/components/schemas/HostOfflineEvent",
-          "HostHealthChanged": "#/components/schemas/HostHealthChangedEvent",
           "PrebuildDone": "#/components/schemas/PrebuildDoneEvent",
           "PrebuildFailed": "#/components/schemas/PrebuildFailedEvent",
           "SubscriptionPaused": "#/components/schemas/SubscriptionPausedEvent",
@@ -18995,7 +18943,6 @@
         "SessionArchived",
         "HostOnline",
         "HostOffline",
-        "HostHealthChanged",
         "PrebuildDone",
         "PrebuildFailed",
         "SubscriptionPaused",
@@ -19192,39 +19139,6 @@
       "type": "string",
       "maxLength": 16384,
       "description": "A token, a key, a code, a nonce or a signature, as its issuer encodes it."
-    },
-    "TranscriptLine": {
-      "type": "object",
-      "required": [
-        "sessionId",
-        "lineSeq",
-        "tenantId",
-        "turnId",
-        "text",
-        "createdAt"
-      ],
-      "properties": {
-        "sessionId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "lineSeq": {
-          "$ref": "#/components/schemas/Sequence"
-        },
-        "tenantId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "turnId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "text": {
-          "$ref": "#/components/schemas/LongText"
-        },
-        "createdAt": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "description": "One harness-native JSONL line of a turn. `lineSeq` numbers the lines of a session from 1 and\nnever restarts, so a cursor stays valid across snapshots, cold boots and host moves."
     },
     "Trigger": {
       "type": "object",

@@ -12212,15 +12212,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostHealth {
         Healthy,
-        RateLimited,
-        Unhealthy,
     }
     impl ::std::fmt::Display for HostHealth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Healthy => f.write_str("Healthy"),
-                Self::RateLimited => f.write_str("RateLimited"),
-                Self::Unhealthy => f.write_str("Unhealthy"),
             }
         }
     }
@@ -12229,8 +12225,6 @@ pub mod types {
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
                 "Healthy" => Ok(Self::Healthy),
-                "RateLimited" => Ok(Self::RateLimited),
-                "Unhealthy" => Ok(Self::Unhealthy),
                 _ => Err("invalid value".into()),
             }
         }
@@ -12242,54 +12236,6 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for HostHealth {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`HostHealthChangedEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct HostHealthChangedEvent {
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        pub detail: Detail,
-        pub event: HostHealthChangedEventEvent,
-        #[serde(rename = "eventId")]
-        pub event_id: Sequence,
-        pub health: HostHealth,
-        #[serde(rename = "hostId")]
-        pub host_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`HostHealthChangedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum HostHealthChangedEventEvent {
-        HostHealthChanged,
-    }
-    impl ::std::fmt::Display for HostHealthChangedEventEvent {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::HostHealthChanged => f.write_str("HostHealthChanged"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for HostHealthChangedEventEvent {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "HostHealthChanged" => Ok(Self::HostHealthChanged),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for HostHealthChangedEventEvent {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for HostHealthChangedEventEvent {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -39154,7 +39100,7 @@ pub mod types {
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
         pub subtype_1: ::std::option::Option<TenantApiTranscriptLines>,
     }
-    ///`TenantApiTranscriptLines`
+    ///No stored chunk holds a line after the cursor yet.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTranscriptLines {
         pub harness: Harness,
@@ -39163,7 +39109,6 @@ pub mod types {
         pub kind: TenantApiTranscriptLinesKind,
         #[serde(rename = "lastLineSeq")]
         pub last_line_seq: i64,
-        pub lines: ::std::vec::Vec<TranscriptLine>,
         #[serde(rename = "sessionState")]
         pub session_state: SessionState,
     }
@@ -40784,7 +40729,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again.
+    ///The host reports itself rate limited, so it takes no new work until it reports Healthy again.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnplaceableNotHealthy {
         pub host: TenantApiHostRecord,
@@ -41477,7 +41422,6 @@ pub mod types {
         SessionArchivedEvent(SessionArchivedEvent),
         HostOnlineEvent(HostOnlineEvent),
         HostOfflineEvent(HostOfflineEvent),
-        HostHealthChangedEvent(HostHealthChangedEvent),
         PrebuildDoneEvent(PrebuildDoneEvent),
         PrebuildFailedEvent(PrebuildFailedEvent),
         SubscriptionPausedEvent(SubscriptionPausedEvent),
@@ -41529,11 +41473,6 @@ pub mod types {
     impl ::std::convert::From<HostOfflineEvent> for TenantEvent {
         fn from(value: HostOfflineEvent) -> Self {
             Self::HostOfflineEvent(value)
-        }
-    }
-    impl ::std::convert::From<HostHealthChangedEvent> for TenantEvent {
-        fn from(value: HostHealthChangedEvent) -> Self {
-            Self::HostHealthChangedEvent(value)
         }
     }
     impl ::std::convert::From<PrebuildDoneEvent> for TenantEvent {
@@ -41594,7 +41533,6 @@ pub mod types {
         SessionArchived,
         HostOnline,
         HostOffline,
-        HostHealthChanged,
         PrebuildDone,
         PrebuildFailed,
         SubscriptionPaused,
@@ -41615,7 +41553,6 @@ pub mod types {
                 Self::SessionArchived => f.write_str("SessionArchived"),
                 Self::HostOnline => f.write_str("HostOnline"),
                 Self::HostOffline => f.write_str("HostOffline"),
-                Self::HostHealthChanged => f.write_str("HostHealthChanged"),
                 Self::PrebuildDone => f.write_str("PrebuildDone"),
                 Self::PrebuildFailed => f.write_str("PrebuildFailed"),
                 Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
@@ -41639,7 +41576,6 @@ pub mod types {
                 "SessionArchived" => Ok(Self::SessionArchived),
                 "HostOnline" => Ok(Self::HostOnline),
                 "HostOffline" => Ok(Self::HostOffline),
-                "HostHealthChanged" => Ok(Self::HostHealthChanged),
                 "PrebuildDone" => Ok(Self::PrebuildDone),
                 "PrebuildFailed" => Ok(Self::PrebuildFailed),
                 "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
@@ -46052,56 +45988,6 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "hosts_patch_labels",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Restores an Unhealthy or RateLimited host to Healthy, so it gets offers again.
-    ///
-    ///Sends a `POST` request to `/v1/hosts/{hostId}/restore-health`
-    ///
-    pub async fn hosts_restore_health<'a>(
-        &'a self,
-        host_id: &'a types::EntityId,
-    ) -> Result<ResponseValue<types::Host>, Error<types::Problem>> {
-        let url = format!(
-            "{}/v1/hosts/{}/restore-health",
-            self.baseurl,
-            encode_path(&host_id.to_string()),
-        );
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "hosts_restore_health",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;
