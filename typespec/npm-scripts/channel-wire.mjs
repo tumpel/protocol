@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import openapiTS, { astToString } from "openapi-typescript";
 import { lockVersion } from "./channel-window.mjs";
-import { baselineLockTexts, baselineRef, LOCK_DIR_PATH } from "./channel-wire-baseline.mjs";
+import { baselineLockTexts, baselineRef, droppedLockText, LOCK_DIR_PATH } from "./channel-wire-baseline.mjs";
 import { channelProtocolRange, channelWireLock, checkChannelLocks, lockShape } from "./channel-wire-shape.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -54,7 +54,13 @@ const frozenTypes = async (version, lock) => {
 mkdirSync(lockDir, { recursive: true });
 mkdirSync(frozenDir, { recursive: true });
 const locks = workingLocks();
-const baseline = baselineLocks(baselineRef(root, fail));
+const base = baselineRef(root, fail);
+const baseline = baselineLocks(base);
+for (const version of locks.keys()) {
+  if (baseline.has(version) || version >= range.version) continue;
+  const shipped = droppedLockText(root, base, version);
+  if (shipped !== undefined) baseline.set(version, shipped);
+}
 const result = checkChannelLocks(baseline, locks, current, range.oldest);
 const lockList = (versions) => versions.map((version) => `${LOCK_DIR_PATH}/v${version}.json`).join(", ");
 if (!result.ok && result.missing.length > 0)

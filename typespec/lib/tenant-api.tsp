@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 19;
+const TenantApiVersion = 28;
 
 namespace TenantApi {
 
@@ -422,7 +422,7 @@ model OpenRouterSecretSetsInput {}
 
 @doc("A host as the control plane stores it, without its supervisor update reports and protocol ranges.")
 model HostRecord {
-  ...OmitProperties<Host, "supervisorUpdateStep" | "supervisorUpdateFailure" | "channelProtocol" | "guestProtocol">;
+  ...OmitProperties<HostBase, "supervisorUpdateStep" | "supervisorUpdateFailure" | "channelProtocol" | "guestProtocol">;
 }
 
 model NewClaudeSetup {
@@ -923,34 +923,30 @@ model TranscriptCursorInput {
   sessionId: EntityId;
   after: int64;
   turnId: EntityId | null;
-  limit: int32;
-  maxBytes?: int64;
-}
-
-model OfferSentInput {
-  turnId: EntityId;
 }
 
 model HostHelloInput {
+  tenantId: EntityId;
   hostId: EntityId;
   boxCapacity: int32;
   usage: HostUsage;
   now: int64;
   channelProtocol: int32;
+  @maxItems(1000) heldTurnIds: EntityId[];
 }
 
-model HostUsageInput {
-  hostId: EntityId;
-  usage: HostUsage;
-  now: int64;
-}
-
-model ReconcileHeldBoxesInput {
+@doc("One host Heartbeat: the tenant stores the report and reconciles the turns, sessions and Claude setups of the host against the held lists in one write.")
+model HostHeartbeatInput {
   tenantId: EntityId;
   hostId: EntityId;
+  boxCapacity: int32;
+  usage: HostUsage;
+  reportedHealth: HostReportedHealth;
+  now: int64;
+  channelProtocol: int32;
   @maxItems(1000) heldSessionIds: EntityId[];
   @maxItems(1000) heldClaudeSetupIds: EntityId[];
-  now: int64;
+  @maxItems(1000) heldTurnIds: EntityId[];
 }
 
 model ForgetHostUsageInput {
@@ -993,30 +989,10 @@ model PrepareOfferInput {
   now: int64;
 }
 
-enum HostPresence {
-  Online: "Online",
-  Offline: "Offline",
-}
-
-model HostPresenceInput {
-  tenantId: EntityId;
-  hostId: EntityId;
-  presence: HostPresence;
-  now: int64;
-}
-
-model HostHealthInput {
-  tenantId: EntityId;
-  hostId: EntityId;
-  health: HostHealth;
-  detail: Detail;
-  now: int64;
-}
-
 model HostMessageInput {
   tenantId: EntityId;
   hostId: EntityId;
-  message: Channel.TurnImageFetching | Channel.TurnClaim | Channel.TurnRepositoryReady | Channel.TurnLine | Channel.TurnComplete | Channel.TurnRepositoryCloneFailed | Channel.TurnFailed | Channel.SnapshotChunks | Channel.SnapshotPacks | Channel.RestoreChunks | Channel.SnapshotDone | Channel.SnapshotFailed | Channel.BoxGone | Channel.BoxTeardownFailed | Channel.ClaudeSetupBoxUrl | Channel.ClaudeSetupBoxFailed;
+  message: Channel.TurnImageFetching | Channel.TurnClaim | Channel.TurnRepositoryReady | Channel.TurnLines | Channel.TurnComplete | Channel.TurnRepositoryCloneFailed | Channel.TurnFailed | Channel.SnapshotChunks | Channel.SnapshotPacks | Channel.RestoreChunks | Channel.SnapshotDone | Channel.SnapshotFailed | Channel.BoxGone | Channel.BoxTeardownFailed | Channel.ClaudeSetupBoxUrl | Channel.ClaudeSetupBoxFailed;
 }
 
 model TurnDeadline {
@@ -1639,28 +1615,16 @@ model TranscriptCursorRequest {
   input: TranscriptCursorInput;
 }
 
-model OfferSentRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "offerSent";
-  input: OfferSentInput;
-}
-
 model HostHelloRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "hostHello";
   input: HostHelloInput;
 }
 
-model HostUsageRequest {
+model HostHeartbeatRequest {
   tenantApiVersion: TenantApiProtocol;
-  operation: "hostUsage";
-  input: HostUsageInput;
-}
-
-model ReconcileHeldBoxesRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "reconcileHeldBoxes";
-  input: ReconcileHeldBoxesInput;
+  operation: "hostHeartbeat";
+  input: HostHeartbeatInput;
 }
 
 model ForgetHostUsageRequest {
@@ -1715,18 +1679,6 @@ model PrepareOfferRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "prepareOffer";
   input: PrepareOfferInput;
-}
-
-model HostPresenceRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "hostPresence";
-  input: HostPresenceInput;
-}
-
-model HostHealthRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "hostHealth";
-  input: HostHealthInput;
 }
 
 model HostMessageRequest {
@@ -1843,10 +1795,8 @@ union TenantRequest {
   listCredentialHandovers: ListCredentialHandoversRequest,
   getSnapshot: GetSnapshotRequest,
   transcriptCursor: TranscriptCursorRequest,
-  offerSent: OfferSentRequest,
   hostHello: HostHelloRequest,
-  hostUsage: HostUsageRequest,
-  reconcileHeldBoxes: ReconcileHeldBoxesRequest,
+  hostHeartbeat: HostHeartbeatRequest,
   forgetHostUsage: ForgetHostUsageRequest,
   runningTurnsByHost: RunningTurnsByHostRequest,
   listHostUsage: ListHostUsageRequest,
@@ -1856,8 +1806,6 @@ union TenantRequest {
   deferredOffers: DeferredOffersRequest,
   turnMetricDimensions: TurnMetricDimensionsRequest,
   prepareOffer: PrepareOfferRequest,
-  hostPresence: HostPresenceRequest,
-  hostHealth: HostHealthRequest,
   hostMessage: HostMessageRequest,
   deadlineReached: DeadlineReachedRequest,
 }
@@ -2289,18 +2237,11 @@ model UnplaceableNotOnline {
   reason: "NotOnline";
 }
 
-@doc("The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again.")
+@doc("The host reports itself rate limited, so it takes no new work until it reports Healthy again.")
 model UnplaceableNotHealthy {
   kind: "Unplaceable";
   host: HostRecord;
   reason: "NotHealthy";
-}
-
-@doc("The host is Online, but it has not sent a Hello since its tenant restarted, so the tenant does not know its usage yet.")
-model UnplaceableNotHeard {
-  kind: "Unplaceable";
-  host: HostRecord;
-  reason: "NotHeard";
 }
 
 model UnplaceableNoImage {
@@ -2353,7 +2294,6 @@ model UnplaceableNoConnectors {
 union Unplaceable {
   NotOnline: UnplaceableNotOnline,
   NotHealthy: UnplaceableNotHealthy,
-  NotHeard: UnplaceableNotHeard,
   NoImage: UnplaceableNoImage,
   Full: UnplaceableFull,
   MemoryFull: UnplaceableMemoryFull,
@@ -2924,26 +2864,22 @@ model TranscriptChunk {
   range: ByteRange;
 }
 
+@doc("No stored chunk holds a line after the cursor yet.")
 model TranscriptLines {
   kind: "Lines";
   sessionState: SessionState;
   harness: Harness;
   lastLineSeq: int64;
   inFlight: boolean;
-  @maxItems(10000) lines: TranscriptLine[];
 }
 
 model TranscriptCursorResult {
   cursor: TranscriptChunk | TranscriptLines | null;
 }
 
-model OfferSentResult {}
-
 model HostHelloResult {}
 
-model HostUsageResult {}
-
-model ReconcileHeldBoxesResult {}
+model HostHeartbeatResult {}
 
 model ForgetHostUsageResult {}
 
@@ -3007,10 +2943,6 @@ model OfferWithdrawn {
 model PrepareOfferResult {
   prepared: OfferReady | OfferWithdrawn;
 }
-
-model HostPresenceResult {}
-
-model HostHealthResult {}
 
 model HostFrameRefused {
   type: "Refused";

@@ -471,7 +471,7 @@ model MintedEnrolmentToken {
   installCommand: Detail;
 }
 
-model HostEnrol is Create<Host> {
+model HostEnrol is Create<HostBase> {
   @minLength(1) enrolmentToken: Token;
 }
 
@@ -489,7 +489,7 @@ model HostLabelsPatch {
   @maxItems(64) remove?: HostLabel[];
 }
 
-model SessionStart is Create<Session> {
+model SessionStart is Create<SessionBase> {
   prompt: Prompt;
   @doc("What happens to the box after each turn; left out, the session takes its persona's boxRetention.")
   boxRetention?: BoxRetention;
@@ -995,9 +995,9 @@ namespace V1 {
     @route("/enrol")
     @useAuth(NoAuth)
     @post
-    enrol(@body body: HostEnrol): Host | ProblemResponse;
+    enrol(@body body: HostEnrol): TenantApi.HostRecord | ProblemResponse;
 
-    @doc("Lists the tenant's hosts with their presence: Enrolled, Online, Offline or Revoked.")
+    @doc("Lists the tenant's hosts with their state and their presence: Online, Degraded or Offline.")
     @get
     list(): Host[] | ProblemResponse;
 
@@ -1015,11 +1015,6 @@ namespace V1 {
     @route("/{hostId}/revoke")
     @post
     revoke(...HostPath): Host | ProblemResponse;
-
-    @doc("Restores an Unhealthy or RateLimited host to Healthy, so it gets offers again.")
-    @route("/{hostId}/restore-health")
-    @post
-    restoreHealth(...HostPath): Host | ProblemResponse;
 
     @doc("Replaces every label of a host.")
     @route("/{hostId}/labels")

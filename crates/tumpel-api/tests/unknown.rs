@@ -1,4 +1,4 @@
-use tumpel_api::types::{SessionPromptOrigin, SessionState, SubscriptionPauseReason, TurnFailureReason};
+use tumpel_api::types::{ChannelControlEnvelope, SessionState, SubscriptionPauseReason, TurnFailureReason};
 
 #[test]
 fn unknown_values_decode_explicitly_and_preserve_the_wire_value() {
@@ -13,17 +13,12 @@ fn unknown_values_decode_explicitly_and_preserve_the_wire_value() {
     let reason: SubscriptionPauseReason = serde_json::from_value(pause.clone()).unwrap();
     assert_eq!(reason, SubscriptionPauseReason::Unrecognised(pause.clone()));
     assert_eq!(serde_json::to_value(&reason).unwrap(), pause);
-
-    let origin: SessionPromptOrigin = serde_json::from_str(r#"{"kind":"Prompt","extra":{"future":true}}"#).unwrap();
-    assert_eq!(origin.kind.to_string(), "Prompt");
 }
 
 #[test]
 fn known_discriminators_still_choose_the_correct_variant() {
     let reason: SubscriptionPauseReason = serde_json::from_str(r#"{"kind":"CrewFailing","extra":true}"#).unwrap();
     assert!(matches!(reason, SubscriptionPauseReason::CrewFailing(_)));
-    let state: SessionState = serde_json::from_str(r#""Idle""#).unwrap();
-    assert_eq!(state, SessionState::Idle);
 }
 
 #[test]
@@ -36,6 +31,28 @@ fn a_known_discriminator_with_a_malformed_payload_is_an_error() {
         ),
     ] {
         let error = serde_json::from_value::<SubscriptionPauseReason>(value).unwrap_err();
+        assert!(error.to_string().contains(message), "{error}");
+    }
+}
+
+#[test]
+fn namespaced_channel_discriminators_preserve_unknown_values_and_reject_malformed_known_values() {
+    let value = serde_json::json!({"type": "FutureAck", "seq": 1, "extra": true});
+    let envelope: ChannelControlEnvelope = serde_json::from_value(value.clone()).unwrap();
+    assert_eq!(envelope, ChannelControlEnvelope::Unrecognised(value.clone()));
+    assert_eq!(serde_json::to_value(&envelope).unwrap(), value);
+
+    let envelope: ChannelControlEnvelope = serde_json::from_str(r#"{"type":"Ack","seq":1}"#).unwrap();
+    assert!(matches!(envelope, ChannelControlEnvelope::Ack(_)));
+
+    for (value, message) in [
+        (serde_json::json!({"type": "Ack"}), "missing field `seq`"),
+        (
+            serde_json::json!({"type": "Ack", "seq": {"future": true}}),
+            "invalid type",
+        ),
+    ] {
+        let error = serde_json::from_value::<ChannelControlEnvelope>(value).unwrap_err();
         assert!(error.to_string().contains(message), "{error}");
     }
 }

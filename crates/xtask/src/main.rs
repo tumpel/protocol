@@ -131,6 +131,10 @@ fn named_values(name: &str, schema: &openapiv3::Schema) -> Result<Option<NamedVa
     Ok(Some((names, values)))
 }
 
+fn rust_name(name: &str) -> String {
+    name.replace(|letter: char| !letter.is_ascii_alphanumeric(), "")
+}
+
 fn enum_constants(spec: &openapiv3::OpenAPI) -> Result<TokenStream, String> {
     let mut tokens = TokenStream::new();
     let Some(components) = &spec.components else {
@@ -155,7 +159,7 @@ fn enum_constants(spec: &openapiv3::OpenAPI) -> Result<TokenStream, String> {
         } else {
             quote!(i64)
         };
-        let type_name = format_ident!("{}", name.replace(|letter: char| !letter.is_ascii_alphanumeric(), ""));
+        let type_name = format_ident!("{}", rust_name(name));
         let constants = names.iter().zip(&values).map(|(member, value)| {
             let constant = format_ident!("{}", screaming(member));
             let literal = proc_macro2::Literal::i64_unsuffixed(*value);
@@ -275,7 +279,11 @@ fn discriminate_enums(file: &mut syn::File, spec: &openapiv3::OpenAPI) -> Result
             continue;
         };
         let name = &declared.ident;
-        let Some(openapiv3::ReferenceOr::Item(schema)) = components.schemas.get(&name.to_string()) else {
+        let Some((_, openapiv3::ReferenceOr::Item(schema))) = components
+            .schemas
+            .iter()
+            .find(|(component, _)| name == &rust_name(component))
+        else {
             continue;
         };
         let Some(discriminator) = &schema.schema_data.discriminator else {
@@ -298,7 +306,11 @@ fn discriminate_enums(file: &mut syn::File, spec: &openapiv3::OpenAPI) -> Result
             };
             let member = &variant.ident;
             for (value, target) in &discriminator.mapping {
-                if target.rsplit('/').next() != Some(payload_name.ident.to_string().as_str()) {
+                if target
+                    .rsplit('/')
+                    .next()
+                    .is_none_or(|component| payload_name.ident != rust_name(component))
+                {
                     continue;
                 }
                 let payload = &field.ty;
