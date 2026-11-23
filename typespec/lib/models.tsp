@@ -60,15 +60,14 @@ scalar Sha256Digest extends string;
 @doc("""
   A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
   the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-  connection that speaks another with UnsupportedVersion. Versions 37 and 38 lack
-  `reusedPackDigests` on SnapshotPacks and `chunkCount` on SnapshotDone.
+  connection that speaks another with UnsupportedVersion.
   """)
 @minValue(ChannelProtocolOldest)
 @maxValue(ChannelProtocolVersion)
 @TypeSpec.OpenAPI.extension("x-bound-names", #["Oldest", "Version"])
 scalar ChannelProtocol extends int32;
 
-const ChannelProtocolOldest = 37;
+const ChannelProtocolOldest = 39;
 const ChannelProtocolVersion = 39;
 
 @doc("""
