@@ -178,7 +178,7 @@ fn implements(implemented: &syn::ItemImpl, type_name: &str, trait_name: &str) ->
     self_named && trait_named
 }
 
-fn without_derive(attribute: &mut syn::Attribute, name: &str) -> Result<(), String> {
+fn without_copy(attribute: &mut syn::Attribute) -> Result<(), String> {
     if !attribute.path().is_ident("derive") {
         return Ok(());
     }
@@ -187,7 +187,7 @@ fn without_derive(attribute: &mut syn::Attribute, name: &str) -> Result<(), Stri
         .map_err(|e| format!("progenitor emitted a derive list syn cannot read: {e}."))?;
     let kept = derived
         .into_iter()
-        .filter(|path| path.segments.last().is_none_or(|segment| segment.ident != name));
+        .filter(|path| path.segments.last().is_none_or(|segment| segment.ident != "Copy"));
     *attribute = syn::parse_quote!(#[derive(#(#kept),*)]);
     Ok(())
 }
@@ -212,7 +212,7 @@ fn open_enum(items: &mut [syn::Item], name: &str) -> Result<(), String> {
         match item {
             syn::Item::Enum(declared) if declared.ident == name => {
                 for attribute in &mut declared.attrs {
-                    without_derive(attribute, "Copy")?;
+                    without_copy(attribute)?;
                 }
                 declared.variants.push(syn::parse_quote!(
                     #[serde(untagged)]
@@ -247,75 +247,6 @@ fn types_module(file: &mut syn::File) -> Result<&mut Vec<syn::Item>, String> {
 fn open_enums(file: &mut syn::File) -> Result<(), String> {
     let types = types_module(file)?;
     OPEN_ENUMS.iter().try_for_each(|name| open_enum(types, name))
-}
-
-fn type_argument<'a>(ty: &'a syn::Type, wrapper: &str) -> Option<&'a syn::Type> {
-    let syn::Type::Path(path) = ty else { return None };
-    let segment = path.path.segments.last()?;
-    if segment.ident != wrapper {
-        return None;
-    }
-    let syn::PathArguments::AngleBracketed(arguments) = &segment.arguments else {
-        return None;
-    };
-    let syn::GenericArgument::Type(inner) = arguments.args.first()? else {
-        return None;
-    };
-    Some(inner)
-}
-
-fn array_unions(items: &mut [syn::Item]) -> Result<(), String> {
-    let arrays: Vec<_> = items
-        .iter()
-        .filter_map(|item| {
-            let syn::Item::Struct(declared) = item else { return None };
-            let syn::Fields::Unnamed(fields) = &declared.fields else {
-                return None;
-            };
-            (fields.unnamed.len() == 1 && type_argument(&fields.unnamed.first()?.ty, "Vec").is_some())
-                .then(|| declared.ident.clone())
-        })
-        .collect();
-    for item in items {
-        let syn::Item::Struct(declared) = item else { continue };
-        let branches: Option<Vec<_>> = declared
-            .fields
-            .iter()
-            .map(|field| {
-                let flattened = field.attrs.iter().any(|attribute| {
-                    attribute.path().is_ident("serde")
-                        && matches!(&attribute.meta, syn::Meta::List(list) if list.tokens.clone().into_iter()
-                            .any(|token| matches!(token, TokenTree::Ident(name) if name == "flatten")))
-                });
-                if !flattened {
-                    return None;
-                }
-                let inner = type_argument(&field.ty, "Option")?;
-                let array = type_argument(inner, "Vec").is_some()
-                    || matches!(inner, syn::Type::Path(path) if arrays.iter().any(|name| path.path.is_ident(name)));
-                array.then_some(inner.clone())
-            })
-            .collect();
-        let Some(branches) = branches.filter(|branches| branches.len() > 1) else {
-            continue;
-        };
-        let mut attributes = declared.attrs.clone();
-        for attribute in &mut attributes {
-            without_derive(attribute, "Default")?;
-        }
-        let name = &declared.ident;
-        let visibility = &declared.vis;
-        let variants = branches.iter().enumerate().map(|(index, ty)| {
-            let variant = format_ident!("Variant{index}");
-            quote!(#variant(#ty))
-        });
-        *item = syn::parse_quote! {
-            #(#attributes)*
-            #[serde(untagged)]
-            #visibility enum #name { #(#variants),* }
-        };
-    }
-    Ok(())
 }
 
 const PATH_NEWTYPES: [&str; 1] = ["PathText"];
@@ -527,7 +458,6 @@ fn generate_frozen(root: &Path) -> Result<(), String> {
 fn generate_api(root: &Path) -> Result<(), String> {
     let spec = read_spec(root)?;
     let mut file = generate_file(&spec)?;
-    array_unions(types_module(&mut file)?)?;
     open_enums(&mut file)?;
     string_newtypes(types_module(&mut file)?)?;
     let output = root.join(OUTPUT);

@@ -471,7 +471,7 @@ model MintedEnrolmentToken {
   installCommand: Detail;
 }
 
-model HostEnrol is Create<Host> {
+model HostEnrol is Create<HostBase> {
   @minLength(1) enrolmentToken: Token;
 }
 
@@ -489,7 +489,7 @@ model HostLabelsPatch {
   @maxItems(64) remove?: HostLabel[];
 }
 
-model SessionStart is Create<Session> {
+model SessionStart is Create<SessionBase> {
   prompt: Prompt;
   @doc("What happens to the box after each turn; left out, the session takes its persona's boxRetention.")
   boxRetention?: BoxRetention;
@@ -683,15 +683,6 @@ model CompactTranscriptLine {
 @doc("The tenant's personas with file metadata and no file content, at most 10,000 entries.")
 @maxItems(10000)
 model PersonaMetadataList is PersonaMetadata[];
-
-enum PersonaListView {
-  Metadata: "Metadata",
-}
-
-model PersonaListQuery {
-  @doc("With Metadata, return persona and file metadata without content or download URLs. Left out, return the full personas with file content or download URLs.")
-  @query view?: PersonaListView;
-}
 
 @doc("A new persona with its whole file set: at most PersonaFileLimit.PersonaBytes together, each at a path its harness accepts.")
 model PersonaCreate is Create<Persona> {
@@ -1008,9 +999,9 @@ namespace V1 {
     @route("/enrol")
     @useAuth(NoAuth)
     @post
-    enrol(@body body: HostEnrol): Host | ProblemResponse;
+    enrol(@body body: HostEnrol): TenantApi.HostRecord | ProblemResponse;
 
-    @doc("Lists the tenant's hosts with their presence: Enrolled, Online, Offline or Revoked.")
+    @doc("Lists the tenant's hosts with their state and their presence: Online, Degraded or Offline.")
     @get
     list(): Host[] | ProblemResponse;
 
@@ -1028,11 +1019,6 @@ namespace V1 {
     @route("/{hostId}/revoke")
     @post
     revoke(...HostPath): Host | ProblemResponse;
-
-    @doc("Restores an Unhealthy or RateLimited host to Healthy, so it gets offers again.")
-    @route("/{hostId}/restore-health")
-    @post
-    restoreHealth(...HostPath): Host | ProblemResponse;
 
     @doc("Replaces every label of a host.")
     @route("/{hostId}/labels")
@@ -1299,9 +1285,9 @@ namespace V1 {
     @post
     uploadFile(@body body: PersonaFileUploadRequest): PersonaFileUpload | ProblemResponse;
 
-    @doc("Lists the tenant's full personas by default. With view=Metadata, returns persona metadata and each file's path, digest, size and timestamps without content or download URLs; read one persona to get file content.")
+    @doc("Lists the tenant's personas.")
     @get
-    list(...PersonaListQuery): Persona[] | PersonaMetadataList | ProblemResponse;
+    list(): Persona[] | ProblemResponse;
 
     @doc("Reads one persona.")
     @route("/{personaId}")
@@ -1614,5 +1600,15 @@ namespace V1 {
     @useAuth(ClaudeSetupBoxToken)
     @post
     writeToken(...ClaudeSetupPath, @body body: ClaudeSetupTokenWrite): NoContentResponse | ProblemResponse;
+  }
+}
+
+@route("/v2")
+namespace V2 {
+  @route("/personas")
+  interface Personas {
+    @doc("Lists the tenant's persona metadata and each file's path, digest, size and timestamps without content or download URLs. Read one persona to get file content.")
+    @get
+    listMetadata(): PersonaMetadataList | ProblemResponse;
   }
 }

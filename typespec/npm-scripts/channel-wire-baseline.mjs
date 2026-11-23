@@ -37,3 +37,11 @@ export const baselineLockTexts = (cwd, ref, dir = LOCK_DIR_PATH) => {
   if (failed !== undefined) return { ok: false, error: failed[1].stderr };
   return { ok: true, locks: new Map(shown.map(([version, result]) => [version, result.stdout])) };
 };
+
+export const droppedLockText = (cwd, ref, version, dir = LOCK_DIR_PATH) => {
+  const path = `${dir}/v${version}.json`;
+  const dropped = git(cwd, ["rev-list", "-1", ref, "--", `:(top)${path}`]);
+  if (!dropped.ok || dropped.stdout.trim() === "") return undefined;
+  const shown = git(cwd, ["show", `${dropped.stdout.trim()}^:${path}`]);
+  return shown.ok ? shown.stdout : undefined;
+};

@@ -67,8 +67,8 @@ scalar Sha256Digest extends string;
 @TypeSpec.OpenAPI.extension("x-bound-names", #["Oldest", "Version"])
 scalar ChannelProtocol extends int32;
 
-const ChannelProtocolOldest = 34;
-const ChannelProtocolVersion = 34;
+const ChannelProtocolOldest = 37;
+const ChannelProtocolVersion = 38;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -191,15 +191,18 @@ enum HostState {
 enum HostHealth {
   @doc("The host stays within the tenant's limits and gets offers.")
   Healthy: "Healthy",
+}
 
-  @doc("The host sent more channel frames in a minute than the tenant's limits allow. It gets no offers until a full window passes without a limit hit.")
-  RateLimited: "RateLimited",
+@doc("Whether the control plane has heard from a host lately, derived when read from the time of the host's latest Hello or Heartbeat. Nothing is written when it changes.")
+enum HostPresence {
+  @doc("The host sent a Hello or Heartbeat within the last 90 seconds and is not revoked. Only an Online host is placeable.")
+  Online: "Online",
 
-  @doc("The host went RateLimited three times within an hour. It gets no offers until a person restores it or the host reconnects with a new Hello.")
-  Unhealthy: "Unhealthy",
-
-  @doc("The host missed its heartbeat plus the grace period. It gets no offers until a heartbeat or a reconnect shows it is alive.")
+  @doc("The host sent a Hello once, but nothing in the last 90 seconds. It gets no offers, and its Offered and Running turns and its Starting, Running, Idle and Stopping sessions read Unknown until it reports again.")
   Degraded: "Degraded",
+
+  @doc("The host never sent a Hello, or it is revoked. It gets no offers.")
+  Offline: "Offline",
 }
 
 @doc("The health a host reports of itself in its Heartbeat.")
@@ -352,32 +355,29 @@ enum HostArchitecture {
 }
 
 @doc("""
-  What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts
-  the paused boxes it holds, `loadAverage` is the one-minute load average of the host,
+  What a host holds at one moment, sent on Hello and on every host Heartbeat. `loadAverage` is the one-minute load average of the host,
   and `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the
   host gives box disks: the free disk under its dataDir and what its boxes already wrote, less the
   headroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host
-  admits a box only while its disk fits the budget beside the held ones; a supervisor older than
-  the box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal
+  admits a box only while its disk fits the budget beside the held ones. `memoryBudgetMib` is the memory the host gives boxes: MemTotal
   less the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it
   holds. A host admits a box only while its memory fits the budget beside the held ones, whatever
-  their count; a supervisor older than the memory budget sends neither.
+  their count.
   """)
 model HostUsage {
-  @minValue(0) boxesWarm: int32;
   @minValue(0) loadAverage: float64;
   @minValue(0) memoryAvailableMib: int64;
-  @minValue(0) diskBudgetMib?: int64;
-  @minValue(0) diskHeldMib?: int64;
-  @minValue(0) memoryBudgetMib?: int64;
-  @minValue(0) memoryHeldMib?: int64;
+  @minValue(0) diskBudgetMib: int64;
+  @minValue(0) diskHeldMib: int64;
+  @minValue(0) memoryBudgetMib: int64;
+  @minValue(0) memoryHeldMib: int64;
 }
 
 @doc("""
   A host's box slots and its last reported usage, kept by its tenant from the host's Hello and
   Heartbeats. `boxCapacity` comes from Hello. `boxesRunning` counts the tenant's Offered and
   Running turns on the host. Placement counts the boxes a host holds from the tenant's own
-  sessions, never from the reported `boxesWarm`, which lags by a Heartbeat.
+  sessions.
   `channelProtocol` is the protocol version the host's latest Hello negotiated; the control plane
   closes the connection with UnsupportedVersion instead of sending a frame of a newer version,
   and resends it once the host reconnects on a version that speaks it. A host that has not connected since it enrolled has none.
@@ -388,6 +388,10 @@ model ReportedHostUsage {
   @minValue(1) @maxValue(256) boxCapacity: int32;
   @minValue(0) boxesRunning: int32;
   ...HostUsage;
+  @doc("The health the host reported in its latest Heartbeat; Healthy until its first Heartbeat.")
+  @visibility(Lifecycle.Read)
+  reportedHealth: HostReportedHealth;
+
   @visibility(Lifecycle.Read) channelProtocol: int32;
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
@@ -419,6 +423,9 @@ enum SessionState {
 
   @doc("The box could not clone the session's repository, and the failure of its last turn says why. The session takes no more turns; archive it and start a new session.")
   Failed: "Failed",
+
+  @doc("The host is Degraded; the last stored state is unknown until it reports again. A read-only projection of a Starting, Running, Idle or Stopping session, never stored; heardAt says when the host last reported.")
+  Unknown: "Unknown",
 }
 
 enum TurnState {
@@ -426,6 +433,9 @@ enum TurnState {
   Running: "Running",
   Completed: "Completed",
   Failed: "Failed",
+
+  @doc("The host is Degraded; the last stored state is unknown until it reports again. A read-only projection of an Offered or Running turn, never stored: on the host's next Hello or Heartbeat a turn the host still holds carries on, and one it no longer holds fails HostDropped.")
+  Unknown: "Unknown",
 }
 
 @doc("Why a turn ended Failed. Each reason names the phase the turn stopped in.")
@@ -500,6 +510,12 @@ enum TurnFailureReason {
 
   @doc("The host's first Heartbeat after it reconnected named no box for the turn's session, for example after its supervisor restarted, so the turn's work since its last snapshot is gone; the detail names the host.")
   BoxLost: "BoxLost",
+
+  @doc("The host's Hello or Heartbeat did not name the turn among the turns it holds: a Running turn the host no longer runs, or an offer the host never took by the second Heartbeat after it was sent; the detail names the host. The control plane records it, so no host sends it.")
+  HostDropped: "HostDropped",
+
+  @doc("A person revoked the turn's host while the turn was Offered or Running; the detail names the host. The control plane records it, so no host sends it.")
+  HostRevoked: "HostRevoked",
 
   @doc("A person stopped the session with cancelTurn while the turn was in flight or waiting, or cancelled the turn while it waited; the detail names who.")
   Cancelled: "Cancelled",
@@ -765,8 +781,8 @@ model OAuthGrant {
   lastIssuedAt: int64;
 }
 
-@doc("A machine the tenant owns, running the supervisor and enrolled to exactly one tenant.")
-model Host {
+@doc("The fields every host carries, whatever its presence.")
+model HostBase {
   @key @visibility(Lifecycle.Read) hostId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
   name: DisplayName;
@@ -811,6 +827,40 @@ model Host {
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
 
+@doc("A host that sent a Hello or Heartbeat within the last 90 seconds and is not revoked.")
+model OnlineHost {
+  ...HostBase;
+  @visibility(Lifecycle.Read) presence: HostPresence.Online;
+
+  @doc("When the host last sent a Hello or Heartbeat.")
+  @visibility(Lifecycle.Read)
+  heardAt: offsetDateTime;
+}
+
+@doc("A host that sent a Hello once, but nothing in the last 90 seconds.")
+model DegradedHost {
+  ...HostBase;
+  @visibility(Lifecycle.Read) presence: HostPresence.Degraded;
+
+  @doc("When the host last sent a Hello or Heartbeat.")
+  @visibility(Lifecycle.Read)
+  heardAt: offsetDateTime;
+}
+
+@doc("A host that never sent a Hello, or is revoked.")
+model OfflineHost {
+  ...HostBase;
+  @visibility(Lifecycle.Read) presence: HostPresence.Offline;
+}
+
+@doc("A machine the tenant owns, running the supervisor and enrolled to exactly one tenant, with its presence.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "presence" })
+union Host {
+  Online: OnlineHost,
+  Degraded: DegradedHost,
+  Offline: OfflineHost,
+}
+
 @doc("A one-time, tenant-scoped token that enrols one host before it expires.")
 model EnrolmentToken {
   @key @visibility(Lifecycle.Read) enrolmentTokenId: EntityId;
@@ -822,8 +872,8 @@ model EnrolmentToken {
   @visibility(Lifecycle.Read) updatedAt: int64;
 }
 
-@doc("A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins.")
-model Session {
+@doc("The fields every session carries, whatever its state.")
+model SessionBase {
   @key @visibility(Lifecycle.Read) sessionId: EntityId;
   @visibility(Lifecycle.Read) tenantId: EntityId;
   @visibility(Lifecycle.Read) principalId: EntityId;
@@ -850,8 +900,6 @@ model Session {
   @visibility(Lifecycle.Read) harness: Harness;
   @visibility(Lifecycle.Read) harnessVersion: ShortText;
   `model`: ModelName;
-  @visibility(Lifecycle.Read) state: SessionState;
-
   @doc("The session's latest turn. A start offers the first turn together with the session, so every session has one.")
   @visibility(Lifecycle.Read)
   lastTurnId: EntityId;
@@ -885,6 +933,64 @@ model Session {
 
   @visibility(Lifecycle.Read) createdAt: int64;
   @visibility(Lifecycle.Read) updatedAt: int64;
+}
+
+model StartingSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Starting;
+}
+
+model IdleSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Idle;
+}
+
+model RunningSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Running;
+}
+
+model StoppingSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Stopping;
+}
+
+model StoppedSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Stopped;
+}
+
+model ArchivedSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Archived;
+}
+
+model FailedSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Failed;
+}
+
+@doc("A Starting, Running, Idle or Stopping session whose host is Degraded, read in place of its stored state until the host reports again.")
+model UnknownSession {
+  ...SessionBase;
+  @visibility(Lifecycle.Read) state: SessionState.Unknown;
+
+  @doc("When the session's host last sent a Hello or Heartbeat.")
+  @visibility(Lifecycle.Read)
+  heardAt: offsetDateTime;
+}
+
+@doc("A repository-scoped conversation with one harness and model. It outlives the boxes that run it. Its harness is its persona's, at the version the tenant pins.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
+union Session {
+  Starting: StartingSession,
+  Idle: IdleSession,
+  Running: RunningSession,
+  Stopping: StoppingSession,
+  Stopped: StoppedSession,
+  Archived: ArchivedSession,
+  Failed: FailedSession,
+  Unknown: UnknownSession,
 }
 
 @doc("The GitHub issue of the session's repository that the session was started from, and the branch its first prompt asks for.")
@@ -1022,6 +1128,18 @@ model FailedTurn {
   failedAt: offsetDateTime;
 }
 
+@doc("An Offered or Running turn whose host is Degraded, read in place of its stored state until the host reports again.")
+model UnknownTurn {
+  ...TurnBase;
+  state: TurnState.Unknown;
+
+  @doc("When the turn's host last sent a Hello or Heartbeat.")
+  heardAt: offsetDateTime;
+
+  @doc("Which host went silent and since when.")
+  detail: Detail;
+}
+
 @doc("One prompt and the harness's completion of it, run on a session's box.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
 union Turn {
@@ -1029,6 +1147,7 @@ union Turn {
   Running: RunningTurn,
   Completed: CompletedTurn,
   Failed: FailedTurn,
+  Unknown: UnknownTurn,
 }
 
 enum SteerState {
@@ -1428,29 +1547,12 @@ model Persona {
 
 @doc("A persona's metadata, with file paths, digests, sizes and timestamps and no file content or download URLs.")
 model PersonaMetadata {
-  personaId: EntityId;
-  tenantId: EntityId;
-  name: DisplayName;
-  harness: Harness;
-  secretSetId: EntityId;
-  @maxItems(100) connectorIds: EntityId[];
-  @minValue(512) @maxValue(65536) boxMemoryMib?: int32;
-  @minValue(32768) @maxValue(262144) boxDiskMib?: int32;
-  boxRetention: BoxRetention;
-  tumpelMcp: boolean;
+  ...OmitProperties<Persona, "files">;
   @maxItems(100) files: PersonaFileMetadata[];
-  createdAt: int64;
-  updatedAt: int64;
 }
 
 @doc("A persona file's metadata, without its content or a download URL.")
-model PersonaFileMetadata {
-  path: PersonaFilePath;
-  digest: Sha256Digest;
-  sizeBytes: PersonaFileSize;
-  createdAt: int64;
-  updatedAt: int64;
-}
+model PersonaFileMetadata is PickProperties<InlinePersonaFileRead, "path" | "digest" | "sizeBytes" | "createdAt" | "updatedAt">;
 
 enum PersonaFileSource {
   @doc("The file's bytes travel in the request, base64, up to PersonaFileLimit.InlineFileBytes.")

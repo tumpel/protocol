@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { PersonaMetadataListSchema, PersonaSchema } from "../build/schemas/schemas.ts";
+import { PersonaMetadataListSchema } from "../build/schemas/schemas.ts";
 
 const persona = {
   personaId: "persona-test",
@@ -24,7 +24,7 @@ const persona = {
   updatedAt: 2000,
 };
 
-test("metadata lists accept an older server's content and unknown fields while default lists and reads keep content", () => {
+test("metadata lists omit file content, download URLs and unknown fields", () => {
   const previous = {
     ...persona,
     futureField: "unknown",
@@ -42,10 +42,6 @@ test("metadata lists accept an older server's content and unknown fields while d
   assert.deepEqual(PersonaMetadataListSchema.parse([previous]), [
     { ...persona, files: [persona.files[0], { ...persona.files[0], path: ".claude/settings.json" }] },
   ]);
-  const read = PersonaSchema.parse(previous);
-  assert.deepEqual(PersonaSchema.array().parse([previous]), [read]);
-  assert.equal(read.files[0].content, "aGVsbG8K");
-  assert.equal(read.files[1].downloadUrl, "https://files.example.test/persona");
   assert.deepEqual(
     PersonaMetadataListSchema.parse([{ ...persona, files: [{ ...persona.files[0], source: "FutureSource" }] }]),
     [persona],
