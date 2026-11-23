@@ -32490,74 +32490,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiOfferSentInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiOfferSentInput {
-        #[serde(rename = "turnId")]
-        pub turn_id: EntityId,
-    }
-    ///`TenantApiOfferSentRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiOfferSentRequest {
-        pub input: TenantApiOfferSentInput,
-        pub operation: TenantApiOfferSentRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiOfferSentRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiOfferSentRequestOperation {
-        #[serde(rename = "offerSent")]
-        OfferSent,
-    }
-    impl ::std::fmt::Display for TenantApiOfferSentRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::OfferSent => f.write_str("offerSent"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiOfferSentRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "offerSent" => Ok(Self::OfferSent),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiOfferSentRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiOfferSentRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiOfferSentResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiOfferSentResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiOfferSentResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiOfferSentResult> for ::serde_json::Map<::std::string::String, ::serde_json::Value> {
-        fn from(value: TenantApiOfferSentResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>> for TenantApiOfferSentResult {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
     ///`TenantApiOfferWithdrawn`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiOfferWithdrawn {
@@ -38770,7 +38702,6 @@ pub mod types {
         ListCredentialHandoversRequest(TenantApiListCredentialHandoversRequest),
         GetSnapshotRequest(TenantApiGetSnapshotRequest),
         TranscriptCursorRequest(TenantApiTranscriptCursorRequest),
-        OfferSentRequest(TenantApiOfferSentRequest),
         HostHelloRequest(TenantApiHostHelloRequest),
         HostHeartbeatRequest(TenantApiHostHeartbeatRequest),
         ForgetHostUsageRequest(TenantApiForgetHostUsageRequest),
@@ -39280,11 +39211,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiTranscriptCursorRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiTranscriptCursorRequest) -> Self {
             Self::TranscriptCursorRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiOfferSentRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiOfferSentRequest) -> Self {
-            Self::OfferSentRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiHostHelloRequest> for TenantApiTenantRequest {
@@ -51497,5 +51423,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 23;
+    pub const VERSION: u16 = 24;
 }

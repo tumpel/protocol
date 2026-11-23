@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 23;
+const TenantApiVersion = 24;
 
 namespace TenantApi {
 
@@ -927,10 +927,6 @@ model TranscriptCursorInput {
   maxBytes?: int64;
 }
 
-model OfferSentInput {
-  turnId: EntityId;
-}
-
 @doc("The turns a host named in its Hello or Heartbeat; the tenant fails each turn of the host the list leaves out.")
 model HeldTurnsReported {
   state: "Reported";
@@ -1659,12 +1655,6 @@ model TranscriptCursorRequest {
   input: TranscriptCursorInput;
 }
 
-model OfferSentRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "offerSent";
-  input: OfferSentInput;
-}
-
 model HostHelloRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "hostHello";
@@ -1857,7 +1847,6 @@ union TenantRequest {
   listCredentialHandovers: ListCredentialHandoversRequest,
   getSnapshot: GetSnapshotRequest,
   transcriptCursor: TranscriptCursorRequest,
-  offerSent: OfferSentRequest,
   hostHello: HostHelloRequest,
   hostHeartbeat: HostHeartbeatRequest,
   forgetHostUsage: ForgetHostUsageRequest,
@@ -2941,8 +2930,6 @@ model TranscriptLines {
 model TranscriptCursorResult {
   cursor: TranscriptChunk | TranscriptLines | null;
 }
-
-model OfferSentResult {}
 
 model HostHelloResult {}
 
