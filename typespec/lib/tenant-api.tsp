@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 24;
+const TenantApiVersion = 25;
 
 namespace TenantApi {
 
@@ -1008,19 +1008,6 @@ model PrepareOfferInput {
   now: int64;
 }
 
-@doc("Whether a host's channel is connected, as the control plane records it on connect and close. Read presence comes from the host's heardAt instead.")
-enum HostConnectionState {
-  Online: "Online",
-  Offline: "Offline",
-}
-
-model HostPresenceInput {
-  tenantId: EntityId;
-  hostId: EntityId;
-  presence: HostConnectionState;
-  now: int64;
-}
-
 model HostHealthInput {
   tenantId: EntityId;
   hostId: EntityId;
@@ -1721,12 +1708,6 @@ model PrepareOfferRequest {
   input: PrepareOfferInput;
 }
 
-model HostPresenceRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "hostPresence";
-  input: HostPresenceInput;
-}
-
 model HostHealthRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "hostHealth";
@@ -1858,7 +1839,6 @@ union TenantRequest {
   deferredOffers: DeferredOffersRequest,
   turnMetricDimensions: TurnMetricDimensionsRequest,
   prepareOffer: PrepareOfferRequest,
-  hostPresence: HostPresenceRequest,
   hostHealth: HostHealthRequest,
   hostMessage: HostMessageRequest,
   deadlineReached: DeadlineReachedRequest,
@@ -2997,8 +2977,6 @@ model OfferWithdrawn {
 model PrepareOfferResult {
   prepared: OfferReady | OfferWithdrawn;
 }
-
-model HostPresenceResult {}
 
 model HostHealthResult {}
 
