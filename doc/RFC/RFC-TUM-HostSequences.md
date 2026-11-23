@@ -1,16 +1,16 @@
 # RFC: Host channel and tenant operations as sequences
 
-| Field   | Value                                                                                                                                       |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Status  | Draft (2026-11-23)                                                                                                                          |
+| Field   | Value                                                                                                                                     |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Status  | Draft (2026-11-23)                                                                                                                        |
 | Scope   | Review only; the code as built at control-plane bdd61a1 plus control-plane PR 149 (open), supervisor 8d051d3, channel protocol version 37 |
-| Related | [channel.tsp](../../typespec/lib/channel.tsp), [tenant-api.tsp](../../typespec/lib/tenant-api.tsp)                                          |
+| Related | [channel.tsp](../../typespec/lib/channel.tsp), [tenant-api.tsp](../../typespec/lib/tenant-api.tsp)                                        |
 
 ## Summary
 
 This document draws every host operation of the control plane as one sequence diagram. Each diagram shows who writes which row or object, and in what order. The host keeps every frame it sends in `channel.json` until the control plane acks it. The control plane acks a host frame only after the frame's effect is stored. Each diagram makes that order visible, and the text under it names every place where the code differs from the design.
 
-The diagrams describe the code, not the design. Where the two differ, one sentence under the diagram says so. The table at the end lists the rows each operation writes, with the measured figure next to the design budget.
+The diagrams describe the code as built. Where it differs from the design, one sentence under the diagram says so. The appendix lists the rows each operation writes, with the measured figure next to the row budget.
 
 ## Reading the diagrams
 
@@ -55,11 +55,12 @@ sequenceDiagram
   H->>S: Welcome(ack k-1)
   H->>S: resent ledger frames: TurnOffer with credential, or TurnWithdrawn
   Note over H: attachment: Open, cursor k-1, boxCapacity
-  H->>D: UPDATE hosts.supervisor_version, UPSERT host_channel_protocols (on change only)
+  H->>D: UPDATE hosts.supervisor_version, UPSERT host_channel_protocols and host_guest_protocols (on change only)
+  Note over D: a protocol the Hello leaves out DELETEs its row
   H->>T: hostHello(heldTurnIds, usage, boxCapacity)
   rect rgba(120, 140, 255, 0.15)
     T->>T: INSERT events HostOnline (no host_reports row, or heard_at past 90 s)
-    T->>T: UPSERT host_reports (first connect, a capacity change, or heard_at older than 30 s)
+    T->>T: UPSERT host_reports (first connect, a change of box capacity, channel protocol, memory budget or memory held, or heard_at older than 30 s)
     T->>T: DELETE superseded supervisor_update_latest_failures
   end
   T->>T: each Running turn not in heldTurnIds fails HostDropped
@@ -68,9 +69,9 @@ sequenceDiagram
   S->>H: resent host frames from seq k, each acked after its write
 ```
 
-On a first connect the ledger row does not exist yet, so nothing is resent, and the Tenant inserts the `host_reports` row and appends HostOnline. The cursor comes from `resendFrom`; the control plane stores no inbound counter. Hello judges only Running turns; Offered turns wait for the Heartbeat grace in section 2.
+On a first connect the Tenant inserts the `host_reports` row and appends HostOnline, and Welcome goes out alone. The cursor comes from `resendFrom` alone. Hello judges only Running turns; Offered turns wait for the Heartbeat grace in section 2.
 
-The supervisor resends its withheld frames at most half the frame limit per tick, so a long backlog cannot trip the rate limit on reconnect.
+The supervisor resends its withheld frames at most half the frame limit per tick, so a long backlog stays under the rate limit on reconnect.
 
 Code and design differ in three places. Welcome and the resent frames go out before the D1 and Tenant writes of Hello. Welcome still carries `ack`, which the protocol text says version 37 leaves out; the supervisor ignores it at 37. Each resent offer mints fresh credentials and writes one more `credential_handovers` row.
 
@@ -195,7 +196,7 @@ sequenceDiagram
 
 A TurnLines frame writes no Durable Object row, except `result_printed` once per turn. A resend that overlaps stored lines writes only the lines past the stored last, so a chunk key never holds a line twice. A turn that is not Running ignores the frame and the frame is still acked.
 
-`result_printed` commits before the R2 PUT. A PUT that fails after it leaves the flag set on a turn that then fails TranscriptGap, which changes no outcome.
+`result_printed` commits before the R2 PUT. A PUT that fails after it leaves the flag set on a turn that then fails TranscriptGap, and the turn ends Failed either way.
 
 ## 5. TurnComplete and TurnFailed
 
@@ -280,6 +281,20 @@ sequenceDiagram
     T->>T: UPDATE turns Completed, sessions Idle, INSERT events TurnCompleted and SessionIdle
     T->>T: DELETE released connector tokens
   end
+  opt box retention Off
+    T->>T: UPDATE sessions Stopping
+  end
+  opt a queued turn picked by the transaction
+    T->>T: UPDATE turns offer_sent 1
+    T->>H: send TurnOffer, prepared with a fresh credential as in section 3
+    H->>H: ledger row: unacked += TurnOffer
+    H->>S: Frame TurnOffer with credential
+  end
+  opt session Stopping
+    T->>H: send BoxTeardown
+    H->>H: ledger row: unacked += BoxTeardown
+    H->>S: Frame BoxTeardown
+  end
   T->>R: PUT live-packs.json (older snapshots release), DELETE older roots and pack lists
   T->>T: DELETE older snapshots rows
   T-->>H: no reply
@@ -288,7 +303,7 @@ sequenceDiagram
 
 Each part writes the `ledger` row twice, once per reply, and the next Heartbeat `ack` writes it once more. A stored snapshot writes the same Tenant rows for one chunk or 100000, because chunks and packs live in R2 objects. A resent SnapshotChunks or SnapshotPacks returns the same answer; a resent SnapshotDone finds no `snapshot_requests` row and writes nothing.
 
-SnapshotFailed, or a SnapshotDone whose root, manifest or packs fail the checks, moves the request to `snapshot_failures` and fails the turn SnapshotNotStored. The protocol names the last message SnapshotDone; no SnapshotStored message exists.
+SnapshotFailed, or a SnapshotDone whose root, manifest or packs fail the checks, moves the request to `snapshot_failures` and fails the turn SnapshotNotStored.
 
 Code and design differ in one place: `live-packs.json` is written with a plain PUT, where the design asks for an etag-conditional PUT.
 
@@ -317,18 +332,26 @@ sequenceDiagram
   S->>H: Frame BoxGone(seq g, sessionId, boxId)
   H->>T: hostMessage BoxGone
   T->>T: UPDATE sessions Stopped, INSERT events SessionStopped
-  Note over T: Offered turns on this host with offer_sent 0, once no session on it is Stopping
-  T->>T: UPDATE turns offer_sent 1, unheld_heartbeats 0
-  T->>H: send TurnOffer, prepared with a fresh credential as in section 3
-  H->>H: ledger row: unacked += TurnOffer
-  H->>S: Frame TurnOffer with credential
+  loop each Offered turn on this host with offer_sent 0, oldest first
+    Note over T: held memory and disk from host_reports and session rows
+    alt held memory and disk within the host budget
+      T->>T: UPDATE turns offer_sent 1, unheld_heartbeats 0
+      T->>H: send TurnOffer, prepared with a fresh credential as in section 3
+      H->>H: ledger row: unacked += TurnOffer
+      H->>S: Frame TurnOffer with credential
+    else over budget, a session on the host is Stopping
+      Note over T: the turn keeps waiting
+    else over budget, no session Stopping
+      T->>T: fail PoolExhausted: turns, turn_failures, events
+    end
+  end
   T-->>H: no reply to BoxGone
   H->>S: Ack(g)
 ```
 
-The offer of the waiting turn is stored and sent before the Ack of the BoxGone that made room for it. BoxTeardownFailed inserts `stop_failures` and returns the session to Idle; its waiting turn stays Offered with `offer_sent` 0.
+The offer of the waiting turn is stored and sent before the Ack of the BoxGone that made room for it. The same loop runs after every Heartbeat reconcile, so a waiting turn is offered as soon as the session rows and the host report leave room.
 
-The waiting offer goes out only once no session on the host is Stopping, so one stuck teardown holds every waiting offer on that host. Reconcile ignores turns with `offer_sent` 0, so nothing fails such a turn.
+BoxTeardownFailed inserts `stop_failures` and returns the session to Idle. Its box still holds memory and no session is Stopping, so the next Heartbeat fails the waiting turn PoolExhausted. A teardown that never answers keeps its session Stopping, and the waiting turn waits for its BoxGone.
 
 Code and design differ on main: without PR 149, BoxGone re-runs only the evicted session's own queue, so the waiting turn's offer is never sent.
 
@@ -362,7 +385,7 @@ sequenceDiagram
   end
 ```
 
-The window lives in the socket attachment. It survives hibernation; a new socket starts a fresh window. A trip fails no running turn and writes no row in the HostChannel or D1. The host reports RateLimited for one minute after its last FrameRateLimited, and that report is the only row a trip writes.
+The window lives in the socket attachment. It survives hibernation; a new socket starts a fresh window. Running turns keep running through a refusal. The host reports RateLimited for one minute after its last FrameRateLimited, and that `host_reports` update is the one row a refusal writes.
 
 The rate check runs before the gap check. A frame past a gap that arrives after `retryAfter` closes the connection, and the next Hello resends from the oldest unacked frame.
 
@@ -415,8 +438,8 @@ sequenceDiagram
   W->>T: startSession(hosts)
   T->>R: read the current release (image architectures) and the deploy drain marker
   Note over T: reads host_reports joined with sessions per host
-  Note over T: memory held = larger of reported memory_held_mib and box_memory_mib summed over Starting, Running, Idle and Stopping sessions
-  Note over T: disk held = the same with disk_held_mib and box_disk_mib
+  Note over T: memory held = max(reported memory_held_mib, sum of live box_memory_mib)
+  Note over T: disk held = max(reported disk_held_mib, sum of live box_disk_mib)
   Note over T: admits a host that is Online (heard_at within 90 s), Healthy, has the image, and fits memory and disk
   alt no host fits and no Idle Auto box frees enough
     T->>W: Unplaced, with a reason per host
@@ -436,7 +459,7 @@ sequenceDiagram
   end
 ```
 
-The session row gets its `host_id` and `box_id` in the same transaction as the turn, before the offer, so the next placement in the same Tenant already counts the box. A host with no `host_reports` row reads NotOnline. When eviction is needed, the offer waits for BoxGone as in section 7.
+A live box belongs to a Starting, Running, Idle or Stopping session. The session row gets its `host_id` and `box_id` in the same transaction as the turn, before the offer, so the next placement in the same Tenant already counts the box. A host with no `host_reports` row reads NotOnline. When eviction is needed, the offer waits for BoxGone as in section 7.
 
 Placement admits on memory and disk only. Free box slots (`box_capacity` less Starting, Running, Idle and Stopping boxes) and load rank the admitted hosts but never refuse one. The disk check applies only when the host reports disk held above zero.
 
@@ -476,30 +499,9 @@ sequenceDiagram
   end
 ```
 
-A queued turn is offered when the turn before it ends, from the same transaction that ends that turn. A session whose completed turns have no stored snapshot is refused as Stranded when it has to move host, because the new box cannot restore their work.
+A queued turn is offered when the turn before it ends: the transaction that ends that turn picks it, and the offer goes out after the commit. A session whose completed turns have no stored snapshot is refused as Stranded when it has to move host, because the new box cannot restore their work.
 
 Excluding the session's own box from eviction comes from PR 149; on main a send picks the session's own Idle box as the box to evict.
-
-## Rows per operation
-
-Rows count Durable Object SQL rows and index entries, as the scenario tests and the dev metrics count them. "Idle" is one host with no turn for 10 minutes. Measured figures come from the `test/scenarios` row tests at bdd61a1 and from the dev row counts recorded with them.
-
-| Operation | Rows written per store | Idle 10 min | Measured | Design budget |
-| --- | --- | --- | --- | --- |
-| Hello | D1: 0 unchanged. HostChannel: 0. Tenant: `host_reports` 0 or 1, `events` 0 or 1, plus one `credential_handovers` row per resent offer | 0 | not measured | at most 1 |
-| Heartbeat | HostChannel: `ledger` 0, or 1 when `ack` drops a frame. Tenant: `host_reports` 0 or 1. TenantMetrics: 0 | Tenant at most 20, HostChannel 0 | test: at most 20 Tenant, 0 HostChannel; dev: 46 for two hosts | 20 Tenant, 0 HostChannel |
-| TurnOffer to TurnClaimed | HostChannel: `ledger` 2. Tenant: `turns`, `credential_handovers`, image row, then `turns`, `sessions`, `events` at claim | 0 | within the turn below | within the turn below |
-| TurnLines | Tenant: 0, plus `result_printed` once per turn. R2: one PUT per frame. HostChannel: 0 | 0 | test: rows do not grow with lines or chunks | 0 rows, one PUT per frame |
-| TurnComplete | Tenant: `snapshot_requests` 1. HostChannel: `ledger` 1 | 0 | within the turn below | within the turn below |
-| Stored snapshot | HostChannel: `ledger` 2 per part. Tenant: fixed per snapshot. R2: `live-packs.json`, pack list, packs, root | 0 | test: at most 20 Tenant, the same for 1 or 100000 chunks; failed snapshot at most 25 | no separate budget |
-| One turn, offer to stored snapshot | sum of the rows above | 0 | test and dev: 53 Tenant, 5 HostChannel | 24 Tenant, 10 HostChannel |
-| BoxGone after eviction | Tenant: `sessions` 2, `events` 1, then the offer rows. HostChannel: `ledger` 2 | 0 | not measured | no separate budget |
-| Frame-rate limit | HostChannel: 0 (attachment only). Tenant: `host_reports` 1 when the reported health turns RateLimited | 0 | test: no row per refused frame | 0 |
-| Host revoke | D1: `hosts` 1. Tenant: `host_reports` 1 and the failure rows per turn. HostChannel: `host` 1 | 0 | not measured | no separate budget |
-| Session start | Tenant: `sessions` and its side tables, `turns`, then the offer rows. HostChannel: `ledger` 1 | 0 | within the turn above | within the turn above |
-| Turn to an existing session | Tenant: `sessions`, `turns`, then the offer rows. HostChannel: `ledger` 1 | 0 | within the turn above | within the turn above |
-
-The idle figure meets the 100-row target: the measured share is the Tenant's 30-second `host_reports` refresh. One turn writes 53 Tenant rows against a design budget of 24; session creation, credential handovers, layered image rows and snapshot request rows make up the difference.
 
 ## FAQ
 
@@ -507,7 +509,28 @@ The idle figure meets the 100-row target: the measured share is the Tenant's 30-
 The control plane cannot tell a resent TurnClaim from a lost reply, so it answers again with no write.
 
 **Can a turn wait forever for room?**
-Yes, when a teardown never answers. Reconcile ignores turns with `offer_sent` 0, so nothing fails it.
+Yes, while a teardown never answers. Its session stays Stopping, and the waiting turn waits for a BoxGone that never comes.
 
 **Where do credentials live after an offer?**
 In box memory on the host. The `ledger` row stores the offer without them, and each resend mints new ones.
+
+## Appendix: rows per operation
+
+Rows count Durable Object SQL rows and index entries, as the scenario tests and the dev metrics count them. "Idle" is one host with no turn for 10 minutes. Measured figures come from the `test/scenarios` row tests at bdd61a1 and from the dev row counts recorded with them.
+
+| Operation                          | Rows written per store                                                                                                                | Idle 10 min                      | Measured                                                                             | Row budget                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------ | ------------------------- |
+| Hello                              | D1: 0 unchanged. HostChannel: 0. Tenant: `host_reports` 0 or 1, `events` 0 or 1, plus one `credential_handovers` row per resent offer | 0                                | not measured                                                                         | at most 1                 |
+| Heartbeat                          | HostChannel: `ledger` 0, or 1 when `ack` drops a frame. Tenant: `host_reports` 0 or 1. TenantMetrics: 0                               | Tenant at most 20, HostChannel 0 | test: at most 20 Tenant, 0 HostChannel; dev: 46 for two hosts                        | 20 Tenant, 0 HostChannel  |
+| TurnOffer to TurnClaimed           | HostChannel: `ledger` 2. Tenant: `turns`, `credential_handovers`, image row, then `turns`, `sessions`, `events` at claim              | 0                                | within the turn below                                                                | within the turn below     |
+| TurnLines                          | Tenant: 0, plus `result_printed` once per turn. R2: one PUT per frame. HostChannel: 0                                                 | 0                                | test: rows do not grow with lines or chunks                                          | 0 rows, one PUT per frame |
+| TurnComplete                       | Tenant: `snapshot_requests` 1. HostChannel: `ledger` 1                                                                                | 0                                | within the turn below                                                                | within the turn below     |
+| Stored snapshot                    | HostChannel: `ledger` 2 per part. Tenant: fixed per snapshot. R2: `live-packs.json`, pack list, packs, root                           | 0                                | test: at most 20 Tenant, the same for 1 or 100000 chunks; failed snapshot at most 25 | no separate budget        |
+| One turn, offer to stored snapshot | sum of the rows above                                                                                                                 | 0                                | test and dev: 53 Tenant, 5 HostChannel                                               | 24 Tenant, 10 HostChannel |
+| BoxGone after eviction             | Tenant: `sessions` 2, `events` 1, then the offer rows. HostChannel: `ledger` 2                                                        | 0                                | not measured                                                                         | no separate budget        |
+| Frame-rate limit                   | HostChannel: 0 (attachment only). Tenant: `host_reports` 1 when the reported health turns RateLimited                                 | 0                                | test: no row per refused frame                                                       | 0                         |
+| Host revoke                        | D1: `hosts` 1. Tenant: `host_reports` 1 and the failure rows per turn. HostChannel: `host` 1                                          | 0                                | not measured                                                                         | no separate budget        |
+| Session start                      | Tenant: `sessions` and its side tables, `turns`, then the offer rows. HostChannel: `ledger` 1                                         | 0                                | within the turn above                                                                | within the turn above     |
+| Turn to an existing session        | Tenant: `sessions`, `turns`, then the offer rows. HostChannel: `ledger` 1                                                             | 0                                | within the turn above                                                                | within the turn above     |
+
+The idle figure is inside the row budget of 100 rows per 10 minutes, and the Tenant's 30-second `host_reports` refresh makes up all of it. One turn writes 53 Tenant rows against a row budget of 24; session creation, credential handovers, layered image rows and snapshot request rows make up the difference.
