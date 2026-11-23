@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 21;
+const TenantApiVersion = 22;
 
 namespace TenantApi {
 

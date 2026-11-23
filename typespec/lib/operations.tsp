@@ -995,7 +995,7 @@ namespace V1 {
     @route("/enrol")
     @useAuth(NoAuth)
     @post
-    enrol(@body body: HostEnrol): Host | ProblemResponse;
+    enrol(@body body: HostEnrol): TenantApi.HostRecord | ProblemResponse;
 
     @doc("Lists the tenant's hosts with their state and their presence: Online, Degraded or Offline.")
     @get
