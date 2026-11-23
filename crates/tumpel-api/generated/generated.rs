@@ -29,7 +29,7 @@ pub mod types {
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
         pub goal: Goal,
-        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        ///The plan, sent at the top of every delivery turn. Creation and delivery share a 100,000-character message limit. The plan, goal and delivery instructions must leave room for one event or its reference.
         pub prompt: Prompt,
         ///The session that receives the delivery turns. Its harness must take a goal.
         #[serde(rename = "sessionId")]
@@ -8037,7 +8037,7 @@ pub mod types {
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
         pub goal: Goal,
-        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        ///The plan, sent at the top of every delivery turn. Creation and delivery share a 100,000-character message limit. The plan, goal and delivery instructions must leave room for one event or its reference.
         pub prompt: Prompt,
         pub reason: SubscriptionEndReason,
         ///The session that receives the delivery turns. Its harness must take a goal.
@@ -16307,7 +16307,7 @@ pub mod types {
         pub goal: Goal,
         #[serde(rename = "pausedAt")]
         pub paused_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        ///The plan, sent at the top of every delivery turn. Creation and delivery share a 100,000-character message limit. The plan, goal and delivery instructions must leave room for one event or its reference.
         pub prompt: Prompt,
         pub reason: SubscriptionPauseReason,
         ///The session that receives the delivery turns. Its harness must take a goal.
@@ -22954,7 +22954,7 @@ pub mod types {
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
         pub goal: Goal,
-        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        ///The plan, sent at the top of every delivery turn. Creation and delivery share a 100,000-character message limit. The plan, goal and delivery instructions must leave room for one event or its reference.
         pub prompt: Prompt,
         ///The session that receives the delivery turns. Its harness must take a goal.
         #[serde(rename = "sessionId")]
@@ -22979,7 +22979,7 @@ pub mod types {
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///The condition that ends the work, sent as the goal of every delivery turn. The session calls Subscriptions_complete once it holds.
         pub goal: Goal,
-        ///The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message.
+        ///The plan, sent at the top of every delivery turn. Creation and delivery share a 100,000-character message limit. The plan, goal and delivery instructions must leave room for one event or its reference.
         pub prompt: Prompt,
         ///The session that receives the delivery turns. Its harness must take a goal.
         #[serde(rename = "sessionId")]
