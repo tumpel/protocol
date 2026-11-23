@@ -2716,8 +2716,15 @@ model SubscriptionCreatedOk {
   subscription: Subscription;
 }
 
+@doc("A crew subscription cannot be created or resumed because the session's persona has tumpelMcp disabled. Enable tumpelMcp on the named persona before trying again.")
+model SubscriptionPersonaLacksTumpelMcp {
+  kind: "PersonaLacksTumpelMcp";
+  personaId: EntityId;
+  personaName: DisplayName;
+}
+
 model CreateSubscriptionResult {
-  created: SubscriptionCreatedOk | SessionNotFound | SessionArchivedState | SessionFailedState;
+  created: SubscriptionCreatedOk | SessionNotFound | SessionArchivedState | SessionFailedState | SubscriptionPersonaLacksTumpelMcp;
 }
 
 model ListSubscriptionsResult {
@@ -2755,7 +2762,7 @@ model PauseSubscriptionResult {
 }
 
 model ResumeSubscriptionResult {
-  resumed: SubscriptionChangedOk | SubscriptionNotFound | SubscriptionEndedState | SubscriptionCursorExpired;
+  resumed: SubscriptionChangedOk | SubscriptionNotFound | SubscriptionEndedState | SubscriptionCursorExpired | SubscriptionPersonaLacksTumpelMcp;
 }
 
 model DeleteSubscriptionResult {

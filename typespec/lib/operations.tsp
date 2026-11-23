@@ -680,6 +680,10 @@ model CompactTranscriptLine {
   text: LongText;
 }
 
+@doc("The tenant's personas with file metadata and no file content, at most 10,000 entries.")
+@maxItems(10000)
+model PersonaMetadataList is PersonaMetadata[];
+
 @doc("A new persona with its whole file set: at most PersonaFileLimit.PersonaBytes together, each at a path its harness accepts.")
 model PersonaCreate is Create<Persona> {
   @doc("The persona's files; none when left out.")
@@ -1596,5 +1600,15 @@ namespace V1 {
     @useAuth(ClaudeSetupBoxToken)
     @post
     writeToken(...ClaudeSetupPath, @body body: ClaudeSetupTokenWrite): NoContentResponse | ProblemResponse;
+  }
+}
+
+@route("/v2")
+namespace V2 {
+  @route("/personas")
+  interface Personas {
+    @doc("Lists the tenant's persona metadata and each file's path, digest, size and timestamps without content or download URLs. Read one persona to get file content.")
+    @get
+    listMetadata(): PersonaMetadataList | ProblemResponse;
   }
 }

@@ -50,7 +50,7 @@
               "$ref": "#/components/schemas/Prompt"
             }
           ],
-          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
+          "description": "The plan, sent at the top of every delivery turn. Creation and delivery share a 100,000-character message limit. The plan, goal and delivery instructions must leave room for one event or its reference."
         },
         "goal": {
           "allOf": [
@@ -423,51 +423,6 @@
         "Auto"
       ],
       "description": "What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode."
-    },
-    "CapacityAvailableEvent": {
-      "type": "object",
-      "required": [
-        "event",
-        "eventId",
-        "tenantId",
-        "createdAt",
-        "subscriptionId",
-        "hostId",
-        "code"
-      ],
-      "properties": {
-        "event": {
-          "type": "string",
-          "enum": [
-            "CapacityAvailable"
-          ]
-        },
-        "eventId": {
-          "$ref": "#/components/schemas/Sequence"
-        },
-        "tenantId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "createdAt": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "subscriptionId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "hostId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "code": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/ProblemCode"
-            }
-          ],
-          "description": "The pending room refusal's code that this event answers."
-        }
-      },
-      "description": "The host freed enough memory and disk for the refused box or came online. It reaches each\nsubscription with a pending PoolExhausted, NoHostAvailable, HostDegraded or HostOffline refusal.\nEach subscription holds at most one pending room refusal, upserted rather than appended.\nDelivery clears that pending refusal; retries back off exponentially."
     },
     "Channel.BaseImageDownload": {
       "type": "object",
@@ -2664,7 +2619,7 @@
               "$ref": "#/components/schemas/Prompt"
             }
           ],
-          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
+          "description": "The plan, sent at the top of every delivery turn. Creation and delivery share a 100,000-character message limit. The plan, goal and delivery instructions must leave room for one event or its reference."
         },
         "goal": {
           "allOf": [
@@ -4102,7 +4057,7 @@
               "$ref": "#/components/schemas/Prompt"
             }
           ],
-          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
+          "description": "The plan, sent at the top of every delivery turn. Creation and delivery share a 100,000-character message limit. The plan, goal and delivery instructions must leave room for one event or its reference."
         },
         "goal": {
           "allOf": [
@@ -6343,87 +6298,6 @@
         }
       }
     },
-    "StartRefusal": {
-      "type": "object",
-      "required": [
-        "code",
-        "detail"
-      ],
-      "properties": {
-        "code": {
-          "$ref": "#/components/schemas/ProblemCode"
-        },
-        "detail": {
-          "$ref": "#/components/schemas/Detail"
-        }
-      },
-      "description": "Why a session start or turn send was refused."
-    },
-    "StartRefusedEvent": {
-      "type": "object",
-      "required": [
-        "event",
-        "eventId",
-        "tenantId",
-        "createdAt",
-        "operation",
-        "refusal",
-        "personaId",
-        "model",
-        "harnessVersion",
-        "crewTags"
-      ],
-      "properties": {
-        "event": {
-          "type": "string",
-          "enum": [
-            "StartRefused"
-          ]
-        },
-        "eventId": {
-          "$ref": "#/components/schemas/Sequence"
-        },
-        "tenantId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "createdAt": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "operation": {
-          "$ref": "#/components/schemas/StartRefusedOperation"
-        },
-        "refusal": {
-          "$ref": "#/components/schemas/StartRefusal"
-        },
-        "personaId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "model": {
-          "$ref": "#/components/schemas/ModelName"
-        },
-        "harnessVersion": {
-          "$ref": "#/components/schemas/ShortText"
-        },
-        "crewTags": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/SessionTag"
-          },
-          "maxItems": 16,
-          "description": "The crew tags the session would carry."
-        }
-      },
-      "description": "A refusal with code ModelUnsupported, HarnessNotInCatalog, ImageNotReleased, PoolExhausted,\nNoHostAvailable, HostDegraded, HostOffline, NoCredential or CredentialExpired. It reaches the\ncalling session's subscription, identified by the turn token's session, or a subscription whose\ncrew tags the refused session would carry. Undelivered events coalesce per subscription and code.\nExhausted provider credit stays a turn failure with the CreditExhausted pause reason."
-    },
-    "StartRefusedOperation": {
-      "type": "string",
-      "enum": [
-        "Start",
-        "Send"
-      ],
-      "description": "The operation that was refused."
-    },
     "StaticConnector": {
       "type": "object",
       "required": [
@@ -7031,7 +6905,7 @@
           "Ended": "#/components/schemas/EndedSubscription"
         }
       },
-      "description": "A plan and a goal tied to one session, which receives a delivery turn whenever a session of its\ncrew records one of the listed events. The crew is every other session that carries every crew\ntag at the moment of the event and holds no Active subscription itself. Each delivery turn holds\nthe plan and the events after the cursor, one JSON line each, and works toward the goal.\nStartRefused also reaches the calling session's subscription or one whose crew tags the refused\nsession would carry. CapacityAvailable reaches a subscription with a pending room refusal."
+      "description": "A plan and a goal tied to one session, which receives a delivery turn whenever a session of its\ncrew records one of the listed events. The crew is every other session that carries every crew\ntag at the moment of the event and holds no Active subscription itself. Each delivery turn holds\nthe plan and the events after the cursor, one JSON line each, and works toward the goal."
     },
     "SubscriptionCreate": {
       "type": "object",
@@ -7058,7 +6932,7 @@
               "$ref": "#/components/schemas/Prompt"
             }
           ],
-          "description": "The plan, sent at the top of every delivery turn. The plan and the goal must leave room for one event inside the 4,000 characters of a delivery turn's message."
+          "description": "The plan, sent at the top of every delivery turn. Creation and delivery share a 100,000-character message limit. The plan, goal and delivery instructions must leave room for one event or its reference."
         },
         "goal": {
           "allOf": [
@@ -7158,11 +7032,9 @@
         "SessionFailed",
         "SessionArchived",
         "SubscriptionPaused",
-        "SubscriptionEnded",
-        "StartRefused",
-        "CapacityAvailable"
+        "SubscriptionEnded"
       ],
-      "description": "An event type a subscription reacts to: a crew session event, a refused start or send, or room becoming available."
+      "description": "An event type a subscription reacts to: one whose event names a session."
     },
     "SubscriptionPausedByRequest": {
       "type": "object",
@@ -7280,21 +7152,6 @@
         }
       }
     },
-    "SubscriptionPausedStartsRefused": {
-      "type": "object",
-      "required": [
-        "kind"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "StartsRefused"
-          ]
-        }
-      },
-      "description": "10 CapacityAvailable deliveries reached the subscription without a successful start; it pauses instead of waking again."
-    },
     "SubscriptionPauseMessage": {
       "type": "string",
       "minLength": 1,
@@ -7315,9 +7172,6 @@
         },
         {
           "$ref": "#/components/schemas/SubscriptionPausedCreditExhausted"
-        },
-        {
-          "$ref": "#/components/schemas/SubscriptionPausedStartsRefused"
         }
       ],
       "discriminator": {
@@ -7326,8 +7180,7 @@
           "ByRequest": "#/components/schemas/SubscriptionPausedByRequest",
           "DeliveryFailed": "#/components/schemas/SubscriptionPausedDeliveryFailed",
           "CrewFailing": "#/components/schemas/SubscriptionPausedCrewFailing",
-          "CreditExhausted": "#/components/schemas/SubscriptionPausedCreditExhausted",
-          "StartsRefused": "#/components/schemas/SubscriptionPausedStartsRefused"
+          "CreditExhausted": "#/components/schemas/SubscriptionPausedCreditExhausted"
         }
       },
       "description": "Why a subscription is Paused."
@@ -9237,6 +9090,9 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.SessionFailedState"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SubscriptionPersonaLacksTumpelMcp"
             }
           ]
         }
@@ -14482,6 +14338,9 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.SubscriptionCursorExpired"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SubscriptionPersonaLacksTumpelMcp"
             }
           ]
         }
@@ -16753,6 +16612,29 @@
           ]
         }
       }
+    },
+    "TenantApi.SubscriptionPersonaLacksTumpelMcp": {
+      "type": "object",
+      "required": [
+        "kind",
+        "personaId",
+        "personaName"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "PersonaLacksTumpelMcp"
+          ]
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "personaName": {
+          "$ref": "#/components/schemas/DisplayName"
+        }
+      },
+      "description": "A crew subscription cannot be created or resumed because the session's persona has tumpelMcp disabled. Enable tumpelMcp on the named persona before trying again."
     },
     "TenantApi.SupervisorUpdateInput": {
       "type": "object",
@@ -19049,12 +18931,6 @@
           "$ref": "#/components/schemas/TriggerStartRefusedEvent"
         },
         {
-          "$ref": "#/components/schemas/StartRefusedEvent"
-        },
-        {
-          "$ref": "#/components/schemas/CapacityAvailableEvent"
-        },
-        {
           "$ref": "#/components/schemas/UsageNearLimitEvent"
         },
         {
@@ -19078,8 +18954,6 @@
           "SubscriptionPaused": "#/components/schemas/SubscriptionPausedEvent",
           "SubscriptionEnded": "#/components/schemas/SubscriptionEndedEvent",
           "TriggerStartRefused": "#/components/schemas/TriggerStartRefusedEvent",
-          "StartRefused": "#/components/schemas/StartRefusedEvent",
-          "CapacityAvailable": "#/components/schemas/CapacityAvailableEvent",
           "UsageNearLimit": "#/components/schemas/UsageNearLimitEvent",
           "UsageLimitReached": "#/components/schemas/UsageLimitReachedEvent"
         }
@@ -19103,8 +18977,6 @@
         "SubscriptionPaused",
         "SubscriptionEnded",
         "TriggerStartRefused",
-        "StartRefused",
-        "CapacityAvailable",
         "UsageNearLimit",
         "UsageLimitReached"
       ],

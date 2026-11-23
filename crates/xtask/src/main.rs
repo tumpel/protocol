@@ -131,6 +131,10 @@ fn named_values(name: &str, schema: &openapiv3::Schema) -> Result<Option<NamedVa
     Ok(Some((names, values)))
 }
 
+fn rust_name(name: &str) -> String {
+    name.replace(|letter: char| !letter.is_ascii_alphanumeric(), "")
+}
+
 fn enum_constants(spec: &openapiv3::OpenAPI) -> Result<TokenStream, String> {
     let mut tokens = TokenStream::new();
     let Some(components) = &spec.components else {
@@ -155,7 +159,7 @@ fn enum_constants(spec: &openapiv3::OpenAPI) -> Result<TokenStream, String> {
         } else {
             quote!(i64)
         };
-        let type_name = format_ident!("{}", name.replace(|letter: char| !letter.is_ascii_alphanumeric(), ""));
+        let type_name = format_ident!("{}", rust_name(name));
         let constants = names.iter().zip(&values).map(|(member, value)| {
             let constant = format_ident!("{}", screaming(member));
             let literal = proc_macro2::Literal::i64_unsuffixed(*value);
@@ -165,8 +169,6 @@ fn enum_constants(spec: &openapiv3::OpenAPI) -> Result<TokenStream, String> {
     }
     Ok(tokens)
 }
-
-const OPEN_ENUMS: [&str; 1] = ["ProblemCode"];
 
 fn implements(implemented: &syn::ItemImpl, type_name: &str, trait_name: &str) -> bool {
     let self_named = matches!(&*implemented.self_ty, syn::Type::Path(path) if path.path.is_ident(type_name));
@@ -178,7 +180,7 @@ fn implements(implemented: &syn::ItemImpl, type_name: &str, trait_name: &str) ->
     self_named && trait_named
 }
 
-fn without_copy(attribute: &mut syn::Attribute) -> Result<(), String> {
+fn without_derive(attribute: &mut syn::Attribute, name: &str) -> Result<(), String> {
     if !attribute.path().is_ident("derive") {
         return Ok(());
     }
@@ -187,7 +189,7 @@ fn without_copy(attribute: &mut syn::Attribute) -> Result<(), String> {
         .map_err(|e| format!("progenitor emitted a derive list syn cannot read: {e}."))?;
     let kept = derived
         .into_iter()
-        .filter(|path| path.segments.last().is_none_or(|segment| segment.ident != "Copy"));
+        .filter(|path| path.segments.last().is_none_or(|segment| segment.ident != name));
     *attribute = syn::parse_quote!(#[derive(#(#kept),*)]);
     Ok(())
 }
@@ -208,16 +210,26 @@ fn display_unrecognised(implemented: &mut syn::ItemImpl) -> bool {
 fn open_enum(items: &mut [syn::Item], name: &str) -> Result<(), String> {
     let mut opened = false;
     let mut displayed = false;
+    let mut union = false;
     for item in items {
         match item {
             syn::Item::Enum(declared) if declared.ident == name => {
                 for attribute in &mut declared.attrs {
-                    without_copy(attribute)?;
+                    without_derive(attribute, "Copy")?;
                 }
-                declared.variants.push(syn::parse_quote!(
-                    #[serde(untagged)]
-                    Unrecognised(::std::string::String)
-                ));
+                union = declared
+                    .variants
+                    .iter()
+                    .any(|variant| !matches!(variant.fields, syn::Fields::Unit));
+                let fallback = if union {
+                    syn::parse_quote!(Unrecognised(::serde_json::Value))
+                } else {
+                    syn::parse_quote!(
+                        #[serde(untagged)]
+                        Unrecognised(::std::string::String)
+                    )
+                };
+                declared.variants.push(fallback);
                 opened = true;
             }
             syn::Item::Impl(implemented) if implements(implemented, name, "Display") => {
@@ -226,11 +238,11 @@ fn open_enum(items: &mut [syn::Item], name: &str) -> Result<(), String> {
             _ => {}
         }
     }
-    if opened && displayed {
+    if opened && (displayed || union) {
         return Ok(());
     }
     Err(format!(
-        "progenitor emitted no enum {name} with a Display match to open. Fix: crates/xtask OPEN_ENUMS."
+        "progenitor emitted no enum {name} with a Display match to open. Fix: update the enum opening pass."
     ))
 }
 
@@ -246,7 +258,93 @@ fn types_module(file: &mut syn::File) -> Result<&mut Vec<syn::Item>, String> {
 
 fn open_enums(file: &mut syn::File) -> Result<(), String> {
     let types = types_module(file)?;
-    OPEN_ENUMS.iter().try_for_each(|name| open_enum(types, name))
+    let names: Vec<String> = types
+        .iter()
+        .filter_map(|item| match item {
+            syn::Item::Enum(declared) => Some(declared.ident.to_string()),
+            _ => None,
+        })
+        .collect();
+    names.iter().try_for_each(|name| open_enum(types, name))
+}
+
+fn discriminate_enums(file: &mut syn::File, spec: &openapiv3::OpenAPI) -> Result<(), String> {
+    let Some(components) = &spec.components else {
+        return Ok(());
+    };
+    let types = types_module(file)?;
+    let mut implementations = Vec::new();
+    for item in types.iter_mut() {
+        let syn::Item::Enum(declared) = item else {
+            continue;
+        };
+        let name = &declared.ident;
+        let Some((_, openapiv3::ReferenceOr::Item(schema))) = components
+            .schemas
+            .iter()
+            .find(|(component, _)| name == &rust_name(component))
+        else {
+            continue;
+        };
+        let Some(discriminator) = &schema.schema_data.discriminator else {
+            continue;
+        };
+        let tag = &discriminator.property_name;
+        let mut arms = Vec::new();
+        for variant in &declared.variants {
+            let syn::Fields::Unnamed(fields) = &variant.fields else {
+                continue;
+            };
+            let Some(field) = fields.unnamed.first() else {
+                continue;
+            };
+            let syn::Type::Path(payload) = &field.ty else {
+                continue;
+            };
+            let Some(payload_name) = payload.path.segments.last() else {
+                continue;
+            };
+            let member = &variant.ident;
+            for (value, target) in &discriminator.mapping {
+                if target
+                    .rsplit('/')
+                    .next()
+                    .is_none_or(|component| payload_name.ident != rust_name(component))
+                {
+                    continue;
+                }
+                let payload = &field.ty;
+                arms.push(quote! {
+                    Some(#value) => Self::#member(
+                        ::serde_json::from_value::<#payload>(value.clone())
+                            .map_err(::serde::de::Error::custom)?
+                    )
+                });
+            }
+        }
+        if arms.is_empty() {
+            return Err(format!(
+                "{name} has a discriminator but no generated variants match it."
+            ));
+        }
+        for attribute in &mut declared.attrs {
+            without_derive(attribute, "Deserialize")?;
+        }
+        implementations.push(syn::parse_quote! {
+            impl<'de> ::serde::Deserialize<'de> for #name {
+                fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+                where D: ::serde::Deserializer<'de> {
+                    let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
+                    Ok(match value.get(#tag).and_then(::serde_json::Value::as_str) {
+                        #(#arms,)*
+                        _ => Self::Unrecognised(value),
+                    })
+                }
+            }
+        });
+    }
+    types.extend(implementations);
+    Ok(())
 }
 
 const PATH_NEWTYPES: [&str; 1] = ["PathText"];
@@ -386,7 +484,10 @@ fn generate_file(spec: &openapiv3::OpenAPI) -> Result<syn::File, String> {
         .map_err(|e| format!("progenitor rejected openapi.json: {e}. Fix: adjust typespec/main.tsp."))?;
     let mut tokens = line_docs(tokens);
     tokens.extend(enum_constants(spec)?);
-    syn::parse2(tokens).map_err(|e| format!("progenitor emitted invalid Rust: {e}."))
+    let mut file = syn::parse2(tokens).map_err(|e| format!("progenitor emitted invalid Rust: {e}."))?;
+    open_enums(&mut file)?;
+    discriminate_enums(&mut file, spec)?;
+    Ok(file)
 }
 
 fn write_file(output: &Path, file: &syn::File) -> Result<(), String> {
@@ -458,7 +559,6 @@ fn generate_frozen(root: &Path) -> Result<(), String> {
 fn generate_api(root: &Path) -> Result<(), String> {
     let spec = read_spec(root)?;
     let mut file = generate_file(&spec)?;
-    open_enums(&mut file)?;
     string_newtypes(types_module(&mut file)?)?;
     let output = root.join(OUTPUT);
     fs::create_dir_all(&output).map_err(|e| format!("creating {}: {e}.", output.display()))?;
@@ -474,22 +574,7 @@ fn types_only(mut file: syn::File) -> Result<syn::File, String> {
             }
             _ => false,
         });
-    let types = file
-        .items
-        .iter_mut()
-        .find_map(|item| match item {
-            syn::Item::Mod(module) => module.content.as_mut().map(|(_, items)| items),
-            _ => None,
-        })
-        .ok_or("progenitor emitted no types module.")?;
-    for name in OPEN_ENUMS {
-        let declared = types
-            .iter()
-            .any(|item| matches!(item, syn::Item::Enum(declared) if declared.ident == name));
-        if declared {
-            open_enum(types, name)?;
-        }
-    }
+    let types = types_module(&mut file)?;
     string_newtypes(types)?;
     Ok(file)
 }
