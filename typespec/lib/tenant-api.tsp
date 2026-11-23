@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 27;
+const TenantApiVersion = 28;
 
 namespace TenantApi {
 
@@ -923,8 +923,6 @@ model TranscriptCursorInput {
   sessionId: EntityId;
   after: int64;
   turnId: EntityId | null;
-  limit: int32;
-  maxBytes?: int64;
 }
 
 model HostHelloInput {
@@ -991,18 +989,10 @@ model PrepareOfferInput {
   now: int64;
 }
 
-model HostHealthInput {
-  tenantId: EntityId;
-  hostId: EntityId;
-  health: HostHealth;
-  detail: Detail;
-  now: int64;
-}
-
 model HostMessageInput {
   tenantId: EntityId;
   hostId: EntityId;
-  message: Channel.TurnImageFetching | Channel.TurnClaim | Channel.TurnRepositoryReady | Channel.TurnLine | Channel.TurnLines | Channel.TurnComplete | Channel.TurnRepositoryCloneFailed | Channel.TurnFailed | Channel.SnapshotChunks | Channel.SnapshotPacks | Channel.RestoreChunks | Channel.SnapshotDone | Channel.SnapshotFailed | Channel.BoxGone | Channel.BoxTeardownFailed | Channel.ClaudeSetupBoxUrl | Channel.ClaudeSetupBoxFailed;
+  message: Channel.TurnImageFetching | Channel.TurnClaim | Channel.TurnRepositoryReady | Channel.TurnLines | Channel.TurnComplete | Channel.TurnRepositoryCloneFailed | Channel.TurnFailed | Channel.SnapshotChunks | Channel.SnapshotPacks | Channel.RestoreChunks | Channel.SnapshotDone | Channel.SnapshotFailed | Channel.BoxGone | Channel.BoxTeardownFailed | Channel.ClaudeSetupBoxUrl | Channel.ClaudeSetupBoxFailed;
 }
 
 model TurnDeadline {
@@ -1691,12 +1681,6 @@ model PrepareOfferRequest {
   input: PrepareOfferInput;
 }
 
-model HostHealthRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "hostHealth";
-  input: HostHealthInput;
-}
-
 model HostMessageRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "hostMessage";
@@ -1822,7 +1806,6 @@ union TenantRequest {
   deferredOffers: DeferredOffersRequest,
   turnMetricDimensions: TurnMetricDimensionsRequest,
   prepareOffer: PrepareOfferRequest,
-  hostHealth: HostHealthRequest,
   hostMessage: HostMessageRequest,
   deadlineReached: DeadlineReachedRequest,
 }
@@ -2254,7 +2237,7 @@ model UnplaceableNotOnline {
   reason: "NotOnline";
 }
 
-@doc("The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again.")
+@doc("The host reports itself rate limited, so it takes no new work until it reports Healthy again.")
 model UnplaceableNotHealthy {
   kind: "Unplaceable";
   host: HostRecord;
@@ -2881,13 +2864,13 @@ model TranscriptChunk {
   range: ByteRange;
 }
 
+@doc("No stored chunk holds a line after the cursor yet.")
 model TranscriptLines {
   kind: "Lines";
   sessionState: SessionState;
   harness: Harness;
   lastLineSeq: int64;
   inFlight: boolean;
-  @maxItems(10000) lines: TranscriptLine[];
 }
 
 model TranscriptCursorResult {
@@ -2960,8 +2943,6 @@ model OfferWithdrawn {
 model PrepareOfferResult {
   prepared: OfferReady | OfferWithdrawn;
 }
-
-model HostHealthResult {}
 
 model HostFrameRefused {
   type: "Refused";
