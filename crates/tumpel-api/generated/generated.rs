@@ -572,7 +572,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///The control plane's answer to a host frame on version 37, sent once the frame's effect is stored.
+    ///The control plane's answer to a host frame, sent once the frame's effect is stored.
     ///It travels outside frames, as Heartbeat does. The host drops its unacked frames up to `seq`. The
     ///control plane answers a resent frame it already applied with Ack again, and a frame that fails a
     ///check on its content with FrameRefused, which lets the host drop it as well. When the control
@@ -1994,10 +1994,8 @@ pub mod types {
         }
     }
     ///The control plane's answer to a host frame past the tenant's per-host frame limit. It travels
-    ///outside frames, as Heartbeat does. On version 36 and below the control plane counts that `seq`
-    ///as received and records nothing for it, so the host drops the frame from its unacked frames and
-    ///never resends it. On version 37 it counts and records nothing, and answers every later frame on
-    ///the connection the same way until `retryAfter`; the host keeps those frames and resends them in
+    ///outside frames, as Heartbeat does. The control plane counts and records nothing for that `seq`,
+    ///and answers every later frame on the connection the same way until `retryAfter`; the host keeps those frames and resends them in
     ///order from `retryAfter`, so no output is lost. A frame that arrives past a gap after
     ///`retryAfter` closes the connection, and the next Hello resends from the oldest unacked frame.
     ///`framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs
@@ -2641,8 +2639,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelHostHeartbeat {
         ///The highest control plane `seq` the host has received with no gap before it, as a frame's
-        ///`ack`; the control plane drops its unacked frames up to it. A Heartbeat of version 36 or below
-        ///carries none.
+        ///`ack`; the control plane drops its unacked frames up to it.
         pub ack: Sequence,
         ///The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -2662,10 +2659,11 @@ pub mod types {
         #[serde(rename = "sentAt")]
         pub sent_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///The metric points the host gathered since its previous Heartbeat, including each turn's image
-        ///fetch and first output durations. The control plane writes them as it writes a TelemetryBatch.
-        ///A Heartbeat is never resent, so no point is counted twice, and a Heartbeat lost with its
-        ///connection loses its points. A Heartbeat of version 36 or below carries none, and the host sends
-        ///TelemetryBatch frames instead.
+        ///fetch and first output durations. The control plane overwrites each point's `hostId` dimension
+        ///with the host that signed the connection, drops a turn.cost point whose costBasis is
+        ///NotReported, and writes the rest to the tenant's metrics store; a batch the store refuses is
+        ///logged as TelemetryRejected. A Heartbeat is never resent, so no point is counted twice, and a
+        ///Heartbeat lost with its connection loses its points.
         pub telemetry: MetricBatch,
         #[serde(rename = "type")]
         pub type_: ChannelHostHeartbeatType,
@@ -2711,7 +2709,6 @@ pub mod types {
         TurnImageFetching(ChannelTurnImageFetching),
         TurnClaim(ChannelTurnClaim),
         TurnRepositoryReady(ChannelTurnRepositoryReady),
-        TurnLine(ChannelTurnLine),
         TurnLines(ChannelTurnLines),
         TurnComplete(ChannelTurnComplete),
         TurnRepositoryCloneFailed(ChannelTurnRepositoryCloneFailed),
@@ -2727,7 +2724,6 @@ pub mod types {
         ClaudeSetupBoxFailed(ChannelClaudeSetupBoxFailed),
         SupervisorUpdateStep(ChannelSupervisorUpdateStep),
         SupervisorUpdateFailed(ChannelSupervisorUpdateFailed),
-        TelemetryBatch(ChannelTelemetryBatch),
     }
     impl ::std::convert::From<ChannelTurnImageFetching> for ChannelHostMessage {
         fn from(value: ChannelTurnImageFetching) -> Self {
@@ -2742,11 +2738,6 @@ pub mod types {
     impl ::std::convert::From<ChannelTurnRepositoryReady> for ChannelHostMessage {
         fn from(value: ChannelTurnRepositoryReady) -> Self {
             Self::TurnRepositoryReady(value)
-        }
-    }
-    impl ::std::convert::From<ChannelTurnLine> for ChannelHostMessage {
-        fn from(value: ChannelTurnLine) -> Self {
-            Self::TurnLine(value)
         }
     }
     impl ::std::convert::From<ChannelTurnLines> for ChannelHostMessage {
@@ -2822,11 +2813,6 @@ pub mod types {
     impl ::std::convert::From<ChannelSupervisorUpdateFailed> for ChannelHostMessage {
         fn from(value: ChannelSupervisorUpdateFailed) -> Self {
             Self::SupervisorUpdateFailed(value)
-        }
-    }
-    impl ::std::convert::From<ChannelTelemetryBatch> for ChannelHostMessage {
-        fn from(value: ChannelTelemetryBatch) -> Self {
-            Self::TelemetryBatch(value)
         }
     }
     ///The layered boot of the turn, offered when the current release carries a base image for the
@@ -2917,11 +2903,7 @@ pub mod types {
     }
     ///A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
     ///the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-    ///connection that speaks another with UnsupportedVersion. Version 34 lacks `heldTurnIds` on Hello
-    ///and Heartbeat and the TurnFailureReason members HostDropped and HostRevoked; version 35 lacks
-    ///HostRevoked. A speaker of 36 downgrades to 34 or 35 by sending that version's shape: it leaves
-    ///out the fields the version lacks and never sends a member it lacks. No host sends HostDropped or
-    ///HostRevoked, since the control plane records both, so the reason needs no mapping on the wire.
+    ///connection that speaks another with UnsupportedVersion.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(transparent)]
     pub struct ChannelProtocol(pub i32);
@@ -3186,14 +3168,11 @@ pub mod types {
     ///Challenge, Hello, Welcome, Heartbeat and Ack belong to one connection and travel outside frames,
     ///with no `seq`. Each side ignores fields it does not know.
     ///
-    ///On version 37 the control plane keeps no count of host frames: Hello names the host's oldest
-    ///unacked frame in `resendFrom`, the control plane applies the host's frames one at a time in
-    ///`seq` order, stores each frame's effect, and only then answers Ack with its `seq`. The host
-    ///acks control frames in every Heartbeat as well as in its frames. On version 37 the `ack` of a
-    ///control frame is the connection's cursor, the last host `seq` whose effect is stored, never the
-    ///highest `seq` received. On version 36 and below the
-    ///control plane keeps its count of host frames in durable storage and acks them in Welcome and in
-    ///its own frames.
+    ///The control plane keeps no count of host frames: Hello names the host's oldest unacked frame in
+    ///`resendFrom`, the control plane applies the host's frames one at a time in `seq` order, stores
+    ///each frame's effect, and only then answers Ack with its `seq`. The host acks control frames in
+    ///every Heartbeat as well as in its frames. The `ack` of a control frame is the connection's
+    ///cursor, the last host `seq` whose effect is stored, never the highest `seq` received.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelSequenced {
         pub ack: Sequence,
@@ -3816,55 +3795,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///Metric points the supervisor collected at its lifecycle edges and from its host sampler, sent
-    ///while the channel is Welcomed. The control plane overwrites each point's `hostId` dimension with
-    ///the host that signed the connection, stamps each turn.cost and turn.tokens point with the
-    ///personaId, secretSetId, provider and costBasis of the turn as it offered it, drops a turn.cost
-    ///point whose costBasis is NotReported, and writes the batch to the tenant's metrics store. A batch
-    ///the store refuses is logged as TelemetryRejected and still acked. The control plane refuses this
-    ///message on a connection that speaks a protocol version below 19, and on version 37, where the
-    ///points ride on the host's Heartbeat.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct ChannelTelemetryBatch {
-        pub instruments: ::std::vec::Vec<MetricInstrument>,
-        pub samples: ::std::vec::Vec<SamplePoint>,
-        pub turns: ::std::vec::Vec<TurnPoint>,
-        #[serde(rename = "type")]
-        pub type_: ChannelTelemetryBatchType,
-    }
-    ///`ChannelTelemetryBatchType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum ChannelTelemetryBatchType {
-        TelemetryBatch,
-    }
-    impl ::std::fmt::Display for ChannelTelemetryBatchType {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::TelemetryBatch => f.write_str("TelemetryBatch"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ChannelTelemetryBatchType {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "TelemetryBatch" => Ok(Self::TelemetryBatch),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ChannelTelemetryBatchType {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ChannelTelemetryBatchType {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///Asks the host to end turn `turnId` at once, which the control plane already failed Cancelled. The
     ///host ends the harness and answers TurnFailed Cancelled with the turn's credential file, and the
     ///control plane keeps the reason and detail it recorded. The box is then a box after any turn, and the
@@ -4349,56 +4279,12 @@ pub mod types {
             value.parse()
         }
     }
-    ///One harness-native JSONL line. `lineSeq` continues the session's line count, so lines of a turn arrive in `lineSeq` order with no gap. The control plane refuses it on version 37, where TurnLines replaces it.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct ChannelTurnLine {
-        #[serde(rename = "lineSeq")]
-        pub line_seq: Sequence,
-        pub text: LongText,
-        #[serde(rename = "turnId")]
-        pub turn_id: EntityId,
-        #[serde(rename = "type")]
-        pub type_: ChannelTurnLineType,
-    }
-    ///`ChannelTurnLineType`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum ChannelTurnLineType {
-        TurnLine,
-    }
-    impl ::std::fmt::Display for ChannelTurnLineType {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::TurnLine => f.write_str("TurnLine"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for ChannelTurnLineType {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "TurnLine" => Ok(Self::TurnLine),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for ChannelTurnLineType {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for ChannelTurnLineType {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///Consecutive harness-native JSONL lines of one turn: the first has `lineSeq` `firstLineSeq` and
     ///each next one the next `lineSeq`, continuing the session's line count. The supervisor sends one
     ///at 200 lines, 256 KB of text, or 2 seconds after its first line, whichever comes first. The
     ///control plane stores the lines before it acks the frame. A frame whose lines the turn already
     ///holds is a duplicate it acks again, and a frame that starts past the turn's last stored line fails
-    ///the turn TranscriptGap. A connection on version 36 or below sends TurnLine instead.
+    ///the turn TranscriptGap.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelTurnLines {
         #[serde(rename = "firstLineSeq")]
@@ -4807,16 +4693,11 @@ pub mod types {
             value.parse()
         }
     }
-    ///The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the
-    ///highest host `seq` the control plane has received with no gap before it. The host drops its
-    ///unacked frames at or below it before it resends, so a frame the control plane took on an earlier
-    ///connection is never counted as undelivered. A control plane that leaves it out acks only with its
-    ///next frame. On version 37 the control plane leaves it out: the host resends from its
-    ///`resendFrom`, and the control plane answers each resent frame it already applied with Ack again.
+    ///The control plane accepts the host. Both sides then resend their unacked frames: the host from
+    ///its `resendFrom`, and the control plane answers each resent frame it already applied with Ack
+    ///again.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ChannelWelcome {
-        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub ack: ::std::option::Option<Sequence>,
         #[serde(rename = "hostId")]
         pub host_id: EntityId,
         #[serde(rename = "protocolVersion")]
@@ -12331,15 +12212,11 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum HostHealth {
         Healthy,
-        RateLimited,
-        Unhealthy,
     }
     impl ::std::fmt::Display for HostHealth {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Healthy => f.write_str("Healthy"),
-                Self::RateLimited => f.write_str("RateLimited"),
-                Self::Unhealthy => f.write_str("Unhealthy"),
             }
         }
     }
@@ -12348,8 +12225,6 @@ pub mod types {
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
                 "Healthy" => Ok(Self::Healthy),
-                "RateLimited" => Ok(Self::RateLimited),
-                "Unhealthy" => Ok(Self::Unhealthy),
                 _ => Err("invalid value".into()),
             }
         }
@@ -12361,54 +12236,6 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for HostHealth {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`HostHealthChangedEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct HostHealthChangedEvent {
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        pub detail: Detail,
-        pub event: HostHealthChangedEventEvent,
-        #[serde(rename = "eventId")]
-        pub event_id: Sequence,
-        pub health: HostHealth,
-        #[serde(rename = "hostId")]
-        pub host_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`HostHealthChangedEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum HostHealthChangedEventEvent {
-        HostHealthChanged,
-    }
-    impl ::std::fmt::Display for HostHealthChangedEventEvent {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::HostHealthChanged => f.write_str("HostHealthChanged"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for HostHealthChangedEventEvent {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "HostHealthChanged" => Ok(Self::HostHealthChanged),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for HostHealthChangedEventEvent {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for HostHealthChangedEventEvent {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -12754,8 +12581,7 @@ pub mod types {
     ///admits a box only while its disk fits the budget beside the held ones. `memoryBudgetMib` is the memory the host gives boxes: MemTotal
     ///less the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it
     ///holds. A host admits a box only while its memory fits the budget beside the held ones, whatever
-    ///their count. Version 36 and below carry `boxesWarm`, the paused boxes the host holds, and may
-    ///leave out the four budgets; the control plane decodes them with the version 36 shape.
+    ///their count.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct HostUsage {
         #[serde(rename = "diskBudgetMib")]
@@ -30471,79 +30297,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiHostHealthInput`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiHostHealthInput {
-        pub detail: Detail,
-        pub health: HostHealth,
-        #[serde(rename = "hostId")]
-        pub host_id: EntityId,
-        pub now: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`TenantApiHostHealthRequest`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiHostHealthRequest {
-        pub input: TenantApiHostHealthInput,
-        pub operation: TenantApiHostHealthRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiHostHealthRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiHostHealthRequestOperation {
-        #[serde(rename = "hostHealth")]
-        HostHealth,
-    }
-    impl ::std::fmt::Display for TenantApiHostHealthRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::HostHealth => f.write_str("hostHealth"),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiHostHealthRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "hostHealth" => Ok(Self::HostHealth),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiHostHealthRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiHostHealthRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiHostHealthResult`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(transparent)]
-    pub struct TenantApiHostHealthResult(pub ::serde_json::Map<::std::string::String, ::serde_json::Value>);
-    impl ::std::ops::Deref for TenantApiHostHealthResult {
-        type Target = ::serde_json::Map<::std::string::String, ::serde_json::Value>;
-        fn deref(&self) -> &::serde_json::Map<::std::string::String, ::serde_json::Value> {
-            &self.0
-        }
-    }
-    impl ::std::convert::From<TenantApiHostHealthResult> for ::serde_json::Map<::std::string::String, ::serde_json::Value> {
-        fn from(value: TenantApiHostHealthResult) -> Self {
-            value.0
-        }
-    }
-    impl ::std::convert::From<::serde_json::Map<::std::string::String, ::serde_json::Value>> for TenantApiHostHealthResult {
-        fn from(value: ::serde_json::Map<::std::string::String, ::serde_json::Value>) -> Self {
-            Self(value)
-        }
-    }
     ///One host Heartbeat: the tenant stores the report and reconciles the turns, sessions and Claude setups of the host against the held lists in one write.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiHostHeartbeatInput {
@@ -30726,7 +30479,6 @@ pub mod types {
         TurnImageFetching(ChannelTurnImageFetching),
         TurnClaim(ChannelTurnClaim),
         TurnRepositoryReady(ChannelTurnRepositoryReady),
-        TurnLine(ChannelTurnLine),
         TurnLines(ChannelTurnLines),
         TurnComplete(ChannelTurnComplete),
         TurnRepositoryCloneFailed(ChannelTurnRepositoryCloneFailed),
@@ -30754,11 +30506,6 @@ pub mod types {
     impl ::std::convert::From<ChannelTurnRepositoryReady> for TenantApiHostMessageInputMessage {
         fn from(value: ChannelTurnRepositoryReady) -> Self {
             Self::TurnRepositoryReady(value)
-        }
-    }
-    impl ::std::convert::From<ChannelTurnLine> for TenantApiHostMessageInputMessage {
-        fn from(value: ChannelTurnLine) -> Self {
-            Self::TurnLine(value)
         }
     }
     impl ::std::convert::From<ChannelTurnLines> for TenantApiHostMessageInputMessage {
@@ -38690,7 +38437,6 @@ pub mod types {
         DeferredOffersRequest(TenantApiDeferredOffersRequest),
         TurnMetricDimensionsRequest(TenantApiTurnMetricDimensionsRequest),
         PrepareOfferRequest(TenantApiPrepareOfferRequest),
-        HostHealthRequest(TenantApiHostHealthRequest),
         HostMessageRequest(TenantApiHostMessageRequest),
         DeadlineReachedRequest(TenantApiDeadlineReachedRequest),
     }
@@ -39244,11 +38990,6 @@ pub mod types {
             Self::PrepareOfferRequest(value)
         }
     }
-    impl ::std::convert::From<TenantApiHostHealthRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiHostHealthRequest) -> Self {
-            Self::HostHealthRequest(value)
-        }
-    }
     impl ::std::convert::From<TenantApiHostMessageRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiHostMessageRequest) -> Self {
             Self::HostMessageRequest(value)
@@ -39351,9 +39092,6 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTranscriptCursorInput {
         pub after: i64,
-        pub limit: i32,
-        #[serde(rename = "maxBytes", skip_serializing_if = "::std::option::Option::is_none")]
-        pub max_bytes: ::std::option::Option<i64>,
         #[serde(rename = "sessionId")]
         pub session_id: EntityId,
         #[serde(rename = "tenantId")]
@@ -39416,7 +39154,7 @@ pub mod types {
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
         pub subtype_1: ::std::option::Option<TenantApiTranscriptLines>,
     }
-    ///`TenantApiTranscriptLines`
+    ///No stored chunk holds a line after the cursor yet.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTranscriptLines {
         pub harness: Harness,
@@ -39425,7 +39163,6 @@ pub mod types {
         pub kind: TenantApiTranscriptLinesKind,
         #[serde(rename = "lastLineSeq")]
         pub last_line_seq: i64,
-        pub lines: ::std::vec::Vec<TranscriptLine>,
         #[serde(rename = "sessionState")]
         pub session_state: SessionState,
     }
@@ -41046,7 +40783,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///The host passed its frame limit, or reports itself rate limited, so it takes no new work until it is Healthy again.
+    ///The host reports itself rate limited, so it takes no new work until it reports Healthy again.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiUnplaceableNotHealthy {
         pub host: TenantApiHostRecord,
@@ -41739,7 +41476,6 @@ pub mod types {
         SessionArchivedEvent(SessionArchivedEvent),
         HostOnlineEvent(HostOnlineEvent),
         HostOfflineEvent(HostOfflineEvent),
-        HostHealthChangedEvent(HostHealthChangedEvent),
         PrebuildDoneEvent(PrebuildDoneEvent),
         PrebuildFailedEvent(PrebuildFailedEvent),
         SubscriptionPausedEvent(SubscriptionPausedEvent),
@@ -41791,11 +41527,6 @@ pub mod types {
     impl ::std::convert::From<HostOfflineEvent> for TenantEvent {
         fn from(value: HostOfflineEvent) -> Self {
             Self::HostOfflineEvent(value)
-        }
-    }
-    impl ::std::convert::From<HostHealthChangedEvent> for TenantEvent {
-        fn from(value: HostHealthChangedEvent) -> Self {
-            Self::HostHealthChangedEvent(value)
         }
     }
     impl ::std::convert::From<PrebuildDoneEvent> for TenantEvent {
@@ -41856,7 +41587,6 @@ pub mod types {
         SessionArchived,
         HostOnline,
         HostOffline,
-        HostHealthChanged,
         PrebuildDone,
         PrebuildFailed,
         SubscriptionPaused,
@@ -41877,7 +41607,6 @@ pub mod types {
                 Self::SessionArchived => f.write_str("SessionArchived"),
                 Self::HostOnline => f.write_str("HostOnline"),
                 Self::HostOffline => f.write_str("HostOffline"),
-                Self::HostHealthChanged => f.write_str("HostHealthChanged"),
                 Self::PrebuildDone => f.write_str("PrebuildDone"),
                 Self::PrebuildFailed => f.write_str("PrebuildFailed"),
                 Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
@@ -41901,7 +41630,6 @@ pub mod types {
                 "SessionArchived" => Ok(Self::SessionArchived),
                 "HostOnline" => Ok(Self::HostOnline),
                 "HostOffline" => Ok(Self::HostOffline),
-                "HostHealthChanged" => Ok(Self::HostHealthChanged),
                 "PrebuildDone" => Ok(Self::PrebuildDone),
                 "PrebuildFailed" => Ok(Self::PrebuildFailed),
                 "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
@@ -46314,56 +46042,6 @@ impl Client {
             .build()?;
         let info = OperationInfo {
             operation_id: "hosts_patch_labels",
-        };
-        self.pre(&mut request, &info).await?;
-        let result = self.exec(request, &info).await;
-        self.post(&result, &info).await?;
-        let response = result?;
-        match response.status().as_u16() {
-            200u16 => ResponseValue::from_response(response).await,
-            400u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            401u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            403u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            404u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            409u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            410u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            413u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            422u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            429u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            503u16 => Err(Error::ErrorResponse(ResponseValue::from_response(response).await?)),
-            _ => Err(Error::UnexpectedResponse(response)),
-        }
-    }
-    ///Restores an Unhealthy or RateLimited host to Healthy, so it gets offers again.
-    ///
-    ///Sends a `POST` request to `/v1/hosts/{hostId}/restore-health`
-    ///
-    pub async fn hosts_restore_health<'a>(
-        &'a self,
-        host_id: &'a types::EntityId,
-    ) -> Result<ResponseValue<types::Host>, Error<types::Problem>> {
-        let url = format!(
-            "{}/v1/hosts/{}/restore-health",
-            self.baseurl,
-            encode_path(&host_id.to_string()),
-        );
-        let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
-        header_map.append(
-            ::reqwest::header::HeaderName::from_static("api-version"),
-            ::reqwest::header::HeaderValue::from_static(Self::api_version()),
-        );
-        #[allow(unused_mut)]
-        let mut request = self
-            .client
-            .post(url)
-            .header(
-                ::reqwest::header::ACCEPT,
-                ::reqwest::header::HeaderValue::from_static("application/json"),
-            )
-            .headers(header_map)
-            .build()?;
-        let info = OperationInfo {
-            operation_id: "hosts_restore_health",
         };
         self.pre(&mut request, &info).await?;
         let result = self.exec(request, &info).await;
@@ -51383,8 +51061,8 @@ impl types::ChannelCloseCode {
     pub const UNSUPPORTED_VERSION: u16 = 4426;
 }
 impl types::ChannelProtocol {
-    pub const OLDEST: u16 = 35;
-    pub const VERSION: u16 = 37;
+    pub const OLDEST: u16 = 37;
+    pub const VERSION: u16 = 38;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
@@ -51399,5 +51077,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 28;
+    pub const VERSION: u16 = 29;
 }

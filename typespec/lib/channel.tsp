@@ -30,14 +30,11 @@ enum CloseCode {
   Challenge, Hello, Welcome, Heartbeat and Ack belong to one connection and travel outside frames,
   with no `seq`. Each side ignores fields it does not know.
 
-  On version 37 the control plane keeps no count of host frames: Hello names the host's oldest
-  unacked frame in `resendFrom`, the control plane applies the host's frames one at a time in
-  `seq` order, stores each frame's effect, and only then answers Ack with its `seq`. The host
-  acks control frames in every Heartbeat as well as in its frames. On version 37 the `ack` of a
-  control frame is the connection's cursor, the last host `seq` whose effect is stored, never the
-  highest `seq` received. On version 36 and below the
-  control plane keeps its count of host frames in durable storage and acks them in Welcome and in
-  its own frames.
+  The control plane keeps no count of host frames: Hello names the host's oldest unacked frame in
+  `resendFrom`, the control plane applies the host's frames one at a time in `seq` order, stores
+  each frame's effect, and only then answers Ack with its `seq`. The host acks control frames in
+  every Heartbeat as well as in its frames. The `ack` of a control frame is the connection's
+  cursor, the last host `seq` whose effect is stored, never the highest `seq` received.
   """)
 model Sequenced {
   seq: Sequence;
@@ -84,26 +81,21 @@ model Hello {
 
   @doc("""
     The `seq` of the oldest frame the host holds unacked, or its next `seq` when it holds none. The
-    control plane takes every host frame below it as applied and expects this one next. A Hello of
-    version 36 or below carries none.
+    control plane takes every host frame below it as applied and expects this one next.
     """)
   @minValue(1)
   resendFrom: Sequence;
 }
 
 @doc("""
-  The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the
-  highest host `seq` the control plane has received with no gap before it. The host drops its
-  unacked frames at or below it before it resends, so a frame the control plane took on an earlier
-  connection is never counted as undelivered. A control plane that leaves it out acks only with its
-  next frame. On version 37 the control plane leaves it out: the host resends from its
-  `resendFrom`, and the control plane answers each resent frame it already applied with Ack again.
+  The control plane accepts the host. Both sides then resend their unacked frames: the host from
+  its `resendFrom`, and the control plane answers each resent frame it already applied with Ack
+  again.
   """)
 model Welcome {
   type: "Welcome";
   hostId: EntityId;
   @minValue(1) protocolVersion: int32;
-  ack?: Sequence;
 }
 
 @doc("""
@@ -145,10 +137,8 @@ model FrameRefused {
 
 @doc("""
   The control plane's answer to a host frame past the tenant's per-host frame limit. It travels
-  outside frames, as Heartbeat does. On version 36 and below the control plane counts that `seq`
-  as received and records nothing for it, so the host drops the frame from its unacked frames and
-  never resends it. On version 37 it counts and records nothing, and answers every later frame on
-  the connection the same way until `retryAfter`; the host keeps those frames and resends them in
+  outside frames, as Heartbeat does. The control plane counts and records nothing for that `seq`,
+  and answers every later frame on the connection the same way until `retryAfter`; the host keeps those frames and resends them in
   order from `retryAfter`, so no output is lost. A frame that arrives past a gap after
   `retryAfter` closes the connection, and the next Hello resends from the oldest unacked frame.
   `framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs
@@ -164,7 +154,7 @@ model FrameRateLimited {
 }
 
 @doc("""
-  The control plane's answer to a host frame on version 37, sent once the frame's effect is stored.
+  The control plane's answer to a host frame, sent once the frame's effect is stored.
   It travels outside frames, as Heartbeat does. The host drops its unacked frames up to `seq`. The
   control plane answers a resent frame it already applied with Ack again, and a frame that fails a
   check on its content with FrameRefused, which lets the host drop it as well. When the control
@@ -222,17 +212,17 @@ model HostHeartbeat {
 
   @doc("""
     The highest control plane `seq` the host has received with no gap before it, as a frame's
-    `ack`; the control plane drops its unacked frames up to it. A Heartbeat of version 36 or below
-    carries none.
+    `ack`; the control plane drops its unacked frames up to it.
     """)
   ack: Sequence;
 
   @doc("""
     The metric points the host gathered since its previous Heartbeat, including each turn's image
-    fetch and first output durations. The control plane writes them as it writes a TelemetryBatch.
-    A Heartbeat is never resent, so no point is counted twice, and a Heartbeat lost with its
-    connection loses its points. A Heartbeat of version 36 or below carries none, and the host sends
-    TelemetryBatch frames instead.
+    fetch and first output durations. The control plane overwrites each point's `hostId` dimension
+    with the host that signed the connection, drops a turn.cost point whose costBasis is
+    NotReported, and writes the rest to the tenant's metrics store; a batch the store refuses is
+    logged as TelemetryRejected. A Heartbeat is never resent, so no point is counted twice, and a
+    Heartbeat lost with its connection loses its points.
     """)
   telemetry: MetricBatch;
 }
@@ -513,21 +503,13 @@ model TurnRepositoryReady {
   turnId: EntityId;
 }
 
-@doc("One harness-native JSONL line. `lineSeq` continues the session's line count, so lines of a turn arrive in `lineSeq` order with no gap. The control plane refuses it on version 37, where TurnLines replaces it.")
-model TurnLine {
-  type: "TurnLine";
-  turnId: EntityId;
-  lineSeq: Sequence;
-  text: LongText;
-}
-
 @doc("""
   Consecutive harness-native JSONL lines of one turn: the first has `lineSeq` `firstLineSeq` and
   each next one the next `lineSeq`, continuing the session's line count. The supervisor sends one
   at 200 lines, 256 KB of text, or 2 seconds after its first line, whichever comes first. The
   control plane stores the lines before it acks the frame. A frame whose lines the turn already
   holds is a duplicate it acks again, and a frame that starts past the turn's last stored line fails
-  the turn TranscriptGap. A connection on version 36 or below sends TurnLine instead.
+  the turn TranscriptGap.
   """)
 model TurnLines {
   type: "TurnLines";
@@ -893,27 +875,11 @@ model SupervisorUpdateFailed {
   ...SupervisorUpdateFailureReport;
 }
 
-@doc("""
-  Metric points the supervisor collected at its lifecycle edges and from its host sampler, sent
-  while the channel is Welcomed. The control plane overwrites each point's `hostId` dimension with
-  the host that signed the connection, stamps each turn.cost and turn.tokens point with the
-  personaId, secretSetId, provider and costBasis of the turn as it offered it, drops a turn.cost
-  point whose costBasis is NotReported, and writes the batch to the tenant's metrics store. A batch
-  the store refuses is logged as TelemetryRejected and still acked. The control plane refuses this
-  message on a connection that speaks a protocol version below 19, and on version 37, where the
-  points ride on the host's Heartbeat.
-  """)
-model TelemetryBatch {
-  type: "TelemetryBatch";
-  ...MetricBatch;
-}
-
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "type" })
 union HostMessage {
   TurnImageFetching: TurnImageFetching,
   TurnClaim: TurnClaim,
   TurnRepositoryReady: TurnRepositoryReady,
-  TurnLine: TurnLine,
   TurnLines: TurnLines,
   TurnComplete: TurnComplete,
   TurnRepositoryCloneFailed: TurnRepositoryCloneFailed,
@@ -929,7 +895,6 @@ union HostMessage {
   ClaudeSetupBoxFailed: ClaudeSetupBoxFailed,
   SupervisorUpdateStep: SupervisorUpdateStep,
   SupervisorUpdateFailed: SupervisorUpdateFailed,
-  TelemetryBatch: TelemetryBatch,
 }
 
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "type" })

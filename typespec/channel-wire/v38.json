@@ -1,5 +1,5 @@
 {
-  "channelProtocolVersion": 36,
+  "channelProtocolVersion": 38,
   "schemas": {
     "BoxRetention": {
       "type": "string",
@@ -9,6 +9,25 @@
         "Auto"
       ],
       "description": "What happens to a session's box after each of its turns, whatever the turn's outcome. A snapshot follows every turn in each mode."
+    },
+    "Channel.Ack": {
+      "type": "object",
+      "required": [
+        "type",
+        "seq"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Ack"
+          ]
+        },
+        "seq": {
+          "$ref": "#/components/schemas/Sequence"
+        }
+      },
+      "description": "The control plane's answer to a host frame, sent once the frame's effect is stored.\nIt travels outside frames, as Heartbeat does. The host drops its unacked frames up to `seq`. The\ncontrol plane answers a resent frame it already applied with Ack again, and a frame that fails a\ncheck on its content with FrameRefused, which lets the host drop it as well. When the control\nplane cannot store a frame's effect it closes the connection, and the host resends the frame\nafter its next Hello."
     },
     "Channel.BaseImageDownload": {
       "type": "object",
@@ -456,6 +475,9 @@
           "$ref": "#/components/schemas/Channel.FrameRateLimited"
         },
         {
+          "$ref": "#/components/schemas/Channel.Ack"
+        },
+        {
           "$ref": "#/components/schemas/Channel.ControlFrame"
         }
       ],
@@ -468,10 +490,11 @@
           "ReleasePublished": "#/components/schemas/Channel.ReleasePublished",
           "FrameRefused": "#/components/schemas/Channel.FrameRefused",
           "FrameRateLimited": "#/components/schemas/Channel.FrameRateLimited",
+          "Ack": "#/components/schemas/Channel.Ack",
           "Frame": "#/components/schemas/Channel.ControlFrame"
         }
       },
-      "description": "Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, or a sequenced frame."
+      "description": "Everything the control plane sends on a connection: Challenge, Welcome, Heartbeat, ReleasePublished, FrameRefused, FrameRateLimited, Ack, or a sequenced frame."
     },
     "Channel.ControlFrame": {
       "type": "object",
@@ -725,7 +748,7 @@
           "format": "date-time"
         }
       },
-      "description": "The control plane's answer to a host frame past the tenant's per-host frame limit. It travels\noutside frames, as Heartbeat does. The control plane counts that `seq` as received and records\nnothing for it, so the host drops the frame from its unacked frames and never resends it.\n`framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs\noff its sends until then and reports RateLimited in its Heartbeat. The control plane sends it\nonly on a connection that speaks a protocol version of 32 or above, and FrameRefused below that."
+      "description": "The control plane's answer to a host frame past the tenant's per-host frame limit. It travels\noutside frames, as Heartbeat does. The control plane counts and records nothing for that `seq`,\nand answers every later frame on the connection the same way until `retryAfter`; the host keeps those frames and resends them in\norder from `retryAfter`, so no output is lost. A frame that arrives past a gap after\n`retryAfter` closes the connection, and the next Hello resends from the oldest unacked frame.\n`framesPerMinute` is the limit and `retryAfter` the start of the next window; the host backs\noff its sends until then and reports RateLimited in its Heartbeat. The control plane sends it\nonly on a connection that speaks a protocol version of 32 or above, and FrameRefused below that."
     },
     "Channel.FrameRefused": {
       "type": "object",
@@ -843,7 +866,7 @@
           "format": "date-time"
         }
       },
-      "description": "The control plane sends one when it has sent nothing else for its heartbeat interval of 10\nseconds. A side that has received nothing for 30 seconds treats the connection as dead and closes\nit; the control plane then reads the host Offline."
+      "description": "The control plane answers every host Heartbeat with one, so it keeps no timer of its own. A side\nthat has received nothing for 30 seconds treats the connection as dead and closes it."
     },
     "Channel.Hello": {
       "type": "object",
@@ -855,7 +878,8 @@
         "signature",
         "boxCapacity",
         "usage",
-        "heldTurnIds"
+        "heldTurnIds",
+        "resendFrom"
       ],
       "properties": {
         "type": {
@@ -911,9 +935,18 @@
             "$ref": "#/components/schemas/EntityId"
           },
           "maxItems": 1000
+        },
+        "resendFrom": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "minimum": 1,
+          "description": "The `seq` of the oldest frame the host holds unacked, or its next `seq` when it holds none. The\ncontrol plane takes every host frame below it as applied and expects this one next."
         }
       },
-      "description": "The host's answer to Challenge. `signature` is the base64 Ed25519 signature, by the host key\nmade at enrolment, over these bytes in order: the ASCII string `tumpel-channel-hello-v1`, one\n0x00 byte, the ASCII bytes of the Challenge `nonce`, one 0x00 byte, and the UTF-8 bytes of\n`hostId`. The control plane rebuilds those bytes from the nonce it sent and verifies the\nsignature against the host's stored public key. It answers Welcome, and closes the connection\nwith BadSignature on a bad signature, Revoked for a revoked host, and UnsupportedVersion for a\nprotocol version outside ChannelProtocol.Oldest to ChannelProtocol.Version. `boxCapacity` is the host's box slots from\nits runtime config and `usage` what it holds as it connects; the control plane keeps both for\nthe host's tenant before it reads the host Online. `channelProtocolOldest` is the oldest\nchannel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves\nit out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host\naccepts from a box. The control plane records both ranges and shows them on the host.\n`heldTurnIds` names the turns the host holds as it connects, as Heartbeat does; the control plane\nfails each Running turn on the host that it does not name with HostDropped. A version 34 Hello and\nHeartbeat carry no `heldTurnIds`: the control plane decodes a 34 host with the version 34 types and\njudges no turn of it against a held list. A host on 35 or later that settles on 34 sends the\nversion 34 shape, without `heldTurnIds`."
+      "description": "The host's answer to Challenge. `signature` is the base64 Ed25519 signature, by the host key\nmade at enrolment, over these bytes in order: the ASCII string `tumpel-channel-hello-v1`, one\n0x00 byte, the ASCII bytes of the Challenge `nonce`, one 0x00 byte, and the UTF-8 bytes of\n`hostId`. The control plane rebuilds those bytes from the nonce it sent and verifies the\nsignature against the host's stored public key. It answers Welcome, and closes the connection\nwith BadSignature on a bad signature, Revoked for a revoked host, and UnsupportedVersion for a\nprotocol version outside ChannelProtocol.Oldest to ChannelProtocol.Version. `boxCapacity` is the host's box slots from\nits runtime config and `usage` what it holds as it connects; the control plane keeps both for\nthe host's tenant before it reads the host Online. `channelProtocolOldest` is the oldest\nchannel protocol version the host speaks, and `protocolVersion` its newest; a host that leaves\nit out speaks only `protocolVersion`. `guestProtocol` is the guest protocol range the host\naccepts from a box. The control plane records both ranges and shows them on the host.\n`heldTurnIds` names the turns the host holds as it connects, as Heartbeat does; the control plane\nfails each Running turn on the host that it does not name with HostDropped."
     },
     "Channel.HostEnvelope": {
       "type": "object",
@@ -973,7 +1006,9 @@
         "usage",
         "heldSessionIds",
         "heldTurnIds",
-        "heldClaudeSetupIds"
+        "heldClaudeSetupIds",
+        "ack",
+        "telemetry"
       ],
       "properties": {
         "type": {
@@ -1019,6 +1054,22 @@
             }
           ],
           "description": "The health the supervisor reports of itself; a supervisor that leaves it out reports Healthy."
+        },
+        "ack": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "description": "The highest control plane `seq` the host has received with no gap before it, as a frame's\n`ack`; the control plane drops its unacked frames up to it."
+        },
+        "telemetry": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/MetricBatch"
+            }
+          ],
+          "description": "The metric points the host gathered since its previous Heartbeat, including each turn's image\nfetch and first output durations. The control plane overwrites each point's `hostId` dimension\nwith the host that signed the connection, drops a turn.cost point whose costBasis is\nNotReported, and writes the rest to the tenant's metrics store; a batch the store refuses is\nlogged as TelemetryRejected. A Heartbeat is never resent, so no point is counted twice, and a\nHeartbeat lost with its connection loses its points."
         }
       },
       "description": "The host sends one every 10 seconds after Welcome, whatever else it sends, with its usage. The\ncontrol plane keeps the last one per host for the host's tenant, which places a new session on\nthe Online host with the most free box slots, then the most memory available.\n`heldSessionIds` names every session the host holds a box for, whether the box runs a turn, waits\nwarm or still boots, and is empty when it holds none. The host sends every frame queued before it\nread the list ahead of the Heartbeat, so the first Heartbeat after Welcome follows the resent\nframes. On that Heartbeat the control plane fails each Running turn on the host whose session the\nlist does not name with BoxLost."
@@ -1036,7 +1087,7 @@
           "$ref": "#/components/schemas/Channel.TurnRepositoryReady"
         },
         {
-          "$ref": "#/components/schemas/Channel.TurnLine"
+          "$ref": "#/components/schemas/Channel.TurnLines"
         },
         {
           "$ref": "#/components/schemas/Channel.TurnComplete"
@@ -1079,9 +1130,6 @@
         },
         {
           "$ref": "#/components/schemas/Channel.SupervisorUpdateFailed"
-        },
-        {
-          "$ref": "#/components/schemas/Channel.TelemetryBatch"
         }
       ],
       "discriminator": {
@@ -1090,7 +1138,7 @@
           "TurnImageFetching": "#/components/schemas/Channel.TurnImageFetching",
           "TurnClaim": "#/components/schemas/Channel.TurnClaim",
           "TurnRepositoryReady": "#/components/schemas/Channel.TurnRepositoryReady",
-          "TurnLine": "#/components/schemas/Channel.TurnLine",
+          "TurnLines": "#/components/schemas/Channel.TurnLines",
           "TurnComplete": "#/components/schemas/Channel.TurnComplete",
           "TurnRepositoryCloneFailed": "#/components/schemas/Channel.TurnRepositoryCloneFailed",
           "TurnFailed": "#/components/schemas/Channel.TurnFailed",
@@ -1104,8 +1152,7 @@
           "ClaudeSetupBoxUrl": "#/components/schemas/Channel.ClaudeSetupBoxUrl",
           "ClaudeSetupBoxFailed": "#/components/schemas/Channel.ClaudeSetupBoxFailed",
           "SupervisorUpdateStep": "#/components/schemas/Channel.SupervisorUpdateStep",
-          "SupervisorUpdateFailed": "#/components/schemas/Channel.SupervisorUpdateFailed",
-          "TelemetryBatch": "#/components/schemas/Channel.TelemetryBatch"
+          "SupervisorUpdateFailed": "#/components/schemas/Channel.SupervisorUpdateFailed"
         }
       }
     },
@@ -1321,7 +1368,7 @@
           "$ref": "#/components/schemas/Sequence"
         }
       },
-      "description": "Each direction of a host's channel numbers its frames from 1 in `seq`, and the count survives\nreconnects and restarts. `ack` is the highest `seq` the sender has received from the other side\nwith no gap before it, 0 before the first one; it advances only with the sender's next frame. A\nreceiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as\na protocol error that closes the connection. After Welcome each side resends, in order, every\nframe the other side has not acked, and the receiver drops the duplicates. The control plane\nkeeps both counters and its unacked frames in durable storage. The supervisor writes its\ncounters and unacked frames to disk before it sends a frame; when it starts without that state\nit does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.\nChallenge, Hello, Welcome and Heartbeat belong to one connection and travel outside frames,\nwith no `seq`; only Welcome carries an `ack`. Each side ignores fields it does not know."
+      "description": "Each direction of a host's channel numbers its frames from 1 in `seq`, and the count survives\nreconnects and restarts. `ack` is the highest `seq` the sender has received from the other side\nwith no gap before it, 0 before the first one; it advances only with the sender's next frame. A\nreceiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as\na protocol error that closes the connection. After Welcome each side resends, in order, every\nframe the other side has not acked, and the receiver drops the duplicates. The control plane\nkeeps its sent counter and its unacked frames in durable storage. The supervisor writes its\ncounters and unacked frames to disk before it sends a frame; when it starts without that state\nit does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.\nChallenge, Hello, Welcome, Heartbeat and Ack belong to one connection and travel outside frames,\nwith no `seq`. Each side ignores fields it does not know.\n\nThe control plane keeps no count of host frames: Hello names the host's oldest unacked frame in\n`resendFrom`, the control plane applies the host's frames one at a time in `seq` order, stores\neach frame's effect, and only then answers Ack with its `seq`. The host acks control frames in\nevery Heartbeat as well as in its frames. The `ack` of a control frame is the connection's\ncursor, the last host `seq` whose effect is stored, never the highest `seq` received."
     },
     "Channel.SnapshotChunks": {
       "type": "object",
@@ -1731,45 +1778,6 @@
       },
       "description": "The host's supervisor update from the binary `fromSha256` to `toSha256` entered `phase`. The new\nbinary sends Online once it reaches Welcome after the swap."
     },
-    "Channel.TelemetryBatch": {
-      "type": "object",
-      "required": [
-        "type",
-        "instruments",
-        "samples",
-        "turns"
-      ],
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": [
-            "TelemetryBatch"
-          ]
-        },
-        "instruments": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/MetricInstrument"
-          },
-          "maxItems": 1000
-        },
-        "samples": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/SamplePoint"
-          },
-          "maxItems": 500
-        },
-        "turns": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/TurnPoint"
-          },
-          "maxItems": 500
-        }
-      },
-      "description": "Metric points the supervisor collected at its lifecycle edges and from its host sampler, sent\nwhile the channel is Welcomed. The control plane overwrites each point's `hostId` dimension with\nthe host that signed the connection, stamps each turn.cost and turn.tokens point with the\npersonaId, secretSetId, provider and costBasis of the turn as it offered it, drops a turn.cost\npoint whose costBasis is NotReported, and writes the batch to the tenant's metrics store. A batch\nthe store refuses is logged as TelemetryRejected and still acked. The control plane refuses this\nmessage on a connection that speaks a protocol version below 19."
-    },
     "Channel.TurnCancel": {
       "type": "object",
       "required": [
@@ -1940,32 +1948,42 @@
       },
       "description": "The host's cache lacks part of the offer's image and the host has started to download it: `imageDigest` names\nthe full image, or the base image or harness layer of a layered boot, whichever it lacks first.\nIt follows the TurnClaim; the host fails the turn ImageFetchTimedOut when the fetch outlasts the\noffer's `image.fetchSeconds`."
     },
-    "Channel.TurnLine": {
+    "Channel.TurnLines": {
       "type": "object",
       "required": [
         "type",
         "turnId",
-        "lineSeq",
-        "text"
+        "firstLineSeq",
+        "lines"
       ],
       "properties": {
         "type": {
           "type": "string",
           "enum": [
-            "TurnLine"
+            "TurnLines"
           ]
         },
         "turnId": {
           "$ref": "#/components/schemas/EntityId"
         },
-        "lineSeq": {
-          "$ref": "#/components/schemas/Sequence"
+        "firstLineSeq": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Sequence"
+            }
+          ],
+          "minimum": 1
         },
-        "text": {
-          "$ref": "#/components/schemas/LongText"
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/LongText"
+          },
+          "minItems": 1,
+          "maxItems": 200
         }
       },
-      "description": "One harness-native JSONL line. `lineSeq` continues the session's line count, so lines of a turn arrive in `lineSeq` order with no gap."
+      "description": "Consecutive harness-native JSONL lines of one turn: the first has `lineSeq` `firstLineSeq` and\neach next one the next `lineSeq`, continuing the session's line count. The supervisor sends one\nat 200 lines, 256 KB of text, or 2 seconds after its first line, whichever comes first. The\ncontrol plane stores the lines before it acks the frame. A frame whose lines the turn already\nholds is a duplicate it acks again, and a frame that starts past the turn's last stored line fails\nthe turn TranscriptGap."
     },
     "Channel.TurnOffer": {
       "type": "object",
@@ -2192,12 +2210,9 @@
           "type": "integer",
           "format": "int32",
           "minimum": 1
-        },
-        "ack": {
-          "$ref": "#/components/schemas/Sequence"
         }
       },
-      "description": "The control plane accepts the host. Both sides then resend their unacked frames. `ack` is the\nhighest host `seq` the control plane has received with no gap before it. The host drops its\nunacked frames at or below it before it resends, so a frame the control plane took on an earlier\nconnection is never counted as undelivered. A control plane that leaves it out acks only with its\nnext frame."
+      "description": "The control plane accepts the host. Both sides then resend their unacked frames: the host from\nits `resendFrom`, and the control plane answers each resent frame it already applied with Ack\nagain."
     },
     "ClaudeSetupCodeText": {
       "type": "string",
@@ -2305,16 +2320,14 @@
     "HostUsage": {
       "type": "object",
       "required": [
-        "boxesWarm",
         "loadAverage",
-        "memoryAvailableMib"
+        "memoryAvailableMib",
+        "diskBudgetMib",
+        "diskHeldMib",
+        "memoryBudgetMib",
+        "memoryHeldMib"
       ],
       "properties": {
-        "boxesWarm": {
-          "type": "integer",
-          "format": "int32",
-          "minimum": 0
-        },
         "loadAverage": {
           "type": "number",
           "format": "double",
@@ -2346,7 +2359,7 @@
           "minimum": 0
         }
       },
-      "description": "What a host holds at one moment, sent on Hello and on every host Heartbeat. `boxesWarm` counts\nthe paused boxes it holds, `loadAverage` is the one-minute load average of the host,\nand `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the\nhost gives box disks: the free disk under its dataDir and what its boxes already wrote, less the\nheadroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host\nadmits a box only while its disk fits the budget beside the held ones; a supervisor older than\nthe box disk budget sends neither. `memoryBudgetMib` is the memory the host gives boxes: MemTotal\nless the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it\nholds. A host admits a box only while its memory fits the budget beside the held ones, whatever\ntheir count; a supervisor older than the memory budget sends neither."
+      "description": "What a host holds at one moment, sent on Hello and on every host Heartbeat. `loadAverage` is the one-minute load average of the host,\nand `memoryAvailableMib` is MemAvailable of /proc/meminfo in MiB. `diskBudgetMib` is the disk the\nhost gives box disks: the free disk under its dataDir and what its boxes already wrote, less the\nheadroom it keeps free. `diskHeldMib` is the sum of the disk sizes of the boxes it holds. A host\nadmits a box only while its disk fits the budget beside the held ones. `memoryBudgetMib` is the memory the host gives boxes: MemTotal\nless the headroom it keeps free. `memoryHeldMib` is the sum of the `boxMemoryMib` of the boxes it\nholds. A host admits a box only while its memory fits the budget beside the held ones, whatever\ntheir count."
     },
     "HttpUrl": {
       "type": "string",
@@ -2370,6 +2383,38 @@
       "type": "string",
       "maxLength": 1048576,
       "description": "A line of harness output or a document such as a script or a devcontainer.json. The guest\nprotocol carries frames up to 4 MiB, but a single line past 1 MiB is refused instead of stored."
+    },
+    "MetricBatch": {
+      "type": "object",
+      "required": [
+        "instruments",
+        "samples",
+        "turns"
+      ],
+      "properties": {
+        "instruments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/MetricInstrument"
+          },
+          "maxItems": 1000
+        },
+        "samples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SamplePoint"
+          },
+          "maxItems": 500
+        },
+        "turns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TurnPoint"
+          },
+          "maxItems": 500
+        }
+      },
+      "description": "The points one call writes into a tenant's metrics store, with the instruments that declare their\nmetrics. A point whose metric the batch and the store both lack is refused."
     },
     "MetricInstrument": {
       "type": "object",
