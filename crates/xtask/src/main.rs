@@ -567,18 +567,20 @@ fn unrecognised_predicates(types: &mut Vec<syn::Item>) {
             }
             syn::Item::Enum(declared) => {
                 let name = &declared.ident;
-                let variants = declared
+                let (units, payloads): (Vec<_>, Vec<_>) = declared
                     .variants
                     .iter()
-                    .filter(|variant| variant.ident != "Unrecognised" && !matches!(variant.fields, syn::Fields::Unit))
-                    .map(|variant| &variant.ident);
-                Some(syn::parse_quote!(unrecognised_union!(#name, #(#variants),*);))
+                    .filter(|variant| variant.ident != "Unrecognised")
+                    .partition(|variant| matches!(variant.fields, syn::Fields::Unit));
+                let units = units.iter().map(|variant| &variant.ident);
+                let payloads = payloads.iter().map(|variant| &variant.ident);
+                Some(syn::parse_quote!(unrecognised_union!(#name, [#(#payloads),*], [#(#units),*]);))
             }
             _ => None,
         })
         .collect();
     types.push(syn::parse_quote!(
-        use crate::response::{fields_contain_unrecognised, unrecognised_union};
+        use crate::unrecognised::{fields_contain_unrecognised, unrecognised_union};
     ));
     types.extend(implementations);
 }

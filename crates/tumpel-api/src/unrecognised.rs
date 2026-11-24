@@ -1,16 +1,8 @@
 use std::collections::HashMap;
 use std::num::{NonZeroU32, NonZeroU64};
 
-use progenitor_client::{ByteStream, ResponseValue};
-
 pub trait ContainsUnrecognised {
     fn contains_unrecognised(&self) -> bool;
-}
-
-impl<T: ContainsUnrecognised> ContainsUnrecognised for ResponseValue<T> {
-    fn contains_unrecognised(&self) -> bool {
-        self.as_ref().contains_unrecognised()
-    }
 }
 
 impl<T: ContainsUnrecognised> ContainsUnrecognised for Option<T> {
@@ -22,12 +14,6 @@ impl<T: ContainsUnrecognised> ContainsUnrecognised for Option<T> {
 impl<T: ContainsUnrecognised> ContainsUnrecognised for Vec<T> {
     fn contains_unrecognised(&self) -> bool {
         self.iter().any(ContainsUnrecognised::contains_unrecognised)
-    }
-}
-
-impl<T: ContainsUnrecognised> ContainsUnrecognised for Box<T> {
-    fn contains_unrecognised(&self) -> bool {
-        self.as_ref().contains_unrecognised()
     }
 }
 
@@ -48,19 +34,16 @@ macro_rules! always_recognised {
 }
 
 always_recognised!(
-    (),
     bool,
     f64,
     i32,
     i64,
-    u16,
     String,
     NonZeroU32,
     NonZeroU64,
     chrono::DateTime<chrono::FixedOffset>,
     serde_json::Value,
     serde_json::Map<String, serde_json::Value>,
-    ByteStream,
 );
 
 macro_rules! fields_contain_unrecognised {
@@ -74,14 +57,13 @@ macro_rules! fields_contain_unrecognised {
 }
 
 macro_rules! unrecognised_union {
-    ($ty:ident, $($variant:ident),*) => {
+    ($ty:ident, [$($payload:ident),*], [$($unit:ident),*]) => {
         impl $crate::ContainsUnrecognised for $ty {
             fn contains_unrecognised(&self) -> bool {
                 match self {
-                    $(Self::$variant(value) => $crate::ContainsUnrecognised::contains_unrecognised(value),)*
+                    $(Self::$payload(value) => $crate::ContainsUnrecognised::contains_unrecognised(value),)*
+                    $(Self::$unit => false,)*
                     Self::Unrecognised(..) => true,
-                    #[allow(unreachable_patterns)]
-                    _ => false,
                 }
             }
         }

@@ -48005,7 +48005,7 @@ pub mod types {
             })
         }
     }
-    use crate::response::{fields_contain_unrecognised, unrecognised_union};
+    use crate::unrecognised::{fields_contain_unrecognised, unrecognised_union};
     fields_contain_unrecognised!(
         ActiveSubscription,
         created_at,
@@ -48023,17 +48023,17 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(ActiveSubscriptionState,);
+    unrecognised_union!(ActiveSubscriptionState, [], [Active]);
     fields_contain_unrecognised!(ApiKeyKey, kind, name, provider, updated_at);
-    unrecognised_union!(ApiKeyKeyKind,);
+    unrecognised_union!(ApiKeyKeyKind, [], [ApiKey]);
     fields_contain_unrecognised!(ApiKeyMember, kind, name, provider);
-    unrecognised_union!(ApiKeyMemberKind,);
+    unrecognised_union!(ApiKeyMemberKind, [], [ApiKey]);
     fields_contain_unrecognised!(ApiKeyUpdate, kind, name, previous_name, provider, value);
-    unrecognised_union!(ApiKeyUpdateKind,);
+    unrecognised_union!(ApiKeyUpdateKind, [], [ApiKey]);
     fields_contain_unrecognised!(ApiKeyValue, kind, name, provider, value);
-    unrecognised_union!(ApiKeyValueKind,);
+    unrecognised_union!(ApiKeyValueKind, [], [ApiKey]);
     fields_contain_unrecognised!(ArchiveInstallRecipe, archives, kind, strip_components);
-    unrecognised_union!(ArchiveInstallRecipeKind,);
+    unrecognised_union!(ArchiveInstallRecipeKind, [], [Archive]);
     fields_contain_unrecognised!(
         ArchivedSession,
         box_id,
@@ -48060,7 +48060,7 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(ArchivedSessionState,);
+    unrecognised_union!(ArchivedSessionState, [], [Archived]);
     fields_contain_unrecognised!(
         AuthorizationServerMetadata,
         authorization_endpoint,
@@ -48091,7 +48091,7 @@ pub mod types {
     fields_contain_unrecognised!(BoxBudgets, boot_seconds, first_line_seconds, snapshot_seconds);
     fields_contain_unrecognised!(BoxDiskLimit, 0);
     fields_contain_unrecognised!(BoxMemoryLimit, 0);
-    unrecognised_union!(BoxRetention,);
+    unrecognised_union!(BoxRetention, [], [Off, Warm, Auto]);
     fields_contain_unrecognised!(
         CapacityAvailableEvent,
         code,
@@ -48101,10 +48101,14 @@ pub mod types {
         host_id,
         tenant_id
     );
-    unrecognised_union!(CapacityAvailableEventEvent,);
-    unrecognised_union!(CapacityRefusalCode,);
+    unrecognised_union!(CapacityAvailableEventEvent, [], [CapacityAvailable]);
+    unrecognised_union!(
+        CapacityRefusalCode,
+        [],
+        [PoolExhausted, NoHostAvailable, HostDegraded, HostOffline]
+    );
     fields_contain_unrecognised!(ChannelAck, seq, type_);
-    unrecognised_union!(ChannelAckType,);
+    unrecognised_union!(ChannelAckType, [], [Ack]);
     fields_contain_unrecognised!(
         ChannelBaseImageDownload,
         image_digest,
@@ -48114,11 +48118,11 @@ pub mod types {
         manifest_digest,
         manifest_url
     );
-    unrecognised_union!(ChannelBootImage, GuestImageDownload, LayeredImageDownload);
+    unrecognised_union!(ChannelBootImage, [GuestImageDownload, LayeredImageDownload], []);
     fields_contain_unrecognised!(ChannelBoxDiscard, box_id, session_id, type_);
-    unrecognised_union!(ChannelBoxDiscardType,);
+    unrecognised_union!(ChannelBoxDiscardType, [], [BoxDiscard]);
     fields_contain_unrecognised!(ChannelBoxGone, box_id, session_id, type_);
-    unrecognised_union!(ChannelBoxGoneType,);
+    unrecognised_union!(ChannelBoxGoneType, [], [BoxGone]);
     fields_contain_unrecognised!(ChannelBoxTeardown, box_id, session_id, type_);
     fields_contain_unrecognised!(
         ChannelBoxTeardownFailed,
@@ -48129,12 +48133,12 @@ pub mod types {
         session_id,
         type_
     );
-    unrecognised_union!(ChannelBoxTeardownFailedType,);
-    unrecognised_union!(ChannelBoxTeardownFailureReason,);
-    unrecognised_union!(ChannelBoxTeardownType,);
+    unrecognised_union!(ChannelBoxTeardownFailedType, [], [BoxTeardownFailed]);
+    unrecognised_union!(ChannelBoxTeardownFailureReason, [], [BoxDirty]);
+    unrecognised_union!(ChannelBoxTeardownType, [], [BoxTeardown]);
     fields_contain_unrecognised!(ChannelChallenge, nonce, type_);
     fields_contain_unrecognised!(ChannelChallengeNonce, 0);
-    unrecognised_union!(ChannelChallengeType,);
+    unrecognised_union!(ChannelChallengeType, [], [Challenge]);
     fields_contain_unrecognised!(ChannelChunkPlacement, digest, length, offset, pack_digest);
     fields_contain_unrecognised!(
         ChannelClaudeSetupBoxCode,
@@ -48144,9 +48148,9 @@ pub mod types {
         mint_budget_seconds,
         type_
     );
-    unrecognised_union!(ChannelClaudeSetupBoxCodeType,);
+    unrecognised_union!(ChannelClaudeSetupBoxCodeType, [], [ClaudeSetupBoxCode]);
     fields_contain_unrecognised!(ChannelClaudeSetupBoxDiscard, box_id, claude_setup_id, type_);
-    unrecognised_union!(ChannelClaudeSetupBoxDiscardType,);
+    unrecognised_union!(ChannelClaudeSetupBoxDiscardType, [], [ClaudeSetupBoxDiscard]);
     fields_contain_unrecognised!(
         ChannelClaudeSetupBoxFailed,
         claude_setup_id,
@@ -48155,7 +48159,7 @@ pub mod types {
         reason,
         type_
     );
-    unrecognised_union!(ChannelClaudeSetupBoxFailedType,);
+    unrecognised_union!(ChannelClaudeSetupBoxFailedType, [], [ClaudeSetupBoxFailed]);
     fields_contain_unrecognised!(
         ChannelClaudeSetupBoxOffer,
         box_id,
@@ -48172,39 +48176,45 @@ pub mod types {
         url_seconds
     );
     fields_contain_unrecognised!(ChannelClaudeSetupBoxOfferTokenCredential, 0);
-    unrecognised_union!(ChannelClaudeSetupBoxOfferType,);
+    unrecognised_union!(ChannelClaudeSetupBoxOfferType, [], [ClaudeSetupBoxOffer]);
     fields_contain_unrecognised!(ChannelClaudeSetupBoxUrl, claude_setup_id, sign_in_url, type_, user_code);
-    unrecognised_union!(ChannelClaudeSetupBoxUrlType,);
+    unrecognised_union!(ChannelClaudeSetupBoxUrlType, [], [ClaudeSetupBoxUrl]);
     fields_contain_unrecognised!(ChannelClaudeSetupBoxUrlUserCode, 0);
     fields_contain_unrecognised!(ChannelCloseCode, 0);
     unrecognised_union!(
         ChannelControlEnvelope,
-        Challenge,
-        Welcome,
-        Heartbeat,
-        ReleasePublished,
-        FrameRefused,
-        FrameRateLimited,
-        Ack,
-        ControlFrame
+        [
+            Challenge,
+            Welcome,
+            Heartbeat,
+            ReleasePublished,
+            FrameRefused,
+            FrameRateLimited,
+            Ack,
+            ControlFrame
+        ],
+        []
     );
     fields_contain_unrecognised!(ChannelControlFrame, ack, message, seq, type_);
-    unrecognised_union!(ChannelControlFrameType,);
+    unrecognised_union!(ChannelControlFrameType, [], [Frame]);
     unrecognised_union!(
         ChannelControlMessage,
-        TurnOffer,
-        TurnWithdrawn,
-        TurnClaimed,
-        TurnCancel,
-        SnapshotRequest,
-        SnapshotChunksHeld,
-        SnapshotPackUploads,
-        RestoreDownloads,
-        BoxTeardown,
-        BoxDiscard,
-        ClaudeSetupBoxOffer,
-        ClaudeSetupBoxCode,
-        ClaudeSetupBoxDiscard
+        [
+            TurnOffer,
+            TurnWithdrawn,
+            TurnClaimed,
+            TurnCancel,
+            SnapshotRequest,
+            SnapshotChunksHeld,
+            SnapshotPackUploads,
+            RestoreDownloads,
+            BoxTeardown,
+            BoxDiscard,
+            ClaudeSetupBoxOffer,
+            ClaudeSetupBoxCode,
+            ClaudeSetupBoxDiscard
+        ],
+        []
     );
     fields_contain_unrecognised!(
         ChannelDispatchConnector,
@@ -48239,10 +48249,10 @@ pub mod types {
         type_
     );
     fields_contain_unrecognised!(ChannelFrameRateLimitedReason, 0);
-    unrecognised_union!(ChannelFrameRateLimitedType,);
+    unrecognised_union!(ChannelFrameRateLimitedType, [], [FrameRateLimited]);
     fields_contain_unrecognised!(ChannelFrameRefused, reason, seq, type_);
     fields_contain_unrecognised!(ChannelFrameRefusedReason, 0);
-    unrecognised_union!(ChannelFrameRefusedType,);
+    unrecognised_union!(ChannelFrameRefusedType, [], [FrameRefused]);
     fields_contain_unrecognised!(
         ChannelGuestImageDownload,
         download_expires_at,
@@ -48255,10 +48265,10 @@ pub mod types {
         manifest_digest,
         manifest_url
     );
-    unrecognised_union!(ChannelGuestImageDownloadKind,);
+    unrecognised_union!(ChannelGuestImageDownloadKind, [], [Full]);
     fields_contain_unrecognised!(ChannelHarnessLayerDownload, layer, layer_url, manifest_url);
     fields_contain_unrecognised!(ChannelHeartbeat, sent_at, type_);
-    unrecognised_union!(ChannelHeartbeatType,);
+    unrecognised_union!(ChannelHeartbeatType, [], [Heartbeat]);
     fields_contain_unrecognised!(
         ChannelHello,
         box_capacity,
@@ -48275,10 +48285,10 @@ pub mod types {
     );
     fields_contain_unrecognised!(ChannelHelloSignature, 0);
     fields_contain_unrecognised!(ChannelHelloSupervisorVersion, 0);
-    unrecognised_union!(ChannelHelloType,);
-    unrecognised_union!(ChannelHostEnvelope, Hello, HostHeartbeat, HostFrame);
+    unrecognised_union!(ChannelHelloType, [], [Hello]);
+    unrecognised_union!(ChannelHostEnvelope, [Hello, HostHeartbeat, HostFrame], []);
     fields_contain_unrecognised!(ChannelHostFrame, ack, message, seq, type_);
-    unrecognised_union!(ChannelHostFrameType,);
+    unrecognised_union!(ChannelHostFrameType, [], [Frame]);
     fields_contain_unrecognised!(
         ChannelHostHeartbeat,
         ack,
@@ -48291,27 +48301,30 @@ pub mod types {
         type_,
         usage
     );
-    unrecognised_union!(ChannelHostHeartbeatType,);
+    unrecognised_union!(ChannelHostHeartbeatType, [], [Heartbeat]);
     unrecognised_union!(
         ChannelHostMessage,
-        TurnImageFetching,
-        TurnClaim,
-        TurnRepositoryReady,
-        TurnLines,
-        TurnComplete,
-        TurnRepositoryCloneFailed,
-        TurnFailed,
-        SnapshotChunks,
-        SnapshotPacks,
-        RestoreChunks,
-        SnapshotDone,
-        SnapshotFailed,
-        BoxGone,
-        BoxTeardownFailed,
-        ClaudeSetupBoxUrl,
-        ClaudeSetupBoxFailed,
-        SupervisorUpdateStep,
-        SupervisorUpdateFailed
+        [
+            TurnImageFetching,
+            TurnClaim,
+            TurnRepositoryReady,
+            TurnLines,
+            TurnComplete,
+            TurnRepositoryCloneFailed,
+            TurnFailed,
+            SnapshotChunks,
+            SnapshotPacks,
+            RestoreChunks,
+            SnapshotDone,
+            SnapshotFailed,
+            BoxGone,
+            BoxTeardownFailed,
+            ClaudeSetupBoxUrl,
+            ClaudeSetupBoxFailed,
+            SupervisorUpdateStep,
+            SupervisorUpdateFailed
+        ],
+        []
     );
     fields_contain_unrecognised!(
         ChannelLayeredImageDownload,
@@ -48321,7 +48334,7 @@ pub mod types {
         kind,
         layer
     );
-    unrecognised_union!(ChannelLayeredImageDownloadKind,);
+    unrecognised_union!(ChannelLayeredImageDownloadKind, [], [Layered]);
     fields_contain_unrecognised!(ChannelPack, pack_digest, size_bytes);
     fields_contain_unrecognised!(ChannelPackUrl, pack_digest, size_bytes, url);
     fields_contain_unrecognised!(
@@ -48335,9 +48348,9 @@ pub mod types {
     fields_contain_unrecognised!(ChannelProtocol, 0);
     fields_contain_unrecognised!(ChannelReleasePublished, release_version, type_);
     fields_contain_unrecognised!(ChannelReleasePublishedReleaseVersion, 0);
-    unrecognised_union!(ChannelReleasePublishedType,);
+    unrecognised_union!(ChannelReleasePublishedType, [], [ReleasePublished]);
     fields_contain_unrecognised!(ChannelRestoreChunks, chunks, part, turn_id, type_);
-    unrecognised_union!(ChannelRestoreChunksType,);
+    unrecognised_union!(ChannelRestoreChunksType, [], [RestoreChunks]);
     fields_contain_unrecognised!(
         ChannelRestoreDownloads,
         download_expires_at,
@@ -48346,14 +48359,14 @@ pub mod types {
         turn_id,
         type_
     );
-    unrecognised_union!(ChannelRestoreDownloadsType,);
+    unrecognised_union!(ChannelRestoreDownloadsType, [], [RestoreDownloads]);
     fields_contain_unrecognised!(ChannelSequenced, ack, seq);
     fields_contain_unrecognised!(ChannelSnapshotChunks, digests, part, snapshot_id, type_);
     fields_contain_unrecognised!(ChannelSnapshotChunksHeld, held, part, snapshot_id, type_);
-    unrecognised_union!(ChannelSnapshotChunksHeldType,);
-    unrecognised_union!(ChannelSnapshotChunksType,);
+    unrecognised_union!(ChannelSnapshotChunksHeldType, [], [SnapshotChunksHeld]);
+    unrecognised_union!(ChannelSnapshotChunksType, [], [SnapshotChunks]);
     fields_contain_unrecognised!(ChannelSnapshotDone, chunk_count, snapshot_id, type_, uploaded_bytes);
-    unrecognised_union!(ChannelSnapshotDoneType,);
+    unrecognised_union!(ChannelSnapshotDoneType, [], [SnapshotDone]);
     fields_contain_unrecognised!(
         ChannelSnapshotDownload,
         download_expires_at,
@@ -48363,8 +48376,20 @@ pub mod types {
         storage_key
     );
     fields_contain_unrecognised!(ChannelSnapshotFailed, detail, failed_at, reason, snapshot_id, type_);
-    unrecognised_union!(ChannelSnapshotFailedType,);
-    unrecognised_union!(ChannelSnapshotFailureReason,);
+    unrecognised_union!(ChannelSnapshotFailedType, [], [SnapshotFailed]);
+    unrecognised_union!(
+        ChannelSnapshotFailureReason,
+        [],
+        [
+            BoxNotFound,
+            UpperDirectoryUnreadable,
+            UploadExpired,
+            UploadRejected,
+            SnapshotTimedOut,
+            NotAnswered,
+            RateLimited
+        ]
+    );
     fields_contain_unrecognised!(
         ChannelSnapshotPackUploads,
         part,
@@ -48373,7 +48398,7 @@ pub mod types {
         upload_expires_at,
         uploads
     );
-    unrecognised_union!(ChannelSnapshotPackUploadsType,);
+    unrecognised_union!(ChannelSnapshotPackUploadsType, [], [SnapshotPackUploads]);
     fields_contain_unrecognised!(
         ChannelSnapshotPacks,
         chunks,
@@ -48383,7 +48408,7 @@ pub mod types {
         snapshot_id,
         type_
     );
-    unrecognised_union!(ChannelSnapshotPacksType,);
+    unrecognised_union!(ChannelSnapshotPacksType, [], [SnapshotPacks]);
     fields_contain_unrecognised!(
         ChannelSnapshotRequest,
         box_id,
@@ -48396,9 +48421,9 @@ pub mod types {
         upload_expires_at,
         upload_url
     );
-    unrecognised_union!(ChannelSnapshotRequestType,);
+    unrecognised_union!(ChannelSnapshotRequestType, [], [SnapshotRequest]);
     fields_contain_unrecognised!(ChannelStoredHostFrame, ack, message, seq, type_);
-    unrecognised_union!(ChannelStoredHostFrameType,);
+    unrecognised_union!(ChannelStoredHostFrameType, [], [Frame]);
     fields_contain_unrecognised!(
         ChannelSupervisorUpdateFailed,
         detail,
@@ -48409,7 +48434,7 @@ pub mod types {
         to_sha256,
         type_
     );
-    unrecognised_union!(ChannelSupervisorUpdateFailedType,);
+    unrecognised_union!(ChannelSupervisorUpdateFailedType, [], [SupervisorUpdateFailed]);
     fields_contain_unrecognised!(
         ChannelSupervisorUpdateStep,
         at,
@@ -48421,13 +48446,13 @@ pub mod types {
         type_
     );
     fields_contain_unrecognised!(ChannelSupervisorUpdateStepReleaseVersion, 0);
-    unrecognised_union!(ChannelSupervisorUpdateStepType,);
+    unrecognised_union!(ChannelSupervisorUpdateStepType, [], [SupervisorUpdateStep]);
     fields_contain_unrecognised!(ChannelTurnCancel, turn_id, type_);
-    unrecognised_union!(ChannelTurnCancelType,);
+    unrecognised_union!(ChannelTurnCancelType, [], [TurnCancel]);
     fields_contain_unrecognised!(ChannelTurnClaim, box_id, turn_id, type_);
-    unrecognised_union!(ChannelTurnClaimType,);
+    unrecognised_union!(ChannelTurnClaimType, [], [TurnClaim]);
     fields_contain_unrecognised!(ChannelTurnClaimed, turn_id, type_);
-    unrecognised_union!(ChannelTurnClaimedType,);
+    unrecognised_union!(ChannelTurnClaimedType, [], [TurnClaimed]);
     fields_contain_unrecognised!(
         ChannelTurnComplete,
         completed_at,
@@ -48438,7 +48463,7 @@ pub mod types {
         warning
     );
     fields_contain_unrecognised!(ChannelTurnCompleteCredentialFile, 0);
-    unrecognised_union!(ChannelTurnCompleteType,);
+    unrecognised_union!(ChannelTurnCompleteType, [], [TurnComplete]);
     fields_contain_unrecognised!(ChannelTurnCompleteWarning, 0);
     fields_contain_unrecognised!(
         ChannelTurnFailed,
@@ -48450,11 +48475,11 @@ pub mod types {
         type_
     );
     fields_contain_unrecognised!(ChannelTurnFailedCredentialFile, 0);
-    unrecognised_union!(ChannelTurnFailedType,);
+    unrecognised_union!(ChannelTurnFailedType, [], [TurnFailed]);
     fields_contain_unrecognised!(ChannelTurnImageFetching, image_digest, turn_id, type_);
-    unrecognised_union!(ChannelTurnImageFetchingType,);
+    unrecognised_union!(ChannelTurnImageFetchingType, [], [TurnImageFetching]);
     fields_contain_unrecognised!(ChannelTurnLines, first_line_seq, lines, turn_id, type_);
-    unrecognised_union!(ChannelTurnLinesType,);
+    unrecognised_union!(ChannelTurnLinesType, [], [TurnLines]);
     fields_contain_unrecognised!(
         ChannelTurnOffer,
         box_disk_mib,
@@ -48482,7 +48507,7 @@ pub mod types {
     );
     fields_contain_unrecognised!(ChannelTurnOfferHarnessVersion, 0);
     fields_contain_unrecognised!(ChannelTurnOfferPrebuildCommitSha, 0);
-    unrecognised_union!(ChannelTurnOfferType,);
+    unrecognised_union!(ChannelTurnOfferType, [], [TurnOffer]);
     fields_contain_unrecognised!(
         ChannelTurnRepositoryCloneFailed,
         cause,
@@ -48491,13 +48516,13 @@ pub mod types {
         turn_id,
         type_
     );
-    unrecognised_union!(ChannelTurnRepositoryCloneFailedType,);
+    unrecognised_union!(ChannelTurnRepositoryCloneFailedType, [], [TurnRepositoryCloneFailed]);
     fields_contain_unrecognised!(ChannelTurnRepositoryReady, turn_id, type_);
-    unrecognised_union!(ChannelTurnRepositoryReadyType,);
+    unrecognised_union!(ChannelTurnRepositoryReadyType, [], [TurnRepositoryReady]);
     fields_contain_unrecognised!(ChannelTurnWithdrawn, turn_id, type_);
-    unrecognised_union!(ChannelTurnWithdrawnType,);
+    unrecognised_union!(ChannelTurnWithdrawnType, [], [TurnWithdrawn]);
     fields_contain_unrecognised!(ChannelWelcome, host_id, protocol_version, type_);
-    unrecognised_union!(ChannelWelcomeType,);
+    unrecognised_union!(ChannelWelcomeType, [], [Welcome]);
     fields_contain_unrecognised!(ChunkExchange, 0);
     fields_contain_unrecognised!(
         ClaudeSetup,
@@ -48514,23 +48539,44 @@ pub mod types {
         updated_at
     );
     fields_contain_unrecognised!(ClaudeSetupAwaitingCode, code_due_at, sign_in_url, state, user_code);
-    unrecognised_union!(ClaudeSetupAwaitingCodeState,);
+    unrecognised_union!(ClaudeSetupAwaitingCodeState, [], [AwaitingCode]);
     fields_contain_unrecognised!(ClaudeSetupCodeSubmit, code);
     fields_contain_unrecognised!(ClaudeSetupCodeText, 0);
     fields_contain_unrecognised!(ClaudeSetupCompleted, completed_at, expires_at, member_name, state);
-    unrecognised_union!(ClaudeSetupCompletedState,);
+    unrecognised_union!(ClaudeSetupCompletedState, [], [Completed]);
     fields_contain_unrecognised!(ClaudeSetupFailed, detail, failed_at, reason, state);
-    unrecognised_union!(ClaudeSetupFailedState,);
-    unrecognised_union!(ClaudeSetupFailureReason,);
-    unrecognised_union!(ClaudeSetupHarness,);
-    unrecognised_union!(ClaudeSetupMember,);
+    unrecognised_union!(ClaudeSetupFailedState, [], [Failed]);
+    unrecognised_union!(
+        ClaudeSetupFailureReason,
+        [],
+        [
+            SetupUrlMissing,
+            CodeRejected,
+            ClaudeCodeExited,
+            SetupTimedOut,
+            TokenNotStored,
+            NoHostOnline,
+            Superseded,
+            RateLimited
+        ]
+    );
+    unrecognised_union!(ClaudeSetupHarness, [], [ClaudeCode, Codex]);
+    unrecognised_union!(ClaudeSetupMember, [], [ClaudeCodeOauthToken, CodexAuthJson]);
     fields_contain_unrecognised!(ClaudeSetupMinting, state, token_due_at);
-    unrecognised_union!(ClaudeSetupMintingState,);
+    unrecognised_union!(ClaudeSetupMintingState, [], [Minting]);
     fields_contain_unrecognised!(ClaudeSetupStart, harness, secret_set_id);
     fields_contain_unrecognised!(ClaudeSetupStarting, state, url_due_at);
-    unrecognised_union!(ClaudeSetupStartingState,);
-    unrecognised_union!(ClaudeSetupState,);
-    unrecognised_union!(ClaudeSetupStatus, Starting, AwaitingCode, Minting, Completed, Failed);
+    unrecognised_union!(ClaudeSetupStartingState, [], [Starting]);
+    unrecognised_union!(
+        ClaudeSetupState,
+        [],
+        [Starting, AwaitingCode, Minting, Completed, Failed]
+    );
+    unrecognised_union!(
+        ClaudeSetupStatus,
+        [Starting, AwaitingCode, Minting, Completed, Failed],
+        []
+    );
     fields_contain_unrecognised!(ClaudeSetupTokenWrite, expires_at, tenant_id, value);
     fields_contain_unrecognised!(ClaudeSetupUserCode, 0);
     fields_contain_unrecognised!(CliCredentials, endpoint, token);
@@ -48548,7 +48594,7 @@ pub mod types {
         session_state,
         turns
     );
-    unrecognised_union!(CompactTranscriptPageForm,);
+    unrecognised_union!(CompactTranscriptPageForm, [], [Compact]);
     fields_contain_unrecognised!(CompactTranscriptTurn, lines, turn_id);
     fields_contain_unrecognised!(
         CompletedTurn,
@@ -48565,16 +48611,16 @@ pub mod types {
         updated_at,
         warning
     );
-    unrecognised_union!(CompletedTurnState,);
+    unrecognised_union!(CompletedTurnState, [], [Completed]);
     fields_contain_unrecognised!(CompletedTurnWarning, 0);
     fields_contain_unrecognised!(ConfigApiKey, kind, name, provider, value_from);
-    unrecognised_union!(ConfigApiKeyKind,);
+    unrecognised_union!(ConfigApiKeyKind, [], [ApiKey]);
     fields_contain_unrecognised!(ConfigChange, action, description, name, resource);
-    unrecognised_union!(ConfigChangeAction,);
-    unrecognised_union!(ConfigExpiry, DateTime, SecretValueSource);
+    unrecognised_union!(ConfigChangeAction, [], [Create, Update, Delete, Rewrite]);
+    unrecognised_union!(ConfigExpiry, [DateTime, SecretValueSource], []);
     fields_contain_unrecognised!(ConfigExpiryValue, env, expires_at);
     fields_contain_unrecognised!(ConfigFileDigest, digest, from, size_bytes);
-    unrecognised_union!(ConfigFileWrite, InlineConfigFile, StoredConfigFile);
+    unrecognised_union!(ConfigFileWrite, [InlineConfigFile, StoredConfigFile], []);
     fields_contain_unrecognised!(ConfigHost, host_id, labels);
     fields_contain_unrecognised!(
         ConfigPersona,
@@ -48590,28 +48636,27 @@ pub mod types {
     );
     fields_contain_unrecognised!(ConfigPersonaFile, from, path);
     fields_contain_unrecognised!(ConfigPlan, changes);
-    unrecognised_union!(ConfigResource,);
-    unrecognised_union!(ConfigSecret, SecretVariable, ApiKey, SubscriptionToken);
+    unrecognised_union!(ConfigResource, [], [Persona, SecretSet, HarnessPin, Host, Trigger]);
+    unrecognised_union!(ConfigSecret, [SecretVariable, ApiKey, SubscriptionToken], []);
     fields_contain_unrecognised!(ConfigSecretSet, name, secrets);
     fields_contain_unrecognised!(ConfigSecretValue, env, value);
     fields_contain_unrecognised!(ConfigSecretVariable, kind, name, value_from);
-    unrecognised_union!(ConfigSecretVariableKind,);
+    unrecognised_union!(ConfigSecretVariableKind, [], [Variable]);
     fields_contain_unrecognised!(ConfigSubscriptionToken, expires_at, kind, name, provider, value_from);
-    unrecognised_union!(ConfigSubscriptionTokenKind,);
+    unrecognised_union!(ConfigSubscriptionTokenKind, [], [SubscriptionToken]);
     fields_contain_unrecognised!(ConfigTrigger, model, name, persona_name, prompt, source);
     fields_contain_unrecognised!(ConnectedConnection, account, kind, state);
-    unrecognised_union!(ConnectedConnectionState,);
-    unrecognised_union!(ConnectionKind,);
-    unrecognised_union!(ConnectionState,);
+    unrecognised_union!(ConnectedConnectionState, [], [Connected]);
+    unrecognised_union!(ConnectionKind, [], [GitHub, OpenRouter]);
+    unrecognised_union!(ConnectionState, [], [NotConfigured, NotConnected, Connected]);
     unrecognised_union!(
         ConnectionSummary,
-        ConnectedConnection,
-        NotConnectedConnection,
-        NotConfiguredConnection
+        [ConnectedConnection, NotConnectedConnection, NotConfiguredConnection],
+        []
     );
-    unrecognised_union!(Connector, StaticConnector, OAuthConnector);
+    unrecognised_union!(Connector, [StaticConnector, OAuthConnector], []);
     fields_contain_unrecognised!(ConnectorAccessToken, access_token, expires_at);
-    unrecognised_union!(ConnectorAuth,);
+    unrecognised_union!(ConnectorAuth, [], [Static, OAuth]);
     fields_contain_unrecognised!(
         ConnectorAuthorization,
         authorize_url,
@@ -48620,12 +48665,21 @@ pub mod types {
         connector_id
     );
     fields_contain_unrecognised!(ConnectorAuthorizationFailed, detail, failed_at, reason, state);
-    unrecognised_union!(ConnectorAuthorizationFailedState,);
-    unrecognised_union!(ConnectorAuthorizationFailureReason,);
+    unrecognised_union!(ConnectorAuthorizationFailedState, [], [AuthorizationFailed]);
+    unrecognised_union!(
+        ConnectorAuthorizationFailureReason,
+        [],
+        [
+            AuthorizationDenied,
+            AuthorizationExpired,
+            TokenExchangeFailed,
+            RefreshRefused
+        ]
+    );
     fields_contain_unrecognised!(ConnectorConnected, connected_at, state);
-    unrecognised_union!(ConnectorConnectedState,);
+    unrecognised_union!(ConnectorConnectedState, [], [Connected]);
     fields_contain_unrecognised!(ConnectorDisconnected, disconnected_at, state);
-    unrecognised_union!(ConnectorDisconnectedState,);
+    unrecognised_union!(ConnectorDisconnectedState, [], [Disconnected]);
     fields_contain_unrecognised!(
         ConnectorFields,
         connector_id,
@@ -48637,14 +48691,16 @@ pub mod types {
         url
     );
     fields_contain_unrecognised!(ConnectorNotConnected, state);
-    unrecognised_union!(ConnectorNotConnectedState,);
-    unrecognised_union!(ConnectorState,);
+    unrecognised_union!(ConnectorNotConnectedState, [], [NotConnected]);
+    unrecognised_union!(
+        ConnectorState,
+        [],
+        [NotConnected, Connected, Disconnected, AuthorizationFailed]
+    );
     unrecognised_union!(
         ConnectorStatus,
-        NotConnected,
-        Connected,
-        Disconnected,
-        AuthorizationFailed
+        [NotConnected, Connected, Disconnected, AuthorizationFailed],
+        []
     );
     fields_contain_unrecognised!(ConnectorUpdate, name);
     fields_contain_unrecognised!(ConnectorUrl, 0);
@@ -48675,12 +48731,12 @@ pub mod types {
         turn_offer_ttl_seconds,
         turn_total_budget_seconds
     );
-    unrecognised_union!(CostBasis,);
-    unrecognised_union!(CredentialChoice,);
+    unrecognised_union!(CostBasis, [], [Billed, NotBilled, NotReported]);
+    unrecognised_union!(CredentialChoice, [], [CatalogOrder, ModelProvider]);
     fields_contain_unrecognised!(CredentialFileKey, expires_at, kind, name, provider, updated_at);
-    unrecognised_union!(CredentialFileKeyKind,);
+    unrecognised_union!(CredentialFileKeyKind, [], [CredentialFile]);
     fields_contain_unrecognised!(CredentialFileMember, expires_at, kind, name, provider);
-    unrecognised_union!(CredentialFileMemberKind,);
+    unrecognised_union!(CredentialFileMemberKind, [], [CredentialFile]);
     fields_contain_unrecognised!(
         CredentialFileUpdate,
         expires_at,
@@ -48690,9 +48746,9 @@ pub mod types {
         provider,
         value
     );
-    unrecognised_union!(CredentialFileUpdateKind,);
+    unrecognised_union!(CredentialFileUpdateKind, [], [CredentialFile]);
     fields_contain_unrecognised!(CredentialFileValue, expires_at, kind, name, provider, value);
-    unrecognised_union!(CredentialFileValueKind,);
+    unrecognised_union!(CredentialFileValueKind, [], [CredentialFile]);
     fields_contain_unrecognised!(
         CredentialHandover,
         box_id,
@@ -48705,7 +48761,7 @@ pub mod types {
         turn_id,
         variable_names
     );
-    unrecognised_union!(CredentialKind,);
+    unrecognised_union!(CredentialKind, [], [ApiKey, SubscriptionToken, CredentialFile]);
     fields_contain_unrecognised!(CredentialText, 0);
     fields_contain_unrecognised!(
         DegradedHost,
@@ -48730,7 +48786,7 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(DegradedHostPresence,);
+    unrecognised_union!(DegradedHostPresence, [], [Degraded]);
     fields_contain_unrecognised!(DegradedHostPublicKey, 0);
     fields_contain_unrecognised!(DegradedHostSupervisorVersion, 0);
     fields_contain_unrecognised!(DeployDrain, drain_token);
@@ -48759,13 +48815,13 @@ pub mod types {
     fields_contain_unrecognised!(DeviceDecision, user_code);
     fields_contain_unrecognised!(DeviceToken, access_token, token_type);
     fields_contain_unrecognised!(DeviceTokenRequest, device_code, grant_type);
-    unrecognised_union!(DeviceTokenRequestGrantType,);
-    unrecognised_union!(DeviceTokenTokenType,);
+    unrecognised_union!(DeviceTokenRequestGrantType, [], [UrnIetfParamsOauthGrantTypeDeviceCode]);
+    unrecognised_union!(DeviceTokenTokenType, [], [Bearer]);
     fields_contain_unrecognised!(DisplayName, 0);
     fields_contain_unrecognised!(DraftTriggerTest, kind, payload, trigger);
-    unrecognised_union!(DraftTriggerTestKind,);
+    unrecognised_union!(DraftTriggerTestKind, [], [Draft]);
     fields_contain_unrecognised!(EditPersonaFilePatch, kind, new_text, old_text, path);
-    unrecognised_union!(EditPersonaFilePatchKind,);
+    unrecognised_union!(EditPersonaFilePatchKind, [], [Edit]);
     fields_contain_unrecognised!(EditPersonaFilePatchOldText, 0);
     fields_contain_unrecognised!(EffectiveHarnessVersion, harness, harness_version, pinned);
     fields_contain_unrecognised!(EmailAddress, 0);
@@ -48788,7 +48844,7 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(EndedSubscriptionState,);
+    unrecognised_union!(EndedSubscriptionState, [], [Ended]);
     fields_contain_unrecognised!(
         EnrolmentToken,
         created_at,
@@ -48800,13 +48856,13 @@ pub mod types {
         updated_at
     );
     fields_contain_unrecognised!(EnrolmentTokenMint, expires_in_seconds);
-    unrecognised_union!(EnrolmentTokenState,);
+    unrecognised_union!(EnrolmentTokenState, [], [Unused, Spent]);
     fields_contain_unrecognised!(EntityId, 0);
     fields_contain_unrecognised!(EnvironmentVariableName, 0);
     fields_contain_unrecognised!(EventCursorExpiredProblem, code, detail, fix, oldest_event_id, title);
-    unrecognised_union!(EventCursorExpiredProblemCode,);
+    unrecognised_union!(EventCursorExpiredProblemCode, [], [EventCursorExpired]);
     fields_contain_unrecognised!(EventPage, events, last_event_id);
-    unrecognised_union!(EventProblem, EventCursorExpiredProblem, Problem);
+    unrecognised_union!(EventProblem, [EventCursorExpiredProblem, Problem], []);
     fields_contain_unrecognised!(
         FailedSession,
         box_id,
@@ -48833,23 +48889,23 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(FailedSessionState,);
+    unrecognised_union!(FailedSessionState, [], [Failed]);
     fields_contain_unrecognised!(
         FailedTurn, box_id, created_at, detail, failed_at, goal, image, line_count, prompt, reason, session_id, state,
         tenant_id, turn_id, updated_at
     );
-    unrecognised_union!(FailedTurnState,);
+    unrecognised_union!(FailedTurnState, [], [Failed]);
     fields_contain_unrecognised!(FixedVariable, name, value);
     fields_contain_unrecognised!(FixedVariableValue, 0);
-    unrecognised_union!(GitHubAccountType,);
+    unrecognised_union!(GitHubAccountType, [], [User, Organization]);
     fields_contain_unrecognised!(GitHubAppMissing, setup_url, state);
-    unrecognised_union!(GitHubAppMissingState,);
+    unrecognised_union!(GitHubAppMissingState, [], [AppMissing]);
     fields_contain_unrecognised!(GitHubAppReady, app_slug, state);
-    unrecognised_union!(GitHubAppReadyState,);
-    unrecognised_union!(GitHubAppState, Ready, Missing);
+    unrecognised_union!(GitHubAppReadyState, [], [Ready]);
+    unrecognised_union!(GitHubAppState, [Ready, Missing], []);
     fields_contain_unrecognised!(GitHubConnection, app, tenant_id);
     fields_contain_unrecognised!(GitHubId, 0);
-    unrecognised_union!(GitHubInstallRefusal,);
+    unrecognised_union!(GitHubInstallRefusal, [], [OtherTenant, NotInstaller, InstallerUnknown]);
     fields_contain_unrecognised!(GitHubInstallStart, expires_at, install_url);
     fields_contain_unrecognised!(
         GitHubInstallation,
@@ -48861,22 +48917,32 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(GitHubInstallationStatus,);
+    unrecognised_union!(GitHubInstallationStatus, [], [Active, Suspended]);
     fields_contain_unrecognised!(GitHubIssue, html_url, issue_number, labels, title, updated_at);
     fields_contain_unrecognised!(GitHubIssueNumber, 0);
     fields_contain_unrecognised!(GitHubLogin, 0);
     fields_contain_unrecognised!(GitHubRepository, default_branch, html_url, name, owner, private);
     fields_contain_unrecognised!(GitHubRepositoryName, 0);
-    unrecognised_union!(GitHubTriggerEvent,);
+    unrecognised_union!(GitHubTriggerEvent, [], [PullRequest, Push, Status, Issues]);
     fields_contain_unrecognised!(GitHubTriggerSource, conditions, event, kind);
-    unrecognised_union!(GitHubTriggerSourceKind,);
+    unrecognised_union!(GitHubTriggerSourceKind, [], [GitHub]);
     fields_contain_unrecognised!(Goal, 0);
     fields_contain_unrecognised!(GuestBufferText, 0);
     fields_contain_unrecognised!(GuestClaudeSetupCode, claude_setup_id, code, mint_budget_seconds, type_);
-    unrecognised_union!(GuestClaudeSetupCodeType,);
+    unrecognised_union!(GuestClaudeSetupCodeType, [], [ClaudeSetupCode]);
     fields_contain_unrecognised!(GuestClaudeSetupFailed, claude_setup_id, detail, reason, type_);
-    unrecognised_union!(GuestClaudeSetupFailedType,);
-    unrecognised_union!(GuestClaudeSetupFailureReason,);
+    unrecognised_union!(GuestClaudeSetupFailedType, [], [ClaudeSetupFailed]);
+    unrecognised_union!(
+        GuestClaudeSetupFailureReason,
+        [],
+        [
+            UrlNotPrinted,
+            CodeRejected,
+            ClaudeCodeExited,
+            TokenNotStored,
+            MintTimedOut
+        ]
+    );
     fields_contain_unrecognised!(
         GuestClaudeSetupStart,
         claude_setup_id,
@@ -48886,11 +48952,11 @@ pub mod types {
         type_
     );
     fields_contain_unrecognised!(GuestClaudeSetupStartTokenCredential, 0);
-    unrecognised_union!(GuestClaudeSetupStartType,);
+    unrecognised_union!(GuestClaudeSetupStartType, [], [ClaudeSetupStart]);
     fields_contain_unrecognised!(GuestClaudeSetupStored, claude_setup_id, type_);
-    unrecognised_union!(GuestClaudeSetupStoredType,);
+    unrecognised_union!(GuestClaudeSetupStoredType, [], [ClaudeSetupStored]);
     fields_contain_unrecognised!(GuestClaudeSetupUrl, claude_setup_id, sign_in_url, type_, user_code);
-    unrecognised_union!(GuestClaudeSetupUrlType,);
+    unrecognised_union!(GuestClaudeSetupUrlType, [], [ClaudeSetupUrl]);
     fields_contain_unrecognised!(GuestEnvironment, home, lang, path);
     fields_contain_unrecognised!(GuestEnvironmentHome, 0);
     fields_contain_unrecognised!(GuestEnvironmentLang, 0);
@@ -48908,7 +48974,11 @@ pub mod types {
     );
     fields_contain_unrecognised!(GuestHarnessHarness, 0);
     fields_contain_unrecognised!(GuestHarnessHarnessVersion, 0);
-    unrecognised_union!(GuestHarnessProtocol,);
+    unrecognised_union!(
+        GuestHarnessProtocol,
+        [],
+        [ClaudeStreamJson, PiRpc, ShellLines, PromptOnStdin, CodexExecJson]
+    );
     fields_contain_unrecognised!(GuestHarnessWorkingDirectory, 0);
     fields_contain_unrecognised!(
         GuestHello,
@@ -48920,7 +48990,7 @@ pub mod types {
     );
     fields_contain_unrecognised!(GuestHelloHarness, 0);
     fields_contain_unrecognised!(GuestHelloHarnessVersion, 0);
-    unrecognised_union!(GuestHelloType,);
+    unrecognised_union!(GuestHelloType, [], [GuestHello]);
     fields_contain_unrecognised!(GuestImageComponent, digest, name, url, version);
     fields_contain_unrecognised!(GuestImageComponentName, 0);
     fields_contain_unrecognised!(GuestImageComponentVersion, 0);
@@ -48934,17 +49004,24 @@ pub mod types {
         kernel_digest,
         kernel_url
     );
-    unrecognised_union!(GuestInput, TurnStart, TurnCancel, ClaudeSetupStart, ClaudeSetupCode);
+    unrecognised_union!(
+        GuestInput,
+        [TurnStart, TurnCancel, ClaudeSetupStart, ClaudeSetupCode],
+        []
+    );
     unrecognised_union!(
         GuestMessage,
-        Hello,
-        TurnRepositoryReady,
-        TurnLine,
-        TurnRepositoryCloneFailed,
-        TurnEnd,
-        ClaudeSetupUrl,
-        ClaudeSetupStored,
-        ClaudeSetupFailed
+        [
+            Hello,
+            TurnRepositoryReady,
+            TurnLine,
+            TurnRepositoryCloneFailed,
+            TurnEnd,
+            ClaudeSetupUrl,
+            ClaudeSetupStored,
+            ClaudeSetupFailed
+        ],
+        []
     );
     fields_contain_unrecognised!(GuestMetric, description, dimensions, kind, metric, unit, value);
     fields_contain_unrecognised!(GuestMetricDescription, 0);
@@ -48954,7 +49031,7 @@ pub mod types {
     fields_contain_unrecognised!(GuestProtocol, 0);
     fields_contain_unrecognised!(GuestProtocolRange, guest_protocol_oldest, guest_protocol_version);
     fields_contain_unrecognised!(GuestTurnCancel, turn_id, type_);
-    unrecognised_union!(GuestTurnCancelType,);
+    unrecognised_union!(GuestTurnCancelType, [], [TurnCancel]);
     fields_contain_unrecognised!(
         GuestTurnEnd,
         credential_file,
@@ -48967,15 +49044,26 @@ pub mod types {
         warning
     );
     fields_contain_unrecognised!(GuestTurnEndCredentialFile, 0);
-    unrecognised_union!(GuestTurnEndReason,);
-    unrecognised_union!(GuestTurnEndType,);
+    unrecognised_union!(
+        GuestTurnEndReason,
+        [],
+        [
+            Completed,
+            HarnessExited,
+            HarnessStartFailed,
+            HarnessOutOfMemory,
+            Cancelled,
+            BoxDiskFull
+        ]
+    );
+    unrecognised_union!(GuestTurnEndType, [], [TurnEnd]);
     fields_contain_unrecognised!(GuestTurnEndWarning, 0);
     fields_contain_unrecognised!(GuestTurnLine, line_seq, text, turn_id, type_);
-    unrecognised_union!(GuestTurnLineType,);
+    unrecognised_union!(GuestTurnLineType, [], [TurnLine]);
     fields_contain_unrecognised!(GuestTurnRepositoryCloneFailed, cause, detail, turn_id, type_);
-    unrecognised_union!(GuestTurnRepositoryCloneFailedType,);
+    unrecognised_union!(GuestTurnRepositoryCloneFailedType, [], [TurnRepositoryCloneFailed]);
     fields_contain_unrecognised!(GuestTurnRepositoryReady, turn_id, type_);
-    unrecognised_union!(GuestTurnRepositoryReadyType,);
+    unrecognised_union!(GuestTurnRepositoryReadyType, [], [TurnRepositoryReady]);
     fields_contain_unrecognised!(
         GuestTurnStart,
         credential,
@@ -48992,8 +49080,8 @@ pub mod types {
         type_
     );
     fields_contain_unrecognised!(GuestTurnStartPrebuildCommitSha, 0);
-    unrecognised_union!(GuestTurnStartType,);
-    unrecognised_union!(Harness,);
+    unrecognised_union!(GuestTurnStartType, [], [TurnStart]);
+    unrecognised_union!(Harness, [], [ClaudeCode, Codex, OpenCode, PiDev, MistralAgent]);
     fields_contain_unrecognised!(
         HarnessCatalogEntry,
         compact_transcript,
@@ -49021,9 +49109,9 @@ pub mod types {
     fields_contain_unrecognised!(HarnessPinCreate, harness, harness_version);
     fields_contain_unrecognised!(HarnessVersion, 0);
     fields_contain_unrecognised!(Health, status);
-    unrecognised_union!(HealthStatus,);
-    unrecognised_union!(Host, OnlineHost, DegradedHost, OfflineHost);
-    unrecognised_union!(HostArchitecture,);
+    unrecognised_union!(HealthStatus, [], [Ok]);
+    unrecognised_union!(Host, [OnlineHost, DegradedHost, OfflineHost], []);
+    unrecognised_union!(HostArchitecture, [], [Amd64, Arm64]);
     fields_contain_unrecognised!(
         HostBase,
         architecture,
@@ -49047,14 +49135,14 @@ pub mod types {
     );
     fields_contain_unrecognised!(HostBasePublicKey, 0);
     fields_contain_unrecognised!(HostBaseSupervisorVersion, 0);
-    unrecognised_union!(HostChannelProtocol, ProtocolNotReported, ChannelProtocolReported);
+    unrecognised_union!(HostChannelProtocol, [ProtocolNotReported, ChannelProtocolReported], []);
     fields_contain_unrecognised!(
         HostChannelProtocolReported,
         channel_protocol_oldest,
         channel_protocol_version,
         state
     );
-    unrecognised_union!(HostChannelProtocolReportedState,);
+    unrecognised_union!(HostChannelProtocolReportedState, [], [Reported]);
     fields_contain_unrecognised!(
         HostEnrol,
         architecture,
@@ -49068,27 +49156,27 @@ pub mod types {
     fields_contain_unrecognised!(HostEnrolEnrolmentToken, 0);
     fields_contain_unrecognised!(HostEnrolPublicKey, 0);
     fields_contain_unrecognised!(HostEnrolSupervisorVersion, 0);
-    unrecognised_union!(HostGuestProtocol, ProtocolNotReported, GuestProtocolReported);
+    unrecognised_union!(HostGuestProtocol, [ProtocolNotReported, GuestProtocolReported], []);
     fields_contain_unrecognised!(
         HostGuestProtocolReported,
         guest_protocol_oldest,
         guest_protocol_version,
         state
     );
-    unrecognised_union!(HostGuestProtocolReportedState,);
-    unrecognised_union!(HostHealth,);
+    unrecognised_union!(HostGuestProtocolReportedState, [], [Reported]);
+    unrecognised_union!(HostHealth, [], [Healthy]);
     fields_contain_unrecognised!(HostLabel, 0);
     fields_contain_unrecognised!(HostLabels, labels);
     fields_contain_unrecognised!(HostLabelsPatch, add, remove);
     fields_contain_unrecognised!(HostOfflineEvent, created_at, event, event_id, host_id, tenant_id);
-    unrecognised_union!(HostOfflineEventEvent,);
+    unrecognised_union!(HostOfflineEventEvent, [], [HostOffline]);
     fields_contain_unrecognised!(HostOnlineEvent, created_at, event, event_id, host_id, tenant_id);
-    unrecognised_union!(HostOnlineEventEvent,);
-    unrecognised_union!(HostPresence,);
+    unrecognised_union!(HostOnlineEventEvent, [], [HostOnline]);
+    unrecognised_union!(HostPresence, [], [Online, Degraded, Offline]);
     fields_contain_unrecognised!(HostProtocolNotReported, state);
-    unrecognised_union!(HostProtocolNotReportedState,);
-    unrecognised_union!(HostReportedHealth,);
-    unrecognised_union!(HostState,);
+    unrecognised_union!(HostProtocolNotReportedState, [], [NotReported]);
+    unrecognised_union!(HostReportedHealth, [], [Healthy, RateLimited]);
+    unrecognised_union!(HostState, [], [Enrolled, Online, Offline, Revoked]);
     fields_contain_unrecognised!(
         HostUsage,
         disk_budget_mib,
@@ -49125,8 +49213,12 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(IdleSessionState,);
-    unrecognised_union!(ImageHarness,);
+    unrecognised_union!(IdleSessionState, [], [Idle]);
+    unrecognised_union!(
+        ImageHarness,
+        [],
+        [ClaudeCode, Codex, OpenCode, PiDev, MistralAgent, Shell]
+    );
     fields_contain_unrecognised!(
         ImageRelease,
         base_layout_version,
@@ -49139,7 +49231,7 @@ pub mod types {
     fields_contain_unrecognised!(ImageReleaseCommit, 0);
     fields_contain_unrecognised!(ImageReleaseImageReleaseVersion, 0);
     fields_contain_unrecognised!(InlineConfigFile, content, from, source);
-    unrecognised_union!(InlineConfigFileSource,);
+    unrecognised_union!(InlineConfigFileSource, [], [Inline]);
     fields_contain_unrecognised!(InlinePersonaFile, content, path, source);
     fields_contain_unrecognised!(
         InlinePersonaFileRead,
@@ -49151,8 +49243,8 @@ pub mod types {
         source,
         updated_at
     );
-    unrecognised_union!(InlinePersonaFileReadSource,);
-    unrecognised_union!(InlinePersonaFileSource,);
+    unrecognised_union!(InlinePersonaFileReadSource, [], [Inline]);
+    unrecognised_union!(InlinePersonaFileSource, [], [Inline]);
     fields_contain_unrecognised!(
         InstallArchive,
         architecture,
@@ -49163,7 +49255,7 @@ pub mod types {
     );
     fields_contain_unrecognised!(InstallArchiveBinaryPath, 0);
     fields_contain_unrecognised!(InstallArchiveUrl, 0);
-    unrecognised_union!(InstallRecipe, NpmInstallRecipe, ArchiveInstallRecipe);
+    unrecognised_union!(InstallRecipe, [NpmInstallRecipe, ArchiveInstallRecipe], []);
     fields_contain_unrecognised!(
         Invitation,
         created_at,
@@ -49179,18 +49271,18 @@ pub mod types {
     fields_contain_unrecognised!(InvitationCreate, email, role);
     fields_contain_unrecognised!(InvitationCreated, accept_url, invitation);
     fields_contain_unrecognised!(IssuerJwk, alg, e, kid, kty, n, use_);
-    unrecognised_union!(IssuerJwkAlg,);
+    unrecognised_union!(IssuerJwkAlg, [], [Rs256]);
     fields_contain_unrecognised!(IssuerJwkE, 0);
-    unrecognised_union!(IssuerJwkKty,);
+    unrecognised_union!(IssuerJwkKty, [], [Rsa]);
     fields_contain_unrecognised!(IssuerJwkN, 0);
-    unrecognised_union!(IssuerJwkUse,);
+    unrecognised_union!(IssuerJwkUse, [], [Sig]);
     fields_contain_unrecognised!(IssuerJwks, keys);
     fields_contain_unrecognised!(IssuerKeyId, 0);
     fields_contain_unrecognised!(LocalFilePath, 0);
     fields_contain_unrecognised!(LongText, 0);
     fields_contain_unrecognised!(Membership, created_at, role, tenant);
     fields_contain_unrecognised!(MetricBatch, instruments, samples, turns);
-    unrecognised_union!(MetricBucket,);
+    unrecognised_union!(MetricBucket, [], [Minute, Hour, Day]);
     fields_contain_unrecognised!(MetricCatalog, metrics);
     fields_contain_unrecognised!(MetricEntry, description, facets, kind, metric, unit);
     fields_contain_unrecognised!(MetricEntryDescription, 0);
@@ -49200,7 +49292,7 @@ pub mod types {
     fields_contain_unrecognised!(MetricInstrument, description, kind, metric, unit);
     fields_contain_unrecognised!(MetricInstrumentDescription, 0);
     fields_contain_unrecognised!(MetricInstrumentUnit, 0);
-    unrecognised_union!(MetricKind,);
+    unrecognised_union!(MetricKind, [], [Turn, Sample]);
     fields_contain_unrecognised!(MetricName, 0);
     fields_contain_unrecognised!(MetricPoint, bucket_start, count, max, min, p50, p90, p99, sum);
     fields_contain_unrecognised!(MetricSeries, group, points);
@@ -49209,18 +49301,18 @@ pub mod types {
     fields_contain_unrecognised!(MetricTurnPoint, at, dimensions, session_id, turn_id, value);
     fields_contain_unrecognised!(MintedEnrolmentToken, enrolment_token, install_command, token);
     fields_contain_unrecognised!(ModelName, 0);
-    unrecognised_union!(ModelProvider,);
-    unrecognised_union!(ModelSupport, Listed, ProviderChecked);
+    unrecognised_union!(ModelProvider, [], [Anthropic, OpenAi, Mistral, Google, OpenRouter]);
+    unrecognised_union!(ModelSupport, [Listed, ProviderChecked], []);
     fields_contain_unrecognised!(ModelSupportListed, kind, models);
-    unrecognised_union!(ModelSupportListedKind,);
+    unrecognised_union!(ModelSupportListedKind, [], [Listed]);
     fields_contain_unrecognised!(ModelSupportProviderChecked, kind);
-    unrecognised_union!(ModelSupportProviderCheckedKind,);
+    unrecognised_union!(ModelSupportProviderCheckedKind, [], [ProviderChecked]);
     fields_contain_unrecognised!(NotConfiguredConnection, kind, state);
-    unrecognised_union!(NotConfiguredConnectionState,);
+    unrecognised_union!(NotConfiguredConnectionState, [], [NotConfigured]);
     fields_contain_unrecognised!(NotConnectedConnection, kind, state);
-    unrecognised_union!(NotConnectedConnectionState,);
+    unrecognised_union!(NotConnectedConnectionState, [], [NotConnected]);
     fields_contain_unrecognised!(NpmInstallRecipe, kind, package, package_version);
-    unrecognised_union!(NpmInstallRecipeKind,);
+    unrecognised_union!(NpmInstallRecipeKind, [], [Npm]);
     fields_contain_unrecognised!(NpmInstallRecipePackage, 0);
     fields_contain_unrecognised!(NpmInstallRecipePackageVersion, 0);
     fields_contain_unrecognised!(
@@ -49232,7 +49324,7 @@ pub mod types {
         redirect_uri,
         resource
     );
-    unrecognised_union!(OAuthAuthorizationCodeRequestGrantType,);
+    unrecognised_union!(OAuthAuthorizationCodeRequestGrantType, [], [AuthorizationCode]);
     fields_contain_unrecognised!(
         OAuthClient,
         client_id,
@@ -49245,7 +49337,7 @@ pub mod types {
         token_endpoint_auth_method
     );
     fields_contain_unrecognised!(OAuthClientRegistration, client_name, redirect_uris);
-    unrecognised_union!(OAuthClientTokenEndpointAuthMethod,);
+    unrecognised_union!(OAuthClientTokenEndpointAuthMethod, [], [None]);
     fields_contain_unrecognised!(
         OAuthConnector,
         auth,
@@ -49257,10 +49349,27 @@ pub mod types {
         updated_at,
         url
     );
-    unrecognised_union!(OAuthConnectorAuth,);
+    unrecognised_union!(OAuthConnectorAuth, [], [OAuth]);
     fields_contain_unrecognised!(OAuthConnectorCreate, name, url);
     fields_contain_unrecognised!(OAuthError, error, error_description);
-    unrecognised_union!(OAuthErrorCode,);
+    unrecognised_union!(
+        OAuthErrorCode,
+        [],
+        [
+            InvalidRequest,
+            InvalidClient,
+            InvalidGrant,
+            UnsupportedGrantType,
+            UnsupportedResponseType,
+            InvalidTarget,
+            InvalidClientMetadata,
+            InvalidRedirectUri,
+            AuthorizationPending,
+            SlowDown,
+            AccessDenied,
+            ExpiredToken
+        ]
+    );
     fields_contain_unrecognised!(
         OAuthGrant,
         client_id,
@@ -49270,11 +49379,11 @@ pub mod types {
         redirect_origin
     );
     fields_contain_unrecognised!(OAuthRefreshTokenRequest, client_id, grant_type, refresh_token, resource);
-    unrecognised_union!(OAuthRefreshTokenRequestGrantType,);
+    unrecognised_union!(OAuthRefreshTokenRequestGrantType, [], [RefreshToken]);
     fields_contain_unrecognised!(OAuthRevocationRequest, client_id, token, token_type_hint);
     fields_contain_unrecognised!(OAuthToken, access_token, expires_in, refresh_token, scope, token_type);
-    unrecognised_union!(OAuthTokenRequest, AuthorizationCodeRequest, RefreshTokenRequest);
-    unrecognised_union!(OAuthTokenTokenType,);
+    unrecognised_union!(OAuthTokenRequest, [AuthorizationCodeRequest, RefreshTokenRequest], []);
+    unrecognised_union!(OAuthTokenTokenType, [], [Bearer]);
     fields_contain_unrecognised!(
         OfferedTurn,
         box_id,
@@ -49289,7 +49398,7 @@ pub mod types {
         turn_id,
         updated_at
     );
-    unrecognised_union!(OfferedTurnState,);
+    unrecognised_union!(OfferedTurnState, [], [Offered]);
     fields_contain_unrecognised!(
         OfflineHost,
         architecture,
@@ -49312,7 +49421,7 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(OfflineHostPresence,);
+    unrecognised_union!(OfflineHostPresence, [], [Offline]);
     fields_contain_unrecognised!(OfflineHostPublicKey, 0);
     fields_contain_unrecognised!(OfflineHostSupervisorVersion, 0);
     fields_contain_unrecognised!(
@@ -49338,7 +49447,7 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(OnlineHostPresence,);
+    unrecognised_union!(OnlineHostPresence, [], [Online]);
     fields_contain_unrecognised!(OnlineHostPublicKey, 0);
     fields_contain_unrecognised!(OnlineHostSupervisorVersion, 0);
     fields_contain_unrecognised!(
@@ -49351,11 +49460,15 @@ pub mod types {
         scopes_supported,
         subject_types_supported
     );
-    unrecognised_union!(OpenIdConfigurationClaimsSupportedItem,);
-    unrecognised_union!(OpenIdConfigurationIdTokenSigningAlgValuesSupportedItem,);
-    unrecognised_union!(OpenIdConfigurationResponseTypesSupportedItem,);
-    unrecognised_union!(OpenIdConfigurationScopesSupportedItem,);
-    unrecognised_union!(OpenIdConfigurationSubjectTypesSupportedItem,);
+    unrecognised_union!(
+        OpenIdConfigurationClaimsSupportedItem,
+        [],
+        [Iss, Sub, Aud, Iat, Nbf, Exp, Jti]
+    );
+    unrecognised_union!(OpenIdConfigurationIdTokenSigningAlgValuesSupportedItem, [], [Rs256]);
+    unrecognised_union!(OpenIdConfigurationResponseTypesSupportedItem, [], [IdToken]);
+    unrecognised_union!(OpenIdConfigurationScopesSupportedItem, [], [Openid]);
+    unrecognised_union!(OpenIdConfigurationSubjectTypesSupportedItem, [], [Public]);
     fields_contain_unrecognised!(
         OpenRouterAuthorization,
         created_at,
@@ -49372,22 +49485,34 @@ pub mod types {
         callback_due_at,
         state
     );
-    unrecognised_union!(OpenRouterAuthorizationAwaitingCallbackState,);
+    unrecognised_union!(OpenRouterAuthorizationAwaitingCallbackState, [], [AwaitingCallback]);
     fields_contain_unrecognised!(OpenRouterAuthorizationCompleted, completed_at, key_label, state);
-    unrecognised_union!(OpenRouterAuthorizationCompletedState,);
+    unrecognised_union!(OpenRouterAuthorizationCompletedState, [], [Completed]);
     fields_contain_unrecognised!(OpenRouterAuthorizationExchanging, exchange_due_at, state);
-    unrecognised_union!(OpenRouterAuthorizationExchangingState,);
+    unrecognised_union!(OpenRouterAuthorizationExchangingState, [], [Exchanging]);
     fields_contain_unrecognised!(OpenRouterAuthorizationFailed, detail, failed_at, reason, state);
-    unrecognised_union!(OpenRouterAuthorizationFailedState,);
-    unrecognised_union!(OpenRouterAuthorizationFailureReason,);
+    unrecognised_union!(OpenRouterAuthorizationFailedState, [], [Failed]);
+    unrecognised_union!(
+        OpenRouterAuthorizationFailureReason,
+        [],
+        [
+            AuthorizationTimedOut,
+            NotConnected,
+            CodeRefused,
+            ExchangeFailed,
+            KeyNotStored
+        ]
+    );
     fields_contain_unrecognised!(OpenRouterAuthorizationStart, secret_set_id);
-    unrecognised_union!(OpenRouterAuthorizationState,);
+    unrecognised_union!(
+        OpenRouterAuthorizationState,
+        [],
+        [AwaitingCallback, Exchanging, Completed, Failed]
+    );
     unrecognised_union!(
         OpenRouterAuthorizationStatus,
-        AwaitingCallback,
-        Exchanging,
-        Completed,
-        Failed
+        [AwaitingCallback, Exchanging, Completed, Failed],
+        []
     );
     fields_contain_unrecognised!(PathText, 0);
     fields_contain_unrecognised!(
@@ -49409,9 +49534,9 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(PausedSubscriptionState,);
+    unrecognised_union!(PausedSubscriptionState, [], [Paused]);
     fields_contain_unrecognised!(PersonOrigin, kind, principal_id);
-    unrecognised_union!(PersonOriginKind,);
+    unrecognised_union!(PersonOriginKind, [], [Person]);
     fields_contain_unrecognised!(
         Persona,
         box_disk_mib,
@@ -49440,23 +49565,22 @@ pub mod types {
         secret_set_id,
         tumpel_mcp
     );
-    unrecognised_union!(PersonaFile, InlinePersonaFileRead, StoredPersonaFileRead);
+    unrecognised_union!(PersonaFile, [InlinePersonaFileRead, StoredPersonaFileRead], []);
     fields_contain_unrecognised!(PersonaFileContent, 0);
     fields_contain_unrecognised!(PersonaFileLimit, 0);
     fields_contain_unrecognised!(PersonaFileMetadata, created_at, digest, path, size_bytes, updated_at);
     unrecognised_union!(
         PersonaFilePatch,
-        PutPersonaFilePatch,
-        RemovePersonaFilePatch,
-        EditPersonaFilePatch
+        [PutPersonaFilePatch, RemovePersonaFilePatch, EditPersonaFilePatch],
+        []
     );
-    unrecognised_union!(PersonaFilePatchKind,);
+    unrecognised_union!(PersonaFilePatchKind, [], [Put, Remove, Edit]);
     fields_contain_unrecognised!(PersonaFilePath, 0);
     fields_contain_unrecognised!(PersonaFileSize, 0);
-    unrecognised_union!(PersonaFileSource,);
+    unrecognised_union!(PersonaFileSource, [], [Inline, Stored]);
     fields_contain_unrecognised!(PersonaFileUpload, digest, size_bytes, upload_expires_at, upload_url);
     fields_contain_unrecognised!(PersonaFileUploadRequest, digest, size_bytes);
-    unrecognised_union!(PersonaFileWrite, InlinePersonaFile, StoredPersonaFile);
+    unrecognised_union!(PersonaFileWrite, [InlinePersonaFile, StoredPersonaFile], []);
     fields_contain_unrecognised!(
         PersonaMetadata,
         box_disk_mib,
@@ -49511,12 +49635,12 @@ pub mod types {
         updated_at
     );
     fields_contain_unrecognised!(PrebuildBuilding, state);
-    unrecognised_union!(PrebuildBuildingState,);
-    unrecognised_union!(PrebuildConfigSource,);
+    unrecognised_union!(PrebuildBuildingState, [], [Building]);
+    unrecognised_union!(PrebuildConfigSource, [], [RepositoryFile, Default]);
     fields_contain_unrecognised!(PrebuildConverting, layer_digest, layer_size_bytes, state, uploaded_at);
-    unrecognised_union!(PrebuildConvertingState,);
+    unrecognised_union!(PrebuildConvertingState, [], [Converting]);
     fields_contain_unrecognised!(PrebuildDispatched, state);
-    unrecognised_union!(PrebuildDispatchedState,);
+    unrecognised_union!(PrebuildDispatchedState, [], [Dispatched]);
     fields_contain_unrecognised!(PrebuildDone, finished_at, layer_digest, layer_size_bytes, state);
     fields_contain_unrecognised!(
         PrebuildDoneEvent,
@@ -49527,8 +49651,8 @@ pub mod types {
         repository,
         tenant_id
     );
-    unrecognised_union!(PrebuildDoneEventEvent,);
-    unrecognised_union!(PrebuildDoneState,);
+    unrecognised_union!(PrebuildDoneEventEvent, [], [PrebuildDone]);
+    unrecognised_union!(PrebuildDoneState, [], [Done]);
     fields_contain_unrecognised!(PrebuildFailed, finished_at, phase, state);
     fields_contain_unrecognised!(
         PrebuildFailedEvent,
@@ -49540,14 +49664,43 @@ pub mod types {
         repository,
         tenant_id
     );
-    unrecognised_union!(PrebuildFailedEventEvent,);
-    unrecognised_union!(PrebuildFailedState,);
+    unrecognised_union!(PrebuildFailedEventEvent, [], [PrebuildFailed]);
+    unrecognised_union!(PrebuildFailedState, [], [Failed]);
     fields_contain_unrecognised!(PrebuildFailure, created_at, detail, fix, phase, prebuild_id, tenant_id);
-    unrecognised_union!(PrebuildFailurePhase,);
+    unrecognised_union!(PrebuildFailurePhase, [], [Dispatch, Build, Upload, Conversion]);
     fields_contain_unrecognised!(PrebuildFinding, code, detail, field, fix);
-    unrecognised_union!(PrebuildFindingCode,);
-    unrecognised_union!(PrebuildLayerAbsence,);
-    unrecognised_union!(PrebuildLifecycleCommand,);
+    unrecognised_union!(
+        PrebuildFindingCode,
+        [],
+        [
+            DevcontainerInvalid,
+            PrebuildImageUnsupported,
+            PrebuildFeaturesUnsupported,
+            ToolchainMismatch
+        ]
+    );
+    unrecognised_union!(
+        PrebuildLayerAbsence,
+        [],
+        [
+            BuildsPrebuild,
+            HostNotAmd64,
+            NoAmd64Image,
+            NoPrebuild,
+            OtherGuestImage,
+            NotRecorded
+        ]
+    );
+    unrecognised_union!(
+        PrebuildLifecycleCommand,
+        [],
+        [
+            OnCreateCommand,
+            UpdateContentCommand,
+            PostCreateCommand,
+            PostStartCommand
+        ]
+    );
     fields_contain_unrecognised!(
         PrebuildPreview,
         commands,
@@ -49559,15 +49712,15 @@ pub mod types {
     );
     fields_contain_unrecognised!(PrebuildPreviewCommand, argv, label, lifecycle);
     fields_contain_unrecognised!(PrebuildPreviewOfRepository, persona_id, repository, source);
-    unrecognised_union!(PrebuildPreviewOfRepositorySource,);
+    unrecognised_union!(PrebuildPreviewOfRepositorySource, [], [RepositoryFile]);
     fields_contain_unrecognised!(PrebuildPreviewOfSupplied, devcontainer, persona_id, repository, source);
     fields_contain_unrecognised!(PrebuildPreviewOfSuppliedDevcontainer, 0);
-    unrecognised_union!(PrebuildPreviewOfSuppliedSource,);
-    unrecognised_union!(PrebuildPreviewRequest, Repository, Supplied);
-    unrecognised_union!(PrebuildPreviewSource,);
+    unrecognised_union!(PrebuildPreviewOfSuppliedSource, [], [Supplied]);
+    unrecognised_union!(PrebuildPreviewRequest, [Repository, Supplied], []);
+    unrecognised_union!(PrebuildPreviewSource, [], [RepositoryFile, Supplied]);
     fields_contain_unrecognised!(PrebuildStart, persona_id, rebuild, repository);
-    unrecognised_union!(PrebuildState,);
-    unrecognised_union!(PrebuildStatus, Dispatched, Building, Converting, Done, Failed);
+    unrecognised_union!(PrebuildState, [], [Dispatched, Building, Converting, Done, Failed]);
+    unrecognised_union!(PrebuildStatus, [Dispatched, Building, Converting, Done, Failed], []);
     fields_contain_unrecognised!(PrebuildTemplate, prebuild_template_id, versions);
     fields_contain_unrecognised!(PrebuildTemplateId, 0);
     fields_contain_unrecognised!(PrebuildTemplateManifest, installs, summary, toolchains);
@@ -49609,9 +49762,83 @@ pub mod types {
         toolchains
     );
     fields_contain_unrecognised!(Principal, created_at, email, principal_id, role, tenant_id, updated_at);
-    unrecognised_union!(PrincipalRole,);
+    unrecognised_union!(PrincipalRole, [], [Owner, Member]);
     fields_contain_unrecognised!(Problem, code, detail, fix, title);
-    unrecognised_union!(ProblemCode,);
+    unrecognised_union!(
+        ProblemCode,
+        [],
+        [
+            InvalidRequest,
+            SignedOut,
+            Forbidden,
+            NotFound,
+            Conflict,
+            NotInvited,
+            EnrolmentTokenSpent,
+            EnrolmentTokenExpired,
+            HostRevoked,
+            NoHostAvailable,
+            PoolExhausted,
+            HostDegraded,
+            HostOffline,
+            HarnessNotInCatalog,
+            NoCredential,
+            CredentialExpired,
+            CredentialKindUnsupported,
+            ModelUnsupported,
+            TurnInFlight,
+            TurnNotWaiting,
+            TurnNotRunning,
+            SteerUnsupported,
+            SessionStopping,
+            SessionNotStopped,
+            SessionArchived,
+            SessionFailed,
+            GitHubAppMissing,
+            GitHubNotConnected,
+            IssueNotOpen,
+            IssueNotFound,
+            NoRelease,
+            ReleaseUnreadable,
+            TranscriptLineUnreadable,
+            ImageNotReleased,
+            GitHubAppPermissionMissing,
+            RepositoryUnreadable,
+            GitHubInstallationUnreadable,
+            OwnerRequired,
+            LastOwner,
+            InvitationExpired,
+            EventCursorExpired,
+            SubscriptionEnded,
+            SubscriptionCursorExpired,
+            NoHostOnline,
+            TriggerFieldMissing,
+            ClaudeSetupNotWaiting,
+            ClaudeSetupBoxTokenRefused,
+            DeployInProgress,
+            DeployDrainTokenRefused,
+            MetricRangeTooLarge,
+            MetricNotFound,
+            PrebuildTemplateNotFound,
+            DevcontainerMissing,
+            DevcontainerExists,
+            GitHubRefused,
+            ConnectorInUse,
+            ConnectorChanged,
+            ConnectorDiscoveryFailed,
+            ConnectorRegistrationUnsupported,
+            ConnectorDisconnected,
+            ConnectorRefreshFailed,
+            ConnectorTurnNotRunning,
+            ConnectorTurnTokenRefused,
+            ConnectorAuthRefused,
+            ConnectorUnreachable,
+            BodyTooLarge,
+            RateLimited,
+            UsageLimitReached,
+            AboveFreeTier
+        ]
+    );
     fields_contain_unrecognised!(Prompt, 0);
     fields_contain_unrecognised!(
         ProtectedResourceMetadata,
@@ -49621,7 +49848,7 @@ pub mod types {
         resource_name,
         scopes_supported
     );
-    unrecognised_union!(PullRequestState,);
+    unrecognised_union!(PullRequestState, [], [Open, Merged, Closed]);
     fields_contain_unrecognised!(PushEndpointUrl, 0);
     fields_contain_unrecognised!(PushKey, application_server_key);
     fields_contain_unrecognised!(PushKeyApplicationServerKey, 0);
@@ -49641,9 +49868,9 @@ pub mod types {
     fields_contain_unrecognised!(PushSubscriptionKeysAuth, 0);
     fields_contain_unrecognised!(PushSubscriptionKeysP256dh, 0);
     fields_contain_unrecognised!(PutPersonaFilePatch, file, kind);
-    unrecognised_union!(PutPersonaFilePatchKind,);
+    unrecognised_union!(PutPersonaFilePatchKind, [], [Put]);
     fields_contain_unrecognised!(RawTranscriptPage, cursor, finished, form, lines, session_state);
-    unrecognised_union!(RawTranscriptPageForm,);
+    unrecognised_union!(RawTranscriptPageForm, [], [Raw]);
     fields_contain_unrecognised!(
         ReleaseBaseImage,
         architecture,
@@ -49702,7 +49929,7 @@ pub mod types {
     );
     fields_contain_unrecognised!(ReleaseSupervisorSupervisorVersion, 0);
     fields_contain_unrecognised!(RemovePersonaFilePatch, kind, path);
-    unrecognised_union!(RemovePersonaFilePatchKind,);
+    unrecognised_union!(RemovePersonaFilePatchKind, [], [Remove]);
     fields_contain_unrecognised!(
         ReportedHostUsage,
         box_capacity,
@@ -49720,8 +49947,12 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(RepositoryCloneFailureCause,);
-    unrecognised_union!(RepositoryCredentialSource,);
+    unrecognised_union!(
+        RepositoryCloneFailureCause,
+        [],
+        [Refused, TimedOut, DirectoryNotEmpty, Other]
+    );
+    unrecognised_union!(RepositoryCredentialSource, [], [GitHubApp, SecretSet, None]);
     fields_contain_unrecognised!(RepositoryUrl, 0);
     fields_contain_unrecognised!(RolloutChannelProtocol, channel_protocol_version, host_count);
     fields_contain_unrecognised!(RolloutHost, host_id, running_turns, tenant_id);
@@ -49751,7 +49982,7 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(RunningSessionState,);
+    unrecognised_union!(RunningSessionState, [], [Running]);
     fields_contain_unrecognised!(
         RunningTurn,
         box_id,
@@ -49766,22 +49997,23 @@ pub mod types {
         turn_id,
         updated_at
     );
-    unrecognised_union!(RunningTurnState,);
+    unrecognised_union!(RunningTurnState, [], [Running]);
     fields_contain_unrecognised!(SamplePoint, at, dimensions, metric, value);
     unrecognised_union!(
         SecretKey,
-        SecretVariableKey,
-        ApiKeyKey,
-        SubscriptionTokenKey,
-        CredentialFileKey
+        [SecretVariableKey, ApiKeyKey, SubscriptionTokenKey, CredentialFileKey],
+        []
     );
-    unrecognised_union!(SecretKind,);
+    unrecognised_union!(SecretKind, [], [Variable, ApiKey, SubscriptionToken, CredentialFile]);
     unrecognised_union!(
         SecretMemberUpdate,
-        SecretVariableUpdate,
-        ApiKeyUpdate,
-        SubscriptionTokenUpdate,
-        CredentialFileUpdate
+        [
+            SecretVariableUpdate,
+            ApiKeyUpdate,
+            SubscriptionTokenUpdate,
+            CredentialFileUpdate
+        ],
+        []
     );
     fields_contain_unrecognised!(SecretName, 0);
     fields_contain_unrecognised!(SecretSet, created_at, keys, name, secret_set_id, tenant_id, updated_at);
@@ -49791,34 +50023,40 @@ pub mod types {
     fields_contain_unrecognised!(SecretText, 0);
     unrecognised_union!(
         SecretValue,
-        SecretVariableValue,
-        ApiKeyValue,
-        SubscriptionTokenValue,
-        CredentialFileValue
+        [
+            SecretVariableValue,
+            ApiKeyValue,
+            SubscriptionTokenValue,
+            CredentialFileValue
+        ],
+        []
     );
     fields_contain_unrecognised!(SecretValueSource, env);
     fields_contain_unrecognised!(SecretVariableKey, kind, name, updated_at);
-    unrecognised_union!(SecretVariableKeyKind,);
+    unrecognised_union!(SecretVariableKeyKind, [], [Variable]);
     fields_contain_unrecognised!(SecretVariableMember, kind, name);
-    unrecognised_union!(SecretVariableMemberKind,);
+    unrecognised_union!(SecretVariableMemberKind, [], [Variable]);
     fields_contain_unrecognised!(SecretVariableUpdate, kind, name, previous_name, value);
-    unrecognised_union!(SecretVariableUpdateKind,);
+    unrecognised_union!(SecretVariableUpdateKind, [], [Variable]);
     fields_contain_unrecognised!(SecretVariableValue, kind, name, value);
-    unrecognised_union!(SecretVariableValueKind,);
+    unrecognised_union!(SecretVariableValueKind, [], [Variable]);
     fields_contain_unrecognised!(Sequence, 0);
     unrecognised_union!(
         Session,
-        StartingSession,
-        IdleSession,
-        RunningSession,
-        StoppingSession,
-        StoppedSession,
-        ArchivedSession,
-        FailedSession,
-        UnknownSession
+        [
+            StartingSession,
+            IdleSession,
+            RunningSession,
+            StoppingSession,
+            StoppedSession,
+            ArchivedSession,
+            FailedSession,
+            UnknownSession
+        ],
+        []
     );
     fields_contain_unrecognised!(SessionArchivedEvent, created_at, event, event_id, session_id, tenant_id);
-    unrecognised_union!(SessionArchivedEventEvent,);
+    unrecognised_union!(SessionArchivedEventEvent, [], [SessionArchived]);
     fields_contain_unrecognised!(
         SessionBase,
         box_id,
@@ -49845,7 +50083,7 @@ pub mod types {
         updated_at
     );
     fields_contain_unrecognised!(SessionFailedEvent, created_at, event, event_id, session_id, tenant_id);
-    unrecognised_union!(SessionFailedEventEvent,);
+    unrecognised_union!(SessionFailedEventEvent, [], [SessionFailed]);
     fields_contain_unrecognised!(
         SessionIdleEvent,
         created_at,
@@ -49855,18 +50093,18 @@ pub mod types {
         tenant_id,
         turn_id
     );
-    unrecognised_union!(SessionIdleEventEvent,);
+    unrecognised_union!(SessionIdleEventEvent, [], [SessionIdle]);
     fields_contain_unrecognised!(SessionIssue, branch, html_url, issue_number, session_id, title);
     fields_contain_unrecognised!(SessionIssueOrigin, branch, html_url, issue_number, kind, title);
-    unrecognised_union!(SessionIssueOriginKind,);
-    unrecognised_union!(SessionOrigin, PromptOrigin, IssueOrigin);
-    unrecognised_union!(SessionPrebuildLayer, Stored, Absent);
+    unrecognised_union!(SessionIssueOriginKind, [], [Issue]);
+    unrecognised_union!(SessionOrigin, [PromptOrigin, IssueOrigin], []);
+    unrecognised_union!(SessionPrebuildLayer, [Stored, Absent], []);
     fields_contain_unrecognised!(SessionPrebuildLayerAbsent, detail, layer, reason);
-    unrecognised_union!(SessionPrebuildLayerAbsentLayer,);
+    unrecognised_union!(SessionPrebuildLayerAbsentLayer, [], [None]);
     fields_contain_unrecognised!(SessionPrebuildLayerStored, layer, layer_digest, prebuild_id);
-    unrecognised_union!(SessionPrebuildLayerStoredLayer,);
+    unrecognised_union!(SessionPrebuildLayerStoredLayer, [], [Prebuild]);
     fields_contain_unrecognised!(SessionPromptOrigin, kind);
-    unrecognised_union!(SessionPromptOriginKind,);
+    unrecognised_union!(SessionPromptOriginKind, [], [Prompt]);
     fields_contain_unrecognised!(SessionStart, box_retention, model, persona_id, prompt, repository, tags);
     fields_contain_unrecognised!(
         SessionStartFromIssue,
@@ -49878,7 +50116,7 @@ pub mod types {
         persona_id,
         tags
     );
-    unrecognised_union!(SessionStartedBy, PersonOrigin, TurnOrigin, TriggerOrigin);
+    unrecognised_union!(SessionStartedBy, [PersonOrigin, TurnOrigin, TriggerOrigin], []);
     fields_contain_unrecognised!(
         SessionStartedEvent,
         caller,
@@ -49888,10 +50126,14 @@ pub mod types {
         session_id,
         tenant_id
     );
-    unrecognised_union!(SessionStartedEventEvent,);
-    unrecognised_union!(SessionState,);
+    unrecognised_union!(SessionStartedEventEvent, [], [SessionStarted]);
+    unrecognised_union!(
+        SessionState,
+        [],
+        [Starting, Idle, Running, Stopping, Stopped, Archived, Failed, Unknown]
+    );
     fields_contain_unrecognised!(SessionStoppedEvent, created_at, event, event_id, session_id, tenant_id);
-    unrecognised_union!(SessionStoppedEventEvent,);
+    unrecognised_union!(SessionStoppedEventEvent, [], [SessionStopped]);
     fields_contain_unrecognised!(SessionTag, 0);
     fields_contain_unrecognised!(SessionTags, tags);
     fields_contain_unrecognised!(SessionTagsPatch, add, remove);
@@ -49921,20 +50163,23 @@ pub mod types {
         path,
         uid
     );
-    unrecognised_union!(SnapshotDirectoryEntryKind,);
+    unrecognised_union!(SnapshotDirectoryEntryKind, [], [Directory]);
     fields_contain_unrecognised!(SnapshotDirectoryEntryPath, 0);
     unrecognised_union!(
         SnapshotEntry,
-        FileEntry,
-        DirectoryEntry,
-        OpaqueDirectoryEntry,
-        SymlinkEntry,
-        WhiteoutEntry
+        [
+            FileEntry,
+            DirectoryEntry,
+            OpaqueDirectoryEntry,
+            SymlinkEntry,
+            WhiteoutEntry
+        ],
+        []
     );
     fields_contain_unrecognised!(SnapshotEntryCommon, gid, mode, mtime_nanos, mtime_seconds, path, uid);
     fields_contain_unrecognised!(SnapshotEntryCommonPath, 0);
     fields_contain_unrecognised!(SnapshotFailure, detail, failed_at, reason, state);
-    unrecognised_union!(SnapshotFailureState,);
+    unrecognised_union!(SnapshotFailureState, [], [Failed]);
     fields_contain_unrecognised!(
         SnapshotFileEntry,
         chunks,
@@ -49947,7 +50192,7 @@ pub mod types {
         size_bytes,
         uid
     );
-    unrecognised_union!(SnapshotFileEntryKind,);
+    unrecognised_union!(SnapshotFileEntryKind, [], [File]);
     fields_contain_unrecognised!(SnapshotFileEntryPath, 0);
     fields_contain_unrecognised!(SnapshotManifest, entries);
     fields_contain_unrecognised!(
@@ -49960,12 +50205,12 @@ pub mod types {
         path,
         uid
     );
-    unrecognised_union!(SnapshotOpaqueDirectoryEntryKind,);
+    unrecognised_union!(SnapshotOpaqueDirectoryEntryKind, [], [OpaqueDirectory]);
     fields_contain_unrecognised!(SnapshotOpaqueDirectoryEntryPath, 0);
-    unrecognised_union!(SnapshotOutcome, Stored, Failure);
+    unrecognised_union!(SnapshotOutcome, [Stored, Failure], []);
     fields_contain_unrecognised!(SnapshotRoot, manifest);
     fields_contain_unrecognised!(SnapshotStored, state, uploaded_bytes);
-    unrecognised_union!(SnapshotStoredState,);
+    unrecognised_union!(SnapshotStoredState, [], [Stored]);
     fields_contain_unrecognised!(
         SnapshotSymlinkEntry,
         gid,
@@ -49977,7 +50222,7 @@ pub mod types {
         target,
         uid
     );
-    unrecognised_union!(SnapshotSymlinkEntryKind,);
+    unrecognised_union!(SnapshotSymlinkEntryKind, [], [Symlink]);
     fields_contain_unrecognised!(SnapshotSymlinkEntryPath, 0);
     fields_contain_unrecognised!(SnapshotSymlinkEntryTarget, 0);
     fields_contain_unrecognised!(
@@ -49990,11 +50235,25 @@ pub mod types {
         path,
         uid
     );
-    unrecognised_union!(SnapshotWhiteoutEntryKind,);
+    unrecognised_union!(SnapshotWhiteoutEntryKind, [], [Whiteout]);
     fields_contain_unrecognised!(SnapshotWhiteoutEntryPath, 0);
     fields_contain_unrecognised!(StartRefusal, code, detail);
-    unrecognised_union!(StartRefusalCode,);
-    unrecognised_union!(StartRefusedCaller, PersonOrigin, TurnOrigin);
+    unrecognised_union!(
+        StartRefusalCode,
+        [],
+        [
+            ModelUnsupported,
+            HarnessNotInCatalog,
+            ImageNotReleased,
+            PoolExhausted,
+            NoHostAvailable,
+            HostDegraded,
+            HostOffline,
+            NoCredential,
+            CredentialExpired
+        ]
+    );
+    unrecognised_union!(StartRefusedCaller, [PersonOrigin, TurnOrigin], []);
     fields_contain_unrecognised!(
         StartRefusedEvent,
         caller,
@@ -50008,8 +50267,8 @@ pub mod types {
         refusal,
         tenant_id
     );
-    unrecognised_union!(StartRefusedEventEvent,);
-    unrecognised_union!(StartRefusedOperation,);
+    unrecognised_union!(StartRefusedEventEvent, [], [StartRefused]);
+    unrecognised_union!(StartRefusedOperation, [], [Start, Send]);
     fields_contain_unrecognised!(StartedSession, session, turn);
     fields_contain_unrecognised!(StartedSessionFromIssue, issue, session, turn);
     fields_contain_unrecognised!(
@@ -50038,7 +50297,7 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(StartingSessionState,);
+    unrecognised_union!(StartingSessionState, [], [Starting]);
     fields_contain_unrecognised!(
         StaticConnector,
         auth,
@@ -50050,12 +50309,12 @@ pub mod types {
         updated_at,
         url
     );
-    unrecognised_union!(StaticConnectorAuth,);
+    unrecognised_union!(StaticConnectorAuth, [], [Static]);
     fields_contain_unrecognised!(StaticConnectorCreate, name, url);
     fields_contain_unrecognised!(StaticConnectorTokenWrite, value);
     fields_contain_unrecognised!(Steer, created_at, prompt, state, steer_id, turn_id);
     fields_contain_unrecognised!(SteerCreate, prompt);
-    unrecognised_union!(SteerState,);
+    unrecognised_union!(SteerState, [], [Pending, Delivered, TurnEnded]);
     fields_contain_unrecognised!(
         StopFailure,
         created_at,
@@ -50066,7 +50325,7 @@ pub mod types {
         stop_failure_id,
         tenant_id
     );
-    unrecognised_union!(StopFailureReason,);
+    unrecognised_union!(StopFailureReason, [], [BoxDirty, NotAnswered]);
     fields_contain_unrecognised!(
         StoppedSession,
         box_id,
@@ -50093,7 +50352,7 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(StoppedSessionState,);
+    unrecognised_union!(StoppedSessionState, [], [Stopped]);
     fields_contain_unrecognised!(
         StoppingSession,
         box_id,
@@ -50120,10 +50379,10 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(StoppingSessionState,);
+    unrecognised_union!(StoppingSessionState, [], [Stopping]);
     fields_contain_unrecognised!(StorageKey, 0);
     fields_contain_unrecognised!(StoredConfigFile, digest, from, size_bytes, source);
-    unrecognised_union!(StoredConfigFileSource,);
+    unrecognised_union!(StoredConfigFileSource, [], [Stored]);
     fields_contain_unrecognised!(StoredPersonaFile, digest, path, size_bytes, source);
     fields_contain_unrecognised!(
         StoredPersonaFileRead,
@@ -50136,12 +50395,16 @@ pub mod types {
         source,
         updated_at
     );
-    unrecognised_union!(StoredPersonaFileReadSource,);
-    unrecognised_union!(StoredPersonaFileSource,);
+    unrecognised_union!(StoredPersonaFileReadSource, [], [Stored]);
+    unrecognised_union!(StoredPersonaFileSource, [], [Stored]);
     fields_contain_unrecognised!(StoredTriggerTest, kind, payload, trigger_id);
-    unrecognised_union!(StoredTriggerTestKind,);
+    unrecognised_union!(StoredTriggerTestKind, [], [Stored]);
     fields_contain_unrecognised!(StoredValueChange, previous_name, value);
-    unrecognised_union!(Subscription, ActiveSubscription, PausedSubscription, EndedSubscription);
+    unrecognised_union!(
+        Subscription,
+        [ActiveSubscription, PausedSubscription, EndedSubscription],
+        []
+    );
     fields_contain_unrecognised!(
         SubscriptionBase,
         created_at,
@@ -50167,7 +50430,11 @@ pub mod types {
         prompt,
         session_id
     );
-    unrecognised_union!(SubscriptionEndReason,);
+    unrecognised_union!(
+        SubscriptionEndReason,
+        [],
+        [SessionArchived, SessionFailed, Expired, GoalMet]
+    );
     fields_contain_unrecognised!(
         SubscriptionEndedEvent,
         created_at,
@@ -50178,26 +50445,39 @@ pub mod types {
         subscription_id,
         tenant_id
     );
-    unrecognised_union!(SubscriptionEndedEventEvent,);
-    unrecognised_union!(SubscriptionEventType,);
+    unrecognised_union!(SubscriptionEndedEventEvent, [], [SubscriptionEnded]);
+    unrecognised_union!(
+        SubscriptionEventType,
+        [],
+        [
+            TurnStarted,
+            TurnCompleted,
+            TurnFailed,
+            SessionIdle,
+            SessionStopped,
+            SessionFailed,
+            SessionArchived,
+            SubscriptionPaused,
+            SubscriptionEnded,
+            StartRefused,
+            CapacityAvailable
+        ]
+    );
     fields_contain_unrecognised!(SubscriptionPause, message);
     fields_contain_unrecognised!(SubscriptionPauseMessage, 0);
     unrecognised_union!(
         SubscriptionPauseReason,
-        ByRequest,
-        DeliveryFailed,
-        CrewFailing,
-        CreditExhausted,
-        StartsRefused
+        [ByRequest, DeliveryFailed, CrewFailing, CreditExhausted, StartsRefused],
+        []
     );
     fields_contain_unrecognised!(SubscriptionPausedByRequest, kind, message);
-    unrecognised_union!(SubscriptionPausedByRequestKind,);
+    unrecognised_union!(SubscriptionPausedByRequestKind, [], [ByRequest]);
     fields_contain_unrecognised!(SubscriptionPausedCreditExhausted, kind, turn_id);
-    unrecognised_union!(SubscriptionPausedCreditExhaustedKind,);
+    unrecognised_union!(SubscriptionPausedCreditExhaustedKind, [], [CreditExhausted]);
     fields_contain_unrecognised!(SubscriptionPausedCrewFailing, kind);
-    unrecognised_union!(SubscriptionPausedCrewFailingKind,);
+    unrecognised_union!(SubscriptionPausedCrewFailingKind, [], [CrewFailing]);
     fields_contain_unrecognised!(SubscriptionPausedDeliveryFailed, kind, turn_id);
-    unrecognised_union!(SubscriptionPausedDeliveryFailedKind,);
+    unrecognised_union!(SubscriptionPausedDeliveryFailedKind, [], [DeliveryFailed]);
     fields_contain_unrecognised!(
         SubscriptionPausedEvent,
         created_at,
@@ -50208,14 +50488,14 @@ pub mod types {
         subscription_id,
         tenant_id
     );
-    unrecognised_union!(SubscriptionPausedEventEvent,);
+    unrecognised_union!(SubscriptionPausedEventEvent, [], [SubscriptionPaused]);
     fields_contain_unrecognised!(SubscriptionPausedStartsRefused, kind);
-    unrecognised_union!(SubscriptionPausedStartsRefusedKind,);
-    unrecognised_union!(SubscriptionState,);
+    unrecognised_union!(SubscriptionPausedStartsRefusedKind, [], [StartsRefused]);
+    unrecognised_union!(SubscriptionState, [], [Active, Paused, Ended]);
     fields_contain_unrecognised!(SubscriptionTokenKey, expires_at, kind, name, provider, updated_at);
-    unrecognised_union!(SubscriptionTokenKeyKind,);
+    unrecognised_union!(SubscriptionTokenKeyKind, [], [SubscriptionToken]);
     fields_contain_unrecognised!(SubscriptionTokenMember, expires_at, kind, name, provider);
-    unrecognised_union!(SubscriptionTokenMemberKind,);
+    unrecognised_union!(SubscriptionTokenMemberKind, [], [SubscriptionToken]);
     fields_contain_unrecognised!(
         SubscriptionTokenUpdate,
         expires_at,
@@ -50225,9 +50505,9 @@ pub mod types {
         provider,
         value
     );
-    unrecognised_union!(SubscriptionTokenUpdateKind,);
+    unrecognised_union!(SubscriptionTokenUpdateKind, [], [SubscriptionToken]);
     fields_contain_unrecognised!(SubscriptionTokenValue, expires_at, kind, name, provider, value);
-    unrecognised_union!(SubscriptionTokenValueKind,);
+    unrecognised_union!(SubscriptionTokenValueKind, [], [SubscriptionToken]);
     fields_contain_unrecognised!(Summary, 0);
     fields_contain_unrecognised!(SupervisorChannelState, received, sent, unacked);
     fields_contain_unrecognised!(
@@ -50238,7 +50518,19 @@ pub mod types {
     );
     fields_contain_unrecognised!(SupervisorCheckReportSupervisorVersion, 0);
     fields_contain_unrecognised!(SupervisorConfig, endpoint, host_id, tenant_id);
-    unrecognised_union!(SupervisorFailure,);
+    unrecognised_union!(
+        SupervisorFailure,
+        [],
+        [
+            NotEnrolled,
+            ChannelStateLost,
+            HostRevoked,
+            ProtocolError,
+            UsageUnreadable,
+            GuestDriveUnwritable,
+            UpdateNotOnline
+        ]
+    );
     fields_contain_unrecognised!(SupervisorHandover, boxes, handed_at);
     fields_contain_unrecognised!(
         SupervisorHandoverBox,
@@ -50254,15 +50546,15 @@ pub mod types {
         state,
         tap_index
     );
-    unrecognised_union!(SupervisorHandoverBoxState, Warm, Turn);
-    unrecognised_union!(SupervisorHandoverCommand, Snapshot, Teardown, Discard);
+    unrecognised_union!(SupervisorHandoverBoxState, [Warm, Turn], []);
+    unrecognised_union!(SupervisorHandoverCommand, [Snapshot, Teardown, Discard], []);
     fields_contain_unrecognised!(SupervisorHandoverDiscard, kind);
-    unrecognised_union!(SupervisorHandoverDiscardKind,);
+    unrecognised_union!(SupervisorHandoverDiscardKind, [], [Discard]);
     fields_contain_unrecognised!(SupervisorHandoverFullImage, kind, manifest);
-    unrecognised_union!(SupervisorHandoverFullImageKind,);
-    unrecognised_union!(SupervisorHandoverImage, FullImage, LayeredImage);
+    unrecognised_union!(SupervisorHandoverFullImageKind, [], [Full]);
+    unrecognised_union!(SupervisorHandoverImage, [FullImage, LayeredImage], []);
     fields_contain_unrecognised!(SupervisorHandoverLayeredImage, base, kind, layer, layer_path);
-    unrecognised_union!(SupervisorHandoverLayeredImageKind,);
+    unrecognised_union!(SupervisorHandoverLayeredImageKind, [], [Layered]);
     fields_contain_unrecognised!(
         SupervisorHandoverMachine,
         api_socket,
@@ -50282,9 +50574,9 @@ pub mod types {
         upload_expires_at,
         upload_url
     );
-    unrecognised_union!(SupervisorHandoverSnapshotKind,);
+    unrecognised_union!(SupervisorHandoverSnapshotKind, [], [Snapshot]);
     fields_contain_unrecognised!(SupervisorHandoverTeardown, kind);
-    unrecognised_union!(SupervisorHandoverTeardownKind,);
+    unrecognised_union!(SupervisorHandoverTeardownKind, [], [Teardown]);
     fields_contain_unrecognised!(
         SupervisorHandoverTurn,
         cancelled,
@@ -50297,9 +50589,9 @@ pub mod types {
         turn_milliseconds
     );
     fields_contain_unrecognised!(SupervisorHandoverTurnError, detail, reason);
-    unrecognised_union!(SupervisorHandoverTurnKind,);
+    unrecognised_union!(SupervisorHandoverTurnKind, [], [Turn]);
     fields_contain_unrecognised!(SupervisorHandoverWarm, kind);
-    unrecognised_union!(SupervisorHandoverWarmKind,);
+    unrecognised_union!(SupervisorHandoverWarmKind, [], [Warm]);
     fields_contain_unrecognised!(SupervisorHostKey, private_key, public_key);
     fields_contain_unrecognised!(SupervisorHostKeyPrivateKey, 0);
     fields_contain_unrecognised!(SupervisorHostKeyPublicKey, 0);
@@ -50334,7 +50626,19 @@ pub mod types {
     fields_contain_unrecognised!(SupervisorRuntimeDataDir, 0);
     fields_contain_unrecognised!(SupervisorRuntimeFirecrackerPath, 0);
     fields_contain_unrecognised!(SupervisorRuntimeImageCacheDir, 0);
-    unrecognised_union!(SupervisorUpdateFailureReason,);
+    unrecognised_union!(
+        SupervisorUpdateFailureReason,
+        [],
+        [
+            SupervisorUpdateFetchFailed,
+            SupervisorUpdateChecksumMismatch,
+            SupervisorUpdateDryRunFailed,
+            SupervisorUpdateStateUnreadable,
+            SupervisorUpdateIdleTimedOut,
+            SupervisorUpdateSwapFailed,
+            SupervisorUpdateRolledBack
+        ]
+    );
     fields_contain_unrecognised!(
         SupervisorUpdateFailureReport,
         detail,
@@ -50345,13 +50649,17 @@ pub mod types {
         to_sha256
     );
     fields_contain_unrecognised!(SupervisorUpdateFailureReported, failure, state);
-    unrecognised_union!(SupervisorUpdateFailureReportedState,);
-    unrecognised_union!(SupervisorUpdateLatestFailure, NotReported, FailureReported);
-    unrecognised_union!(SupervisorUpdateLatestStep, NotReported, StepReported);
+    unrecognised_union!(SupervisorUpdateFailureReportedState, [], [Reported]);
+    unrecognised_union!(SupervisorUpdateLatestFailure, [NotReported, FailureReported], []);
+    unrecognised_union!(SupervisorUpdateLatestStep, [NotReported, StepReported], []);
     fields_contain_unrecognised!(SupervisorUpdateNotReported, state);
-    unrecognised_union!(SupervisorUpdateNotReportedState,);
+    unrecognised_union!(SupervisorUpdateNotReportedState, [], [NotReported]);
     fields_contain_unrecognised!(SupervisorUpdatePending, from_sha256, swapped_at, to_sha256);
-    unrecognised_union!(SupervisorUpdatePhase,);
+    unrecognised_union!(
+        SupervisorUpdatePhase,
+        [],
+        [Fetching, DryRunning, Staged, WaitingForIdle, Restarting, Online]
+    );
     fields_contain_unrecognised!(SupervisorUpdateRefusal, reason, refused_at, to_sha256);
     fields_contain_unrecognised!(
         SupervisorUpdateStepReport,
@@ -50364,36 +50672,48 @@ pub mod types {
     );
     fields_contain_unrecognised!(SupervisorUpdateStepReportReleaseVersion, 0);
     fields_contain_unrecognised!(SupervisorUpdateStepReported, state, step);
-    unrecognised_union!(SupervisorUpdateStepReportedState,);
+    unrecognised_union!(SupervisorUpdateStepReportedState, [], [Reported]);
     fields_contain_unrecognised!(Tenant, created_at, name, tenant_id, tier, updated_at);
     fields_contain_unrecognised!(TenantApiApplyConfigInput, now, tenant_id, writes);
     fields_contain_unrecognised!(TenantApiApplyConfigRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiApplyConfigRequestOperation,);
+    unrecognised_union!(TenantApiApplyConfigRequestOperation, [], [ApplyConfig]);
     fields_contain_unrecognised!(TenantApiApplyConfigResult, applied);
-    unrecognised_union!(TenantApiApplyConfigResultApplied, Applied, Conflict, ResourceDeleted);
+    unrecognised_union!(
+        TenantApiApplyConfigResultApplied,
+        [Applied, Conflict, ResourceDeleted],
+        []
+    );
     fields_contain_unrecognised!(TenantApiArchiveSessionInput, now, session_id, tenant_id);
     fields_contain_unrecognised!(TenantApiArchiveSessionRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiArchiveSessionRequestOperation,);
+    unrecognised_union!(TenantApiArchiveSessionRequestOperation, [], [ArchiveSession]);
     fields_contain_unrecognised!(TenantApiArchiveSessionResult, archived);
-    unrecognised_union!(TenantApiArchiveSessionResultArchived, ArchivedOk, NotFound, NotStopped);
+    unrecognised_union!(
+        TenantApiArchiveSessionResultArchived,
+        [ArchivedOk, NotFound, NotStopped],
+        []
+    );
     fields_contain_unrecognised!(TenantApiAuthorizationNoSecretSet, kind);
-    unrecognised_union!(TenantApiAuthorizationNoSecretSetKind,);
+    unrecognised_union!(TenantApiAuthorizationNoSecretSetKind, [], [NoSecretSet]);
     fields_contain_unrecognised!(TenantApiAuthorizationNotFound, kind);
-    unrecognised_union!(TenantApiAuthorizationNotFoundKind,);
+    unrecognised_union!(TenantApiAuthorizationNotFoundKind, [], [NotFound]);
     fields_contain_unrecognised!(TenantApiAuthorizationNotWaiting, detail, kind);
-    unrecognised_union!(TenantApiAuthorizationNotWaitingKind,);
+    unrecognised_union!(TenantApiAuthorizationNotWaitingKind, [], [NotWaiting]);
     fields_contain_unrecognised!(TenantApiAuthorizationOtherCredential, kind, name);
-    unrecognised_union!(TenantApiAuthorizationOtherCredentialKind,);
+    unrecognised_union!(TenantApiAuthorizationOtherCredentialKind, [], [OtherCredential]);
     fields_contain_unrecognised!(TenantApiByteRange, length, offset);
     fields_contain_unrecognised!(TenantApiCancelTurnInput, cancelled_by, now, tenant_id, turn_id);
     fields_contain_unrecognised!(TenantApiCancelTurnRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiCancelTurnRequestOperation,);
+    unrecognised_union!(TenantApiCancelTurnRequestOperation, [], [CancelTurn]);
     fields_contain_unrecognised!(TenantApiCancelTurnResult, cancelled);
-    unrecognised_union!(TenantApiCancelTurnResultCancelled, CancelledOk, NotFound, NotWaiting);
+    unrecognised_union!(
+        TenantApiCancelTurnResultCancelled,
+        [CancelledOk, NotFound, NotWaiting],
+        []
+    );
     fields_contain_unrecognised!(TenantApiCancelUnspoken, host, kind, turn_id);
-    unrecognised_union!(TenantApiCancelUnspokenKind,);
+    unrecognised_union!(TenantApiCancelUnspokenKind, [], [CancelUnspoken]);
     fields_contain_unrecognised!(TenantApiClaudeSetupCodedOk, kind, setup);
-    unrecognised_union!(TenantApiClaudeSetupCodedOkKind,);
+    unrecognised_union!(TenantApiClaudeSetupCodedOkKind, [], [Coded]);
     fields_contain_unrecognised!(TenantApiClaudeSetupDeadline, at, claude_setup_id);
     fields_contain_unrecognised!(TenantApiClaudeSetupDeadlineReachedInput, deadline, tenant_id);
     fields_contain_unrecognised!(
@@ -50402,25 +50722,29 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiClaudeSetupDeadlineReachedRequestOperation,);
+    unrecognised_union!(
+        TenantApiClaudeSetupDeadlineReachedRequestOperation,
+        [],
+        [ClaudeSetupDeadlineReached]
+    );
     fields_contain_unrecognised!(TenantApiClaudeSetupDeadlineReachedResult, 0);
     fields_contain_unrecognised!(TenantApiClaudeSetupNotStored, detail, kind);
-    unrecognised_union!(TenantApiClaudeSetupNotStoredKind,);
+    unrecognised_union!(TenantApiClaudeSetupNotStoredKind, [], [NotStored]);
     fields_contain_unrecognised!(TenantApiClaudeSetupReady, kind, message);
-    unrecognised_union!(TenantApiClaudeSetupReadyKind,);
-    unrecognised_union!(TenantApiClaudeSetupReadyMessage, Offer, Code);
+    unrecognised_union!(TenantApiClaudeSetupReadyKind, [], [Ready]);
+    unrecognised_union!(TenantApiClaudeSetupReadyMessage, [Offer, Code], []);
     fields_contain_unrecognised!(TenantApiClaudeSetupRefused, kind);
-    unrecognised_union!(TenantApiClaudeSetupRefusedKind,);
+    unrecognised_union!(TenantApiClaudeSetupRefusedKind, [], [Refused]);
     fields_contain_unrecognised!(TenantApiClaudeSetupReleaseUnreadable, detail, kind);
-    unrecognised_union!(TenantApiClaudeSetupReleaseUnreadableKind,);
+    unrecognised_union!(TenantApiClaudeSetupReleaseUnreadableKind, [], [ReleaseUnreadable]);
     fields_contain_unrecognised!(TenantApiClaudeSetupStartedOk, kind, setup);
-    unrecognised_union!(TenantApiClaudeSetupStartedOkKind,);
+    unrecognised_union!(TenantApiClaudeSetupStartedOkKind, [], [Started]);
     fields_contain_unrecognised!(TenantApiClaudeSetupStoredOk, kind);
-    unrecognised_union!(TenantApiClaudeSetupStoredOkKind,);
+    unrecognised_union!(TenantApiClaudeSetupStoredOkKind, [], [Stored]);
     fields_contain_unrecognised!(TenantApiClaudeSetupUnplaced, hosts, kind);
-    unrecognised_union!(TenantApiClaudeSetupUnplacedKind,);
+    unrecognised_union!(TenantApiClaudeSetupUnplacedKind, [], [Unplaced]);
     fields_contain_unrecognised!(TenantApiClaudeSetupWithdrawn, kind, message);
-    unrecognised_union!(TenantApiClaudeSetupWithdrawnKind,);
+    unrecognised_union!(TenantApiClaudeSetupWithdrawnKind, [], [Withdrawn]);
     fields_contain_unrecognised!(
         TenantApiClearConnectorCredentialInput,
         connector_id,
@@ -50434,14 +50758,16 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiClearConnectorCredentialRequestOperation,);
+    unrecognised_union!(
+        TenantApiClearConnectorCredentialRequestOperation,
+        [],
+        [ClearConnectorCredential]
+    );
     fields_contain_unrecognised!(TenantApiClearConnectorCredentialResult, written);
     unrecognised_union!(
         TenantApiClearConnectorCredentialResultWritten,
-        WrittenOk,
-        NotFound,
-        NameTaken,
-        Changed
+        [WrittenOk, NotFound, NameTaken, Changed],
+        []
     );
     fields_contain_unrecognised!(TenantApiCompleteSubscriptionInput, now, subscription_id, tenant_id);
     fields_contain_unrecognised!(
@@ -50450,42 +50776,48 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiCompleteSubscriptionRequestOperation,);
+    unrecognised_union!(
+        TenantApiCompleteSubscriptionRequestOperation,
+        [],
+        [CompleteSubscription]
+    );
     fields_contain_unrecognised!(TenantApiCompleteSubscriptionResult, completed);
     unrecognised_union!(
         TenantApiCompleteSubscriptionResultCompleted,
-        ChangedOk,
-        NotFound,
-        EndedState
+        [ChangedOk, NotFound, EndedState],
+        []
     );
     fields_contain_unrecognised!(TenantApiConfigApplied, kind);
-    unrecognised_union!(TenantApiConfigAppliedKind,);
+    unrecognised_union!(TenantApiConfigAppliedKind, [], [Applied]);
     fields_contain_unrecognised!(TenantApiConfigConflict, constraint, kind);
-    unrecognised_union!(TenantApiConfigConflictKind,);
+    unrecognised_union!(TenantApiConfigConflictKind, [], [Conflict]);
     fields_contain_unrecognised!(TenantApiConfigResourceDeleted, kind, resource);
-    unrecognised_union!(TenantApiConfigResourceDeletedKind,);
+    unrecognised_union!(TenantApiConfigResourceDeletedKind, [], [Deleted]);
     unrecognised_union!(
         TenantApiConfigWrite,
-        CreateSecretSetWrite,
-        RewriteSecretSetWrite,
-        DeleteSecretSetWrite,
-        CreatePersonaWrite,
-        UpdatePersonaWrite,
-        DeletePersonaWrite,
-        PinWrite,
-        UnpinWrite,
-        CreateTriggerWrite,
-        UpdateTriggerWrite,
-        DeleteTriggerWrite
+        [
+            CreateSecretSetWrite,
+            RewriteSecretSetWrite,
+            DeleteSecretSetWrite,
+            CreatePersonaWrite,
+            UpdatePersonaWrite,
+            DeletePersonaWrite,
+            PinWrite,
+            UnpinWrite,
+            CreateTriggerWrite,
+            UpdateTriggerWrite,
+            DeleteTriggerWrite
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiConnectorAuthorizeStartedOk, authorization, kind);
-    unrecognised_union!(TenantApiConnectorAuthorizeStartedOkKind,);
+    unrecognised_union!(TenantApiConnectorAuthorizeStartedOkKind, [], [Started]);
     fields_contain_unrecognised!(TenantApiConnectorCallbackCode, code, issuer, kind);
-    unrecognised_union!(TenantApiConnectorCallbackCodeKind,);
+    unrecognised_union!(TenantApiConnectorCallbackCodeKind, [], [Code]);
     fields_contain_unrecognised!(TenantApiConnectorCallbackConnected, kind, name);
-    unrecognised_union!(TenantApiConnectorCallbackConnectedKind,);
+    unrecognised_union!(TenantApiConnectorCallbackConnectedKind, [], [Connected]);
     fields_contain_unrecognised!(TenantApiConnectorCallbackError, error, kind);
-    unrecognised_union!(TenantApiConnectorCallbackErrorKind,);
+    unrecognised_union!(TenantApiConnectorCallbackErrorKind, [], [Error]);
     fields_contain_unrecognised!(
         TenantApiConnectorCallbackInput,
         callback,
@@ -50494,31 +50826,35 @@ pub mod types {
         now,
         state_hash
     );
-    unrecognised_union!(TenantApiConnectorCallbackInputCallback, Code, Error);
+    unrecognised_union!(TenantApiConnectorCallbackInputCallback, [Code, Error], []);
     fields_contain_unrecognised!(TenantApiConnectorCallbackNotConnected, detail, kind);
-    unrecognised_union!(TenantApiConnectorCallbackNotConnectedKind,);
+    unrecognised_union!(TenantApiConnectorCallbackNotConnectedKind, [], [NotConnected]);
     fields_contain_unrecognised!(TenantApiConnectorCallbackRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiConnectorCallbackRequestOperation,);
+    unrecognised_union!(TenantApiConnectorCallbackRequestOperation, [], [ConnectorCallback]);
     fields_contain_unrecognised!(TenantApiConnectorCallbackResult, settled);
-    unrecognised_union!(TenantApiConnectorCallbackResultSettled, Connected, NotConnected);
+    unrecognised_union!(TenantApiConnectorCallbackResultSettled, [Connected, NotConnected], []);
     fields_contain_unrecognised!(TenantApiConnectorChanged, kind);
-    unrecognised_union!(TenantApiConnectorChangedKind,);
+    unrecognised_union!(TenantApiConnectorChangedKind, [], [Changed]);
     fields_contain_unrecognised!(TenantApiConnectorDeletedOk, kind);
-    unrecognised_union!(TenantApiConnectorDeletedOkKind,);
+    unrecognised_union!(TenantApiConnectorDeletedOkKind, [], [Deleted]);
     fields_contain_unrecognised!(TenantApiConnectorDiscoveryFailed, detail, kind);
-    unrecognised_union!(TenantApiConnectorDiscoveryFailedKind,);
+    unrecognised_union!(TenantApiConnectorDiscoveryFailedKind, [], [DiscoveryFailed]);
     fields_contain_unrecognised!(TenantApiConnectorInUse, detail, kind);
-    unrecognised_union!(TenantApiConnectorInUseKind,);
+    unrecognised_union!(TenantApiConnectorInUseKind, [], [InUse]);
     fields_contain_unrecognised!(TenantApiConnectorNameTaken, kind);
-    unrecognised_union!(TenantApiConnectorNameTakenKind,);
+    unrecognised_union!(TenantApiConnectorNameTakenKind, [], [NameTaken]);
     fields_contain_unrecognised!(TenantApiConnectorNoCredential, kind, name);
-    unrecognised_union!(TenantApiConnectorNoCredentialKind,);
+    unrecognised_union!(TenantApiConnectorNoCredentialKind, [], [NoCredential]);
     fields_contain_unrecognised!(TenantApiConnectorNotFound, kind);
-    unrecognised_union!(TenantApiConnectorNotFoundKind,);
+    unrecognised_union!(TenantApiConnectorNotFoundKind, [], [NotFound]);
     fields_contain_unrecognised!(TenantApiConnectorRefreshFailed, detail, kind);
-    unrecognised_union!(TenantApiConnectorRefreshFailedKind,);
+    unrecognised_union!(TenantApiConnectorRefreshFailedKind, [], [RefreshFailed]);
     fields_contain_unrecognised!(TenantApiConnectorRegistrationUnsupported, detail, kind);
-    unrecognised_union!(TenantApiConnectorRegistrationUnsupportedKind,);
+    unrecognised_union!(
+        TenantApiConnectorRegistrationUnsupportedKind,
+        [],
+        [RegistrationUnsupported]
+    );
     fields_contain_unrecognised!(
         TenantApiConnectorStateClaims,
         connector_authorization_id,
@@ -50530,42 +50866,38 @@ pub mod types {
     fields_contain_unrecognised!(TenantApiConnectorStateClaimsConnectorAuthorizationId, 0);
     fields_contain_unrecognised!(TenantApiConnectorStateClaimsConnectorId, 0);
     fields_contain_unrecognised!(TenantApiConnectorStateClaimsPrincipalId, 0);
-    unrecognised_union!(TenantApiConnectorStateClaimsPurpose,);
+    unrecognised_union!(TenantApiConnectorStateClaimsPurpose, [], [ConnectorAuthorization]);
     fields_contain_unrecognised!(TenantApiConnectorStateClaimsTenantId, 0);
     fields_contain_unrecognised!(TenantApiConnectorTokenRefused, kind);
-    unrecognised_union!(TenantApiConnectorTokenRefusedKind,);
+    unrecognised_union!(TenantApiConnectorTokenRefusedKind, [], [Refused]);
     fields_contain_unrecognised!(TenantApiConnectorTokenServedOk, kind, token);
-    unrecognised_union!(TenantApiConnectorTokenServedOkKind,);
+    unrecognised_union!(TenantApiConnectorTokenServedOkKind, [], [Served]);
     fields_contain_unrecognised!(TenantApiConnectorTurnNotRunning, kind);
-    unrecognised_union!(TenantApiConnectorTurnNotRunningKind,);
+    unrecognised_union!(TenantApiConnectorTurnNotRunningKind, [], [NotRunning]);
     fields_contain_unrecognised!(TenantApiConnectorWrittenOk, connector, kind);
-    unrecognised_union!(TenantApiConnectorWrittenOkKind,);
+    unrecognised_union!(TenantApiConnectorWrittenOkKind, [], [Written]);
     fields_contain_unrecognised!(TenantApiConnectorWrittenResult, written);
     unrecognised_union!(
         TenantApiConnectorWrittenResultWritten,
-        WrittenOk,
-        NotFound,
-        NameTaken,
-        Changed
+        [WrittenOk, NotFound, NameTaken, Changed],
+        []
     );
     fields_contain_unrecognised!(TenantApiCreateConnectorInput, auth, name, now, tenant_id, url);
     fields_contain_unrecognised!(TenantApiCreateConnectorRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiCreateConnectorRequestOperation,);
+    unrecognised_union!(TenantApiCreateConnectorRequestOperation, [], [CreateConnector]);
     fields_contain_unrecognised!(TenantApiCreateConnectorResult, written);
     unrecognised_union!(
         TenantApiCreateConnectorResultWritten,
-        WrittenOk,
-        NotFound,
-        NameTaken,
-        Changed
+        [WrittenOk, NotFound, NameTaken, Changed],
+        []
     );
     fields_contain_unrecognised!(TenantApiCreatePersonaInput, now, persona, tenant_id);
     fields_contain_unrecognised!(TenantApiCreatePersonaRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiCreatePersonaRequestOperation,);
+    unrecognised_union!(TenantApiCreatePersonaRequestOperation, [], [CreatePersona]);
     fields_contain_unrecognised!(TenantApiCreatePersonaResult, written);
-    unrecognised_union!(TenantApiCreatePersonaResultWritten, PersonaWritten, WriteConflict);
+    unrecognised_union!(TenantApiCreatePersonaResultWritten, [PersonaWritten, WriteConflict], []);
     fields_contain_unrecognised!(TenantApiCreatePersonaWrite, kind, persona);
-    unrecognised_union!(TenantApiCreatePersonaWriteKind,);
+    unrecognised_union!(TenantApiCreatePersonaWriteKind, [], [CreatePersona]);
     fields_contain_unrecognised!(
         TenantApiCreatePushSubscriptionInput,
         now,
@@ -50579,13 +50911,21 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiCreatePushSubscriptionRequestOperation,);
+    unrecognised_union!(
+        TenantApiCreatePushSubscriptionRequestOperation,
+        [],
+        [CreatePushSubscription]
+    );
     fields_contain_unrecognised!(TenantApiCreatePushSubscriptionResult, subscription);
     fields_contain_unrecognised!(TenantApiCreateSecretSetInput, github_user, now, secret_set, tenant_id);
     fields_contain_unrecognised!(TenantApiCreateSecretSetRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiCreateSecretSetRequestOperation,);
+    unrecognised_union!(TenantApiCreateSecretSetRequestOperation, [], [CreateSecretSet]);
     fields_contain_unrecognised!(TenantApiCreateSecretSetResult, written);
-    unrecognised_union!(TenantApiCreateSecretSetResultWritten, SecretSetWritten, WriteConflict);
+    unrecognised_union!(
+        TenantApiCreateSecretSetResultWritten,
+        [SecretSetWritten, WriteConflict],
+        []
+    );
     fields_contain_unrecognised!(
         TenantApiCreateSecretSetWrite,
         github_user,
@@ -50593,31 +50933,33 @@ pub mod types {
         secret_set,
         secret_set_id
     );
-    unrecognised_union!(TenantApiCreateSecretSetWriteKind,);
+    unrecognised_union!(TenantApiCreateSecretSetWriteKind, [], [CreateSecretSet]);
     fields_contain_unrecognised!(TenantApiCreateSubscriptionInput, now, subscription, tenant_id);
     fields_contain_unrecognised!(TenantApiCreateSubscriptionRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiCreateSubscriptionRequestOperation,);
+    unrecognised_union!(TenantApiCreateSubscriptionRequestOperation, [], [CreateSubscription]);
     fields_contain_unrecognised!(TenantApiCreateSubscriptionResult, created);
     unrecognised_union!(
         TenantApiCreateSubscriptionResultCreated,
-        SubscriptionCreatedOk,
-        SessionNotFound,
-        SessionArchivedState,
-        SessionFailedState,
-        SubscriptionPersonaLacksTumpelMcp
+        [
+            SubscriptionCreatedOk,
+            SessionNotFound,
+            SessionArchivedState,
+            SessionFailedState,
+            SubscriptionPersonaLacksTumpelMcp
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiCreateTriggerInput, now, principal_id, tenant_id, trigger);
     fields_contain_unrecognised!(TenantApiCreateTriggerRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiCreateTriggerRequestOperation,);
+    unrecognised_union!(TenantApiCreateTriggerRequestOperation, [], [CreateTrigger]);
     fields_contain_unrecognised!(TenantApiCreateTriggerResult, created);
     unrecognised_union!(
         TenantApiCreateTriggerResultCreated,
-        CreatedOk,
-        NameTaken,
-        PersonaNotFound
+        [CreatedOk, NameTaken, PersonaNotFound],
+        []
     );
     fields_contain_unrecognised!(TenantApiCreateTriggerWrite, kind, principal_id, trigger);
-    unrecognised_union!(TenantApiCreateTriggerWriteKind,);
+    unrecognised_union!(TenantApiCreateTriggerWriteKind, [], [CreateTrigger]);
     fields_contain_unrecognised!(TenantApiCreateWebhookEndpointInput, endpoint, now, tenant_id);
     fields_contain_unrecognised!(
         TenantApiCreateWebhookEndpointRequest,
@@ -50625,34 +50967,36 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiCreateWebhookEndpointRequestOperation,);
+    unrecognised_union!(
+        TenantApiCreateWebhookEndpointRequestOperation,
+        [],
+        [CreateWebhookEndpoint]
+    );
     fields_contain_unrecognised!(TenantApiCreateWebhookEndpointResult, endpoint);
     fields_contain_unrecognised!(TenantApiDeadlineReachedInput, due, retries, tenant_id);
     fields_contain_unrecognised!(TenantApiDeadlineReachedRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiDeadlineReachedRequestOperation,);
+    unrecognised_union!(TenantApiDeadlineReachedRequestOperation, [], [DeadlineReached]);
     fields_contain_unrecognised!(TenantApiDeadlineReachedResult, 0);
     fields_contain_unrecognised!(TenantApiDeferredOffersInput, host_id, tenant_id);
     fields_contain_unrecognised!(TenantApiDeferredOffersRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiDeferredOffersRequestOperation,);
+    unrecognised_union!(TenantApiDeferredOffersRequestOperation, [], [DeferredOffers]);
     fields_contain_unrecognised!(TenantApiDeferredOffersResult, handoffs);
     fields_contain_unrecognised!(TenantApiDeleteConnectorInput, connector_id, updated_at);
     fields_contain_unrecognised!(TenantApiDeleteConnectorRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiDeleteConnectorRequestOperation,);
+    unrecognised_union!(TenantApiDeleteConnectorRequestOperation, [], [DeleteConnector]);
     fields_contain_unrecognised!(TenantApiDeleteConnectorResult, deleted);
     unrecognised_union!(
         TenantApiDeleteConnectorResultDeleted,
-        DeletedOk,
-        NotFound,
-        Changed,
-        InUse
+        [DeletedOk, NotFound, Changed, InUse],
+        []
     );
     fields_contain_unrecognised!(TenantApiDeletePersonaInput, persona_id, tenant_id);
     fields_contain_unrecognised!(TenantApiDeletePersonaRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiDeletePersonaRequestOperation,);
+    unrecognised_union!(TenantApiDeletePersonaRequestOperation, [], [DeletePersona]);
     fields_contain_unrecognised!(TenantApiDeletePersonaResult, deleted);
-    unrecognised_union!(TenantApiDeletePersonaResultDeleted, Deleted, NotFound, InUse);
+    unrecognised_union!(TenantApiDeletePersonaResultDeleted, [Deleted, NotFound, InUse], []);
     fields_contain_unrecognised!(TenantApiDeletePersonaWrite, kind, persona_id);
-    unrecognised_union!(TenantApiDeletePersonaWriteKind,);
+    unrecognised_union!(TenantApiDeletePersonaWriteKind, [], [DeletePersona]);
     fields_contain_unrecognised!(
         TenantApiDeletePushSubscriptionInput,
         principal_id,
@@ -50665,30 +51009,34 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiDeletePushSubscriptionRequestOperation,);
+    unrecognised_union!(
+        TenantApiDeletePushSubscriptionRequestOperation,
+        [],
+        [DeletePushSubscription]
+    );
     fields_contain_unrecognised!(TenantApiDeletePushSubscriptionResult, deleted);
     fields_contain_unrecognised!(TenantApiDeleteSecretSetInput, secret_set_id);
     fields_contain_unrecognised!(TenantApiDeleteSecretSetRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiDeleteSecretSetRequestOperation,);
+    unrecognised_union!(TenantApiDeleteSecretSetRequestOperation, [], [DeleteSecretSet]);
     fields_contain_unrecognised!(TenantApiDeleteSecretSetResult, deleted);
-    unrecognised_union!(TenantApiDeleteSecretSetResultDeleted, Deleted, NotFound, InUse);
+    unrecognised_union!(TenantApiDeleteSecretSetResultDeleted, [Deleted, NotFound, InUse], []);
     fields_contain_unrecognised!(TenantApiDeleteSecretSetWrite, kind, secret_set_id);
-    unrecognised_union!(TenantApiDeleteSecretSetWriteKind,);
+    unrecognised_union!(TenantApiDeleteSecretSetWriteKind, [], [DeleteSecretSet]);
     fields_contain_unrecognised!(TenantApiDeleteSessionInput, session_id, tenant_id);
     fields_contain_unrecognised!(TenantApiDeleteSessionRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiDeleteSessionRequestOperation,);
+    unrecognised_union!(TenantApiDeleteSessionRequestOperation, [], [DeleteSession]);
     fields_contain_unrecognised!(TenantApiDeleteSessionResult, deleted);
-    unrecognised_union!(TenantApiDeleteSessionResultDeleted, Deleted, NotFound, NotStopped);
+    unrecognised_union!(TenantApiDeleteSessionResultDeleted, [Deleted, NotFound, NotStopped], []);
     fields_contain_unrecognised!(TenantApiDeleteSubscriptionInput, now, subscription_id, tenant_id);
     fields_contain_unrecognised!(TenantApiDeleteSubscriptionRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiDeleteSubscriptionRequestOperation,);
+    unrecognised_union!(TenantApiDeleteSubscriptionRequestOperation, [], [DeleteSubscription]);
     fields_contain_unrecognised!(TenantApiDeleteSubscriptionResult, deleted);
     fields_contain_unrecognised!(TenantApiDeleteTriggerInput, now, tenant_id, trigger_id);
     fields_contain_unrecognised!(TenantApiDeleteTriggerRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiDeleteTriggerRequestOperation,);
+    unrecognised_union!(TenantApiDeleteTriggerRequestOperation, [], [DeleteTrigger]);
     fields_contain_unrecognised!(TenantApiDeleteTriggerResult, deleted);
     fields_contain_unrecognised!(TenantApiDeleteTriggerWrite, kind, trigger_id);
-    unrecognised_union!(TenantApiDeleteTriggerWriteKind,);
+    unrecognised_union!(TenantApiDeleteTriggerWriteKind, [], [DeleteTrigger]);
     fields_contain_unrecognised!(TenantApiDeleteWebhookEndpointInput, tenant_id, webhook_endpoint_id);
     fields_contain_unrecognised!(
         TenantApiDeleteWebhookEndpointRequest,
@@ -50696,17 +51044,21 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiDeleteWebhookEndpointRequestOperation,);
+    unrecognised_union!(
+        TenantApiDeleteWebhookEndpointRequestOperation,
+        [],
+        [DeleteWebhookEndpoint]
+    );
     fields_contain_unrecognised!(TenantApiDeleteWebhookEndpointResult, deleted);
     fields_contain_unrecognised!(TenantApiEventCursorExpired, kind, oldest_event_id);
-    unrecognised_union!(TenantApiEventCursorExpiredKind,);
+    unrecognised_union!(TenantApiEventCursorExpiredKind, [], [CursorExpired]);
     fields_contain_unrecognised!(TenantApiEventsRead, kind, page);
-    unrecognised_union!(TenantApiEventsReadKind,);
+    unrecognised_union!(TenantApiEventsReadKind, [], [Read]);
     fields_contain_unrecognised!(TenantApiExpiredCredentialRefusal, expires_at, kind, name);
-    unrecognised_union!(TenantApiExpiredCredentialRefusalKind,);
+    unrecognised_union!(TenantApiExpiredCredentialRefusalKind, [], [Expired]);
     fields_contain_unrecognised!(TenantApiForgetHostUsageInput, host_id);
     fields_contain_unrecognised!(TenantApiForgetHostUsageRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiForgetHostUsageRequestOperation,);
+    unrecognised_union!(TenantApiForgetHostUsageRequestOperation, [], [ForgetHostUsage]);
     fields_contain_unrecognised!(TenantApiForgetHostUsageResult, 0);
     fields_contain_unrecognised!(TenantApiForgetPushSubscriptionInput, push_subscription_id, tenant_id);
     fields_contain_unrecognised!(
@@ -50715,15 +51067,19 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiForgetPushSubscriptionRequestOperation,);
+    unrecognised_union!(
+        TenantApiForgetPushSubscriptionRequestOperation,
+        [],
+        [ForgetPushSubscription]
+    );
     fields_contain_unrecognised!(TenantApiForgetPushSubscriptionResult, 0);
     fields_contain_unrecognised!(TenantApiGetClaudeSetupInput, claude_setup_id, now, tenant_id);
     fields_contain_unrecognised!(TenantApiGetClaudeSetupRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetClaudeSetupRequestOperation,);
+    unrecognised_union!(TenantApiGetClaudeSetupRequestOperation, [], [GetClaudeSetup]);
     fields_contain_unrecognised!(TenantApiGetClaudeSetupResult, setup);
     fields_contain_unrecognised!(TenantApiGetConnectorInput, connector_id, now, tenant_id);
     fields_contain_unrecognised!(TenantApiGetConnectorRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetConnectorRequestOperation,);
+    unrecognised_union!(TenantApiGetConnectorRequestOperation, [], [GetConnector]);
     fields_contain_unrecognised!(TenantApiGetConnectorResult, connector);
     fields_contain_unrecognised!(
         TenantApiGetOpenRouterAuthorizationInput,
@@ -50737,65 +51093,69 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiGetOpenRouterAuthorizationRequestOperation,);
+    unrecognised_union!(
+        TenantApiGetOpenRouterAuthorizationRequestOperation,
+        [],
+        [GetOpenRouterAuthorization]
+    );
     fields_contain_unrecognised!(TenantApiGetOpenRouterAuthorizationResult, read);
     unrecognised_union!(
         TenantApiGetOpenRouterAuthorizationResultRead,
-        OpenRouterAuthorizationFound,
-        AuthorizationNotFound
+        [OpenRouterAuthorizationFound, AuthorizationNotFound],
+        []
     );
     fields_contain_unrecognised!(TenantApiGetPersonaInput, persona_id, tenant_id);
     fields_contain_unrecognised!(TenantApiGetPersonaRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetPersonaRequestOperation,);
+    unrecognised_union!(TenantApiGetPersonaRequestOperation, [], [GetPersona]);
     fields_contain_unrecognised!(TenantApiGetPersonaResult, persona);
     fields_contain_unrecognised!(TenantApiGetPrebuildFailureInput, prebuild_id, tenant_id);
     fields_contain_unrecognised!(TenantApiGetPrebuildFailureRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetPrebuildFailureRequestOperation,);
+    unrecognised_union!(TenantApiGetPrebuildFailureRequestOperation, [], [GetPrebuildFailure]);
     fields_contain_unrecognised!(TenantApiGetPrebuildFailureResult, failure);
     fields_contain_unrecognised!(TenantApiGetPrebuildInput, prebuild_id, tenant_id);
     fields_contain_unrecognised!(TenantApiGetPrebuildRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetPrebuildRequestOperation,);
+    unrecognised_union!(TenantApiGetPrebuildRequestOperation, [], [GetPrebuild]);
     fields_contain_unrecognised!(TenantApiGetPrebuildResult, prebuild);
     fields_contain_unrecognised!(TenantApiGetSecretSetInput, secret_set_id, tenant_id);
     fields_contain_unrecognised!(TenantApiGetSecretSetRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetSecretSetRequestOperation,);
+    unrecognised_union!(TenantApiGetSecretSetRequestOperation, [], [GetSecretSet]);
     fields_contain_unrecognised!(TenantApiGetSecretSetResult, read);
-    unrecognised_union!(TenantApiGetSecretSetResultRead, Found, NotFound, Unreadable);
+    unrecognised_union!(TenantApiGetSecretSetResultRead, [Found, NotFound, Unreadable], []);
     fields_contain_unrecognised!(TenantApiGetSessionInput, session_id, tenant_id);
     fields_contain_unrecognised!(TenantApiGetSessionRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetSessionRequestOperation,);
+    unrecognised_union!(TenantApiGetSessionRequestOperation, [], [GetSession]);
     fields_contain_unrecognised!(TenantApiGetSessionResult, session);
     fields_contain_unrecognised!(TenantApiGetSnapshotInput, snapshot_id, tenant_id);
     fields_contain_unrecognised!(TenantApiGetSnapshotRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetSnapshotRequestOperation,);
+    unrecognised_union!(TenantApiGetSnapshotRequestOperation, [], [GetSnapshot]);
     fields_contain_unrecognised!(TenantApiGetSnapshotResult, snapshot);
     fields_contain_unrecognised!(TenantApiGetSubscriptionInput, subscription_id, tenant_id);
     fields_contain_unrecognised!(TenantApiGetSubscriptionRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetSubscriptionRequestOperation,);
+    unrecognised_union!(TenantApiGetSubscriptionRequestOperation, [], [GetSubscription]);
     fields_contain_unrecognised!(TenantApiGetSubscriptionResult, subscription);
     fields_contain_unrecognised!(TenantApiGetTriggerInput, tenant_id, trigger_id);
     fields_contain_unrecognised!(TenantApiGetTriggerRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetTriggerRequestOperation,);
+    unrecognised_union!(TenantApiGetTriggerRequestOperation, [], [GetTrigger]);
     fields_contain_unrecognised!(TenantApiGetTriggerResult, trigger);
     fields_contain_unrecognised!(TenantApiGetTurnFailureInput, tenant_id, turn_id);
     fields_contain_unrecognised!(TenantApiGetTurnFailureRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetTurnFailureRequestOperation,);
+    unrecognised_union!(TenantApiGetTurnFailureRequestOperation, [], [GetTurnFailure]);
     fields_contain_unrecognised!(TenantApiGetTurnFailureResult, failure);
     fields_contain_unrecognised!(TenantApiGetTurnInput, tenant_id, turn_id);
     fields_contain_unrecognised!(TenantApiGetTurnRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetTurnRequestOperation,);
+    unrecognised_union!(TenantApiGetTurnRequestOperation, [], [GetTurn]);
     fields_contain_unrecognised!(TenantApiGetTurnResult, turn);
     fields_contain_unrecognised!(TenantApiGetWebhookEndpointInput, tenant_id, webhook_endpoint_id);
     fields_contain_unrecognised!(TenantApiGetWebhookEndpointRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiGetWebhookEndpointRequestOperation,);
+    unrecognised_union!(TenantApiGetWebhookEndpointRequestOperation, [], [GetWebhookEndpoint]);
     fields_contain_unrecognised!(TenantApiGetWebhookEndpointResult, endpoint);
     fields_contain_unrecognised!(TenantApiGitHubUser, github_user_id, login);
     fields_contain_unrecognised!(TenantApiHeldPrebuildInput, key, tenant_id);
     fields_contain_unrecognised!(TenantApiHeldPrebuildRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiHeldPrebuildRequestOperation,);
+    unrecognised_union!(TenantApiHeldPrebuildRequestOperation, [], [HeldPrebuild]);
     fields_contain_unrecognised!(TenantApiHeldPrebuildResult, prebuild);
     fields_contain_unrecognised!(TenantApiHostFrameRefused, reason, type_);
-    unrecognised_union!(TenantApiHostFrameRefusedType,);
+    unrecognised_union!(TenantApiHostFrameRefusedType, [], [Refused]);
     fields_contain_unrecognised!(
         TenantApiHostHeartbeatInput,
         box_capacity,
@@ -50810,7 +51170,7 @@ pub mod types {
         usage
     );
     fields_contain_unrecognised!(TenantApiHostHeartbeatRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiHostHeartbeatRequestOperation,);
+    unrecognised_union!(TenantApiHostHeartbeatRequestOperation, [], [HostHeartbeat]);
     fields_contain_unrecognised!(TenantApiHostHeartbeatResult, 0);
     fields_contain_unrecognised!(
         TenantApiHostHelloInput,
@@ -50823,30 +51183,33 @@ pub mod types {
         usage
     );
     fields_contain_unrecognised!(TenantApiHostHelloRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiHostHelloRequestOperation,);
+    unrecognised_union!(TenantApiHostHelloRequestOperation, [], [HostHello]);
     fields_contain_unrecognised!(TenantApiHostHelloResult, 0);
     fields_contain_unrecognised!(TenantApiHostMessageInput, host_id, message, tenant_id);
     unrecognised_union!(
         TenantApiHostMessageInputMessage,
-        TurnImageFetching,
-        TurnClaim,
-        TurnRepositoryReady,
-        TurnLines,
-        TurnComplete,
-        TurnRepositoryCloneFailed,
-        TurnFailed,
-        SnapshotChunks,
-        SnapshotPacks,
-        RestoreChunks,
-        SnapshotDone,
-        SnapshotFailed,
-        BoxGone,
-        BoxTeardownFailed,
-        ClaudeSetupBoxUrl,
-        ClaudeSetupBoxFailed
+        [
+            TurnImageFetching,
+            TurnClaim,
+            TurnRepositoryReady,
+            TurnLines,
+            TurnComplete,
+            TurnRepositoryCloneFailed,
+            TurnFailed,
+            SnapshotChunks,
+            SnapshotPacks,
+            RestoreChunks,
+            SnapshotDone,
+            SnapshotFailed,
+            BoxGone,
+            BoxTeardownFailed,
+            ClaudeSetupBoxUrl,
+            ClaudeSetupBoxFailed
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiHostMessageRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiHostMessageRequestOperation,);
+    unrecognised_union!(TenantApiHostMessageRequestOperation, [], [HostMessage]);
     fields_contain_unrecognised!(TenantApiHostMessageResult, reply);
     fields_contain_unrecognised!(
         TenantApiHostMessageResultReply,
@@ -50862,7 +51225,7 @@ pub mod types {
         subtype_9
     );
     fields_contain_unrecognised!(TenantApiHostPrebuildStarted, kind, started);
-    unrecognised_union!(TenantApiHostPrebuildStartedKind,);
+    unrecognised_union!(TenantApiHostPrebuildStartedKind, [], [Started]);
     fields_contain_unrecognised!(
         TenantApiHostRecord,
         architecture,
@@ -50886,11 +51249,11 @@ pub mod types {
     fields_contain_unrecognised!(TenantApiIssueOfSession, branch, html_url, issue_number, title);
     fields_contain_unrecognised!(TenantApiListClaudeSetupsInput, now, secret_set_id, tenant_id);
     fields_contain_unrecognised!(TenantApiListClaudeSetupsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListClaudeSetupsRequestOperation,);
+    unrecognised_union!(TenantApiListClaudeSetupsRequestOperation, [], [ListClaudeSetups]);
     fields_contain_unrecognised!(TenantApiListClaudeSetupsResult, setups);
     fields_contain_unrecognised!(TenantApiListConnectorsInput, now, tenant_id);
     fields_contain_unrecognised!(TenantApiListConnectorsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListConnectorsRequestOperation,);
+    unrecognised_union!(TenantApiListConnectorsRequestOperation, [], [ListConnectors]);
     fields_contain_unrecognised!(TenantApiListConnectorsResult, connectors);
     fields_contain_unrecognised!(TenantApiListCredentialHandoversInput, session_id, tenant_id);
     fields_contain_unrecognised!(
@@ -50899,7 +51262,11 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiListCredentialHandoversRequestOperation,);
+    unrecognised_union!(
+        TenantApiListCredentialHandoversRequestOperation,
+        [],
+        [ListCredentialHandovers]
+    );
     fields_contain_unrecognised!(TenantApiListCredentialHandoversResult, handovers);
     fields_contain_unrecognised!(
         TenantApiListEventsInput,
@@ -50910,12 +51277,12 @@ pub mod types {
         trigger_id
     );
     fields_contain_unrecognised!(TenantApiListEventsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListEventsRequestOperation,);
+    unrecognised_union!(TenantApiListEventsRequestOperation, [], [ListEvents]);
     fields_contain_unrecognised!(TenantApiListEventsResult, listed);
-    unrecognised_union!(TenantApiListEventsResultListed, EventsRead, EventCursorExpired);
+    unrecognised_union!(TenantApiListEventsResultListed, [EventsRead, EventCursorExpired], []);
     fields_contain_unrecognised!(TenantApiListHostUsageInput, tenant_id);
     fields_contain_unrecognised!(TenantApiListHostUsageRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListHostUsageRequestOperation,);
+    unrecognised_union!(TenantApiListHostUsageRequestOperation, [], [ListHostUsage]);
     fields_contain_unrecognised!(TenantApiListHostUsageResult, usage);
     fields_contain_unrecognised!(TenantApiListLatestPrebuildsInput, tenant_id);
     fields_contain_unrecognised!(
@@ -50924,19 +51291,19 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiListLatestPrebuildsRequestOperation,);
+    unrecognised_union!(TenantApiListLatestPrebuildsRequestOperation, [], [ListLatestPrebuilds]);
     fields_contain_unrecognised!(TenantApiListLatestPrebuildsResult, prebuilds);
     fields_contain_unrecognised!(TenantApiListPersonasInput, tenant_id);
     fields_contain_unrecognised!(TenantApiListPersonasRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListPersonasRequestOperation,);
+    unrecognised_union!(TenantApiListPersonasRequestOperation, [], [ListPersonas]);
     fields_contain_unrecognised!(TenantApiListPersonasResult, personas);
     fields_contain_unrecognised!(TenantApiListPinsInput, 0);
     fields_contain_unrecognised!(TenantApiListPinsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListPinsRequestOperation,);
+    unrecognised_union!(TenantApiListPinsRequestOperation, [], [ListPins]);
     fields_contain_unrecognised!(TenantApiListPinsResult, pins);
     fields_contain_unrecognised!(TenantApiListPrebuildsInput, repository, tenant_id);
     fields_contain_unrecognised!(TenantApiListPrebuildsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListPrebuildsRequestOperation,);
+    unrecognised_union!(TenantApiListPrebuildsRequestOperation, [], [ListPrebuilds]);
     fields_contain_unrecognised!(TenantApiListPrebuildsResult, prebuilds);
     fields_contain_unrecognised!(TenantApiListPushSubscriptionsInput, principal_id, tenant_id);
     fields_contain_unrecognised!(
@@ -50945,40 +51312,44 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiListPushSubscriptionsRequestOperation,);
+    unrecognised_union!(
+        TenantApiListPushSubscriptionsRequestOperation,
+        [],
+        [ListPushSubscriptions]
+    );
     fields_contain_unrecognised!(TenantApiListPushSubscriptionsResult, subscriptions);
     fields_contain_unrecognised!(TenantApiListSecretSetsInput, tenant_id);
     fields_contain_unrecognised!(TenantApiListSecretSetsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListSecretSetsRequestOperation,);
+    unrecognised_union!(TenantApiListSecretSetsRequestOperation, [], [ListSecretSets]);
     fields_contain_unrecognised!(TenantApiListSecretSetsResult, read);
-    unrecognised_union!(TenantApiListSecretSetsResultRead, SetsRead, SetUnreadable);
+    unrecognised_union!(TenantApiListSecretSetsResultRead, [SetsRead, SetUnreadable], []);
     fields_contain_unrecognised!(TenantApiListSessionsInput, filter, tenant_id);
     fields_contain_unrecognised!(TenantApiListSessionsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListSessionsRequestOperation,);
+    unrecognised_union!(TenantApiListSessionsRequestOperation, [], [ListSessions]);
     fields_contain_unrecognised!(TenantApiListSessionsResult, sessions);
     fields_contain_unrecognised!(TenantApiListSnapshotsInput, session_id, tenant_id);
     fields_contain_unrecognised!(TenantApiListSnapshotsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListSnapshotsRequestOperation,);
+    unrecognised_union!(TenantApiListSnapshotsRequestOperation, [], [ListSnapshots]);
     fields_contain_unrecognised!(TenantApiListSnapshotsResult, snapshots);
     fields_contain_unrecognised!(TenantApiListSteersInput, tenant_id, turn_id);
     fields_contain_unrecognised!(TenantApiListSteersRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListSteersRequestOperation,);
+    unrecognised_union!(TenantApiListSteersRequestOperation, [], [ListSteers]);
     fields_contain_unrecognised!(TenantApiListSteersResult, steers);
     fields_contain_unrecognised!(TenantApiListStopFailuresInput, session_id, tenant_id);
     fields_contain_unrecognised!(TenantApiListStopFailuresRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListStopFailuresRequestOperation,);
+    unrecognised_union!(TenantApiListStopFailuresRequestOperation, [], [ListStopFailures]);
     fields_contain_unrecognised!(TenantApiListStopFailuresResult, failures);
     fields_contain_unrecognised!(TenantApiListSubscriptionsInput, filter, tenant_id);
     fields_contain_unrecognised!(TenantApiListSubscriptionsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListSubscriptionsRequestOperation,);
+    unrecognised_union!(TenantApiListSubscriptionsRequestOperation, [], [ListSubscriptions]);
     fields_contain_unrecognised!(TenantApiListSubscriptionsResult, subscriptions);
     fields_contain_unrecognised!(TenantApiListTriggersInput, tenant_id);
     fields_contain_unrecognised!(TenantApiListTriggersRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListTriggersRequestOperation,);
+    unrecognised_union!(TenantApiListTriggersRequestOperation, [], [ListTriggers]);
     fields_contain_unrecognised!(TenantApiListTriggersResult, triggers);
     fields_contain_unrecognised!(TenantApiListTurnsInput, session_id, tenant_id);
     fields_contain_unrecognised!(TenantApiListTurnsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiListTurnsRequestOperation,);
+    unrecognised_union!(TenantApiListTurnsRequestOperation, [], [ListTurns]);
     fields_contain_unrecognised!(TenantApiListTurnsResult, turns);
     fields_contain_unrecognised!(TenantApiListWebhookEndpointsInput, tenant_id);
     fields_contain_unrecognised!(
@@ -50987,7 +51358,11 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiListWebhookEndpointsRequestOperation,);
+    unrecognised_union!(
+        TenantApiListWebhookEndpointsRequestOperation,
+        [],
+        [ListWebhookEndpoints]
+    );
     fields_contain_unrecognised!(TenantApiListWebhookEndpointsResult, endpoints);
     fields_contain_unrecognised!(
         TenantApiModelUnsupportedCredentialRefusal,
@@ -50997,7 +51372,7 @@ pub mod types {
         model,
         name
     );
-    unrecognised_union!(TenantApiModelUnsupportedCredentialRefusalKind,);
+    unrecognised_union!(TenantApiModelUnsupportedCredentialRefusalKind, [], [ModelUnsupported]);
     fields_contain_unrecognised!(
         TenantApiNewClaudeSetup,
         endpoint,
@@ -51019,9 +51394,9 @@ pub mod types {
         started_by
     );
     fields_contain_unrecognised!(TenantApiNoCredentialRefusal, accepted, kind);
-    unrecognised_union!(TenantApiNoCredentialRefusalKind,);
+    unrecognised_union!(TenantApiNoCredentialRefusalKind, [], [NoCredential]);
     fields_contain_unrecognised!(TenantApiNoModelCredentialRefusal, accepted, kind, model, provider);
-    unrecognised_union!(TenantApiNoModelCredentialRefusalKind,);
+    unrecognised_union!(TenantApiNoModelCredentialRefusalKind, [], [NoModelCredential]);
     fields_contain_unrecognised!(
         TenantApiOfferReady,
         credential,
@@ -51033,12 +51408,12 @@ pub mod types {
         persona_files,
         snapshots
     );
-    unrecognised_union!(TenantApiOfferReadyKind,);
+    unrecognised_union!(TenantApiOfferReadyKind, [], [Ready]);
     fields_contain_unrecognised!(TenantApiOfferWithdrawn, kind);
-    unrecognised_union!(TenantApiOfferWithdrawnKind,);
+    unrecognised_union!(TenantApiOfferWithdrawnKind, [], [Withdrawn]);
     fields_contain_unrecognised!(TenantApiOpenInput, now, tenant_id);
     fields_contain_unrecognised!(TenantApiOpenRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiOpenRequestOperation,);
+    unrecognised_union!(TenantApiOpenRequestOperation, [], [Open]);
     fields_contain_unrecognised!(TenantApiOpenResult, 0);
     fields_contain_unrecognised!(
         TenantApiOpenRouterAuthorizationDeadline,
@@ -51052,14 +51427,18 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiOpenRouterAuthorizationDeadlineReachedRequestOperation,);
+    unrecognised_union!(
+        TenantApiOpenRouterAuthorizationDeadlineReachedRequestOperation,
+        [],
+        [OpenRouterAuthorizationDeadlineReached]
+    );
     fields_contain_unrecognised!(TenantApiOpenRouterAuthorizationDeadlineReachedResult, 0);
     fields_contain_unrecognised!(TenantApiOpenRouterAuthorizationFound, authorization, kind);
-    unrecognised_union!(TenantApiOpenRouterAuthorizationFoundKind,);
+    unrecognised_union!(TenantApiOpenRouterAuthorizationFoundKind, [], [Found]);
     fields_contain_unrecognised!(TenantApiOpenRouterAuthorizationStartedOk, authorization, kind);
-    unrecognised_union!(TenantApiOpenRouterAuthorizationStartedOkKind,);
+    unrecognised_union!(TenantApiOpenRouterAuthorizationStartedOkKind, [], [Started]);
     fields_contain_unrecognised!(TenantApiOpenRouterCallbackCode, code, kind);
-    unrecognised_union!(TenantApiOpenRouterCallbackCodeKind,);
+    unrecognised_union!(TenantApiOpenRouterCallbackCodeKind, [], [Code]);
     fields_contain_unrecognised!(
         TenantApiOpenRouterCallbackInput,
         callback,
@@ -51067,19 +51446,19 @@ pub mod types {
         open_router_authorization_id,
         tenant_id
     );
-    unrecognised_union!(TenantApiOpenRouterCallbackInputCallback, Code, NoCode);
+    unrecognised_union!(TenantApiOpenRouterCallbackInputCallback, [Code, NoCode], []);
     fields_contain_unrecognised!(TenantApiOpenRouterCallbackNoCode, kind);
-    unrecognised_union!(TenantApiOpenRouterCallbackNoCodeKind,);
+    unrecognised_union!(TenantApiOpenRouterCallbackNoCodeKind, [], [NoCode]);
     fields_contain_unrecognised!(TenantApiOpenRouterCallbackRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiOpenRouterCallbackRequestOperation,);
+    unrecognised_union!(TenantApiOpenRouterCallbackRequestOperation, [], [OpenRouterCallback]);
     fields_contain_unrecognised!(TenantApiOpenRouterCallbackResult, settled);
     unrecognised_union!(
         TenantApiOpenRouterCallbackResultSettled,
-        OpenRouterReturned,
-        AuthorizationNotFound
+        [OpenRouterReturned, AuthorizationNotFound],
+        []
     );
     fields_contain_unrecognised!(TenantApiOpenRouterReturned, kind, secret_set_id);
-    unrecognised_union!(TenantApiOpenRouterReturnedKind,);
+    unrecognised_union!(TenantApiOpenRouterReturnedKind, [], [Returned]);
     fields_contain_unrecognised!(TenantApiOpenRouterSecretSetsInput, 0);
     fields_contain_unrecognised!(
         TenantApiOpenRouterSecretSetsRequest,
@@ -51087,13 +51466,17 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiOpenRouterSecretSetsRequestOperation,);
+    unrecognised_union!(
+        TenantApiOpenRouterSecretSetsRequestOperation,
+        [],
+        [OpenRouterSecretSets]
+    );
     fields_contain_unrecognised!(TenantApiOpenRouterSecretSetsResult, names);
     fields_contain_unrecognised!(TenantApiPatchPersonaInput, now, patch, persona_id, tenant_id);
     fields_contain_unrecognised!(TenantApiPatchPersonaRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiPatchPersonaRequestOperation,);
+    unrecognised_union!(TenantApiPatchPersonaRequestOperation, [], [PatchPersona]);
     fields_contain_unrecognised!(TenantApiPatchPersonaResult, written);
-    unrecognised_union!(TenantApiPatchPersonaResultWritten, PersonaUpdated, WriteConflict);
+    unrecognised_union!(TenantApiPatchPersonaResultWritten, [PersonaUpdated, WriteConflict], []);
     fields_contain_unrecognised!(
         TenantApiPatchSecretSetInput,
         github_user,
@@ -51103,21 +51486,22 @@ pub mod types {
         tenant_id
     );
     fields_contain_unrecognised!(TenantApiPatchSecretSetRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiPatchSecretSetRequestOperation,);
+    unrecognised_union!(TenantApiPatchSecretSetRequestOperation, [], [PatchSecretSet]);
     fields_contain_unrecognised!(TenantApiPatchSecretSetResult, patched);
     unrecognised_union!(
         TenantApiPatchSecretSetResultPatched,
-        Updated,
-        Missing,
-        Conflict,
-        NoStoredValue,
-        UncheckedToken
+        [Updated, Missing, Conflict, NoStoredValue, UncheckedToken],
+        []
     );
     fields_contain_unrecognised!(TenantApiPatchSessionTagsInput, now, patch, session_id, tenant_id);
     fields_contain_unrecognised!(TenantApiPatchSessionTagsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiPatchSessionTagsRequestOperation,);
+    unrecognised_union!(TenantApiPatchSessionTagsRequestOperation, [], [PatchSessionTags]);
     fields_contain_unrecognised!(TenantApiPatchSessionTagsResult, tagged);
-    unrecognised_union!(TenantApiPatchSessionTagsResultTagged, Tagged, NotFound, TagsOverLimit);
+    unrecognised_union!(
+        TenantApiPatchSessionTagsResultTagged,
+        [Tagged, NotFound, TagsOverLimit],
+        []
+    );
     fields_contain_unrecognised!(
         TenantApiPauseSubscriptionInput,
         message,
@@ -51126,9 +51510,13 @@ pub mod types {
         tenant_id
     );
     fields_contain_unrecognised!(TenantApiPauseSubscriptionRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiPauseSubscriptionRequestOperation,);
+    unrecognised_union!(TenantApiPauseSubscriptionRequestOperation, [], [PauseSubscription]);
     fields_contain_unrecognised!(TenantApiPauseSubscriptionResult, paused);
-    unrecognised_union!(TenantApiPauseSubscriptionResultPaused, ChangedOk, NotFound, EndedState);
+    unrecognised_union!(
+        TenantApiPauseSubscriptionResultPaused,
+        [ChangedOk, NotFound, EndedState],
+        []
+    );
     fields_contain_unrecognised!(
         TenantApiPersonaChange,
         box_disk_mib,
@@ -51141,11 +51529,11 @@ pub mod types {
         tumpel_mcp
     );
     fields_contain_unrecognised!(TenantApiPersonaDeleted, kind);
-    unrecognised_union!(TenantApiPersonaDeletedKind,);
+    unrecognised_union!(TenantApiPersonaDeletedKind, [], [Deleted]);
     fields_contain_unrecognised!(TenantApiPersonaInUse, kind, sessions);
-    unrecognised_union!(TenantApiPersonaInUseKind,);
+    unrecognised_union!(TenantApiPersonaInUseKind, [], [InUse]);
     fields_contain_unrecognised!(TenantApiPersonaNotFound, kind);
-    unrecognised_union!(TenantApiPersonaNotFoundKind,);
+    unrecognised_union!(TenantApiPersonaNotFoundKind, [], [NotFound]);
     fields_contain_unrecognised!(
         TenantApiPersonaPatchChange,
         box_disk_mib,
@@ -51172,12 +51560,12 @@ pub mod types {
     fields_contain_unrecognised!(TenantApiPersonaWritten, ok, value);
     fields_contain_unrecognised!(TenantApiPinInput, now, pin);
     fields_contain_unrecognised!(TenantApiPinRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiPinRequestOperation,);
+    unrecognised_union!(TenantApiPinRequestOperation, [], [Pin]);
     fields_contain_unrecognised!(TenantApiPinResult, pin);
     fields_contain_unrecognised!(TenantApiPinWrite, kind, pin);
-    unrecognised_union!(TenantApiPinWriteKind,);
+    unrecognised_union!(TenantApiPinWriteKind, [], [Pin]);
     fields_contain_unrecognised!(TenantApiPrebuildBuildDue, deadline, name);
-    unrecognised_union!(TenantApiPrebuildBuildDueName,);
+    unrecognised_union!(TenantApiPrebuildBuildDueName, [], [PrebuildBuild]);
     fields_contain_unrecognised!(
         TenantApiPrebuildCommitStart,
         config_source,
@@ -51190,46 +51578,50 @@ pub mod types {
     );
     fields_contain_unrecognised!(TenantApiPrebuildDeadline, at, prebuild_id);
     fields_contain_unrecognised!(TenantApiPrebuildDeadlineReachedInput, due, retries, tenant_id);
-    unrecognised_union!(TenantApiPrebuildDeadlineReachedInputDue, DispatchDue, BuildDue);
+    unrecognised_union!(TenantApiPrebuildDeadlineReachedInputDue, [DispatchDue, BuildDue], []);
     fields_contain_unrecognised!(
         TenantApiPrebuildDeadlineReachedRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiPrebuildDeadlineReachedRequestOperation,);
+    unrecognised_union!(
+        TenantApiPrebuildDeadlineReachedRequestOperation,
+        [],
+        [PrebuildDeadlineReached]
+    );
     fields_contain_unrecognised!(TenantApiPrebuildDeadlineReachedResult, 0);
     fields_contain_unrecognised!(TenantApiPrebuildDispatchDue, deadline, name);
-    unrecognised_union!(TenantApiPrebuildDispatchDueName,);
+    unrecognised_union!(TenantApiPrebuildDispatchDueName, [], [PrebuildDispatch]);
     fields_contain_unrecognised!(TenantApiPrebuildKey, guest_image_digest, input_digest, repository);
     fields_contain_unrecognised!(TenantApiPrebuildRefused, detail, kind);
-    unrecognised_union!(TenantApiPrebuildRefusedKind,);
+    unrecognised_union!(TenantApiPrebuildRefusedKind, [], [Refused]);
     fields_contain_unrecognised!(TenantApiPrepareClaudeSetupInput, host_id, now, stored, tenant_id);
-    unrecognised_union!(TenantApiPrepareClaudeSetupInputStored, Offer, Code);
+    unrecognised_union!(TenantApiPrepareClaudeSetupInputStored, [Offer, Code], []);
     fields_contain_unrecognised!(TenantApiPrepareClaudeSetupRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiPrepareClaudeSetupRequestOperation,);
+    unrecognised_union!(TenantApiPrepareClaudeSetupRequestOperation, [], [PrepareClaudeSetup]);
     fields_contain_unrecognised!(TenantApiPrepareClaudeSetupResult, prepared);
-    unrecognised_union!(TenantApiPrepareClaudeSetupResultPrepared, Ready, Withdrawn);
+    unrecognised_union!(TenantApiPrepareClaudeSetupResultPrepared, [Ready, Withdrawn], []);
     fields_contain_unrecognised!(TenantApiPrepareOfferInput, host_id, now, tenant_id, turn_id);
     fields_contain_unrecognised!(TenantApiPrepareOfferRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiPrepareOfferRequestOperation,);
+    unrecognised_union!(TenantApiPrepareOfferRequestOperation, [], [PrepareOffer]);
     fields_contain_unrecognised!(TenantApiPrepareOfferResult, prepared);
-    unrecognised_union!(TenantApiPrepareOfferResultPrepared, Ready, Withdrawn);
+    unrecognised_union!(TenantApiPrepareOfferResultPrepared, [Ready, Withdrawn], []);
     fields_contain_unrecognised!(TenantApiProtocol, 0);
     fields_contain_unrecognised!(TenantApiPushDeliveryTarget, endpoint, events, keys);
     fields_contain_unrecognised!(TenantApiPushTargetInput, push_subscription_id, tenant_id);
     fields_contain_unrecognised!(TenantApiPushTargetRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiPushTargetRequestOperation,);
+    unrecognised_union!(TenantApiPushTargetRequestOperation, [], [PushTarget]);
     fields_contain_unrecognised!(TenantApiPushTargetResult, target);
     fields_contain_unrecognised!(TenantApiReadLimitsInput, tenant_id);
     fields_contain_unrecognised!(TenantApiReadLimitsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiReadLimitsRequestOperation,);
+    unrecognised_union!(TenantApiReadLimitsRequestOperation, [], [ReadLimits]);
     fields_contain_unrecognised!(TenantApiReadLimitsResult, limits);
     fields_contain_unrecognised!(TenantApiReadTokenOk, kind, token);
-    unrecognised_union!(TenantApiReadTokenOkKind,);
+    unrecognised_union!(TenantApiReadTokenOkKind, [], [Token]);
     fields_contain_unrecognised!(TenantApiReadUsageInput, tenant_id);
     fields_contain_unrecognised!(TenantApiReadUsageRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiReadUsageRequestOperation,);
+    unrecognised_union!(TenantApiReadUsageRequestOperation, [], [ReadUsage]);
     fields_contain_unrecognised!(TenantApiReadUsageResult, usage);
     fields_contain_unrecognised!(TenantApiRecordPrebuildBuildingInput, now, prebuild_id, tenant_id);
     fields_contain_unrecognised!(
@@ -51238,7 +51630,11 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiRecordPrebuildBuildingRequestOperation,);
+    unrecognised_union!(
+        TenantApiRecordPrebuildBuildingRequestOperation,
+        [],
+        [RecordPrebuildBuilding]
+    );
     fields_contain_unrecognised!(TenantApiRecordPrebuildBuildingResult, 0);
     fields_contain_unrecognised!(TenantApiRecordStartRefusalInput, event, now, tenant_id);
     fields_contain_unrecognised!(
@@ -51251,20 +51647,18 @@ pub mod types {
         persona_id,
         refusal
     );
-    unrecognised_union!(TenantApiRecordStartRefusalInputEventEvent,);
+    unrecognised_union!(TenantApiRecordStartRefusalInputEventEvent, [], [StartRefused]);
     fields_contain_unrecognised!(TenantApiRecordStartRefusalRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiRecordStartRefusalRequestOperation,);
+    unrecognised_union!(TenantApiRecordStartRefusalRequestOperation, [], [RecordStartRefusal]);
     fields_contain_unrecognised!(TenantApiRecordStartRefusalResult, 0);
     fields_contain_unrecognised!(TenantApiRemoveSecretMemberInput, name, now, secret_set_id, tenant_id);
     fields_contain_unrecognised!(TenantApiRemoveSecretMemberRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiRemoveSecretMemberRequestOperation,);
+    unrecognised_union!(TenantApiRemoveSecretMemberRequestOperation, [], [RemoveSecretMember]);
     fields_contain_unrecognised!(TenantApiRemoveSecretMemberResult, removed);
     unrecognised_union!(
         TenantApiRemoveSecretMemberResultRemoved,
-        MemberRemoved,
-        SetMissing,
-        MemberNotFound,
-        SetUnreadable
+        [MemberRemoved, SetMissing, MemberNotFound, SetUnreadable],
+        []
     );
     fields_contain_unrecognised!(
         TenantApiRenameConnectorInput,
@@ -51275,14 +51669,12 @@ pub mod types {
         updated_at
     );
     fields_contain_unrecognised!(TenantApiRenameConnectorRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiRenameConnectorRequestOperation,);
+    unrecognised_union!(TenantApiRenameConnectorRequestOperation, [], [RenameConnector]);
     fields_contain_unrecognised!(TenantApiRenameConnectorResult, written);
     unrecognised_union!(
         TenantApiRenameConnectorResultWritten,
-        WrittenOk,
-        NotFound,
-        NameTaken,
-        Changed
+        [WrittenOk, NotFound, NameTaken, Changed],
+        []
     );
     fields_contain_unrecognised!(
         TenantApiRepositoryReadTokenInput,
@@ -51292,28 +51684,29 @@ pub mod types {
         repository,
         tenant_id
     );
-    unrecognised_union!(TenantApiRepositoryReadTokenInputPermissionsValue,);
+    unrecognised_union!(TenantApiRepositoryReadTokenInputPermissionsValue, [], [Read, Write]);
     fields_contain_unrecognised!(
         TenantApiRepositoryReadTokenRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiRepositoryReadTokenRequestOperation,);
+    unrecognised_union!(TenantApiRepositoryReadTokenRequestOperation, [], [RepositoryReadToken]);
     fields_contain_unrecognised!(TenantApiRepositoryReadTokenResult, read);
-    unrecognised_union!(TenantApiRepositoryReadTokenResultRead, ReadTokenOk, PrebuildRefused);
+    unrecognised_union!(
+        TenantApiRepositoryReadTokenResultRead,
+        [ReadTokenOk, PrebuildRefused],
+        []
+    );
     fields_contain_unrecognised!(TenantApiRepositoryRef, name, owner);
     fields_contain_unrecognised!(TenantApiResumeSubscriptionInput, now, subscription_id, tenant_id);
     fields_contain_unrecognised!(TenantApiResumeSubscriptionRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiResumeSubscriptionRequestOperation,);
+    unrecognised_union!(TenantApiResumeSubscriptionRequestOperation, [], [ResumeSubscription]);
     fields_contain_unrecognised!(TenantApiResumeSubscriptionResult, resumed);
     unrecognised_union!(
         TenantApiResumeSubscriptionResultResumed,
-        ChangedOk,
-        NotFound,
-        EndedState,
-        CursorExpired,
-        PersonaLacksTumpelMcp
+        [ChangedOk, NotFound, EndedState, CursorExpired, PersonaLacksTumpelMcp],
+        []
     );
     fields_contain_unrecognised!(
         TenantApiRewriteSecretSetWrite,
@@ -51322,58 +51715,61 @@ pub mod types {
         secret_set,
         secret_set_id
     );
-    unrecognised_union!(TenantApiRewriteSecretSetWriteKind,);
+    unrecognised_union!(TenantApiRewriteSecretSetWriteKind, [], [RewriteSecretSet]);
     fields_contain_unrecognised!(TenantApiRunningTurns, host_id, running_turns);
     fields_contain_unrecognised!(TenantApiRunningTurnsByHostInput, 0);
     fields_contain_unrecognised!(TenantApiRunningTurnsByHostRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiRunningTurnsByHostRequestOperation,);
+    unrecognised_union!(TenantApiRunningTurnsByHostRequestOperation, [], [RunningTurnsByHost]);
     fields_contain_unrecognised!(TenantApiRunningTurnsByHostResult, running);
     fields_contain_unrecognised!(TenantApiSecretMemberNotFound, kind);
-    unrecognised_union!(TenantApiSecretMemberNotFoundKind,);
+    unrecognised_union!(TenantApiSecretMemberNotFoundKind, [], [MemberNotFound]);
     fields_contain_unrecognised!(TenantApiSecretMemberRemoved, kind, secret_set);
-    unrecognised_union!(TenantApiSecretMemberRemovedKind,);
+    unrecognised_union!(TenantApiSecretMemberRemovedKind, [], [Removed]);
     fields_contain_unrecognised!(TenantApiSecretMemberWritten, kind, secret_set);
-    unrecognised_union!(TenantApiSecretMemberWrittenKind,);
+    unrecognised_union!(TenantApiSecretMemberWrittenKind, [], [Set]);
     fields_contain_unrecognised!(TenantApiSecretSetConflict, constraint, kind);
-    unrecognised_union!(TenantApiSecretSetConflictKind,);
+    unrecognised_union!(TenantApiSecretSetConflictKind, [], [Conflict]);
     fields_contain_unrecognised!(TenantApiSecretSetDeleted, kind);
-    unrecognised_union!(TenantApiSecretSetDeletedKind,);
+    unrecognised_union!(TenantApiSecretSetDeletedKind, [], [Deleted]);
     fields_contain_unrecognised!(TenantApiSecretSetFound, kind, secret_set);
-    unrecognised_union!(TenantApiSecretSetFoundKind,);
+    unrecognised_union!(TenantApiSecretSetFoundKind, [], [Found]);
     fields_contain_unrecognised!(TenantApiSecretSetInUse, kind, personas);
-    unrecognised_union!(TenantApiSecretSetInUseKind,);
+    unrecognised_union!(TenantApiSecretSetInUseKind, [], [InUse]);
     fields_contain_unrecognised!(TenantApiSecretSetMissing, kind);
-    unrecognised_union!(TenantApiSecretSetMissingKind,);
+    unrecognised_union!(TenantApiSecretSetMissingKind, [], [SetNotFound]);
     fields_contain_unrecognised!(TenantApiSecretSetNoStoredValue, kind, name, source);
-    unrecognised_union!(TenantApiSecretSetNoStoredValueKind,);
+    unrecognised_union!(TenantApiSecretSetNoStoredValueKind, [], [NoStoredValue]);
     fields_contain_unrecognised!(TenantApiSecretSetNotFound, kind);
-    unrecognised_union!(TenantApiSecretSetNotFoundKind,);
+    unrecognised_union!(TenantApiSecretSetNotFoundKind, [], [NotFound]);
     fields_contain_unrecognised!(TenantApiSecretSetUncheckedToken, kind, source);
-    unrecognised_union!(TenantApiSecretSetUncheckedTokenKind,);
+    unrecognised_union!(TenantApiSecretSetUncheckedTokenKind, [], [UncheckedToken]);
     fields_contain_unrecognised!(TenantApiSecretSetUnreadable, detail, kind, member, name, secret_set_id);
-    unrecognised_union!(TenantApiSecretSetUnreadableKind,);
+    unrecognised_union!(TenantApiSecretSetUnreadableKind, [], [Unreadable]);
     fields_contain_unrecognised!(TenantApiSecretSetUpdated, kind, secret_set);
-    unrecognised_union!(TenantApiSecretSetUpdatedKind,);
+    unrecognised_union!(TenantApiSecretSetUpdatedKind, [], [Updated]);
     fields_contain_unrecognised!(TenantApiSecretSetWritten, ok, value);
     fields_contain_unrecognised!(TenantApiSecretSetsRead, kind, secret_sets);
-    unrecognised_union!(TenantApiSecretSetsReadKind,);
+    unrecognised_union!(TenantApiSecretSetsReadKind, [], [Read]);
     fields_contain_unrecognised!(TenantApiSendTurnInput, hosts, now, send, session_id, tenant_id);
     fields_contain_unrecognised!(TenantApiSendTurnRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiSendTurnRequestOperation,);
+    unrecognised_union!(TenantApiSendTurnRequestOperation, [], [SendTurn]);
     fields_contain_unrecognised!(TenantApiSendTurnResult, sent);
     unrecognised_union!(
         TenantApiSendTurnResultSent,
-        TurnSentOk,
-        StartDraining,
-        TurnStranded,
-        StartUnplaced,
-        StartConnectorDisconnected,
-        ClaudeSetupReleaseUnreadable,
-        SessionNotFound,
-        SessionStopping,
-        SessionArchivedState,
-        SessionFailedState,
-        TurnCredentialRefused
+        [
+            TurnSentOk,
+            StartDraining,
+            TurnStranded,
+            StartUnplaced,
+            StartConnectorDisconnected,
+            ClaudeSetupReleaseUnreadable,
+            SessionNotFound,
+            SessionStopping,
+            SessionArchivedState,
+            SessionFailedState,
+            TurnCredentialRefused
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiServeConnectorTokenInput, connector_id, now, turn_id);
     fields_contain_unrecognised!(
@@ -51382,26 +51778,35 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiServeConnectorTokenRequestOperation,);
+    unrecognised_union!(TenantApiServeConnectorTokenRequestOperation, [], [ServeConnectorToken]);
     fields_contain_unrecognised!(TenantApiServeConnectorTokenResult, served);
     unrecognised_union!(
         TenantApiServeConnectorTokenResultServed,
-        TokenServedOk,
-        TokenRefused,
-        TurnNotRunning,
-        NoCredential,
-        RefreshFailed
+        [TokenServedOk, TokenRefused, TurnNotRunning, NoCredential, RefreshFailed],
+        []
     );
     fields_contain_unrecognised!(TenantApiSessionArchivedOk, kind, session);
-    unrecognised_union!(TenantApiSessionArchivedOkKind,);
+    unrecognised_union!(TenantApiSessionArchivedOkKind, [], [Archived]);
     fields_contain_unrecognised!(TenantApiSessionArchivedState, kind);
-    unrecognised_union!(TenantApiSessionArchivedStateKind,);
-    unrecognised_union!(TenantApiSessionDeadlineName,);
+    unrecognised_union!(TenantApiSessionArchivedStateKind, [], [Archived]);
+    unrecognised_union!(
+        TenantApiSessionDeadlineName,
+        [],
+        [
+            FirstLine,
+            Total,
+            Snapshot,
+            SnapshotAnswer,
+            Teardown,
+            TeardownAnswer,
+            HostOffline
+        ]
+    );
     fields_contain_unrecognised!(TenantApiSessionDeleted, kind);
-    unrecognised_union!(TenantApiSessionDeletedKind,);
+    unrecognised_union!(TenantApiSessionDeletedKind, [], [Deleted]);
     fields_contain_unrecognised!(TenantApiSessionDueDeadline, deadline, name);
     fields_contain_unrecognised!(TenantApiSessionFailedState, kind);
-    unrecognised_union!(TenantApiSessionFailedStateKind,);
+    unrecognised_union!(TenantApiSessionFailedStateKind, [], [Failed]);
     fields_contain_unrecognised!(
         TenantApiSessionFilter,
         host_id,
@@ -51411,24 +51816,24 @@ pub mod types {
         trigger_id
     );
     fields_contain_unrecognised!(TenantApiSessionFromIssueStartedOk, kind, started);
-    unrecognised_union!(TenantApiSessionFromIssueStartedOkKind,);
+    unrecognised_union!(TenantApiSessionFromIssueStartedOkKind, [], [Started]);
     fields_contain_unrecognised!(TenantApiSessionNotFound, kind);
-    unrecognised_union!(TenantApiSessionNotFoundKind,);
+    unrecognised_union!(TenantApiSessionNotFoundKind, [], [NotFound]);
     fields_contain_unrecognised!(TenantApiSessionNotStopped, kind, state);
-    unrecognised_union!(TenantApiSessionNotStoppedKind,);
+    unrecognised_union!(TenantApiSessionNotStoppedKind, [], [NotStopped]);
     fields_contain_unrecognised!(TenantApiSessionStartedOk, kind, started);
-    unrecognised_union!(TenantApiSessionStartedOkKind,);
+    unrecognised_union!(TenantApiSessionStartedOkKind, [], [Started]);
     fields_contain_unrecognised!(TenantApiSessionStopping, kind);
-    unrecognised_union!(TenantApiSessionStoppingKind,);
+    unrecognised_union!(TenantApiSessionStoppingKind, [], [Stopping]);
     fields_contain_unrecognised!(TenantApiSessionStoppingWith, kind, session);
-    unrecognised_union!(TenantApiSessionStoppingWithKind,);
+    unrecognised_union!(TenantApiSessionStoppingWithKind, [], [Stopping]);
     fields_contain_unrecognised!(TenantApiSessionTagged, kind, session);
-    unrecognised_union!(TenantApiSessionTaggedKind,);
+    unrecognised_union!(TenantApiSessionTaggedKind, [], [Tagged]);
     fields_contain_unrecognised!(TenantApiSessionTagsOverLimit, kind, tags);
-    unrecognised_union!(TenantApiSessionTagsOverLimitKind,);
+    unrecognised_union!(TenantApiSessionTagsOverLimitKind, [], [TagsOverLimit]);
     fields_contain_unrecognised!(TenantApiSetLimitsInput, limits, now, tenant_id);
     fields_contain_unrecognised!(TenantApiSetLimitsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiSetLimitsRequestOperation,);
+    unrecognised_union!(TenantApiSetLimitsRequestOperation, [], [SetLimits]);
     fields_contain_unrecognised!(TenantApiSetLimitsResult, limits);
     fields_contain_unrecognised!(
         TenantApiSetSecretMemberInput,
@@ -51439,20 +51844,18 @@ pub mod types {
         tenant_id
     );
     fields_contain_unrecognised!(TenantApiSetSecretMemberRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiSetSecretMemberRequestOperation,);
+    unrecognised_union!(TenantApiSetSecretMemberRequestOperation, [], [SetSecretMember]);
     fields_contain_unrecognised!(TenantApiSetSecretMemberResult, set);
     unrecognised_union!(
         TenantApiSetSecretMemberResultSet,
-        MemberWritten,
-        SetMissing,
-        SetConflict,
-        SetUnreadable
+        [MemberWritten, SetMissing, SetConflict, SetUnreadable],
+        []
     );
     fields_contain_unrecognised!(TenantApiSetSessionTagsInput, now, session_id, tags, tenant_id);
     fields_contain_unrecognised!(TenantApiSetSessionTagsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiSetSessionTagsRequestOperation,);
+    unrecognised_union!(TenantApiSetSessionTagsRequestOperation, [], [SetSessionTags]);
     fields_contain_unrecognised!(TenantApiSetSessionTagsResult, tagged);
-    unrecognised_union!(TenantApiSetSessionTagsResultTagged, Tagged, NotFound);
+    unrecognised_union!(TenantApiSetSessionTagsResultTagged, [Tagged, NotFound], []);
     fields_contain_unrecognised!(
         TenantApiSetStaticTokenInput,
         connector_id,
@@ -51462,14 +51865,12 @@ pub mod types {
         value
     );
     fields_contain_unrecognised!(TenantApiSetStaticTokenRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiSetStaticTokenRequestOperation,);
+    unrecognised_union!(TenantApiSetStaticTokenRequestOperation, [], [SetStaticToken]);
     fields_contain_unrecognised!(TenantApiSetStaticTokenResult, written);
     unrecognised_union!(
         TenantApiSetStaticTokenResultWritten,
-        WrittenOk,
-        NotFound,
-        NameTaken,
-        Changed
+        [WrittenOk, NotFound, NameTaken, Changed],
+        []
     );
     fields_contain_unrecognised!(
         TenantApiSetWebhookEndpointStatusInput,
@@ -51483,19 +51884,26 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiSetWebhookEndpointStatusRequestOperation,);
+    unrecognised_union!(
+        TenantApiSetWebhookEndpointStatusRequestOperation,
+        [],
+        [SetWebhookEndpointStatus]
+    );
     fields_contain_unrecognised!(TenantApiSetWebhookEndpointStatusResult, 0);
     fields_contain_unrecognised!(TenantApiStartClaudeSetupInput, input, now, tenant_id);
     fields_contain_unrecognised!(TenantApiStartClaudeSetupRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiStartClaudeSetupRequestOperation,);
+    unrecognised_union!(TenantApiStartClaudeSetupRequestOperation, [], [StartClaudeSetup]);
     fields_contain_unrecognised!(TenantApiStartClaudeSetupResult, started);
     unrecognised_union!(
         TenantApiStartClaudeSetupResultStarted,
-        ClaudeSetupStartedOk,
-        ClaudeSetupUnplaced,
-        ClaudeSetupReleaseUnreadable,
-        AuthorizationNoSecretSet,
-        AuthorizationOtherCredential
+        [
+            ClaudeSetupStartedOk,
+            ClaudeSetupUnplaced,
+            ClaudeSetupReleaseUnreadable,
+            AuthorizationNoSecretSet,
+            AuthorizationOtherCredential
+        ],
+        []
     );
     fields_contain_unrecognised!(
         TenantApiStartConnectorAuthorizationInput,
@@ -51512,20 +51920,27 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiStartConnectorAuthorizationRequestOperation,);
+    unrecognised_union!(
+        TenantApiStartConnectorAuthorizationRequestOperation,
+        [],
+        [StartConnectorAuthorization]
+    );
     fields_contain_unrecognised!(TenantApiStartConnectorAuthorizationResult, started);
     unrecognised_union!(
         TenantApiStartConnectorAuthorizationResultStarted,
-        AuthorizeStartedOk,
-        NotFound,
-        Changed,
-        DiscoveryFailed,
-        RegistrationUnsupported
+        [
+            AuthorizeStartedOk,
+            NotFound,
+            Changed,
+            DiscoveryFailed,
+            RegistrationUnsupported
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiStartConnectorDisconnected, kind, names);
-    unrecognised_union!(TenantApiStartConnectorDisconnectedKind,);
+    unrecognised_union!(TenantApiStartConnectorDisconnectedKind, [], [ConnectorDisconnected]);
     fields_contain_unrecognised!(TenantApiStartDraining, kind);
-    unrecognised_union!(TenantApiStartDrainingKind,);
+    unrecognised_union!(TenantApiStartDrainingKind, [], [Draining]);
     fields_contain_unrecognised!(
         TenantApiStartHostPrebuildInput,
         api_origin,
@@ -51535,15 +51950,18 @@ pub mod types {
         tenant_id
     );
     fields_contain_unrecognised!(TenantApiStartHostPrebuildRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiStartHostPrebuildRequestOperation,);
+    unrecognised_union!(TenantApiStartHostPrebuildRequestOperation, [], [StartHostPrebuild]);
     fields_contain_unrecognised!(TenantApiStartHostPrebuildResult, started);
     unrecognised_union!(
         TenantApiStartHostPrebuildResultStarted,
-        HostPrebuildStarted,
-        StartDraining,
-        StartUnplaced,
-        StartConnectorDisconnected,
-        ClaudeSetupReleaseUnreadable
+        [
+            HostPrebuildStarted,
+            StartDraining,
+            StartUnplaced,
+            StartConnectorDisconnected,
+            ClaudeSetupReleaseUnreadable
+        ],
+        []
     );
     fields_contain_unrecognised!(
         TenantApiStartOpenRouterAuthorizationInput,
@@ -51558,13 +51976,20 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiStartOpenRouterAuthorizationRequestOperation,);
+    unrecognised_union!(
+        TenantApiStartOpenRouterAuthorizationRequestOperation,
+        [],
+        [StartOpenRouterAuthorization]
+    );
     fields_contain_unrecognised!(TenantApiStartOpenRouterAuthorizationResult, started);
     unrecognised_union!(
         TenantApiStartOpenRouterAuthorizationResultStarted,
-        OpenRouterAuthorizationStartedOk,
-        AuthorizationNoSecretSet,
-        AuthorizationOtherCredential
+        [
+            OpenRouterAuthorizationStartedOk,
+            AuthorizationNoSecretSet,
+            AuthorizationOtherCredential
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiStartSessionFromIssueInput, input, issue, now, tenant_id);
     fields_contain_unrecognised!(
@@ -51573,67 +51998,78 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiStartSessionFromIssueRequestOperation,);
+    unrecognised_union!(
+        TenantApiStartSessionFromIssueRequestOperation,
+        [],
+        [StartSessionFromIssue]
+    );
     fields_contain_unrecognised!(TenantApiStartSessionFromIssueResult, started);
     unrecognised_union!(
         TenantApiStartSessionFromIssueResultStarted,
-        SessionFromIssueStartedOk,
-        StartDraining,
-        StartUnplaced,
-        StartConnectorDisconnected,
-        ClaudeSetupReleaseUnreadable,
-        SessionTagsOverLimit
+        [
+            SessionFromIssueStartedOk,
+            StartDraining,
+            StartUnplaced,
+            StartConnectorDisconnected,
+            ClaudeSetupReleaseUnreadable,
+            SessionTagsOverLimit
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiStartSessionInput, input, now, tenant_id);
     fields_contain_unrecognised!(TenantApiStartSessionRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiStartSessionRequestOperation,);
+    unrecognised_union!(TenantApiStartSessionRequestOperation, [], [StartSession]);
     fields_contain_unrecognised!(TenantApiStartSessionResult, started);
     unrecognised_union!(
         TenantApiStartSessionResultStarted,
-        SessionStartedOk,
-        StartDraining,
-        StartUnplaced,
-        StartConnectorDisconnected,
-        ClaudeSetupReleaseUnreadable,
-        SessionTagsOverLimit
+        [
+            SessionStartedOk,
+            StartDraining,
+            StartUnplaced,
+            StartConnectorDisconnected,
+            ClaudeSetupReleaseUnreadable,
+            SessionTagsOverLimit
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiStartUnplaced, hosts, kind);
-    unrecognised_union!(TenantApiStartUnplacedKind,);
+    unrecognised_union!(TenantApiStartUnplacedKind, [], [Unplaced]);
     fields_contain_unrecognised!(TenantApiSteerInboxClosed, kind);
-    unrecognised_union!(TenantApiSteerInboxClosedKind,);
+    unrecognised_union!(TenantApiSteerInboxClosedKind, [], [Closed]);
     fields_contain_unrecognised!(TenantApiSteerSentOk, kind, steer);
-    unrecognised_union!(TenantApiSteerSentOkKind,);
+    unrecognised_union!(TenantApiSteerSentOkKind, [], [Sent]);
     fields_contain_unrecognised!(TenantApiSteerTurnInput, now, steer, tenant_id, turn_id);
     fields_contain_unrecognised!(TenantApiSteerTurnRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiSteerTurnRequestOperation,);
+    unrecognised_union!(TenantApiSteerTurnRequestOperation, [], [SteerTurn]);
     fields_contain_unrecognised!(TenantApiSteerTurnResult, sent);
     unrecognised_union!(
         TenantApiSteerTurnResultSent,
-        SteerSentOk,
-        TurnNotFound,
-        TurnNotRunning,
-        SteerUnsupported
+        [SteerSentOk, TurnNotFound, TurnNotRunning, SteerUnsupported],
+        []
     );
     fields_contain_unrecognised!(TenantApiSteerUnsupported, kind);
-    unrecognised_union!(TenantApiSteerUnsupportedKind,);
+    unrecognised_union!(TenantApiSteerUnsupportedKind, [], [Unsupported]);
     fields_contain_unrecognised!(TenantApiSteersTaken, kind, prompts);
-    unrecognised_union!(TenantApiSteersTakenKind,);
+    unrecognised_union!(TenantApiSteersTakenKind, [], [Taken]);
     fields_contain_unrecognised!(TenantApiStopSessionInput, cancelled_by, now, session_id, tenant_id);
     fields_contain_unrecognised!(TenantApiStopSessionRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiStopSessionRequestOperation,);
+    unrecognised_union!(TenantApiStopSessionRequestOperation, [], [StopSession]);
     fields_contain_unrecognised!(TenantApiStopSessionResult, stopped);
     unrecognised_union!(
         TenantApiStopSessionResultStopped,
-        SessionStoppingWith,
-        SessionNotFound,
-        TurnInFlight,
-        CancelUnspoken,
-        SessionArchivedState
+        [
+            SessionStoppingWith,
+            SessionNotFound,
+            TurnInFlight,
+            CancelUnspoken,
+            SessionArchivedState
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiStoredClaudeSetupCode, box_id, claude_setup_id, type_);
-    unrecognised_union!(TenantApiStoredClaudeSetupCodeType,);
+    unrecognised_union!(TenantApiStoredClaudeSetupCodeType, [], [ClaudeSetupBoxCode]);
     fields_contain_unrecognised!(TenantApiStoredClaudeSetupOffer, box_id, claude_setup_id, type_);
-    unrecognised_union!(TenantApiStoredClaudeSetupOfferType,);
+    unrecognised_union!(TenantApiStoredClaudeSetupOfferType, [], [ClaudeSetupBoxOffer]);
     fields_contain_unrecognised!(TenantApiStoredFile, digest, path, size_bytes);
     fields_contain_unrecognised!(
         TenantApiStoredFileRead,
@@ -51679,7 +52115,7 @@ pub mod types {
     );
     fields_contain_unrecognised!(TenantApiStoredTurnOfferHarnessVersion, 0);
     fields_contain_unrecognised!(TenantApiStoredTurnOfferPrebuildCommitSha, 0);
-    unrecognised_union!(TenantApiStoredTurnOfferType,);
+    unrecognised_union!(TenantApiStoredTurnOfferType, [], [TurnOffer]);
     fields_contain_unrecognised!(
         TenantApiSubmitClaudeSetupCodeInput,
         claude_setup_id,
@@ -51693,41 +52129,48 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiSubmitClaudeSetupCodeRequestOperation,);
+    unrecognised_union!(
+        TenantApiSubmitClaudeSetupCodeRequestOperation,
+        [],
+        [SubmitClaudeSetupCode]
+    );
     fields_contain_unrecognised!(TenantApiSubmitClaudeSetupCodeResult, coded);
     unrecognised_union!(
         TenantApiSubmitClaudeSetupCodeResultCoded,
-        ClaudeSetupCodedOk,
-        AuthorizationNotFound,
-        AuthorizationNotWaiting
+        [ClaudeSetupCodedOk, AuthorizationNotFound, AuthorizationNotWaiting],
+        []
     );
     fields_contain_unrecognised!(TenantApiSubscriptionChangedOk, kind, subscription);
-    unrecognised_union!(TenantApiSubscriptionChangedOkKind,);
+    unrecognised_union!(TenantApiSubscriptionChangedOkKind, [], [Changed]);
     fields_contain_unrecognised!(TenantApiSubscriptionCreatedOk, kind, subscription);
-    unrecognised_union!(TenantApiSubscriptionCreatedOkKind,);
+    unrecognised_union!(TenantApiSubscriptionCreatedOkKind, [], [Created]);
     fields_contain_unrecognised!(
         TenantApiSubscriptionCursorExpired,
         cursor_event_id,
         kind,
         oldest_event_id
     );
-    unrecognised_union!(TenantApiSubscriptionCursorExpiredKind,);
+    unrecognised_union!(TenantApiSubscriptionCursorExpiredKind, [], [CursorExpired]);
     fields_contain_unrecognised!(TenantApiSubscriptionEndedState, kind, subscription);
-    unrecognised_union!(TenantApiSubscriptionEndedStateKind,);
+    unrecognised_union!(TenantApiSubscriptionEndedStateKind, [], [Ended]);
     fields_contain_unrecognised!(TenantApiSubscriptionFilter, session_id, state);
     fields_contain_unrecognised!(TenantApiSubscriptionNotFound, kind);
-    unrecognised_union!(TenantApiSubscriptionNotFoundKind,);
+    unrecognised_union!(TenantApiSubscriptionNotFoundKind, [], [NotFound]);
     fields_contain_unrecognised!(
         TenantApiSubscriptionPersonaLacksTumpelMcp,
         kind,
         persona_id,
         persona_name
     );
-    unrecognised_union!(TenantApiSubscriptionPersonaLacksTumpelMcpKind,);
+    unrecognised_union!(
+        TenantApiSubscriptionPersonaLacksTumpelMcpKind,
+        [],
+        [PersonaLacksTumpelMcp]
+    );
     fields_contain_unrecognised!(TenantApiSupervisorUpdateInput, host_id, message);
-    unrecognised_union!(TenantApiSupervisorUpdateInputMessage, Step, Failed);
+    unrecognised_union!(TenantApiSupervisorUpdateInputMessage, [Step, Failed], []);
     fields_contain_unrecognised!(TenantApiSupervisorUpdateRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiSupervisorUpdateRequestOperation,);
+    unrecognised_union!(TenantApiSupervisorUpdateRequestOperation, [], [SupervisorUpdate]);
     fields_contain_unrecognised!(TenantApiSupervisorUpdateResult, 0);
     fields_contain_unrecognised!(
         TenantApiSupervisorUpdates,
@@ -51736,20 +52179,24 @@ pub mod types {
     );
     fields_contain_unrecognised!(TenantApiSupervisorUpdatesInput, host_ids);
     fields_contain_unrecognised!(TenantApiSupervisorUpdatesRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiSupervisorUpdatesRequestOperation,);
+    unrecognised_union!(TenantApiSupervisorUpdatesRequestOperation, [], [SupervisorUpdates]);
     fields_contain_unrecognised!(TenantApiSupervisorUpdatesResult, by_host);
     fields_contain_unrecognised!(TenantApiTakeSteersInput, now, turn_id);
     fields_contain_unrecognised!(TenantApiTakeSteersRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiTakeSteersRequestOperation,);
+    unrecognised_union!(TenantApiTakeSteersRequestOperation, [], [TakeSteers]);
     fields_contain_unrecognised!(TenantApiTakeSteersResult, taken);
-    unrecognised_union!(TenantApiTakeSteersResultTaken, SteersTaken, SteerInboxClosed);
+    unrecognised_union!(TenantApiTakeSteersResultTaken, [SteersTaken, SteerInboxClosed], []);
     fields_contain_unrecognised!(
         TenantApiTenantApiVersionUnsupported,
         oldest_tenant_api_version,
         refusal,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiTenantApiVersionUnsupportedRefusal,);
+    unrecognised_union!(
+        TenantApiTenantApiVersionUnsupportedRefusal,
+        [],
+        [TenantApiVersionUnsupported]
+    );
     fields_contain_unrecognised!(
         TenantApiTenantLimitReached,
         limit,
@@ -51760,134 +52207,135 @@ pub mod types {
         used,
         window
     );
-    unrecognised_union!(TenantApiTenantLimitReachedRefusal,);
+    unrecognised_union!(TenantApiTenantLimitReachedRefusal, [], [TenantLimitReached]);
     fields_contain_unrecognised!(TenantApiTenantOperationUnknown, operation, refusal);
-    unrecognised_union!(TenantApiTenantOperationUnknownRefusal,);
+    unrecognised_union!(TenantApiTenantOperationUnknownRefusal, [], [TenantOperationUnknown]);
     unrecognised_union!(
         TenantApiTenantRefusal,
-        ApiVersionUnsupported,
-        OperationUnknown,
-        RequestInvalid,
-        LimitReached
+        [ApiVersionUnsupported, OperationUnknown, RequestInvalid, LimitReached],
+        []
     );
     unrecognised_union!(
         TenantApiTenantRequest,
-        ListPersonasRequest,
-        GetPersonaRequest,
-        CreatePersonaRequest,
-        UpdatePersonaRequest,
-        PatchPersonaRequest,
-        DeletePersonaRequest,
-        OpenRequest,
-        SupervisorUpdateRequest,
-        SupervisorUpdatesRequest,
-        ListSecretSetsRequest,
-        GetSecretSetRequest,
-        CreateSecretSetRequest,
-        UpdateSecretSetRequest,
-        PatchSecretSetRequest,
-        SetSecretMemberRequest,
-        RemoveSecretMemberRequest,
-        DeleteSecretSetRequest,
-        ApplyConfigRequest,
-        ListPinsRequest,
-        PinRequest,
-        UnpinRequest,
-        ListConnectorsRequest,
-        GetConnectorRequest,
-        CreateConnectorRequest,
-        RenameConnectorRequest,
-        DeleteConnectorRequest,
-        SetStaticTokenRequest,
-        ClearConnectorCredentialRequest,
-        StartConnectorAuthorizationRequest,
-        ConnectorCallbackRequest,
-        ServeConnectorTokenRequest,
-        UnknownConnectorsRequest,
-        StartOpenRouterAuthorizationRequest,
-        GetOpenRouterAuthorizationRequest,
-        OpenRouterCallbackRequest,
-        OpenRouterAuthorizationDeadlineReachedRequest,
-        OpenRouterSecretSetsRequest,
-        StartClaudeSetupRequest,
-        GetClaudeSetupRequest,
-        ListClaudeSetupsRequest,
-        SubmitClaudeSetupCodeRequest,
-        WriteClaudeSetupTokenRequest,
-        ClaudeSetupDeadlineReachedRequest,
-        PrepareClaudeSetupRequest,
-        ListPrebuildsRequest,
-        ListLatestPrebuildsRequest,
-        GetPrebuildRequest,
-        HeldPrebuildRequest,
-        RecordPrebuildBuildingRequest,
-        PrebuildDeadlineReachedRequest,
-        StartHostPrebuildRequest,
-        GetPrebuildFailureRequest,
-        RepositoryReadTokenRequest,
-        StartSessionRequest,
-        StartSessionFromIssueRequest,
-        SendTurnRequest,
-        StopSessionRequest,
-        ArchiveSessionRequest,
-        SetSessionTagsRequest,
-        PatchSessionTagsRequest,
-        DeleteSessionRequest,
-        GetSessionRequest,
-        ListSessionsRequest,
-        ListTurnsRequest,
-        GetTurnRequest,
-        CancelTurnRequest,
-        SteerTurnRequest,
-        ListSteersRequest,
-        TakeSteersRequest,
-        ListEventsRequest,
-        RecordStartRefusalRequest,
-        ListWebhookEndpointsRequest,
-        CreateWebhookEndpointRequest,
-        GetWebhookEndpointRequest,
-        DeleteWebhookEndpointRequest,
-        SetWebhookEndpointStatusRequest,
-        ListPushSubscriptionsRequest,
-        CreatePushSubscriptionRequest,
-        DeletePushSubscriptionRequest,
-        ForgetPushSubscriptionRequest,
-        PushTargetRequest,
-        CreateSubscriptionRequest,
-        ListSubscriptionsRequest,
-        GetSubscriptionRequest,
-        PauseSubscriptionRequest,
-        ResumeSubscriptionRequest,
-        DeleteSubscriptionRequest,
-        CompleteSubscriptionRequest,
-        CreateTriggerRequest,
-        ListTriggersRequest,
-        GetTriggerRequest,
-        UpdateTriggerRequest,
-        DeleteTriggerRequest,
-        TriggerFiredRequest,
-        GetTurnFailureRequest,
-        ListStopFailuresRequest,
-        ListSnapshotsRequest,
-        ListCredentialHandoversRequest,
-        GetSnapshotRequest,
-        TranscriptCursorRequest,
-        HostHelloRequest,
-        HostHeartbeatRequest,
-        ForgetHostUsageRequest,
-        RunningTurnsByHostRequest,
-        ListHostUsageRequest,
-        ReadUsageRequest,
-        ReadLimitsRequest,
-        SetLimitsRequest,
-        DeferredOffersRequest,
-        TurnMetricDimensionsRequest,
-        PrepareOfferRequest,
-        HostMessageRequest,
-        DeadlineReachedRequest
+        [
+            ListPersonasRequest,
+            GetPersonaRequest,
+            CreatePersonaRequest,
+            UpdatePersonaRequest,
+            PatchPersonaRequest,
+            DeletePersonaRequest,
+            OpenRequest,
+            SupervisorUpdateRequest,
+            SupervisorUpdatesRequest,
+            ListSecretSetsRequest,
+            GetSecretSetRequest,
+            CreateSecretSetRequest,
+            UpdateSecretSetRequest,
+            PatchSecretSetRequest,
+            SetSecretMemberRequest,
+            RemoveSecretMemberRequest,
+            DeleteSecretSetRequest,
+            ApplyConfigRequest,
+            ListPinsRequest,
+            PinRequest,
+            UnpinRequest,
+            ListConnectorsRequest,
+            GetConnectorRequest,
+            CreateConnectorRequest,
+            RenameConnectorRequest,
+            DeleteConnectorRequest,
+            SetStaticTokenRequest,
+            ClearConnectorCredentialRequest,
+            StartConnectorAuthorizationRequest,
+            ConnectorCallbackRequest,
+            ServeConnectorTokenRequest,
+            UnknownConnectorsRequest,
+            StartOpenRouterAuthorizationRequest,
+            GetOpenRouterAuthorizationRequest,
+            OpenRouterCallbackRequest,
+            OpenRouterAuthorizationDeadlineReachedRequest,
+            OpenRouterSecretSetsRequest,
+            StartClaudeSetupRequest,
+            GetClaudeSetupRequest,
+            ListClaudeSetupsRequest,
+            SubmitClaudeSetupCodeRequest,
+            WriteClaudeSetupTokenRequest,
+            ClaudeSetupDeadlineReachedRequest,
+            PrepareClaudeSetupRequest,
+            ListPrebuildsRequest,
+            ListLatestPrebuildsRequest,
+            GetPrebuildRequest,
+            HeldPrebuildRequest,
+            RecordPrebuildBuildingRequest,
+            PrebuildDeadlineReachedRequest,
+            StartHostPrebuildRequest,
+            GetPrebuildFailureRequest,
+            RepositoryReadTokenRequest,
+            StartSessionRequest,
+            StartSessionFromIssueRequest,
+            SendTurnRequest,
+            StopSessionRequest,
+            ArchiveSessionRequest,
+            SetSessionTagsRequest,
+            PatchSessionTagsRequest,
+            DeleteSessionRequest,
+            GetSessionRequest,
+            ListSessionsRequest,
+            ListTurnsRequest,
+            GetTurnRequest,
+            CancelTurnRequest,
+            SteerTurnRequest,
+            ListSteersRequest,
+            TakeSteersRequest,
+            ListEventsRequest,
+            RecordStartRefusalRequest,
+            ListWebhookEndpointsRequest,
+            CreateWebhookEndpointRequest,
+            GetWebhookEndpointRequest,
+            DeleteWebhookEndpointRequest,
+            SetWebhookEndpointStatusRequest,
+            ListPushSubscriptionsRequest,
+            CreatePushSubscriptionRequest,
+            DeletePushSubscriptionRequest,
+            ForgetPushSubscriptionRequest,
+            PushTargetRequest,
+            CreateSubscriptionRequest,
+            ListSubscriptionsRequest,
+            GetSubscriptionRequest,
+            PauseSubscriptionRequest,
+            ResumeSubscriptionRequest,
+            DeleteSubscriptionRequest,
+            CompleteSubscriptionRequest,
+            CreateTriggerRequest,
+            ListTriggersRequest,
+            GetTriggerRequest,
+            UpdateTriggerRequest,
+            DeleteTriggerRequest,
+            TriggerFiredRequest,
+            GetTurnFailureRequest,
+            ListStopFailuresRequest,
+            ListSnapshotsRequest,
+            ListCredentialHandoversRequest,
+            GetSnapshotRequest,
+            TranscriptCursorRequest,
+            HostHelloRequest,
+            HostHeartbeatRequest,
+            ForgetHostUsageRequest,
+            RunningTurnsByHostRequest,
+            ListHostUsageRequest,
+            ReadUsageRequest,
+            ReadLimitsRequest,
+            SetLimitsRequest,
+            DeferredOffersRequest,
+            TurnMetricDimensionsRequest,
+            PrepareOfferRequest,
+            HostMessageRequest,
+            DeadlineReachedRequest
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiTenantRequestInvalid, issues, operation, refusal);
-    unrecognised_union!(TenantApiTenantRequestInvalidRefusal,);
+    unrecognised_union!(TenantApiTenantRequestInvalidRefusal, [], [TenantRequestInvalid]);
     fields_contain_unrecognised!(
         TenantApiTranscriptChunk,
         harness,
@@ -51898,10 +52346,10 @@ pub mod types {
         session_state,
         storage_key
     );
-    unrecognised_union!(TenantApiTranscriptChunkKind,);
+    unrecognised_union!(TenantApiTranscriptChunkKind, [], [Chunk]);
     fields_contain_unrecognised!(TenantApiTranscriptCursorInput, after, session_id, tenant_id, turn_id);
     fields_contain_unrecognised!(TenantApiTranscriptCursorRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiTranscriptCursorRequestOperation,);
+    unrecognised_union!(TenantApiTranscriptCursorRequestOperation, [], [TranscriptCursor]);
     fields_contain_unrecognised!(TenantApiTranscriptCursorResult, cursor);
     fields_contain_unrecognised!(TenantApiTranscriptCursorResultCursor, subtype_0, subtype_1);
     fields_contain_unrecognised!(
@@ -51912,11 +52360,11 @@ pub mod types {
         last_line_seq,
         session_state
     );
-    unrecognised_union!(TenantApiTranscriptLinesKind,);
+    unrecognised_union!(TenantApiTranscriptLinesKind, [], [Lines]);
     fields_contain_unrecognised!(TenantApiTriggerCreatedOk, kind, trigger);
-    unrecognised_union!(TenantApiTriggerCreatedOkKind,);
+    unrecognised_union!(TenantApiTriggerCreatedOkKind, [], [Created]);
     fields_contain_unrecognised!(TenantApiTriggerDeliveryRepeated, kind, session_id);
-    unrecognised_union!(TenantApiTriggerDeliveryRepeatedKind,);
+    unrecognised_union!(TenantApiTriggerDeliveryRepeatedKind, [], [Repeated]);
     fields_contain_unrecognised!(
         TenantApiTriggerFiredInput,
         delivery_id,
@@ -51925,48 +52373,54 @@ pub mod types {
         tenant_id,
         trigger_id
     );
-    unrecognised_union!(TenantApiTriggerFiredInputFired, Matched, Refused);
+    unrecognised_union!(TenantApiTriggerFiredInputFired, [Matched, Refused], []);
     fields_contain_unrecognised!(TenantApiTriggerFiredMatched, kind, prompt, repository);
-    unrecognised_union!(TenantApiTriggerFiredMatchedKind,);
+    unrecognised_union!(TenantApiTriggerFiredMatchedKind, [], [Matched]);
     fields_contain_unrecognised!(TenantApiTriggerFiredRefused, kind, refusal);
-    unrecognised_union!(TenantApiTriggerFiredRefusedKind,);
+    unrecognised_union!(TenantApiTriggerFiredRefusedKind, [], [Refused]);
     fields_contain_unrecognised!(TenantApiTriggerFiredRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiTriggerFiredRequestOperation,);
+    unrecognised_union!(TenantApiTriggerFiredRequestOperation, [], [TriggerFired]);
     fields_contain_unrecognised!(TenantApiTriggerFiredResult, fired);
     unrecognised_union!(
         TenantApiTriggerFiredResultFired,
-        SessionStartedOk,
-        TriggerDeliveryRepeated,
-        TriggerNotFound,
-        TriggerStartRefusedOk
+        [
+            SessionStartedOk,
+            TriggerDeliveryRepeated,
+            TriggerNotFound,
+            TriggerStartRefusedOk
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiTriggerNameTaken, kind);
-    unrecognised_union!(TenantApiTriggerNameTakenKind,);
+    unrecognised_union!(TenantApiTriggerNameTakenKind, [], [NameTaken]);
     fields_contain_unrecognised!(TenantApiTriggerNotFound, kind);
-    unrecognised_union!(TenantApiTriggerNotFoundKind,);
+    unrecognised_union!(TenantApiTriggerNotFoundKind, [], [NotFound]);
     fields_contain_unrecognised!(TenantApiTriggerPersonaNotFound, kind);
-    unrecognised_union!(TenantApiTriggerPersonaNotFoundKind,);
+    unrecognised_union!(TenantApiTriggerPersonaNotFoundKind, [], [PersonaNotFound]);
     fields_contain_unrecognised!(TenantApiTriggerStartRefusedOk, kind, refusal);
-    unrecognised_union!(TenantApiTriggerStartRefusedOkKind,);
+    unrecognised_union!(TenantApiTriggerStartRefusedOkKind, [], [Refused]);
     fields_contain_unrecognised!(TenantApiTriggerUpdatedOk, kind, trigger);
-    unrecognised_union!(TenantApiTriggerUpdatedOkKind,);
+    unrecognised_union!(TenantApiTriggerUpdatedOkKind, [], [Updated]);
     fields_contain_unrecognised!(TenantApiTurnCancelledOk, kind, turn);
-    unrecognised_union!(TenantApiTurnCancelledOkKind,);
+    unrecognised_union!(TenantApiTurnCancelledOkKind, [], [Cancelled]);
     fields_contain_unrecognised!(TenantApiTurnCredentialRefused, kind, persona_id, refusal);
-    unrecognised_union!(TenantApiTurnCredentialRefusedKind,);
+    unrecognised_union!(TenantApiTurnCredentialRefusedKind, [], [CredentialRefused]);
     unrecognised_union!(
         TenantApiTurnCredentialRefusedRefusal,
-        NoCredentialRefusal,
-        NoModelCredentialRefusal,
-        UnsupportedCredentialRefusal,
-        ModelUnsupportedCredentialRefusal,
-        ExpiredCredentialRefusal
+        [
+            NoCredentialRefusal,
+            NoModelCredentialRefusal,
+            UnsupportedCredentialRefusal,
+            ModelUnsupportedCredentialRefusal,
+            ExpiredCredentialRefusal
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiTurnDeadline, at, turn_id);
     fields_contain_unrecognised!(TenantApiTurnHandoff, host_id, offer, type_);
-    unrecognised_union!(TenantApiTurnHandoffType,);
+    unrecognised_union!(TenantApiTurnHandoffType, [], [TurnHandoff]);
     fields_contain_unrecognised!(TenantApiTurnInFlight, kind, turn_id);
-    unrecognised_union!(TenantApiTurnInFlightKind,);
+    unrecognised_union!(TenantApiTurnInFlightKind, [], [InFlight]);
     fields_contain_unrecognised!(TenantApiTurnMetricDimensions, 0);
     fields_contain_unrecognised!(TenantApiTurnMetricDimensionsInput, turn_ids);
     fields_contain_unrecognised!(
@@ -51975,42 +52429,49 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiTurnMetricDimensionsRequestOperation,);
+    unrecognised_union!(
+        TenantApiTurnMetricDimensionsRequestOperation,
+        [],
+        [TurnMetricDimensions]
+    );
     fields_contain_unrecognised!(TenantApiTurnMetricDimensionsResult, dimensions);
     fields_contain_unrecognised!(TenantApiTurnNotFound, kind);
-    unrecognised_union!(TenantApiTurnNotFoundKind,);
+    unrecognised_union!(TenantApiTurnNotFoundKind, [], [NotFound]);
     fields_contain_unrecognised!(TenantApiTurnNotRunning, kind, state);
-    unrecognised_union!(TenantApiTurnNotRunningKind,);
+    unrecognised_union!(TenantApiTurnNotRunningKind, [], [NotRunning]);
     fields_contain_unrecognised!(TenantApiTurnNotWaiting, kind, state);
-    unrecognised_union!(TenantApiTurnNotWaitingKind,);
+    unrecognised_union!(TenantApiTurnNotWaitingKind, [], [NotWaiting]);
     fields_contain_unrecognised!(TenantApiTurnSentOk, kind, turn);
-    unrecognised_union!(TenantApiTurnSentOkKind,);
+    unrecognised_union!(TenantApiTurnSentOkKind, [], [Sent]);
     fields_contain_unrecognised!(TenantApiTurnStranded, kind, missing_turn_ids);
-    unrecognised_union!(TenantApiTurnStrandedKind,);
+    unrecognised_union!(TenantApiTurnStrandedKind, [], [Stranded]);
     fields_contain_unrecognised!(TenantApiUnknownConnectorsInput, connector_ids);
     fields_contain_unrecognised!(TenantApiUnknownConnectorsRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiUnknownConnectorsRequestOperation,);
+    unrecognised_union!(TenantApiUnknownConnectorsRequestOperation, [], [UnknownConnectors]);
     fields_contain_unrecognised!(TenantApiUnknownConnectorsResult, unknown_connector_ids);
     fields_contain_unrecognised!(TenantApiUnpinInput, harness);
     fields_contain_unrecognised!(TenantApiUnpinRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiUnpinRequestOperation,);
+    unrecognised_union!(TenantApiUnpinRequestOperation, [], [Unpin]);
     fields_contain_unrecognised!(TenantApiUnpinResult, unpinned);
     fields_contain_unrecognised!(TenantApiUnpinWrite, harness, kind);
-    unrecognised_union!(TenantApiUnpinWriteKind,);
+    unrecognised_union!(TenantApiUnpinWriteKind, [], [Unpin]);
     unrecognised_union!(
         TenantApiUnplaceable,
-        NotOnline,
-        NotHealthy,
-        NoImage,
-        Full,
-        MemoryFull,
-        NoMemory,
-        NoDisk,
-        NoConnectors
+        [
+            NotOnline,
+            NotHealthy,
+            NoImage,
+            Full,
+            MemoryFull,
+            NoMemory,
+            NoDisk,
+            NoConnectors
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiUnplaceableFull, host, kind, reason, usage);
-    unrecognised_union!(TenantApiUnplaceableFullKind,);
-    unrecognised_union!(TenantApiUnplaceableFullReason,);
+    unrecognised_union!(TenantApiUnplaceableFullKind, [], [Unplaceable]);
+    unrecognised_union!(TenantApiUnplaceableFullReason, [], [Full]);
     fields_contain_unrecognised!(
         TenantApiUnplaceableMemoryFull,
         box_memory_mib,
@@ -52019,26 +52480,26 @@ pub mod types {
         reason,
         usage
     );
-    unrecognised_union!(TenantApiUnplaceableMemoryFullKind,);
-    unrecognised_union!(TenantApiUnplaceableMemoryFullReason,);
+    unrecognised_union!(TenantApiUnplaceableMemoryFullKind, [], [Unplaceable]);
+    unrecognised_union!(TenantApiUnplaceableMemoryFullReason, [], [MemoryFull]);
     fields_contain_unrecognised!(TenantApiUnplaceableNoConnectors, host, kind, reason, usage);
-    unrecognised_union!(TenantApiUnplaceableNoConnectorsKind,);
-    unrecognised_union!(TenantApiUnplaceableNoConnectorsReason,);
+    unrecognised_union!(TenantApiUnplaceableNoConnectorsKind, [], [Unplaceable]);
+    unrecognised_union!(TenantApiUnplaceableNoConnectorsReason, [], [NoConnectors]);
     fields_contain_unrecognised!(TenantApiUnplaceableNoDisk, box_disk_mib, host, kind, reason, usage);
-    unrecognised_union!(TenantApiUnplaceableNoDiskKind,);
-    unrecognised_union!(TenantApiUnplaceableNoDiskReason,);
+    unrecognised_union!(TenantApiUnplaceableNoDiskKind, [], [Unplaceable]);
+    unrecognised_union!(TenantApiUnplaceableNoDiskReason, [], [NoDisk]);
     fields_contain_unrecognised!(TenantApiUnplaceableNoImage, host, image, kind, reason);
-    unrecognised_union!(TenantApiUnplaceableNoImageKind,);
-    unrecognised_union!(TenantApiUnplaceableNoImageReason,);
+    unrecognised_union!(TenantApiUnplaceableNoImageKind, [], [Unplaceable]);
+    unrecognised_union!(TenantApiUnplaceableNoImageReason, [], [NoImage]);
     fields_contain_unrecognised!(TenantApiUnplaceableNoMemory, box_memory_mib, host, kind, reason, usage);
-    unrecognised_union!(TenantApiUnplaceableNoMemoryKind,);
-    unrecognised_union!(TenantApiUnplaceableNoMemoryReason,);
+    unrecognised_union!(TenantApiUnplaceableNoMemoryKind, [], [Unplaceable]);
+    unrecognised_union!(TenantApiUnplaceableNoMemoryReason, [], [NoMemory]);
     fields_contain_unrecognised!(TenantApiUnplaceableNotHealthy, host, kind, reason);
-    unrecognised_union!(TenantApiUnplaceableNotHealthyKind,);
-    unrecognised_union!(TenantApiUnplaceableNotHealthyReason,);
+    unrecognised_union!(TenantApiUnplaceableNotHealthyKind, [], [Unplaceable]);
+    unrecognised_union!(TenantApiUnplaceableNotHealthyReason, [], [NotHealthy]);
     fields_contain_unrecognised!(TenantApiUnplaceableNotOnline, host, kind, reason);
-    unrecognised_union!(TenantApiUnplaceableNotOnlineKind,);
-    unrecognised_union!(TenantApiUnplaceableNotOnlineReason,);
+    unrecognised_union!(TenantApiUnplaceableNotOnlineKind, [], [Unplaceable]);
+    unrecognised_union!(TenantApiUnplaceableNotOnlineReason, [], [NotOnline]);
     fields_contain_unrecognised!(
         TenantApiUnsupportedCredentialRefusal,
         credential_kind,
@@ -52046,14 +52507,14 @@ pub mod types {
         name,
         supported
     );
-    unrecognised_union!(TenantApiUnsupportedCredentialRefusalKind,);
+    unrecognised_union!(TenantApiUnsupportedCredentialRefusalKind, [], [Unsupported]);
     fields_contain_unrecognised!(TenantApiUpdatePersonaInput, now, persona, persona_id, tenant_id);
     fields_contain_unrecognised!(TenantApiUpdatePersonaRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiUpdatePersonaRequestOperation,);
+    unrecognised_union!(TenantApiUpdatePersonaRequestOperation, [], [UpdatePersona]);
     fields_contain_unrecognised!(TenantApiUpdatePersonaResult, written);
-    unrecognised_union!(TenantApiUpdatePersonaResultWritten, PersonaUpdated, WriteConflict);
+    unrecognised_union!(TenantApiUpdatePersonaResultWritten, [PersonaUpdated, WriteConflict], []);
     fields_contain_unrecognised!(TenantApiUpdatePersonaWrite, kind, persona, persona_id);
-    unrecognised_union!(TenantApiUpdatePersonaWriteKind,);
+    unrecognised_union!(TenantApiUpdatePersonaWriteKind, [], [UpdatePersona]);
     fields_contain_unrecognised!(
         TenantApiUpdateSecretSetInput,
         change,
@@ -52063,15 +52524,12 @@ pub mod types {
         tenant_id
     );
     fields_contain_unrecognised!(TenantApiUpdateSecretSetRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiUpdateSecretSetRequestOperation,);
+    unrecognised_union!(TenantApiUpdateSecretSetRequestOperation, [], [UpdateSecretSet]);
     fields_contain_unrecognised!(TenantApiUpdateSecretSetResult, updated);
     unrecognised_union!(
         TenantApiUpdateSecretSetResultUpdated,
-        Updated,
-        Missing,
-        Conflict,
-        NoStoredValue,
-        UncheckedToken
+        [Updated, Missing, Conflict, NoStoredValue, UncheckedToken],
+        []
     );
     fields_contain_unrecognised!(
         TenantApiUpdateTriggerInput,
@@ -52082,17 +52540,15 @@ pub mod types {
         trigger_id
     );
     fields_contain_unrecognised!(TenantApiUpdateTriggerRequest, input, operation, tenant_api_version);
-    unrecognised_union!(TenantApiUpdateTriggerRequestOperation,);
+    unrecognised_union!(TenantApiUpdateTriggerRequestOperation, [], [UpdateTrigger]);
     fields_contain_unrecognised!(TenantApiUpdateTriggerResult, updated);
     unrecognised_union!(
         TenantApiUpdateTriggerResultUpdated,
-        UpdatedOk,
-        NotFound,
-        NameTaken,
-        PersonaNotFound
+        [UpdatedOk, NotFound, NameTaken, PersonaNotFound],
+        []
     );
     fields_contain_unrecognised!(TenantApiUpdateTriggerWrite, kind, principal_id, trigger, trigger_id);
-    unrecognised_union!(TenantApiUpdateTriggerWriteKind,);
+    unrecognised_union!(TenantApiUpdateTriggerWriteKind, [], [UpdateTrigger]);
     fields_contain_unrecognised!(
         TenantApiWriteClaudeSetupTokenInput,
         claude_setup_id,
@@ -52108,15 +52564,22 @@ pub mod types {
         operation,
         tenant_api_version
     );
-    unrecognised_union!(TenantApiWriteClaudeSetupTokenRequestOperation,);
+    unrecognised_union!(
+        TenantApiWriteClaudeSetupTokenRequestOperation,
+        [],
+        [WriteClaudeSetupToken]
+    );
     fields_contain_unrecognised!(TenantApiWriteClaudeSetupTokenResult, stored);
     unrecognised_union!(
         TenantApiWriteClaudeSetupTokenResultStored,
-        ClaudeSetupStoredOk,
-        AuthorizationNotFound,
-        ClaudeSetupRefused,
-        AuthorizationNotWaiting,
-        ClaudeSetupNotStored
+        [
+            ClaudeSetupStoredOk,
+            AuthorizationNotFound,
+            ClaudeSetupRefused,
+            AuthorizationNotWaiting,
+            ClaudeSetupNotStored
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantApiWriteConflict, constraint, ok);
     fields_contain_unrecognised!(
@@ -52132,43 +52595,70 @@ pub mod types {
     fields_contain_unrecognised!(TenantConfigPlanRequest, config, expiry_values, files, secret_values);
     unrecognised_union!(
         TenantEvent,
-        TurnStartedEvent,
-        TurnCompletedEvent,
-        TurnFailedEvent,
-        SessionIdleEvent,
-        SessionStoppedEvent,
-        SessionFailedEvent,
-        SessionArchivedEvent,
-        HostOnlineEvent,
-        HostOfflineEvent,
-        PrebuildDoneEvent,
-        PrebuildFailedEvent,
-        SubscriptionPausedEvent,
-        SubscriptionEndedEvent,
-        TriggerStartRefusedEvent,
-        StartRefusedEvent,
-        CapacityAvailableEvent,
-        SessionStartedEvent,
-        UsageNearLimitEvent,
-        UsageLimitReachedEvent
+        [
+            TurnStartedEvent,
+            TurnCompletedEvent,
+            TurnFailedEvent,
+            SessionIdleEvent,
+            SessionStoppedEvent,
+            SessionFailedEvent,
+            SessionArchivedEvent,
+            HostOnlineEvent,
+            HostOfflineEvent,
+            PrebuildDoneEvent,
+            PrebuildFailedEvent,
+            SubscriptionPausedEvent,
+            SubscriptionEndedEvent,
+            TriggerStartRefusedEvent,
+            StartRefusedEvent,
+            CapacityAvailableEvent,
+            SessionStartedEvent,
+            UsageNearLimitEvent,
+            UsageLimitReachedEvent
+        ],
+        []
     );
     fields_contain_unrecognised!(TenantEventEnvelope, created_at, event_id, tenant_id);
-    unrecognised_union!(TenantEventType,);
+    unrecognised_union!(
+        TenantEventType,
+        [],
+        [
+            TurnStarted,
+            SessionStarted,
+            TurnCompleted,
+            TurnFailed,
+            SessionIdle,
+            SessionStopped,
+            SessionFailed,
+            SessionArchived,
+            HostOnline,
+            HostOffline,
+            PrebuildDone,
+            PrebuildFailed,
+            SubscriptionPaused,
+            SubscriptionEnded,
+            TriggerStartRefused,
+            StartRefused,
+            CapacityAvailable,
+            UsageNearLimit,
+            UsageLimitReached
+        ]
+    );
     fields_contain_unrecognised!(TenantLimit, limit, measure, window);
     fields_contain_unrecognised!(TenantLimits, profile, source);
     fields_contain_unrecognised!(TenantLimitsProfile, host_frames_per_minute, usage, writes_per_minute);
     fields_contain_unrecognised!(TenantLimitsReset, reset);
-    unrecognised_union!(TenantLimitsSet, Reset, Profile);
-    unrecognised_union!(TenantLimitsSource,);
+    unrecognised_union!(TenantLimitsSet, [Reset, Profile], []);
+    unrecognised_union!(TenantLimitsSource, [], [Free, Configured, Custom]);
     fields_contain_unrecognised!(TenantMetricCatalog, metrics, usage);
-    unrecognised_union!(TenantTier,);
+    unrecognised_union!(TenantTier, [], [Free, Configured]);
     fields_contain_unrecognised!(TenantUsage, counters, tier);
     fields_contain_unrecognised!(TenantUsageCounter, limit, measure, resets_at, used, window);
-    unrecognised_union!(TenantUsageMeasure,);
-    unrecognised_union!(TenantUsageWindow,);
+    unrecognised_union!(TenantUsageMeasure, [], [Requests, Writes, RowsWritten, RowsRead]);
+    unrecognised_union!(TenantUsageWindow, [], [Minute, Hour, Day]);
     fields_contain_unrecognised!(Token, 0);
-    unrecognised_union!(TokenKind,);
-    unrecognised_union!(Toolchain,);
+    unrecognised_union!(TokenKind, [], [Input, Output, CacheRead, CacheWrite]);
+    unrecognised_union!(Toolchain, [], [Node, Rust, Python]);
     fields_contain_unrecognised!(
         TranscriptLine,
         created_at,
@@ -52178,7 +52668,7 @@ pub mod types {
         text,
         turn_id
     );
-    unrecognised_union!(TranscriptPage, RawTranscriptPage, CompactTranscriptPage);
+    unrecognised_union!(TranscriptPage, [RawTranscriptPage, CompactTranscriptPage], []);
     fields_contain_unrecognised!(
         Trigger,
         created_at,
@@ -52199,7 +52689,7 @@ pub mod types {
     fields_contain_unrecognised!(TriggerDeliveryId, 0);
     fields_contain_unrecognised!(TriggerFieldPath, 0);
     fields_contain_unrecognised!(TriggerOrigin, delivery_id, kind, trigger_id);
-    unrecognised_union!(TriggerOriginKind,);
+    unrecognised_union!(TriggerOriginKind, [], [Trigger]);
     fields_contain_unrecognised!(TriggerPatch, model, name, persona_id, prompt, source);
     fields_contain_unrecognised!(TriggerPayload, 0);
     fields_contain_unrecognised!(TriggerSource, 0);
@@ -52214,10 +52704,14 @@ pub mod types {
         tenant_id,
         trigger_id
     );
-    unrecognised_union!(TriggerStartRefusedEventEvent,);
-    unrecognised_union!(TriggerTest, StoredTriggerTest, DraftTriggerTest);
+    unrecognised_union!(TriggerStartRefusedEventEvent, [], [TriggerStartRefused]);
+    unrecognised_union!(TriggerTest, [StoredTriggerTest, DraftTriggerTest], []);
     fields_contain_unrecognised!(TriggerTestResult, conditions, matched, missing_fields, prompt);
-    unrecognised_union!(Turn, OfferedTurn, RunningTurn, CompletedTurn, FailedTurn, UnknownTurn);
+    unrecognised_union!(
+        Turn,
+        [OfferedTurn, RunningTurn, CompletedTurn, FailedTurn, UnknownTurn],
+        []
+    );
     fields_contain_unrecognised!(
         TurnBase, box_id, created_at, goal, image, line_count, prompt, session_id, tenant_id, turn_id, updated_at
     );
@@ -52230,7 +52724,7 @@ pub mod types {
         tenant_id,
         turn_id
     );
-    unrecognised_union!(TurnCompletedEventEvent,);
+    unrecognised_union!(TurnCompletedEventEvent, [], [TurnCompleted]);
     fields_contain_unrecognised!(
         TurnFailedEvent,
         created_at,
@@ -52242,7 +52736,7 @@ pub mod types {
         tenant_id,
         turn_id
     );
-    unrecognised_union!(TurnFailedEventEvent,);
+    unrecognised_union!(TurnFailedEventEvent, [], [TurnFailed]);
     fields_contain_unrecognised!(
         TurnFailure,
         created_at,
@@ -52253,14 +52747,52 @@ pub mod types {
         tenant_id,
         turn_id
     );
-    unrecognised_union!(TurnFailureReason,);
+    unrecognised_union!(
+        TurnFailureReason,
+        [],
+        [
+            NotClaimed,
+            Undelivered,
+            NoFirstOutput,
+            HostOffline,
+            CredentialRefused,
+            DispatchCredentialExpired,
+            CredentialExpired,
+            BoxBootFailed,
+            PoolExhausted,
+            HostDegraded,
+            SnapshotUnreadable,
+            HarnessExited,
+            HarnessOutOfMemory,
+            BoxDiskFull,
+            HarnessExitedWithoutResult,
+            TurnTimedOut,
+            TranscriptGap,
+            PersonaFileUnreadable,
+            RepositoryCloneFailed,
+            HarnessReportedError,
+            CreditExhausted,
+            RepositoryTokenRefused,
+            ImageNotReleased,
+            ImageFetchFailed,
+            ImageFetchTimedOut,
+            HostUpdating,
+            BoxLost,
+            HostDropped,
+            HostRevoked,
+            Cancelled,
+            ConnectorDisconnected,
+            SnapshotNotStored,
+            RateLimited
+        ]
+    );
     fields_contain_unrecognised!(TurnFullImage, guest_image_digest, kind);
-    unrecognised_union!(TurnFullImageKind,);
-    unrecognised_union!(TurnImage, FullImage, LayeredImage);
+    unrecognised_union!(TurnFullImageKind, [], [Full]);
+    unrecognised_union!(TurnImage, [FullImage, LayeredImage], []);
     fields_contain_unrecognised!(TurnLayeredImage, base_image_digest, harness_layer_digest, kind);
-    unrecognised_union!(TurnLayeredImageKind,);
+    unrecognised_union!(TurnLayeredImageKind, [], [Layered]);
     fields_contain_unrecognised!(TurnOrigin, kind, session_id, turn_id);
-    unrecognised_union!(TurnOriginKind,);
+    unrecognised_union!(TurnOriginKind, [], [Turn]);
     fields_contain_unrecognised!(TurnPoint, at, dimensions, metric, session_id, turn_id, value);
     fields_contain_unrecognised!(TurnSend, goal, prompt);
     fields_contain_unrecognised!(
@@ -52272,8 +52804,8 @@ pub mod types {
         tenant_id,
         turn_id
     );
-    unrecognised_union!(TurnStartedEventEvent,);
-    unrecognised_union!(TurnState,);
+    unrecognised_union!(TurnStartedEventEvent, [], [TurnStarted]);
+    unrecognised_union!(TurnState, [], [Offered, Running, Completed, Failed, Unknown]);
     fields_contain_unrecognised!(
         UnknownSession,
         box_id,
@@ -52301,7 +52833,7 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised_union!(UnknownSessionState,);
+    unrecognised_union!(UnknownSessionState, [], [Unknown]);
     fields_contain_unrecognised!(
         UnknownTurn,
         box_id,
@@ -52318,7 +52850,7 @@ pub mod types {
         turn_id,
         updated_at
     );
-    unrecognised_union!(UnknownTurnState,);
+    unrecognised_union!(UnknownTurnState, [], [Unknown]);
     fields_contain_unrecognised!(UrlText, 0);
     fields_contain_unrecognised!(
         UsageLimitReachedEvent,
@@ -52333,7 +52865,7 @@ pub mod types {
         used,
         window
     );
-    unrecognised_union!(UsageLimitReachedEventEvent,);
+    unrecognised_union!(UsageLimitReachedEventEvent, [], [UsageLimitReached]);
     fields_contain_unrecognised!(
         UsageNearLimitEvent,
         created_at,
@@ -52347,11 +52879,11 @@ pub mod types {
         used,
         window
     );
-    unrecognised_union!(UsageNearLimitEventEvent,);
+    unrecognised_union!(UsageNearLimitEventEvent, [], [UsageNearLimit]);
     fields_contain_unrecognised!(WebhookDelivering, delivery);
-    unrecognised_union!(WebhookDeliveringDelivery,);
-    unrecognised_union!(WebhookDelivery,);
-    unrecognised_union!(WebhookDeliveryStatus, Delivering, Failing);
+    unrecognised_union!(WebhookDeliveringDelivery, [], [Delivering]);
+    unrecognised_union!(WebhookDelivery, [], [Delivering, Failing]);
+    unrecognised_union!(WebhookDeliveryStatus, [Delivering, Failing], []);
     fields_contain_unrecognised!(
         WebhookEndpoint,
         created_at,
@@ -52363,9 +52895,9 @@ pub mod types {
     );
     fields_contain_unrecognised!(WebhookEndpointCreate, events, url);
     fields_contain_unrecognised!(WebhookFailing, delivery, detail, failing_since);
-    unrecognised_union!(WebhookFailingDelivery,);
+    unrecognised_union!(WebhookFailingDelivery, [], [Failing]);
     fields_contain_unrecognised!(WebhookSigningKey, algorithm, public_key);
-    unrecognised_union!(WebhookSigningKeyAlgorithm,);
+    unrecognised_union!(WebhookSigningKeyAlgorithm, [], [Ed25519]);
     fields_contain_unrecognised!(WebhookSigningKeyPublicKey, 0);
     fields_contain_unrecognised!(WebhookUrl, 0);
     fields_contain_unrecognised!(Whoami, principal, tenant);
