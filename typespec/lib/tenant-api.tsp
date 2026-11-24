@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 33;
+const TenantApiVersion = 34;
 
 namespace TenantApi {
 
@@ -618,6 +618,9 @@ model SendTurnInput {
   send: TurnSend;
   @maxItems(1000) hosts: HostRecord[];
   now: int64;
+
+  @doc("The authenticated person or turn that requested the send.")
+  caller: RequestCaller;
 }
 
 model StopSessionInput {
@@ -709,13 +712,27 @@ model CancelTurnInput {
   now: int64;
 }
 
+@doc("A start refusal the Worker decided before calling the tenant to start the session.")
 model RecordStartRefusalInput {
   tenantId: EntityId;
-  event: OmitProperties<StartRefusedEvent, "eventId" | "tenantId" | "createdAt">;
+  ...OmitProperties<StartRefusedEvent, "event" | "eventId" | "tenantId" | "createdAt" | "operation" | "crewTags">;
+
+  @doc("The tags requested for the session before the tenant adds inherited crew tags.")
+  @maxItems(16)
+  requestedTags: SessionTag[];
   now: int64;
 }
 
-model RecordStartRefusalResult {}
+model StartRefusalRecorded {
+  kind: "Recorded";
+}
+
+@doc("The tenant records the refusal with the resolved tags, or returns TagsOverLimit without appending an event.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union RecordStartRefusalResult {
+  Recorded: StartRefusalRecorded,
+  TagsOverLimit: SessionTagsOverLimit,
+}
 
 model RecordStartRefusalRequest {
   tenantApiVersion: TenantApiProtocol;
@@ -2573,10 +2590,11 @@ model SessionTagged {
   session: Session;
 }
 
-@doc("A patch or a start whose tags, with the crew tags a start inherits, would number more than 16; nothing changes.")
+@doc("The resolved session tags exceed the limit of 16. A start includes its inherited crew tags.")
 model SessionTagsOverLimit {
   kind: "TagsOverLimit";
-  @maxItems(64) tags: SessionTag[];
+  @doc("The number of distinct resolved tags.")
+  @minValue(17) tagCount: int32;
 }
 
 model SetSessionTagsResult {

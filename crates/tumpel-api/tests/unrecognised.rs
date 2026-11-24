@@ -3,15 +3,11 @@ use tumpel_api::ContainsUnrecognised;
 
 #[test]
 fn config_plans_flag_nested_unrecognised_values() -> serde_json::Result<()> {
-    for (action, unrecognised) in [("FutureAction", true), ("Create", false)] {
-        let body = format!(
-            r#"{{"changes":[{{"action":"Create","resource":"Persona","name":"first","description":"first change"}},{{"action":"{action}","resource":"Persona","name":"second","description":"second change"}}]}}"#
-        );
-        assert_eq!(
-            serde_json::from_str::<ConfigPlan>(&body)?.contains_unrecognised(),
-            unrecognised
-        );
-    }
+    let unknown_action = r#"{"changes":[{"action":"Create","resource":"Persona","name":"first","description":"first change"},{"action":"FutureAction","resource":"Persona","name":"second","description":"second change"}]}"#;
+    assert!(serde_json::from_str::<ConfigPlan>(unknown_action)?.contains_unrecognised());
+
+    let known_actions = r#"{"changes":[{"action":"Create","resource":"Persona","name":"first","description":"first change"},{"action":"Create","resource":"Persona","name":"second","description":"second change"}]}"#;
+    assert!(!serde_json::from_str::<ConfigPlan>(known_actions)?.contains_unrecognised());
     Ok(())
 }
 
