@@ -239,6 +239,8 @@ model StartRefusedEvent {
   refusal: StartRefusal;
   personaId: EntityId;
   `model`: ModelName;
+  @doc("The resolved harness version, when the request reached version selection.")
+  harnessVersion?: HarnessVersion;
   caller: StartRefusedCaller;
 
   @doc("The crew tags the session would carry.")

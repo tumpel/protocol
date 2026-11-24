@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 33;
+const TenantApiVersion = 34;
 
 namespace TenantApi {
 
@@ -618,6 +618,7 @@ model SendTurnInput {
   send: TurnSend;
   @maxItems(1000) hosts: HostRecord[];
   now: int64;
+  caller: StartRefusedCaller;
 }
 
 model StopSessionInput {
@@ -715,7 +716,13 @@ model RecordStartRefusalInput {
   now: int64;
 }
 
-model RecordStartRefusalResult {}
+model StartRefusalRecorded {
+  kind: "Recorded";
+}
+
+model RecordStartRefusalResult {
+  recorded: StartRefusalRecorded | SessionTagsOverLimit;
+}
 
 model RecordStartRefusalRequest {
   tenantApiVersion: TenantApiProtocol;
