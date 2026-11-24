@@ -33,6 +33,11 @@ navigateProgram(program, {
     if (!PASCAL.test(declared.name)) failures.add(`enum ${declared.name} is not PascalCase`);
     for (const member of declared.members.values()) {
       if (!PASCAL.test(member.name)) failures.add(`enum member ${declared.name}.${member.name} is not PascalCase`);
+      if (member.name === "Unrecognised" || member.value === "Unrecognised") {
+        failures.add(
+          `enum member ${declared.name}.${member.name} uses Unrecognised; choose a different name and value`,
+        );
+      }
     }
   },
   modelProperty: (property) => {

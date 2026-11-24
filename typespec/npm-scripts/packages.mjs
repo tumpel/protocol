@@ -13,8 +13,18 @@ if (version === undefined)
 const packages = {
   schemas: {
     name: "@tumpel/schemas",
-    files: ["schemas.js", "schemas.d.ts"],
-    exports: { ".": { types: "./schemas.d.ts", default: "./schemas.js" } },
+    files: [
+      "schemas.js",
+      "schemas.d.ts",
+      "responses.js",
+      "responses.d.ts",
+      "response-decoding.js",
+      "response-decoding.d.ts",
+    ],
+    exports: {
+      ".": { types: "./schemas.d.ts", default: "./schemas.js" },
+      "./responses": { types: "./responses.d.ts", default: "./responses.js" },
+    },
     dependencies: { zod: "^4.6.7" },
   },
   openapi: {

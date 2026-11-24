@@ -18,3 +18,7 @@ Always follow `rules/errors.md` and `rules/coding-standards.md`.
 - `npm test` runs the channel-wire guard tests and the Rust tests.
 - `npm run pack` builds the npm tarballs into `dist/`.
 - Releases are mechanical; never bump the version in `Cargo.toml`, tag or publish by hand. A merge to `main` that changes a shipped file publishes a GitHub pre-release `vX.Y.Z-rc.N` and `tumpel-api` at that version on crates.io, versioned from the conventional commit types (breaking major, `feat` minor, `fix` and `perf` patch). Only the manual `promote` workflow ships a release candidate as the stable `vX.Y.Z`. A rerun releases the same version.
+
+## Compatibility
+
+Ship the dashboard, CLI, MCP clients and supervisor before the back end that serves their changes. Publish the protocol release candidate before consumers pin it. TypeScript clients must decode answers with `@tumpel/schemas/responses` and use the root schemas for requests. Tell users to update when an answer contains an unrecognised value. Ignore extra fields.

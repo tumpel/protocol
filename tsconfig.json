@@ -10,5 +10,5 @@
       "@tumpel/schemas": ["./build/schemas/schemas.ts"]
     }
   },
-  "include": ["build/schemas/schemas.ts", "build/openapi/paths.ts", "build/openapi/frozen/*.ts", "build/api/*.ts"]
+  "include": ["build/schemas/*.ts", "build/openapi/paths.ts", "build/openapi/frozen/*.ts", "build/api/*.ts"]
 }
