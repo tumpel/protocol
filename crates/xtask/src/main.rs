@@ -556,122 +556,79 @@ fn generate_frozen(root: &Path) -> Result<(), String> {
     fs::write(&output, modules).map_err(|e| format!("writing {}: {e}.", output.display()))
 }
 
-struct TrackUnrecognised;
+fn any_unrecognised(fields: impl Iterator<Item = TokenStream>) -> TokenStream {
+    let checks: Vec<_> = fields
+        .map(|field| quote!(ContainsUnrecognised::is_unrecognised(#field)))
+        .collect();
+    if checks.is_empty() {
+        return quote!(false);
+    }
+    quote!(#(#checks)||*)
+}
 
-impl syn::visit_mut::VisitMut for TrackUnrecognised {
-    fn visit_expr_mut(&mut self, expression: &mut syn::Expr) {
-        syn::visit_mut::visit_expr_mut(self, expression);
-        let syn::Expr::Call(call) = expression else {
-            return;
-        };
-        let syn::Expr::Path(function) = &*call.func else {
-            return;
-        };
-        if function
-            .path
-            .segments
-            .last()
-            .is_some_and(|segment| segment.ident == "Unrecognised")
-        {
-            *expression = syn::parse_quote!(crate::response::mark_unrecognised(#expression));
+fn unrecognised_variant(variant: &syn::Variant) -> Option<TokenStream> {
+    let name = &variant.ident;
+    if name == "Unrecognised" {
+        return Some(quote!(Self::#name(..) => true));
+    }
+    match &variant.fields {
+        syn::Fields::Unit => None,
+        syn::Fields::Unnamed(fields) => {
+            let names: Vec<_> = (0..fields.unnamed.len())
+                .map(|index| format_ident!("field_{index}"))
+                .collect();
+            let check = any_unrecognised(names.iter().map(|name| quote!(#name)));
+            Some(quote!(Self::#name(#(#names),*) => #check))
+        }
+        syn::Fields::Named(fields) => {
+            let names: Vec<_> = fields.named.iter().filter_map(|field| field.ident.as_ref()).collect();
+            let check = any_unrecognised(names.iter().map(|name| quote!(#name)));
+            Some(quote!(Self::#name { #(#names),* } => #check))
         }
     }
 }
 
-fn track_decoding(file: &mut syn::File) -> Result<(), String> {
-    for item in types_module(file)? {
-        match item {
+fn unrecognised_predicates(types: &mut Vec<syn::Item>) {
+    let implementations: Vec<_> = types
+        .iter()
+        .filter_map(|item| match item {
+            syn::Item::Struct(declared) => {
+                let name = &declared.ident;
+                let fields = declared.fields.members();
+                Some(syn::parse_quote!(unrecognised!(#name, #(#fields),*);))
+            }
             syn::Item::Enum(declared) => {
-                for variant in &mut declared.variants {
-                    let decoder = if variant.ident == "Unrecognised" {
-                        "crate::response::unrecognised"
-                    } else {
-                        "crate::response::attempt"
-                    };
-                    for field in &mut variant.fields {
-                        field
-                            .attrs
-                            .push(syn::parse_quote!(#[serde(deserialize_with = #decoder)]));
-                    }
+                let name = &declared.ident;
+                let mut arms: Vec<_> = declared.variants.iter().filter_map(unrecognised_variant).collect();
+                if arms.len() == 1 {
+                    return Some(syn::parse_quote!(unrecognised!(#name);));
                 }
+                if arms.len() < declared.variants.len() {
+                    arms.push(quote!(_ => false));
+                }
+                Some(syn::parse_quote! {
+                    impl ContainsUnrecognised for #name {
+                        fn is_unrecognised(&self) -> bool {
+                            match self { #(#arms,)* }
+                        }
+                    }
+                })
             }
-            syn::Item::Impl(implemented)
-                if implemented.trait_.as_ref().is_some_and(|(path, _)| {
-                    path.segments
-                        .last()
-                        .is_some_and(|segment| segment.ident == "Deserialize")
-                }) =>
-            {
-                syn::visit_mut::VisitMut::visit_item_impl_mut(&mut TrackUnrecognised, implemented);
-            }
-            _ => {}
-        }
-    }
-    Ok(())
-}
-
-struct ResponseErrors;
-
-impl syn::visit_mut::VisitMut for ResponseErrors {
-    fn visit_expr_call_mut(&mut self, call: &mut syn::ExprCall) {
-        syn::visit_mut::visit_expr_call_mut(self, call);
-        let syn::Expr::Path(function) = &*call.func else {
-            return;
-        };
-        if function
-            .path
-            .segments
-            .last()
-            .is_none_or(|segment| segment.ident != "ErrorResponse")
-        {
-            return;
-        }
-        let Some(syn::Expr::Try(tried)) = call.args.first_mut() else {
-            return;
-        };
-        let syn::Expr::Await(awaited) = &mut *tried.expr else {
-            return;
-        };
-        let syn::Expr::Call(decoded) = &mut *awaited.base else {
-            return;
-        };
-        *decoded.func = syn::parse_quote!(progenitor_client::ResponseValue::from_response);
-    }
-}
-
-fn tracked_responses(file: &mut syn::File) {
-    for item in &mut file.items {
-        let syn::Item::Use(imported) = item else {
-            continue;
-        };
-        let syn::UseTree::Path(path) = &mut imported.tree else {
-            continue;
-        };
-        if path.ident != "progenitor_client" {
-            continue;
-        }
-        let syn::UseTree::Group(group) = &mut *path.tree else {
-            continue;
-        };
-        group.items = group
-            .items
-            .clone()
-            .into_iter()
-            .filter(|item| !matches!(item, syn::UseTree::Name(name) if name.ident == "ResponseValue"))
-            .collect();
-    }
-    file.items.push(syn::parse_quote!(
-        use crate::ResponseValue;
+            _ => None,
+        })
+        .collect();
+    types.push(syn::parse_quote!(
+        use crate::{response::unrecognised, ContainsUnrecognised};
     ));
-    syn::visit_mut::VisitMut::visit_file_mut(&mut ResponseErrors, file);
+    types.extend(implementations);
 }
 
 fn generate_api(root: &Path) -> Result<(), String> {
     let spec = read_spec(root)?;
     let mut file = generate_file(&spec)?;
-    string_newtypes(types_module(&mut file)?)?;
-    track_decoding(&mut file)?;
-    tracked_responses(&mut file);
+    let types = types_module(&mut file)?;
+    string_newtypes(types)?;
+    unrecognised_predicates(types);
     let output = root.join(OUTPUT);
     fs::create_dir_all(&output).map_err(|e| format!("creating {}: {e}.", output.display()))?;
     write_file(&output.join("generated.rs"), &file)?;

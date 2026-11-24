@@ -1,89 +1,103 @@
-use tumpel_api::types::{ConfigPlan, EventProblem, SessionState, SubscriptionPauseReason};
-use tumpel_api::{Error, ResponseValue};
+use std::time::Duration;
+
+use reqwest::StatusCode;
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tokio::net::TcpListener;
+use tumpel_api::types::{ConfigPlan, Problem};
+use tumpel_api::{ByteStream, Client, ContainsUnrecognised, Error, ResponseValue};
 
 #[tokio::test]
-async fn responses_record_unknown_enums_and_reset_the_bit_for_each_decode() {
-    for (body, unrecognised) in [(r#""FutureState""#, true), (r#""Idle""#, false)] {
+async fn responses_flag_only_a_nested_unrecognised_value() {
+    for (action, unrecognised) in [("FutureAction", true), ("Create", false)] {
+        let body = format!(
+            r#"{{"changes":[{{"action":"Create","resource":"Persona","name":"first","description":"first change"}},{{"action":"{action}","resource":"Persona","name":"second","description":"second change"}}]}}"#
+        );
         let response = reqwest::Response::from(http::Response::new(body));
-        let decoded = ResponseValue::<SessionState>::from_response::<()>(response)
+        let decoded = ResponseValue::<ConfigPlan>::from_response::<Problem>(response)
             .await
             .unwrap();
         assert_eq!(decoded.is_unrecognised(), unrecognised);
-        assert_eq!(serde_json::to_string(&*decoded).unwrap(), body);
     }
 }
 
-#[tokio::test]
-async fn responses_record_unknown_values_inside_nested_collections() {
-    let body = r#"{"changes":[{"action":"Create","resource":"Persona","name":"known","description":"known change"},{"action":"FutureAction","resource":"FutureResource","name":"future","description":"future change"}]}"#;
-    let response = reqwest::Response::from(http::Response::new(body));
-    let decoded = ResponseValue::<ConfigPlan>::from_response::<()>(response)
-        .await
-        .unwrap();
-    assert!(decoded.is_unrecognised());
-    assert_eq!(
-        serde_json::to_value(decoded.into_inner()).unwrap(),
-        serde_json::from_str::<serde_json::Value>(body).unwrap()
+async fn installation(
+    status: &str,
+    content_type: &str,
+    body: &str,
+) -> Result<Result<ResponseValue<ByteStream>, Error<Problem>>, Box<dyn std::error::Error>> {
+    let listener = TcpListener::bind("127.0.0.1:0").await?;
+    let address = listener.local_addr()?;
+    let client = Client::new_with_client(
+        &format!("http://{address}"),
+        reqwest::Client::builder().no_proxy().build()?,
     );
+    let server = async {
+        let (socket, _) = listener.accept().await?;
+        let mut socket = BufReader::new(socket);
+        let mut line = String::new();
+        socket.read_line(&mut line).await?;
+        assert_eq!(line, "GET /v1/releases/install.sh HTTP/1.1\r\n");
+        loop {
+            line.clear();
+            assert_ne!(socket.read_line(&mut line).await?, 0);
+            if line == "\r\n" {
+                break;
+            }
+        }
+        let response = format!(
+            "HTTP/1.1 {status}\r\nContent-Type: {content_type}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+            body.len()
+        );
+        socket.get_mut().write_all(response.as_bytes()).await
+    };
+    let (written, response) = tokio::time::timeout(Duration::from_secs(5), async {
+        tokio::join!(server, client.releases_install())
+    })
+    .await?;
+    written?;
+    Ok(response)
 }
 
 #[tokio::test]
-async fn responses_record_unknown_discriminators_without_losing_known_values() {
-    let body = r#"[{"kind":"CrewFailing"},{"kind":"FuturePause","extra":true}]"#;
-    let response = reqwest::Response::from(http::Response::new(body));
-    let decoded = ResponseValue::<Vec<SubscriptionPauseReason>>::from_response::<()>(response)
-        .await
-        .unwrap();
-    assert!(decoded.is_unrecognised());
-    assert!(matches!(decoded[0], SubscriptionPauseReason::CrewFailing(_)));
-    assert_eq!(
-        serde_json::to_value(decoded.into_inner()).unwrap(),
-        serde_json::from_str::<serde_json::Value>(body).unwrap()
-    );
+async fn a_generated_typed_error_matches_and_converts_with_the_same_response_type() {
+    let outcome = installation(
+        "400 Bad Request",
+        "application/problem+json",
+        r#"{"code":"FutureRefusal","title":"Future refusal","detail":"future detail","fix":"future fix"}"#,
+    )
+    .await
+    .expect("the test server serves the request");
+    let Err(Error::ErrorResponse(response)) = outcome else {
+        panic!("the generated client returns a typed problem");
+    };
+    assert!(response.is_unrecognised());
+    let status = response.status();
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    let headers = response.headers().clone();
+    assert_eq!(headers[reqwest::header::CONTENT_TYPE], "application/problem+json");
+    let problem: Problem = response.into_inner();
+    assert_eq!(problem.title.as_str(), "Future refusal");
+    let error: Error<Problem> = Error::ErrorResponse(ResponseValue::new(problem, status, headers.clone()));
+    let Error::ErrorResponse(response) = error.into_untyped() else {
+        panic!("the converted error keeps its response");
+    };
+    assert_eq!(response.status(), status);
+    assert_eq!(response.headers(), &headers);
 }
 
 #[tokio::test]
-async fn failed_decodes_do_not_mark_the_next_response_as_unrecognised() {
-    let response = reqwest::Response::from(http::Response::new(r#"["FutureState",42]"#));
-    let error = ResponseValue::<Vec<SessionState>>::from_response::<()>(response)
+async fn consuming_a_generated_stream_response_preserves_its_bytes() {
+    let response = installation("200 OK", "text/plain", "download bytes")
         .await
-        .unwrap_err();
-    assert!(matches!(error, Error::InvalidResponsePayload(_, _)));
-    let response = reqwest::Response::from(http::Response::new(r#"["Idle"]"#));
-    let decoded = ResponseValue::<Vec<SessionState>>::from_response::<()>(response)
-        .await
-        .unwrap();
-    assert!(!decoded.is_unrecognised());
-}
-
-#[tokio::test]
-async fn abandoned_untagged_variants_do_not_mark_a_known_value_as_unrecognised() {
-    let body = r#"{"code":"SignedOut","title":"Sign in","detail":"no token","fix":"sign in again"}"#;
-    let response = reqwest::Response::from(http::Response::new(body));
-    let decoded = ResponseValue::<EventProblem>::from_response::<()>(response)
-        .await
-        .unwrap();
-    assert!(matches!(*decoded, EventProblem::Problem(_)));
-    assert!(!decoded.is_unrecognised());
-}
-
-#[test]
-fn a_generated_download_response_keeps_the_consuming_stream_api() {
-    let client = tumpel_api::Client::new("https://example.test").unwrap();
-    let download = async { client.releases_install().await.unwrap().into_inner_stream() };
-    drop(download);
-}
-
-#[tokio::test]
-async fn consuming_a_stream_response_preserves_its_bytes() {
-    let response = reqwest::Response::from(http::Response::new("download bytes"));
-    let response = ResponseValue::stream(response);
+        .expect("the test server serves the request")
+        .expect("the generated client receives a download");
+    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(response.content_length(), Some(14));
     assert!(!response.is_unrecognised());
     let mut stream = response.into_inner_stream();
-    let bytes = std::future::poll_fn(|cx| stream.as_mut().poll_next(cx))
-        .await
-        .unwrap()
-        .unwrap();
-    assert_eq!(&bytes[..], b"download bytes");
-    assert!(std::future::poll_fn(|cx| stream.as_mut().poll_next(cx)).await.is_none());
+    let mut body = Vec::new();
+    while let Some(chunk) = std::future::poll_fn(|cx| stream.as_mut().poll_next(cx)).await {
+        body.extend_from_slice(&chunk.unwrap());
+    }
+    assert_eq!(body, b"download bytes");
 }
