@@ -66,3 +66,24 @@ async fn abandoned_untagged_variants_do_not_mark_a_known_value_as_unrecognised()
     assert!(matches!(*decoded, EventProblem::Problem(_)));
     assert!(!decoded.is_unrecognised());
 }
+
+#[test]
+fn a_generated_download_response_keeps_the_consuming_stream_api() {
+    let client = tumpel_api::Client::new("https://example.test").unwrap();
+    let download = async { client.releases_install().await.unwrap().into_inner_stream() };
+    drop(download);
+}
+
+#[tokio::test]
+async fn consuming_a_stream_response_preserves_its_bytes() {
+    let response = reqwest::Response::from(http::Response::new("download bytes"));
+    let response = ResponseValue::stream(response);
+    assert!(!response.is_unrecognised());
+    let mut stream = response.into_inner_stream();
+    let bytes = std::future::poll_fn(|cx| stream.as_mut().poll_next(cx))
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(&bytes[..], b"download bytes");
+    assert!(std::future::poll_fn(|cx| stream.as_mut().poll_next(cx)).await.is_none());
+}

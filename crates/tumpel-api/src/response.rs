@@ -103,6 +103,20 @@ impl<T> ResponseValue<T> {
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
+impl ResponseValue<reqwest::Upgraded> {
+    #[expect(
+        clippy::result_large_err,
+        reason = "the public upgrade constructor returns progenitor_client::Error"
+    )]
+    pub async fn upgrade<E: std::fmt::Debug>(response: reqwest::Response) -> Result<Self, Error<E>> {
+        Ok(Self {
+            inner: progenitor_client::ResponseValue::upgrade(response).await?,
+            unrecognised: false,
+        })
+    }
+}
+
 impl ResponseValue<()> {
     #[must_use]
     pub fn empty(response: reqwest::Response) -> Self {
@@ -120,6 +134,11 @@ impl ResponseValue<ByteStream> {
             inner: progenitor_client::ResponseValue::stream(response),
             unrecognised: false,
         }
+    }
+
+    #[must_use]
+    pub fn into_inner_stream(self) -> <ByteStream as Deref>::Target {
+        self.inner.into_inner_stream()
     }
 }
 
