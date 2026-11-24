@@ -596,105 +596,6 @@ pub mod types {
             value.parse()
         }
     }
-    ///The host freed enough memory and disk for the refused box or came online. It reaches each
-    ///subscription with a pending room refusal.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct CapacityAvailableEvent {
-        ///The pending room refusal's code that this event answers.
-        pub code: CapacityRefusalCode,
-        #[serde(rename = "createdAt")]
-        pub created_at: i64,
-        pub event: CapacityAvailableEventEvent,
-        #[serde(rename = "eventId")]
-        pub event_id: Sequence,
-        #[serde(rename = "hostId")]
-        pub host_id: EntityId,
-        #[serde(rename = "subscriptionId")]
-        pub subscription_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///`CapacityAvailableEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CapacityAvailableEventEvent {
-        CapacityAvailable,
-        #[serde(untagged)]
-        Unrecognised(::std::string::String),
-    }
-    impl ::std::fmt::Display for CapacityAvailableEventEvent {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::CapacityAvailable => f.write_str("CapacityAvailable"),
-                Self::Unrecognised(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CapacityAvailableEventEvent {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "CapacityAvailable" => Ok(Self::CapacityAvailable),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CapacityAvailableEventEvent {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CapacityAvailableEventEvent {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///A room refusal code that a CapacityAvailable event answers.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum CapacityRefusalCode {
-        PoolExhausted,
-        NoHostAvailable,
-        HostDegraded,
-        HostOffline,
-        #[serde(untagged)]
-        Unrecognised(::std::string::String),
-    }
-    impl ::std::fmt::Display for CapacityRefusalCode {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::PoolExhausted => f.write_str("PoolExhausted"),
-                Self::NoHostAvailable => f.write_str("NoHostAvailable"),
-                Self::HostDegraded => f.write_str("HostDegraded"),
-                Self::HostOffline => f.write_str("HostOffline"),
-                Self::Unrecognised(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for CapacityRefusalCode {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "PoolExhausted" => Ok(Self::PoolExhausted),
-                "NoHostAvailable" => Ok(Self::NoHostAvailable),
-                "HostDegraded" => Ok(Self::HostDegraded),
-                "HostOffline" => Ok(Self::HostOffline),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for CapacityRefusalCode {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for CapacityRefusalCode {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
     ///The control plane's answer to a host frame, sent once the frame's effect is stored.
     ///It travels outside frames, as Heartbeat does. The host drops its unacked frames up to `seq`. The
     ///control plane answers a resent frame it already applied with Ack again, and a frame that fails a
@@ -23144,8 +23045,6 @@ pub mod types {
         pub event: StartRefusedEventEvent,
         #[serde(rename = "eventId")]
         pub event_id: Sequence,
-        #[serde(rename = "harnessVersion")]
-        pub harness_version: ShortText,
         pub model: ModelName,
         pub operation: StartRefusedOperation,
         #[serde(rename = "personaId")]
@@ -23974,7 +23873,7 @@ pub mod types {
     ///tag at the moment of the event and holds no Active subscription itself. Each delivery turn holds
     ///the plan and the events after the cursor, one JSON line each, and works toward the goal.
     ///StartRefused also reaches the calling session's subscription or one whose crew tags the refused
-    ///session would carry. CapacityAvailable reaches a subscription with a pending room refusal.
+    ///session would carry.
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum Subscription {
@@ -24151,7 +24050,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///An event type a subscription reacts to: a crew session event, a refused start or send, or room becoming available.
+    ///An event type a subscription reacts to: a crew session event or a refused start or send.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum SubscriptionEventType {
         TurnStarted,
@@ -24164,7 +24063,6 @@ pub mod types {
         SubscriptionPaused,
         SubscriptionEnded,
         StartRefused,
-        CapacityAvailable,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
     }
@@ -24181,7 +24079,6 @@ pub mod types {
                 Self::SubscriptionPaused => f.write_str("SubscriptionPaused"),
                 Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
                 Self::StartRefused => f.write_str("StartRefused"),
-                Self::CapacityAvailable => f.write_str("CapacityAvailable"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
         }
@@ -24200,7 +24097,6 @@ pub mod types {
                 "SubscriptionPaused" => Ok(Self::SubscriptionPaused),
                 "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
                 "StartRefused" => Ok(Self::StartRefused),
-                "CapacityAvailable" => Ok(Self::CapacityAvailable),
                 _ => Err("invalid value".into()),
             }
         }
@@ -24299,7 +24195,6 @@ pub mod types {
         DeliveryFailed(SubscriptionPausedDeliveryFailed),
         CrewFailing(SubscriptionPausedCrewFailing),
         CreditExhausted(SubscriptionPausedCreditExhausted),
-        StartsRefused(SubscriptionPausedStartsRefused),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<SubscriptionPausedByRequest> for SubscriptionPauseReason {
@@ -24320,11 +24215,6 @@ pub mod types {
     impl ::std::convert::From<SubscriptionPausedCreditExhausted> for SubscriptionPauseReason {
         fn from(value: SubscriptionPausedCreditExhausted) -> Self {
             Self::CreditExhausted(value)
-        }
-    }
-    impl ::std::convert::From<SubscriptionPausedStartsRefused> for SubscriptionPauseReason {
-        fn from(value: SubscriptionPausedStartsRefused) -> Self {
-            Self::StartsRefused(value)
         }
     }
     ///Someone paused the subscription with Subscriptions_pause, leaving a message.
@@ -24544,47 +24434,6 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedEventEvent {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///10 CapacityAvailable deliveries reached the subscription without a successful start; it pauses instead of waking again.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct SubscriptionPausedStartsRefused {
-        pub kind: SubscriptionPausedStartsRefusedKind,
-    }
-    ///`SubscriptionPausedStartsRefusedKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum SubscriptionPausedStartsRefusedKind {
-        StartsRefused,
-        #[serde(untagged)]
-        Unrecognised(::std::string::String),
-    }
-    impl ::std::fmt::Display for SubscriptionPausedStartsRefusedKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::StartsRefused => f.write_str("StartsRefused"),
-                Self::Unrecognised(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for SubscriptionPausedStartsRefusedKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "StartsRefused" => Ok(Self::StartsRefused),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for SubscriptionPausedStartsRefusedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for SubscriptionPausedStartsRefusedKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -29472,6 +29321,7 @@ pub mod types {
         SessionArchivedState(TenantApiSessionArchivedState),
         SessionFailedState(TenantApiSessionFailedState),
         SubscriptionPersonaLacksTumpelMcp(TenantApiSubscriptionPersonaLacksTumpelMcp),
+        SubscriptionLimitReached(TenantApiSubscriptionLimitReached),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSubscriptionCreatedOk> for TenantApiCreateSubscriptionResultCreated {
@@ -29497,6 +29347,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiSubscriptionPersonaLacksTumpelMcp> for TenantApiCreateSubscriptionResultCreated {
         fn from(value: TenantApiSubscriptionPersonaLacksTumpelMcp) -> Self {
             Self::SubscriptionPersonaLacksTumpelMcp(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSubscriptionLimitReached> for TenantApiCreateSubscriptionResultCreated {
+        fn from(value: TenantApiSubscriptionLimitReached) -> Self {
+            Self::SubscriptionLimitReached(value)
         }
     }
     ///`TenantApiCreateTriggerInput`
@@ -39746,6 +39601,82 @@ pub mod types {
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub state: ::std::option::Option<SubscriptionState>,
     }
+    ///`TenantApiSubscriptionLimitReached`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSubscriptionLimitReached {
+        pub kind: TenantApiSubscriptionLimitReachedKind,
+        pub limit: TenantApiSubscriptionLimitReachedLimit,
+    }
+    ///`TenantApiSubscriptionLimitReachedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSubscriptionLimitReachedKind {
+        LimitReached,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for TenantApiSubscriptionLimitReachedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::LimitReached => f.write_str("LimitReached"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSubscriptionLimitReachedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "LimitReached" => Ok(Self::LimitReached),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSubscriptionLimitReachedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSubscriptionLimitReachedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiSubscriptionLimitReachedLimit`
+    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(transparent)]
+    pub struct TenantApiSubscriptionLimitReachedLimit(f64);
+    impl ::std::ops::Deref for TenantApiSubscriptionLimitReachedLimit {
+        type Target = f64;
+        fn deref(&self) -> &f64 {
+            &self.0
+        }
+    }
+    impl ::std::convert::From<TenantApiSubscriptionLimitReachedLimit> for f64 {
+        fn from(value: TenantApiSubscriptionLimitReachedLimit) -> Self {
+            value.0
+        }
+    }
+    impl ::std::convert::TryFrom<f64> for TenantApiSubscriptionLimitReachedLimit {
+        type Error = self::error::ConversionError;
+        fn try_from(value: f64) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if ![128.0_f64].contains(&value) {
+                Err("invalid value".into())
+            } else {
+                Ok(Self(value))
+            }
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for TenantApiSubscriptionLimitReachedLimit {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            Self::try_from(<f64>::deserialize(deserializer)?)
+                .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
+        }
+    }
     ///`TenantApiSubscriptionNotFound`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSubscriptionNotFound {
@@ -43549,7 +43480,6 @@ pub mod types {
         SubscriptionEndedEvent(SubscriptionEndedEvent),
         TriggerStartRefusedEvent(TriggerStartRefusedEvent),
         StartRefusedEvent(StartRefusedEvent),
-        CapacityAvailableEvent(CapacityAvailableEvent),
         UsageNearLimitEvent(UsageNearLimitEvent),
         UsageLimitReachedEvent(UsageLimitReachedEvent),
         Unrecognised(::serde_json::Value),
@@ -43629,11 +43559,6 @@ pub mod types {
             Self::StartRefusedEvent(value)
         }
     }
-    impl ::std::convert::From<CapacityAvailableEvent> for TenantEvent {
-        fn from(value: CapacityAvailableEvent) -> Self {
-            Self::CapacityAvailableEvent(value)
-        }
-    }
     impl ::std::convert::From<UsageNearLimitEvent> for TenantEvent {
         fn from(value: UsageNearLimitEvent) -> Self {
             Self::UsageNearLimitEvent(value)
@@ -43673,7 +43598,6 @@ pub mod types {
         SubscriptionEnded,
         TriggerStartRefused,
         StartRefused,
-        CapacityAvailable,
         UsageNearLimit,
         UsageLimitReached,
         #[serde(untagged)]
@@ -43697,7 +43621,6 @@ pub mod types {
                 Self::SubscriptionEnded => f.write_str("SubscriptionEnded"),
                 Self::TriggerStartRefused => f.write_str("TriggerStartRefused"),
                 Self::StartRefused => f.write_str("StartRefused"),
-                Self::CapacityAvailable => f.write_str("CapacityAvailable"),
                 Self::UsageNearLimit => f.write_str("UsageNearLimit"),
                 Self::UsageLimitReached => f.write_str("UsageLimitReached"),
                 Self::Unrecognised(ref code) => f.write_str(code),
@@ -43723,7 +43646,6 @@ pub mod types {
                 "SubscriptionEnded" => Ok(Self::SubscriptionEnded),
                 "TriggerStartRefused" => Ok(Self::TriggerStartRefused),
                 "StartRefused" => Ok(Self::StartRefused),
-                "CapacityAvailable" => Ok(Self::CapacityAvailable),
                 "UsageNearLimit" => Ok(Self::UsageNearLimit),
                 "UsageLimitReached" => Ok(Self::UsageLimitReached),
                 _ => Err("invalid value".into()),
@@ -46912,10 +46834,6 @@ pub mod types {
                     ::serde_json::from_value::<SubscriptionPausedCreditExhausted>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                Some("StartsRefused") => Self::StartsRefused(
-                    ::serde_json::from_value::<SubscriptionPausedStartsRefused>(value.clone())
-                        .map_err(::serde::de::Error::custom)?,
-                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -47661,10 +47579,6 @@ pub mod types {
                 ),
                 Some("StartRefused") => Self::StartRefusedEvent(
                     ::serde_json::from_value::<StartRefusedEvent>(value.clone()).map_err(::serde::de::Error::custom)?,
-                ),
-                Some("CapacityAvailable") => Self::CapacityAvailableEvent(
-                    ::serde_json::from_value::<CapacityAvailableEvent>(value.clone())
-                        .map_err(::serde::de::Error::custom)?,
                 ),
                 Some("UsageNearLimit") => Self::UsageNearLimitEvent(
                     ::serde_json::from_value::<UsageNearLimitEvent>(value.clone())
@@ -53626,7 +53540,9 @@ impl Client {
     ///session's harness takes no goal, when the plan and the goal leave no room for one event, or
     ///when crewTags is not empty and the session's persona has tumpelMcp disabled. That problem's
     ///detail names the persona and its fix says to enable tumpelMcp on it before trying again.
-    ///Refused SessionArchived or SessionFailed when the session is.
+    ///At most 128 Active or Paused subscriptions listing StartRefused belong to one tenant; creating
+    ///another is refused InvalidRequest until one ends or is deleted. Other event subscriptions
+    ///do not count toward this limit. Refused SessionArchived or SessionFailed when the session is.
     ///
     ///Sends a `POST` request to `/v1/subscriptions`
     ///
@@ -55094,5 +55010,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 31;
+    pub const VERSION: u16 = 32;
 }

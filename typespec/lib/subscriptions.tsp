@@ -11,7 +11,7 @@ namespace Tumpel;
 @maxLength(500)
 scalar SubscriptionPauseMessage extends string;
 
-@doc("An event type a subscription reacts to: a crew session event, a refused start or send, or room becoming available.")
+@doc("An event type a subscription reacts to: a crew session event or a refused start or send.")
 enum SubscriptionEventType {
   TurnStarted: "TurnStarted",
   TurnCompleted: "TurnCompleted",
@@ -23,7 +23,6 @@ enum SubscriptionEventType {
   SubscriptionPaused: "SubscriptionPaused",
   SubscriptionEnded: "SubscriptionEnded",
   StartRefused: "StartRefused",
-  CapacityAvailable: "CapacityAvailable",
 }
 
 enum SubscriptionState {
@@ -60,11 +59,6 @@ model SubscriptionPausedCreditExhausted {
   turnId: EntityId;
 }
 
-@doc("10 CapacityAvailable deliveries reached the subscription without a successful start; it pauses instead of waking again.")
-model SubscriptionPausedStartsRefused {
-  kind: "StartsRefused";
-}
-
 @doc("Why a subscription is Paused.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union SubscriptionPauseReason {
@@ -72,7 +66,6 @@ union SubscriptionPauseReason {
   DeliveryFailed: SubscriptionPausedDeliveryFailed,
   CrewFailing: SubscriptionPausedCrewFailing,
   CreditExhausted: SubscriptionPausedCreditExhausted,
-  StartsRefused: SubscriptionPausedStartsRefused,
 }
 
 @doc("Why a subscription is Ended.")
@@ -164,7 +157,7 @@ model EndedSubscription {
   tag at the moment of the event and holds no Active subscription itself. Each delivery turn holds
   the plan and the events after the cursor, one JSON line each, and works toward the goal.
   StartRefused also reaches the calling session's subscription or one whose crew tags the refused
-  session would carry. CapacityAvailable reaches a subscription with a pending room refusal.
+  session would carry.
   """)
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
 union Subscription {
@@ -198,7 +191,9 @@ namespace V1 {
       session's harness takes no goal, when the plan and the goal leave no room for one event, or
       when crewTags is not empty and the session's persona has tumpelMcp disabled. That problem's
       detail names the persona and its fix says to enable tumpelMcp on it before trying again.
-      Refused SessionArchived or SessionFailed when the session is.
+      At most 128 Active or Paused subscriptions listing StartRefused belong to one tenant; creating
+      another is refused InvalidRequest until one ends or is deleted. Other event subscriptions
+      do not count toward this limit. Refused SessionArchived or SessionFailed when the session is.
       """)
     @post
     create(@body body: SubscriptionCreate): Subscription | ProblemResponse;
