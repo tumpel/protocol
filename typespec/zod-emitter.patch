@@ -7,7 +7,7 @@
 +const isNamedUnion = (union) => union.name && union.namespace && getNamespaceFullName(union.namespace).startsWith("Tumpel");
 @@ -297 +298 @@
 -    const imports = 'import { z } from "zod";\n\n';
-+    const imports = 'import { z } from "zod";\nimport { openEnum, openUnion, unionVariant } from "./open-schemas.js";\nexport { decode, openEnum, openUnion } from "./open-schemas.js";\n\n';
++    const imports = 'import { z } from "zod";\nimport { openEnum, openUnion, unionVariant } from "./open-schemas.ts";\nexport { decode, openEnum, openUnion } from "./open-schemas.ts";\n\n';
 @@ -321 +322,5 @@
 -    return (imports + header + (enumSchemas ? `${enumSchemas}\n\n` : "") + modelSchemas);
 +    const unions = [];

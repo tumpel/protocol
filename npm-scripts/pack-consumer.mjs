@@ -42,7 +42,6 @@ const session = {
   updatedAt: failed.updatedAt,
   state: "Idle",
 };
-
 test("the tarballs decode a mixed session list and name the unknown wire values", () => {
   assert.deepEqual([MCP_PATH, openapi.paths["/v1/sessions"].get.operationId], ["/mcp", "Sessions_list"]);
   const list = z.array(schemas.SessionSchema);
