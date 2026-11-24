@@ -2594,11 +2594,11 @@ model SessionTagged {
 model SessionTagsOverLimit {
   kind: "TagsOverLimit";
   @doc("The number of distinct resolved tags.")
-  tagCount: int32;
+  @minValue(17) tagCount: int32;
 }
 
 model SetSessionTagsResult {
-  tagged: SessionTagged | SessionNotFound | SessionTagsOverLimit;
+  tagged: SessionTagged | SessionNotFound;
 }
 
 model PatchSessionTagsResult {

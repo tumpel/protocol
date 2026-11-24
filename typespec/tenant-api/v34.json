@@ -15462,6 +15462,7 @@
         "tagCount": {
           "type": "integer",
           "format": "int32",
+          "minimum": 17,
           "description": "The number of distinct resolved tags."
         }
       },
@@ -15663,9 +15664,6 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.SessionNotFound"
-            },
-            {
-              "$ref": "#/components/schemas/TenantApi.SessionTagsOverLimit"
             }
           ]
         }

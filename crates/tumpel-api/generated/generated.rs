@@ -38023,7 +38023,6 @@ pub mod types {
     pub enum TenantApiSetSessionTagsResultTagged {
         Tagged(TenantApiSessionTagged),
         NotFound(TenantApiSessionNotFound),
-        TagsOverLimit(TenantApiSessionTagsOverLimit),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionTagged> for TenantApiSetSessionTagsResultTagged {
@@ -38034,11 +38033,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiSessionNotFound> for TenantApiSetSessionTagsResultTagged {
         fn from(value: TenantApiSessionNotFound) -> Self {
             Self::NotFound(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiSessionTagsOverLimit> for TenantApiSetSessionTagsResultTagged {
-        fn from(value: TenantApiSessionTagsOverLimit) -> Self {
-            Self::TagsOverLimit(value)
         }
     }
     ///`TenantApiSetStaticTokenInput`
