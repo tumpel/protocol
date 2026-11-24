@@ -4969,6 +4969,25 @@
       "minLength": 1,
       "maxLength": 500
     },
+    "RequestCaller": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/PersonOrigin"
+        },
+        {
+          "$ref": "#/components/schemas/TurnOrigin"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Person": "#/components/schemas/PersonOrigin",
+          "Turn": "#/components/schemas/TurnOrigin"
+        }
+      },
+      "description": "The person or turn that made a request."
+    },
     "RunningSession": {
       "type": "object",
       "required": [
@@ -6430,25 +6449,6 @@
       ],
       "description": "A refusal code that produces a StartRefused event."
     },
-    "StartRefusedCaller": {
-      "type": "object",
-      "oneOf": [
-        {
-          "$ref": "#/components/schemas/PersonOrigin"
-        },
-        {
-          "$ref": "#/components/schemas/TurnOrigin"
-        }
-      ],
-      "discriminator": {
-        "propertyName": "kind",
-        "mapping": {
-          "Person": "#/components/schemas/PersonOrigin",
-          "Turn": "#/components/schemas/TurnOrigin"
-        }
-      },
-      "description": "The person or turn that made the refused request."
-    },
     "StartRefusedEvent": {
       "type": "object",
       "required": [
@@ -6498,10 +6498,10 @@
               "$ref": "#/components/schemas/HarnessVersion"
             }
           ],
-          "description": "The resolved harness version, when the request reached version selection."
+          "description": "The harness version the request resolved, if any."
         },
         "caller": {
-          "$ref": "#/components/schemas/StartRefusedCaller"
+          "$ref": "#/components/schemas/RequestCaller"
         },
         "crewTags": {
           "type": "array",
@@ -14333,10 +14333,10 @@
                   "$ref": "#/components/schemas/HarnessVersion"
                 }
               ],
-              "description": "The resolved harness version, when the request reached version selection."
+              "description": "The harness version the request resolved, if any."
             },
             "caller": {
-              "$ref": "#/components/schemas/StartRefusedCaller"
+              "$ref": "#/components/schemas/RequestCaller"
             },
             "crewTags": {
               "type": "array",
@@ -14379,19 +14379,19 @@
     },
     "TenantApi.RecordStartRefusalResult": {
       "type": "object",
-      "required": [
-        "recorded"
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/TenantApi.StartRefusalRecorded"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.SessionTagsOverLimit"
+        }
       ],
-      "properties": {
-        "recorded": {
-          "anyOf": [
-            {
-              "$ref": "#/components/schemas/TenantApi.StartRefusalRecorded"
-            },
-            {
-              "$ref": "#/components/schemas/TenantApi.SessionTagsOverLimit"
-            }
-          ]
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Recorded": "#/components/schemas/TenantApi.StartRefusalRecorded",
+          "TagsOverLimit": "#/components/schemas/TenantApi.SessionTagsOverLimit"
         }
       }
     },
@@ -15070,38 +15070,19 @@
     "TenantApi.SendTurnInput": {
       "type": "object",
       "required": [
-        "tenantId",
-        "sessionId",
-        "send",
-        "hosts",
-        "now",
         "caller"
       ],
       "properties": {
-        "tenantId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "sessionId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "send": {
-          "$ref": "#/components/schemas/TurnSend"
-        },
-        "hosts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/TenantApi.HostRecord"
-          },
-          "maxItems": 1000
-        },
-        "now": {
-          "type": "integer",
-          "format": "int64"
-        },
         "caller": {
-          "$ref": "#/components/schemas/StartRefusedCaller"
+          "$ref": "#/components/schemas/RequestCaller"
         }
-      }
+      },
+      "allOf": [
+        {
+          "$ref": "#/components/schemas/TenantApi.SendTurnV33Input"
+        }
+      ],
+      "description": "A turn send includes its authenticated caller from tenant protocol version 34."
     },
     "TenantApi.SendTurnRequest": {
       "type": "object",
@@ -15169,6 +15150,39 @@
           ]
         }
       }
+    },
+    "TenantApi.SendTurnV33Input": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "sessionId",
+        "send",
+        "hosts",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "send": {
+          "$ref": "#/components/schemas/TurnSend"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.HostRecord"
+          },
+          "maxItems": 1000
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "The turn send input for tenant protocol versions through 33."
     },
     "TenantApi.ServeConnectorTokenInput": {
       "type": "object",

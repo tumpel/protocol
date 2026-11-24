@@ -612,13 +612,18 @@ model StartSessionFromIssueInput {
   now: int64;
 }
 
-model SendTurnInput {
+@doc("The turn send input for tenant protocol versions through 33.")
+model SendTurnV33Input {
   tenantId: EntityId;
   sessionId: EntityId;
   send: TurnSend;
   @maxItems(1000) hosts: HostRecord[];
   now: int64;
-  caller: StartRefusedCaller;
+}
+
+@doc("A turn send includes its authenticated caller from tenant protocol version 34.")
+model SendTurnInput extends SendTurnV33Input {
+  caller: RequestCaller;
 }
 
 model StopSessionInput {
@@ -720,8 +725,10 @@ model StartRefusalRecorded {
   kind: "Recorded";
 }
 
-model RecordStartRefusalResult {
-  recorded: StartRefusalRecorded | SessionTagsOverLimit;
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union RecordStartRefusalResult {
+  Recorded: StartRefusalRecorded,
+  TagsOverLimit: SessionTagsOverLimit,
 }
 
 model RecordStartRefusalRequest {
