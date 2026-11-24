@@ -715,6 +715,10 @@ model CancelTurnInput {
   now: int64;
 }
 
+@doc("""
+  For a start, event.crewTags contains the requested tags. The tenant resolves inherited tags
+  before appending the event. For a send, event.crewTags contains the target session's tags.
+  """)
 model RecordStartRefusalInput {
   tenantId: EntityId;
   event: OmitProperties<StartRefusedEvent, "eventId" | "tenantId" | "createdAt">;
@@ -725,6 +729,7 @@ model StartRefusalRecorded {
   kind: "Recorded";
 }
 
+@doc("The tenant records the refusal with the resolved tags, or returns TagsOverLimit without appending an event.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union RecordStartRefusalResult {
   Recorded: StartRefusalRecorded,
@@ -1379,12 +1384,14 @@ model StartSessionFromIssueRequest {
   input: StartSessionFromIssueInput;
 }
 
+@doc("The legacy turn send route for callers through tenant protocol version 33.")
 model SendTurnRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "sendTurn";
   input: SendTurnV33Input;
 }
 
+@doc("Callers from tenant protocol version 34 use this turn send route with their authenticated caller.")
 model SendTurnWithCallerRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "sendTurnWithCaller";

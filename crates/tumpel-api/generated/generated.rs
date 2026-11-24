@@ -35793,7 +35793,8 @@ pub mod types {
             Self(value)
         }
     }
-    ///`TenantApiRecordStartRefusalInput`
+    ///For a start, event.crewTags contains the requested tags. The tenant resolves inherited tags
+    ///before appending the event. For a send, event.crewTags contains the target session's tags.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiRecordStartRefusalInput {
         pub event: TenantApiRecordStartRefusalInputEvent,
@@ -35899,7 +35900,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///`TenantApiRecordStartRefusalResult`
+    ///The tenant records the refusal with the resolved tags, or returns TagsOverLimit without appending an event.
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiRecordStartRefusalResult {
@@ -37062,7 +37063,7 @@ pub mod types {
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
-    ///`TenantApiSendTurnRequest`
+    ///The legacy turn send route for callers through tenant protocol version 33.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSendTurnRequest {
         pub input: TenantApiSendTurnV33Input,
@@ -37195,7 +37196,7 @@ pub mod types {
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
-    ///`TenantApiSendTurnWithCallerRequest`
+    ///Callers from tenant protocol version 34 use this turn send route with their authenticated caller.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSendTurnWithCallerRequest {
         pub input: TenantApiSendTurnInput,

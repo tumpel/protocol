@@ -14353,7 +14353,8 @@
           "type": "integer",
           "format": "int64"
         }
-      }
+      },
+      "description": "For a start, event.crewTags contains the requested tags. The tenant resolves inherited tags\nbefore appending the event. For a send, event.crewTags contains the target session's tags."
     },
     "TenantApi.RecordStartRefusalRequest": {
       "type": "object",
@@ -14393,7 +14394,8 @@
           "Recorded": "#/components/schemas/TenantApi.StartRefusalRecorded",
           "TagsOverLimit": "#/components/schemas/TenantApi.SessionTagsOverLimit"
         }
-      }
+      },
+      "description": "The tenant records the refusal with the resolved tags, or returns TagsOverLimit without appending an event."
     },
     "TenantApi.RemoveSecretMemberInput": {
       "type": "object",
@@ -15104,7 +15106,8 @@
         "input": {
           "$ref": "#/components/schemas/TenantApi.SendTurnV33Input"
         }
-      }
+      },
+      "description": "The legacy turn send route for callers through tenant protocol version 33."
     },
     "TenantApi.SendTurnResult": {
       "type": "object",
@@ -15204,7 +15207,8 @@
         "input": {
           "$ref": "#/components/schemas/TenantApi.SendTurnInput"
         }
-      }
+      },
+      "description": "Callers from tenant protocol version 34 use this turn send route with their authenticated caller."
     },
     "TenantApi.ServeConnectorTokenInput": {
       "type": "object",
