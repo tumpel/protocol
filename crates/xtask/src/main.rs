@@ -556,38 +556,6 @@ fn generate_frozen(root: &Path) -> Result<(), String> {
     fs::write(&output, modules).map_err(|e| format!("writing {}: {e}.", output.display()))
 }
 
-fn any_unrecognised(fields: impl Iterator<Item = TokenStream>) -> TokenStream {
-    let checks: Vec<_> = fields
-        .map(|field| quote!(ContainsUnrecognised::is_unrecognised(#field)))
-        .collect();
-    if checks.is_empty() {
-        return quote!(false);
-    }
-    quote!(#(#checks)||*)
-}
-
-fn unrecognised_variant(variant: &syn::Variant) -> Option<TokenStream> {
-    let name = &variant.ident;
-    if name == "Unrecognised" {
-        return Some(quote!(Self::#name(..) => true));
-    }
-    match &variant.fields {
-        syn::Fields::Unit => None,
-        syn::Fields::Unnamed(fields) => {
-            let names: Vec<_> = (0..fields.unnamed.len())
-                .map(|index| format_ident!("field_{index}"))
-                .collect();
-            let check = any_unrecognised(names.iter().map(|name| quote!(#name)));
-            Some(quote!(Self::#name(#(#names),*) => #check))
-        }
-        syn::Fields::Named(fields) => {
-            let names: Vec<_> = fields.named.iter().filter_map(|field| field.ident.as_ref()).collect();
-            let check = any_unrecognised(names.iter().map(|name| quote!(#name)));
-            Some(quote!(Self::#name { #(#names),* } => #check))
-        }
-    }
-}
-
 fn unrecognised_predicates(types: &mut Vec<syn::Item>) {
     let implementations: Vec<_> = types
         .iter()
@@ -599,26 +567,22 @@ fn unrecognised_predicates(types: &mut Vec<syn::Item>) {
             }
             syn::Item::Enum(declared) => {
                 let name = &declared.ident;
-                let mut arms: Vec<_> = declared.variants.iter().filter_map(unrecognised_variant).collect();
-                if arms.len() == 1 {
+                let variants: Vec<_> = declared
+                    .variants
+                    .iter()
+                    .filter(|variant| variant.ident != "Unrecognised" && !matches!(variant.fields, syn::Fields::Unit))
+                    .map(|variant| &variant.ident)
+                    .collect();
+                if variants.is_empty() {
                     return Some(syn::parse_quote!(unrecognised!(#name);));
                 }
-                if arms.len() < declared.variants.len() {
-                    arms.push(quote!(_ => false));
-                }
-                Some(syn::parse_quote! {
-                    impl ContainsUnrecognised for #name {
-                        fn is_unrecognised(&self) -> bool {
-                            match self { #(#arms,)* }
-                        }
-                    }
-                })
+                Some(syn::parse_quote!(unrecognised_union!(#name, #(#variants),*);))
             }
             _ => None,
         })
         .collect();
     types.push(syn::parse_quote!(
-        use crate::{response::unrecognised, ContainsUnrecognised};
+        use crate::response::{unrecognised, unrecognised_union};
     ));
     types.extend(implementations);
 }

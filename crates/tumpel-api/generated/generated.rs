@@ -48005,7 +48005,7 @@ pub mod types {
             })
         }
     }
-    use crate::{response::unrecognised, ContainsUnrecognised};
+    use crate::response::{unrecognised, unrecognised_union};
     unrecognised!(
         ActiveSubscription,
         created_at,
@@ -48114,15 +48114,7 @@ pub mod types {
         manifest_digest,
         manifest_url
     );
-    impl ContainsUnrecognised for ChannelBootImage {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::GuestImageDownload(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::LayeredImageDownload(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(ChannelBootImage, GuestImageDownload, LayeredImageDownload);
     unrecognised!(ChannelBoxDiscard, box_id, session_id, type_);
     unrecognised!(ChannelBoxDiscardType);
     unrecognised!(ChannelBoxGone, box_id, session_id, type_);
@@ -48185,43 +48177,35 @@ pub mod types {
     unrecognised!(ChannelClaudeSetupBoxUrlType);
     unrecognised!(ChannelClaudeSetupBoxUrlUserCode, 0);
     unrecognised!(ChannelCloseCode, 0);
-    impl ContainsUnrecognised for ChannelControlEnvelope {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Challenge(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Welcome(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Heartbeat(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ReleasePublished(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::FrameRefused(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::FrameRateLimited(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Ack(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ControlFrame(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        ChannelControlEnvelope,
+        Challenge,
+        Welcome,
+        Heartbeat,
+        ReleasePublished,
+        FrameRefused,
+        FrameRateLimited,
+        Ack,
+        ControlFrame
+    );
     unrecognised!(ChannelControlFrame, ack, message, seq, type_);
     unrecognised!(ChannelControlFrameType);
-    impl ContainsUnrecognised for ChannelControlMessage {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::TurnOffer(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnWithdrawn(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnClaimed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnCancel(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SnapshotRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SnapshotChunksHeld(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SnapshotPackUploads(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RestoreDownloads(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::BoxTeardown(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::BoxDiscard(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupBoxOffer(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupBoxCode(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupBoxDiscard(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        ChannelControlMessage,
+        TurnOffer,
+        TurnWithdrawn,
+        TurnClaimed,
+        TurnCancel,
+        SnapshotRequest,
+        SnapshotChunksHeld,
+        SnapshotPackUploads,
+        RestoreDownloads,
+        BoxTeardown,
+        BoxDiscard,
+        ClaudeSetupBoxOffer,
+        ClaudeSetupBoxCode,
+        ClaudeSetupBoxDiscard
+    );
     unrecognised!(
         ChannelDispatchConnector,
         connector_id,
@@ -48292,16 +48276,7 @@ pub mod types {
     unrecognised!(ChannelHelloSignature, 0);
     unrecognised!(ChannelHelloSupervisorVersion, 0);
     unrecognised!(ChannelHelloType);
-    impl ContainsUnrecognised for ChannelHostEnvelope {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Hello(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::HostHeartbeat(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::HostFrame(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(ChannelHostEnvelope, Hello, HostHeartbeat, HostFrame);
     unrecognised!(ChannelHostFrame, ack, message, seq, type_);
     unrecognised!(ChannelHostFrameType);
     unrecognised!(
@@ -48317,31 +48292,27 @@ pub mod types {
         usage
     );
     unrecognised!(ChannelHostHeartbeatType);
-    impl ContainsUnrecognised for ChannelHostMessage {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::TurnImageFetching(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnClaim(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnRepositoryReady(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnLines(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnComplete(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnRepositoryCloneFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SnapshotChunks(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SnapshotPacks(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RestoreChunks(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SnapshotDone(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SnapshotFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::BoxGone(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::BoxTeardownFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupBoxUrl(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupBoxFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SupervisorUpdateStep(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SupervisorUpdateFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        ChannelHostMessage,
+        TurnImageFetching,
+        TurnClaim,
+        TurnRepositoryReady,
+        TurnLines,
+        TurnComplete,
+        TurnRepositoryCloneFailed,
+        TurnFailed,
+        SnapshotChunks,
+        SnapshotPacks,
+        RestoreChunks,
+        SnapshotDone,
+        SnapshotFailed,
+        BoxGone,
+        BoxTeardownFailed,
+        ClaudeSetupBoxUrl,
+        ClaudeSetupBoxFailed,
+        SupervisorUpdateStep,
+        SupervisorUpdateFailed
+    );
     unrecognised!(
         ChannelLayeredImageDownload,
         base,
@@ -48559,18 +48530,7 @@ pub mod types {
     unrecognised!(ClaudeSetupStarting, state, url_due_at);
     unrecognised!(ClaudeSetupStartingState);
     unrecognised!(ClaudeSetupState);
-    impl ContainsUnrecognised for ClaudeSetupStatus {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Starting(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AwaitingCode(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Minting(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Completed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Failed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(ClaudeSetupStatus, Starting, AwaitingCode, Minting, Completed, Failed);
     unrecognised!(ClaudeSetupTokenWrite, expires_at, tenant_id, value);
     unrecognised!(ClaudeSetupUserCode, 0);
     unrecognised!(CliCredentials, endpoint, token);
@@ -48611,26 +48571,10 @@ pub mod types {
     unrecognised!(ConfigApiKeyKind);
     unrecognised!(ConfigChange, action, description, name, resource);
     unrecognised!(ConfigChangeAction);
-    impl ContainsUnrecognised for ConfigExpiry {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::DateTime(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SecretValueSource(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(ConfigExpiry, DateTime, SecretValueSource);
     unrecognised!(ConfigExpiryValue, env, expires_at);
     unrecognised!(ConfigFileDigest, digest, from, size_bytes);
-    impl ContainsUnrecognised for ConfigFileWrite {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::InlineConfigFile(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StoredConfigFile(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(ConfigFileWrite, InlineConfigFile, StoredConfigFile);
     unrecognised!(ConfigHost, host_id, labels);
     unrecognised!(
         ConfigPersona,
@@ -48647,16 +48591,7 @@ pub mod types {
     unrecognised!(ConfigPersonaFile, from, path);
     unrecognised!(ConfigPlan, changes);
     unrecognised!(ConfigResource);
-    impl ContainsUnrecognised for ConfigSecret {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SecretVariable(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ApiKey(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SubscriptionToken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(ConfigSecret, SecretVariable, ApiKey, SubscriptionToken);
     unrecognised!(ConfigSecretSet, name, secrets);
     unrecognised!(ConfigSecretValue, env, value);
     unrecognised!(ConfigSecretVariable, kind, name, value_from);
@@ -48668,25 +48603,13 @@ pub mod types {
     unrecognised!(ConnectedConnectionState);
     unrecognised!(ConnectionKind);
     unrecognised!(ConnectionState);
-    impl ContainsUnrecognised for ConnectionSummary {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ConnectedConnection(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotConnectedConnection(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotConfiguredConnection(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
-    impl ContainsUnrecognised for Connector {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::StaticConnector(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::OAuthConnector(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        ConnectionSummary,
+        ConnectedConnection,
+        NotConnectedConnection,
+        NotConfiguredConnection
+    );
+    unrecognised_union!(Connector, StaticConnector, OAuthConnector);
     unrecognised!(ConnectorAccessToken, access_token, expires_at);
     unrecognised!(ConnectorAuth);
     unrecognised!(
@@ -48716,17 +48639,13 @@ pub mod types {
     unrecognised!(ConnectorNotConnected, state);
     unrecognised!(ConnectorNotConnectedState);
     unrecognised!(ConnectorState);
-    impl ContainsUnrecognised for ConnectorStatus {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::NotConnected(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Connected(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Disconnected(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AuthorizationFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        ConnectorStatus,
+        NotConnected,
+        Connected,
+        Disconnected,
+        AuthorizationFailed
+    );
     unrecognised!(ConnectorUpdate, name);
     unrecognised!(ConnectorUrl, 0);
     unrecognised!(
@@ -48887,15 +48806,7 @@ pub mod types {
     unrecognised!(EventCursorExpiredProblem, code, detail, fix, oldest_event_id, title);
     unrecognised!(EventCursorExpiredProblemCode);
     unrecognised!(EventPage, events, last_event_id);
-    impl ContainsUnrecognised for EventProblem {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::EventCursorExpiredProblem(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Problem(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(EventProblem, EventCursorExpiredProblem, Problem);
     unrecognised!(
         FailedSession,
         box_id,
@@ -48935,15 +48846,7 @@ pub mod types {
     unrecognised!(GitHubAppMissingState);
     unrecognised!(GitHubAppReady, app_slug, state);
     unrecognised!(GitHubAppReadyState);
-    impl ContainsUnrecognised for GitHubAppState {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Ready(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Missing(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(GitHubAppState, Ready, Missing);
     unrecognised!(GitHubConnection, app, tenant_id);
     unrecognised!(GitHubId, 0);
     unrecognised!(GitHubInstallRefusal);
@@ -49031,32 +48934,18 @@ pub mod types {
         kernel_digest,
         kernel_url
     );
-    impl ContainsUnrecognised for GuestInput {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::TurnStart(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnCancel(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupStart(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupCode(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
-    impl ContainsUnrecognised for GuestMessage {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Hello(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnRepositoryReady(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnLine(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnRepositoryCloneFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnEnd(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupUrl(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupStored(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(GuestInput, TurnStart, TurnCancel, ClaudeSetupStart, ClaudeSetupCode);
+    unrecognised_union!(
+        GuestMessage,
+        Hello,
+        TurnRepositoryReady,
+        TurnLine,
+        TurnRepositoryCloneFailed,
+        TurnEnd,
+        ClaudeSetupUrl,
+        ClaudeSetupStored,
+        ClaudeSetupFailed
+    );
     unrecognised!(GuestMetric, description, dimensions, kind, metric, unit, value);
     unrecognised!(GuestMetricDescription, 0);
     unrecognised!(GuestMetricUnit, 0);
@@ -49133,16 +49022,7 @@ pub mod types {
     unrecognised!(HarnessVersion, 0);
     unrecognised!(Health, status);
     unrecognised!(HealthStatus);
-    impl ContainsUnrecognised for Host {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::OnlineHost(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DegradedHost(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::OfflineHost(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(Host, OnlineHost, DegradedHost, OfflineHost);
     unrecognised!(HostArchitecture);
     unrecognised!(
         HostBase,
@@ -49167,15 +49047,7 @@ pub mod types {
     );
     unrecognised!(HostBasePublicKey, 0);
     unrecognised!(HostBaseSupervisorVersion, 0);
-    impl ContainsUnrecognised for HostChannelProtocol {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ProtocolNotReported(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ChannelProtocolReported(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(HostChannelProtocol, ProtocolNotReported, ChannelProtocolReported);
     unrecognised!(
         HostChannelProtocolReported,
         channel_protocol_oldest,
@@ -49196,15 +49068,7 @@ pub mod types {
     unrecognised!(HostEnrolEnrolmentToken, 0);
     unrecognised!(HostEnrolPublicKey, 0);
     unrecognised!(HostEnrolSupervisorVersion, 0);
-    impl ContainsUnrecognised for HostGuestProtocol {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ProtocolNotReported(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GuestProtocolReported(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(HostGuestProtocol, ProtocolNotReported, GuestProtocolReported);
     unrecognised!(
         HostGuestProtocolReported,
         guest_protocol_oldest,
@@ -49299,15 +49163,7 @@ pub mod types {
     );
     unrecognised!(InstallArchiveBinaryPath, 0);
     unrecognised!(InstallArchiveUrl, 0);
-    impl ContainsUnrecognised for InstallRecipe {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::NpmInstallRecipe(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ArchiveInstallRecipe(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(InstallRecipe, NpmInstallRecipe, ArchiveInstallRecipe);
     unrecognised!(
         Invitation,
         created_at,
@@ -49354,15 +49210,7 @@ pub mod types {
     unrecognised!(MintedEnrolmentToken, enrolment_token, install_command, token);
     unrecognised!(ModelName, 0);
     unrecognised!(ModelProvider);
-    impl ContainsUnrecognised for ModelSupport {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Listed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ProviderChecked(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(ModelSupport, Listed, ProviderChecked);
     unrecognised!(ModelSupportListed, kind, models);
     unrecognised!(ModelSupportListedKind);
     unrecognised!(ModelSupportProviderChecked, kind);
@@ -49425,15 +49273,7 @@ pub mod types {
     unrecognised!(OAuthRefreshTokenRequestGrantType);
     unrecognised!(OAuthRevocationRequest, client_id, token, token_type_hint);
     unrecognised!(OAuthToken, access_token, expires_in, refresh_token, scope, token_type);
-    impl ContainsUnrecognised for OAuthTokenRequest {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::AuthorizationCodeRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RefreshTokenRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(OAuthTokenRequest, AuthorizationCodeRequest, RefreshTokenRequest);
     unrecognised!(OAuthTokenTokenType);
     unrecognised!(
         OfferedTurn,
@@ -49542,17 +49382,13 @@ pub mod types {
     unrecognised!(OpenRouterAuthorizationFailureReason);
     unrecognised!(OpenRouterAuthorizationStart, secret_set_id);
     unrecognised!(OpenRouterAuthorizationState);
-    impl ContainsUnrecognised for OpenRouterAuthorizationStatus {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::AwaitingCallback(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Exchanging(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Completed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Failed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        OpenRouterAuthorizationStatus,
+        AwaitingCallback,
+        Exchanging,
+        Completed,
+        Failed
+    );
     unrecognised!(PathText, 0);
     unrecognised!(
         PausedSubscription,
@@ -49604,43 +49440,23 @@ pub mod types {
         secret_set_id,
         tumpel_mcp
     );
-    impl ContainsUnrecognised for PersonaFile {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::InlinePersonaFileRead(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StoredPersonaFileRead(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(PersonaFile, InlinePersonaFileRead, StoredPersonaFileRead);
     unrecognised!(PersonaFileContent, 0);
     unrecognised!(PersonaFileLimit, 0);
     unrecognised!(PersonaFileMetadata, created_at, digest, path, size_bytes, updated_at);
-    impl ContainsUnrecognised for PersonaFilePatch {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::PutPersonaFilePatch(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RemovePersonaFilePatch(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::EditPersonaFilePatch(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        PersonaFilePatch,
+        PutPersonaFilePatch,
+        RemovePersonaFilePatch,
+        EditPersonaFilePatch
+    );
     unrecognised!(PersonaFilePatchKind);
     unrecognised!(PersonaFilePath, 0);
     unrecognised!(PersonaFileSize, 0);
     unrecognised!(PersonaFileSource);
     unrecognised!(PersonaFileUpload, digest, size_bytes, upload_expires_at, upload_url);
     unrecognised!(PersonaFileUploadRequest, digest, size_bytes);
-    impl ContainsUnrecognised for PersonaFileWrite {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::InlinePersonaFile(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StoredPersonaFile(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(PersonaFileWrite, InlinePersonaFile, StoredPersonaFile);
     unrecognised!(
         PersonaMetadata,
         box_disk_mib,
@@ -49747,30 +49563,11 @@ pub mod types {
     unrecognised!(PrebuildPreviewOfSupplied, devcontainer, persona_id, repository, source);
     unrecognised!(PrebuildPreviewOfSuppliedDevcontainer, 0);
     unrecognised!(PrebuildPreviewOfSuppliedSource);
-    impl ContainsUnrecognised for PrebuildPreviewRequest {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Repository(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Supplied(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(PrebuildPreviewRequest, Repository, Supplied);
     unrecognised!(PrebuildPreviewSource);
     unrecognised!(PrebuildStart, persona_id, rebuild, repository);
     unrecognised!(PrebuildState);
-    impl ContainsUnrecognised for PrebuildStatus {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Dispatched(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Building(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Converting(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Done(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Failed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(PrebuildStatus, Dispatched, Building, Converting, Done, Failed);
     unrecognised!(PrebuildTemplate, prebuild_template_id, versions);
     unrecognised!(PrebuildTemplateId, 0);
     unrecognised!(PrebuildTemplateManifest, installs, summary, toolchains);
@@ -49971,46 +49768,34 @@ pub mod types {
     );
     unrecognised!(RunningTurnState);
     unrecognised!(SamplePoint, at, dimensions, metric, value);
-    impl ContainsUnrecognised for SecretKey {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SecretVariableKey(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ApiKeyKey(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SubscriptionTokenKey(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CredentialFileKey(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        SecretKey,
+        SecretVariableKey,
+        ApiKeyKey,
+        SubscriptionTokenKey,
+        CredentialFileKey
+    );
     unrecognised!(SecretKind);
-    impl ContainsUnrecognised for SecretMemberUpdate {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SecretVariableUpdate(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ApiKeyUpdate(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SubscriptionTokenUpdate(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CredentialFileUpdate(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        SecretMemberUpdate,
+        SecretVariableUpdate,
+        ApiKeyUpdate,
+        SubscriptionTokenUpdate,
+        CredentialFileUpdate
+    );
     unrecognised!(SecretName, 0);
     unrecognised!(SecretSet, created_at, keys, name, secret_set_id, tenant_id, updated_at);
     unrecognised!(SecretSetCreate, name, secrets);
     unrecognised!(SecretSetPatch, name, secrets);
     unrecognised!(SecretSetUpdate, name, secrets);
     unrecognised!(SecretText, 0);
-    impl ContainsUnrecognised for SecretValue {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SecretVariableValue(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ApiKeyValue(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SubscriptionTokenValue(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CredentialFileValue(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        SecretValue,
+        SecretVariableValue,
+        ApiKeyValue,
+        SubscriptionTokenValue,
+        CredentialFileValue
+    );
     unrecognised!(SecretValueSource, env);
     unrecognised!(SecretVariableKey, kind, name, updated_at);
     unrecognised!(SecretVariableKeyKind);
@@ -50021,21 +49806,17 @@ pub mod types {
     unrecognised!(SecretVariableValue, kind, name, value);
     unrecognised!(SecretVariableValueKind);
     unrecognised!(Sequence, 0);
-    impl ContainsUnrecognised for Session {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::StartingSession(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::IdleSession(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RunningSession(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StoppingSession(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StoppedSession(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ArchivedSession(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::FailedSession(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UnknownSession(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        Session,
+        StartingSession,
+        IdleSession,
+        RunningSession,
+        StoppingSession,
+        StoppedSession,
+        ArchivedSession,
+        FailedSession,
+        UnknownSession
+    );
     unrecognised!(SessionArchivedEvent, created_at, event, event_id, session_id, tenant_id);
     unrecognised!(SessionArchivedEventEvent);
     unrecognised!(
@@ -50078,24 +49859,8 @@ pub mod types {
     unrecognised!(SessionIssue, branch, html_url, issue_number, session_id, title);
     unrecognised!(SessionIssueOrigin, branch, html_url, issue_number, kind, title);
     unrecognised!(SessionIssueOriginKind);
-    impl ContainsUnrecognised for SessionOrigin {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::PromptOrigin(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::IssueOrigin(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
-    impl ContainsUnrecognised for SessionPrebuildLayer {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Stored(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Absent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(SessionOrigin, PromptOrigin, IssueOrigin);
+    unrecognised_union!(SessionPrebuildLayer, Stored, Absent);
     unrecognised!(SessionPrebuildLayerAbsent, detail, layer, reason);
     unrecognised!(SessionPrebuildLayerAbsentLayer);
     unrecognised!(SessionPrebuildLayerStored, layer, layer_digest, prebuild_id);
@@ -50113,16 +49878,7 @@ pub mod types {
         persona_id,
         tags
     );
-    impl ContainsUnrecognised for SessionStartedBy {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::PersonOrigin(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnOrigin(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TriggerOrigin(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(SessionStartedBy, PersonOrigin, TurnOrigin, TriggerOrigin);
     unrecognised!(
         SessionStartedEvent,
         caller,
@@ -50167,18 +49923,14 @@ pub mod types {
     );
     unrecognised!(SnapshotDirectoryEntryKind);
     unrecognised!(SnapshotDirectoryEntryPath, 0);
-    impl ContainsUnrecognised for SnapshotEntry {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::FileEntry(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DirectoryEntry(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::OpaqueDirectoryEntry(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SymlinkEntry(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::WhiteoutEntry(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        SnapshotEntry,
+        FileEntry,
+        DirectoryEntry,
+        OpaqueDirectoryEntry,
+        SymlinkEntry,
+        WhiteoutEntry
+    );
     unrecognised!(SnapshotEntryCommon, gid, mode, mtime_nanos, mtime_seconds, path, uid);
     unrecognised!(SnapshotEntryCommonPath, 0);
     unrecognised!(SnapshotFailure, detail, failed_at, reason, state);
@@ -50210,15 +49962,7 @@ pub mod types {
     );
     unrecognised!(SnapshotOpaqueDirectoryEntryKind);
     unrecognised!(SnapshotOpaqueDirectoryEntryPath, 0);
-    impl ContainsUnrecognised for SnapshotOutcome {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Stored(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Failure(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(SnapshotOutcome, Stored, Failure);
     unrecognised!(SnapshotRoot, manifest);
     unrecognised!(SnapshotStored, state, uploaded_bytes);
     unrecognised!(SnapshotStoredState);
@@ -50250,15 +49994,7 @@ pub mod types {
     unrecognised!(SnapshotWhiteoutEntryPath, 0);
     unrecognised!(StartRefusal, code, detail);
     unrecognised!(StartRefusalCode);
-    impl ContainsUnrecognised for StartRefusedCaller {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::PersonOrigin(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnOrigin(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(StartRefusedCaller, PersonOrigin, TurnOrigin);
     unrecognised!(
         StartRefusedEvent,
         caller,
@@ -50405,16 +50141,7 @@ pub mod types {
     unrecognised!(StoredTriggerTest, kind, payload, trigger_id);
     unrecognised!(StoredTriggerTestKind);
     unrecognised!(StoredValueChange, previous_name, value);
-    impl ContainsUnrecognised for Subscription {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ActiveSubscription(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PausedSubscription(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::EndedSubscription(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(Subscription, ActiveSubscription, PausedSubscription, EndedSubscription);
     unrecognised!(
         SubscriptionBase,
         created_at,
@@ -50455,18 +50182,14 @@ pub mod types {
     unrecognised!(SubscriptionEventType);
     unrecognised!(SubscriptionPause, message);
     unrecognised!(SubscriptionPauseMessage, 0);
-    impl ContainsUnrecognised for SubscriptionPauseReason {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ByRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeliveryFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CrewFailing(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CreditExhausted(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartsRefused(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        SubscriptionPauseReason,
+        ByRequest,
+        DeliveryFailed,
+        CrewFailing,
+        CreditExhausted,
+        StartsRefused
+    );
     unrecognised!(SubscriptionPausedByRequest, kind, message);
     unrecognised!(SubscriptionPausedByRequestKind);
     unrecognised!(SubscriptionPausedCreditExhausted, kind, turn_id);
@@ -50531,38 +50254,13 @@ pub mod types {
         state,
         tap_index
     );
-    impl ContainsUnrecognised for SupervisorHandoverBoxState {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Warm(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Turn(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
-    impl ContainsUnrecognised for SupervisorHandoverCommand {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Snapshot(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Teardown(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Discard(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(SupervisorHandoverBoxState, Warm, Turn);
+    unrecognised_union!(SupervisorHandoverCommand, Snapshot, Teardown, Discard);
     unrecognised!(SupervisorHandoverDiscard, kind);
     unrecognised!(SupervisorHandoverDiscardKind);
     unrecognised!(SupervisorHandoverFullImage, kind, manifest);
     unrecognised!(SupervisorHandoverFullImageKind);
-    impl ContainsUnrecognised for SupervisorHandoverImage {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::FullImage(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::LayeredImage(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(SupervisorHandoverImage, FullImage, LayeredImage);
     unrecognised!(SupervisorHandoverLayeredImage, base, kind, layer, layer_path);
     unrecognised!(SupervisorHandoverLayeredImageKind);
     unrecognised!(
@@ -50648,24 +50346,8 @@ pub mod types {
     );
     unrecognised!(SupervisorUpdateFailureReported, failure, state);
     unrecognised!(SupervisorUpdateFailureReportedState);
-    impl ContainsUnrecognised for SupervisorUpdateLatestFailure {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::NotReported(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::FailureReported(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
-    impl ContainsUnrecognised for SupervisorUpdateLatestStep {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::NotReported(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StepReported(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(SupervisorUpdateLatestFailure, NotReported, FailureReported);
+    unrecognised_union!(SupervisorUpdateLatestStep, NotReported, StepReported);
     unrecognised!(SupervisorUpdateNotReported, state);
     unrecognised!(SupervisorUpdateNotReportedState);
     unrecognised!(SupervisorUpdatePending, from_sha256, swapped_at, to_sha256);
@@ -50688,30 +50370,12 @@ pub mod types {
     unrecognised!(TenantApiApplyConfigRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiApplyConfigRequestOperation);
     unrecognised!(TenantApiApplyConfigResult, applied);
-    impl ContainsUnrecognised for TenantApiApplyConfigResultApplied {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Applied(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Conflict(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ResourceDeleted(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiApplyConfigResultApplied, Applied, Conflict, ResourceDeleted);
     unrecognised!(TenantApiArchiveSessionInput, now, session_id, tenant_id);
     unrecognised!(TenantApiArchiveSessionRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiArchiveSessionRequestOperation);
     unrecognised!(TenantApiArchiveSessionResult, archived);
-    impl ContainsUnrecognised for TenantApiArchiveSessionResultArchived {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ArchivedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotStopped(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiArchiveSessionResultArchived, ArchivedOk, NotFound, NotStopped);
     unrecognised!(TenantApiAuthorizationNoSecretSet, kind);
     unrecognised!(TenantApiAuthorizationNoSecretSetKind);
     unrecognised!(TenantApiAuthorizationNotFound, kind);
@@ -50725,16 +50389,7 @@ pub mod types {
     unrecognised!(TenantApiCancelTurnRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiCancelTurnRequestOperation);
     unrecognised!(TenantApiCancelTurnResult, cancelled);
-    impl ContainsUnrecognised for TenantApiCancelTurnResultCancelled {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::CancelledOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotWaiting(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiCancelTurnResultCancelled, CancelledOk, NotFound, NotWaiting);
     unrecognised!(TenantApiCancelUnspoken, host, kind, turn_id);
     unrecognised!(TenantApiCancelUnspokenKind);
     unrecognised!(TenantApiClaudeSetupCodedOk, kind, setup);
@@ -50753,15 +50408,7 @@ pub mod types {
     unrecognised!(TenantApiClaudeSetupNotStoredKind);
     unrecognised!(TenantApiClaudeSetupReady, kind, message);
     unrecognised!(TenantApiClaudeSetupReadyKind);
-    impl ContainsUnrecognised for TenantApiClaudeSetupReadyMessage {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Offer(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Code(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiClaudeSetupReadyMessage, Offer, Code);
     unrecognised!(TenantApiClaudeSetupRefused, kind);
     unrecognised!(TenantApiClaudeSetupRefusedKind);
     unrecognised!(TenantApiClaudeSetupReleaseUnreadable, detail, kind);
@@ -50789,17 +50436,13 @@ pub mod types {
     );
     unrecognised!(TenantApiClearConnectorCredentialRequestOperation);
     unrecognised!(TenantApiClearConnectorCredentialResult, written);
-    impl ContainsUnrecognised for TenantApiClearConnectorCredentialResultWritten {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::WrittenOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NameTaken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Changed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiClearConnectorCredentialResultWritten,
+        WrittenOk,
+        NotFound,
+        NameTaken,
+        Changed
+    );
     unrecognised!(TenantApiCompleteSubscriptionInput, now, subscription_id, tenant_id);
     unrecognised!(
         TenantApiCompleteSubscriptionRequest,
@@ -50809,40 +50452,32 @@ pub mod types {
     );
     unrecognised!(TenantApiCompleteSubscriptionRequestOperation);
     unrecognised!(TenantApiCompleteSubscriptionResult, completed);
-    impl ContainsUnrecognised for TenantApiCompleteSubscriptionResultCompleted {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ChangedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::EndedState(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiCompleteSubscriptionResultCompleted,
+        ChangedOk,
+        NotFound,
+        EndedState
+    );
     unrecognised!(TenantApiConfigApplied, kind);
     unrecognised!(TenantApiConfigAppliedKind);
     unrecognised!(TenantApiConfigConflict, constraint, kind);
     unrecognised!(TenantApiConfigConflictKind);
     unrecognised!(TenantApiConfigResourceDeleted, kind, resource);
     unrecognised!(TenantApiConfigResourceDeletedKind);
-    impl ContainsUnrecognised for TenantApiConfigWrite {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::CreateSecretSetWrite(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RewriteSecretSetWrite(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeleteSecretSetWrite(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CreatePersonaWrite(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UpdatePersonaWrite(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeletePersonaWrite(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PinWrite(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UnpinWrite(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CreateTriggerWrite(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UpdateTriggerWrite(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeleteTriggerWrite(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiConfigWrite,
+        CreateSecretSetWrite,
+        RewriteSecretSetWrite,
+        DeleteSecretSetWrite,
+        CreatePersonaWrite,
+        UpdatePersonaWrite,
+        DeletePersonaWrite,
+        PinWrite,
+        UnpinWrite,
+        CreateTriggerWrite,
+        UpdateTriggerWrite,
+        DeleteTriggerWrite
+    );
     unrecognised!(TenantApiConnectorAuthorizeStartedOk, authorization, kind);
     unrecognised!(TenantApiConnectorAuthorizeStartedOkKind);
     unrecognised!(TenantApiConnectorCallbackCode, code, issuer, kind);
@@ -50859,29 +50494,13 @@ pub mod types {
         now,
         state_hash
     );
-    impl ContainsUnrecognised for TenantApiConnectorCallbackInputCallback {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Code(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Error(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiConnectorCallbackInputCallback, Code, Error);
     unrecognised!(TenantApiConnectorCallbackNotConnected, detail, kind);
     unrecognised!(TenantApiConnectorCallbackNotConnectedKind);
     unrecognised!(TenantApiConnectorCallbackRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiConnectorCallbackRequestOperation);
     unrecognised!(TenantApiConnectorCallbackResult, settled);
-    impl ContainsUnrecognised for TenantApiConnectorCallbackResultSettled {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Connected(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotConnected(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiConnectorCallbackResultSettled, Connected, NotConnected);
     unrecognised!(TenantApiConnectorChanged, kind);
     unrecognised!(TenantApiConnectorChangedKind);
     unrecognised!(TenantApiConnectorDeletedOk, kind);
@@ -50922,45 +50541,29 @@ pub mod types {
     unrecognised!(TenantApiConnectorWrittenOk, connector, kind);
     unrecognised!(TenantApiConnectorWrittenOkKind);
     unrecognised!(TenantApiConnectorWrittenResult, written);
-    impl ContainsUnrecognised for TenantApiConnectorWrittenResultWritten {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::WrittenOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NameTaken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Changed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiConnectorWrittenResultWritten,
+        WrittenOk,
+        NotFound,
+        NameTaken,
+        Changed
+    );
     unrecognised!(TenantApiCreateConnectorInput, auth, name, now, tenant_id, url);
     unrecognised!(TenantApiCreateConnectorRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiCreateConnectorRequestOperation);
     unrecognised!(TenantApiCreateConnectorResult, written);
-    impl ContainsUnrecognised for TenantApiCreateConnectorResultWritten {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::WrittenOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NameTaken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Changed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiCreateConnectorResultWritten,
+        WrittenOk,
+        NotFound,
+        NameTaken,
+        Changed
+    );
     unrecognised!(TenantApiCreatePersonaInput, now, persona, tenant_id);
     unrecognised!(TenantApiCreatePersonaRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiCreatePersonaRequestOperation);
     unrecognised!(TenantApiCreatePersonaResult, written);
-    impl ContainsUnrecognised for TenantApiCreatePersonaResultWritten {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::PersonaWritten(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::WriteConflict(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiCreatePersonaResultWritten, PersonaWritten, WriteConflict);
     unrecognised!(TenantApiCreatePersonaWrite, kind, persona);
     unrecognised!(TenantApiCreatePersonaWriteKind);
     unrecognised!(
@@ -50982,15 +50585,7 @@ pub mod types {
     unrecognised!(TenantApiCreateSecretSetRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiCreateSecretSetRequestOperation);
     unrecognised!(TenantApiCreateSecretSetResult, written);
-    impl ContainsUnrecognised for TenantApiCreateSecretSetResultWritten {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SecretSetWritten(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::WriteConflict(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiCreateSecretSetResultWritten, SecretSetWritten, WriteConflict);
     unrecognised!(
         TenantApiCreateSecretSetWrite,
         github_user,
@@ -51003,32 +50598,24 @@ pub mod types {
     unrecognised!(TenantApiCreateSubscriptionRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiCreateSubscriptionRequestOperation);
     unrecognised!(TenantApiCreateSubscriptionResult, created);
-    impl ContainsUnrecognised for TenantApiCreateSubscriptionResultCreated {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SubscriptionCreatedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionArchivedState(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionFailedState(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SubscriptionPersonaLacksTumpelMcp(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiCreateSubscriptionResultCreated,
+        SubscriptionCreatedOk,
+        SessionNotFound,
+        SessionArchivedState,
+        SessionFailedState,
+        SubscriptionPersonaLacksTumpelMcp
+    );
     unrecognised!(TenantApiCreateTriggerInput, now, principal_id, tenant_id, trigger);
     unrecognised!(TenantApiCreateTriggerRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiCreateTriggerRequestOperation);
     unrecognised!(TenantApiCreateTriggerResult, created);
-    impl ContainsUnrecognised for TenantApiCreateTriggerResultCreated {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::CreatedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NameTaken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PersonaNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiCreateTriggerResultCreated,
+        CreatedOk,
+        NameTaken,
+        PersonaNotFound
+    );
     unrecognised!(TenantApiCreateTriggerWrite, kind, principal_id, trigger);
     unrecognised!(TenantApiCreateTriggerWriteKind);
     unrecognised!(TenantApiCreateWebhookEndpointInput, endpoint, now, tenant_id);
@@ -51052,31 +50639,18 @@ pub mod types {
     unrecognised!(TenantApiDeleteConnectorRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiDeleteConnectorRequestOperation);
     unrecognised!(TenantApiDeleteConnectorResult, deleted);
-    impl ContainsUnrecognised for TenantApiDeleteConnectorResultDeleted {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::DeletedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Changed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::InUse(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiDeleteConnectorResultDeleted,
+        DeletedOk,
+        NotFound,
+        Changed,
+        InUse
+    );
     unrecognised!(TenantApiDeletePersonaInput, persona_id, tenant_id);
     unrecognised!(TenantApiDeletePersonaRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiDeletePersonaRequestOperation);
     unrecognised!(TenantApiDeletePersonaResult, deleted);
-    impl ContainsUnrecognised for TenantApiDeletePersonaResultDeleted {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Deleted(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::InUse(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiDeletePersonaResultDeleted, Deleted, NotFound, InUse);
     unrecognised!(TenantApiDeletePersonaWrite, kind, persona_id);
     unrecognised!(TenantApiDeletePersonaWriteKind);
     unrecognised!(
@@ -51097,32 +50671,14 @@ pub mod types {
     unrecognised!(TenantApiDeleteSecretSetRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiDeleteSecretSetRequestOperation);
     unrecognised!(TenantApiDeleteSecretSetResult, deleted);
-    impl ContainsUnrecognised for TenantApiDeleteSecretSetResultDeleted {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Deleted(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::InUse(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiDeleteSecretSetResultDeleted, Deleted, NotFound, InUse);
     unrecognised!(TenantApiDeleteSecretSetWrite, kind, secret_set_id);
     unrecognised!(TenantApiDeleteSecretSetWriteKind);
     unrecognised!(TenantApiDeleteSessionInput, session_id, tenant_id);
     unrecognised!(TenantApiDeleteSessionRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiDeleteSessionRequestOperation);
     unrecognised!(TenantApiDeleteSessionResult, deleted);
-    impl ContainsUnrecognised for TenantApiDeleteSessionResultDeleted {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Deleted(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotStopped(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiDeleteSessionResultDeleted, Deleted, NotFound, NotStopped);
     unrecognised!(TenantApiDeleteSubscriptionInput, now, subscription_id, tenant_id);
     unrecognised!(TenantApiDeleteSubscriptionRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiDeleteSubscriptionRequestOperation);
@@ -51183,15 +50739,11 @@ pub mod types {
     );
     unrecognised!(TenantApiGetOpenRouterAuthorizationRequestOperation);
     unrecognised!(TenantApiGetOpenRouterAuthorizationResult, read);
-    impl ContainsUnrecognised for TenantApiGetOpenRouterAuthorizationResultRead {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::OpenRouterAuthorizationFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AuthorizationNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiGetOpenRouterAuthorizationResultRead,
+        OpenRouterAuthorizationFound,
+        AuthorizationNotFound
+    );
     unrecognised!(TenantApiGetPersonaInput, persona_id, tenant_id);
     unrecognised!(TenantApiGetPersonaRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiGetPersonaRequestOperation);
@@ -51208,16 +50760,7 @@ pub mod types {
     unrecognised!(TenantApiGetSecretSetRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiGetSecretSetRequestOperation);
     unrecognised!(TenantApiGetSecretSetResult, read);
-    impl ContainsUnrecognised for TenantApiGetSecretSetResultRead {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Found(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unreadable(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiGetSecretSetResultRead, Found, NotFound, Unreadable);
     unrecognised!(TenantApiGetSessionInput, session_id, tenant_id);
     unrecognised!(TenantApiGetSessionRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiGetSessionRequestOperation);
@@ -51283,29 +50826,25 @@ pub mod types {
     unrecognised!(TenantApiHostHelloRequestOperation);
     unrecognised!(TenantApiHostHelloResult, 0);
     unrecognised!(TenantApiHostMessageInput, host_id, message, tenant_id);
-    impl ContainsUnrecognised for TenantApiHostMessageInputMessage {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::TurnImageFetching(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnClaim(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnRepositoryReady(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnLines(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnComplete(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnRepositoryCloneFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SnapshotChunks(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SnapshotPacks(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RestoreChunks(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SnapshotDone(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SnapshotFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::BoxGone(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::BoxTeardownFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupBoxUrl(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupBoxFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiHostMessageInputMessage,
+        TurnImageFetching,
+        TurnClaim,
+        TurnRepositoryReady,
+        TurnLines,
+        TurnComplete,
+        TurnRepositoryCloneFailed,
+        TurnFailed,
+        SnapshotChunks,
+        SnapshotPacks,
+        RestoreChunks,
+        SnapshotDone,
+        SnapshotFailed,
+        BoxGone,
+        BoxTeardownFailed,
+        ClaudeSetupBoxUrl,
+        ClaudeSetupBoxFailed
+    );
     unrecognised!(TenantApiHostMessageRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiHostMessageRequestOperation);
     unrecognised!(TenantApiHostMessageResult, reply);
@@ -51373,15 +50912,7 @@ pub mod types {
     unrecognised!(TenantApiListEventsRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiListEventsRequestOperation);
     unrecognised!(TenantApiListEventsResult, listed);
-    impl ContainsUnrecognised for TenantApiListEventsResultListed {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::EventsRead(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::EventCursorExpired(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiListEventsResultListed, EventsRead, EventCursorExpired);
     unrecognised!(TenantApiListHostUsageInput, tenant_id);
     unrecognised!(TenantApiListHostUsageRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiListHostUsageRequestOperation);
@@ -51420,15 +50951,7 @@ pub mod types {
     unrecognised!(TenantApiListSecretSetsRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiListSecretSetsRequestOperation);
     unrecognised!(TenantApiListSecretSetsResult, read);
-    impl ContainsUnrecognised for TenantApiListSecretSetsResultRead {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SetsRead(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SetUnreadable(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiListSecretSetsResultRead, SetsRead, SetUnreadable);
     unrecognised!(TenantApiListSessionsInput, filter, tenant_id);
     unrecognised!(TenantApiListSessionsRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiListSessionsRequestOperation);
@@ -51544,29 +51067,17 @@ pub mod types {
         open_router_authorization_id,
         tenant_id
     );
-    impl ContainsUnrecognised for TenantApiOpenRouterCallbackInputCallback {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Code(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NoCode(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiOpenRouterCallbackInputCallback, Code, NoCode);
     unrecognised!(TenantApiOpenRouterCallbackNoCode, kind);
     unrecognised!(TenantApiOpenRouterCallbackNoCodeKind);
     unrecognised!(TenantApiOpenRouterCallbackRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiOpenRouterCallbackRequestOperation);
     unrecognised!(TenantApiOpenRouterCallbackResult, settled);
-    impl ContainsUnrecognised for TenantApiOpenRouterCallbackResultSettled {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::OpenRouterReturned(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AuthorizationNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiOpenRouterCallbackResultSettled,
+        OpenRouterReturned,
+        AuthorizationNotFound
+    );
     unrecognised!(TenantApiOpenRouterReturned, kind, secret_set_id);
     unrecognised!(TenantApiOpenRouterReturnedKind);
     unrecognised!(TenantApiOpenRouterSecretSetsInput, 0);
@@ -51582,15 +51093,7 @@ pub mod types {
     unrecognised!(TenantApiPatchPersonaRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiPatchPersonaRequestOperation);
     unrecognised!(TenantApiPatchPersonaResult, written);
-    impl ContainsUnrecognised for TenantApiPatchPersonaResultWritten {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::PersonaUpdated(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::WriteConflict(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiPatchPersonaResultWritten, PersonaUpdated, WriteConflict);
     unrecognised!(
         TenantApiPatchSecretSetInput,
         github_user,
@@ -51602,32 +51105,19 @@ pub mod types {
     unrecognised!(TenantApiPatchSecretSetRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiPatchSecretSetRequestOperation);
     unrecognised!(TenantApiPatchSecretSetResult, patched);
-    impl ContainsUnrecognised for TenantApiPatchSecretSetResultPatched {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Updated(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Missing(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Conflict(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NoStoredValue(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UncheckedToken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiPatchSecretSetResultPatched,
+        Updated,
+        Missing,
+        Conflict,
+        NoStoredValue,
+        UncheckedToken
+    );
     unrecognised!(TenantApiPatchSessionTagsInput, now, patch, session_id, tenant_id);
     unrecognised!(TenantApiPatchSessionTagsRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiPatchSessionTagsRequestOperation);
     unrecognised!(TenantApiPatchSessionTagsResult, tagged);
-    impl ContainsUnrecognised for TenantApiPatchSessionTagsResultTagged {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Tagged(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TagsOverLimit(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiPatchSessionTagsResultTagged, Tagged, NotFound, TagsOverLimit);
     unrecognised!(
         TenantApiPauseSubscriptionInput,
         message,
@@ -51638,16 +51128,7 @@ pub mod types {
     unrecognised!(TenantApiPauseSubscriptionRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiPauseSubscriptionRequestOperation);
     unrecognised!(TenantApiPauseSubscriptionResult, paused);
-    impl ContainsUnrecognised for TenantApiPauseSubscriptionResultPaused {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ChangedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::EndedState(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiPauseSubscriptionResultPaused, ChangedOk, NotFound, EndedState);
     unrecognised!(
         TenantApiPersonaChange,
         box_disk_mib,
@@ -51709,15 +51190,7 @@ pub mod types {
     );
     unrecognised!(TenantApiPrebuildDeadline, at, prebuild_id);
     unrecognised!(TenantApiPrebuildDeadlineReachedInput, due, retries, tenant_id);
-    impl ContainsUnrecognised for TenantApiPrebuildDeadlineReachedInputDue {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::DispatchDue(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::BuildDue(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiPrebuildDeadlineReachedInputDue, DispatchDue, BuildDue);
     unrecognised!(
         TenantApiPrebuildDeadlineReachedRequest,
         input,
@@ -51732,40 +51205,16 @@ pub mod types {
     unrecognised!(TenantApiPrebuildRefused, detail, kind);
     unrecognised!(TenantApiPrebuildRefusedKind);
     unrecognised!(TenantApiPrepareClaudeSetupInput, host_id, now, stored, tenant_id);
-    impl ContainsUnrecognised for TenantApiPrepareClaudeSetupInputStored {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Offer(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Code(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiPrepareClaudeSetupInputStored, Offer, Code);
     unrecognised!(TenantApiPrepareClaudeSetupRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiPrepareClaudeSetupRequestOperation);
     unrecognised!(TenantApiPrepareClaudeSetupResult, prepared);
-    impl ContainsUnrecognised for TenantApiPrepareClaudeSetupResultPrepared {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Ready(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Withdrawn(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiPrepareClaudeSetupResultPrepared, Ready, Withdrawn);
     unrecognised!(TenantApiPrepareOfferInput, host_id, now, tenant_id, turn_id);
     unrecognised!(TenantApiPrepareOfferRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiPrepareOfferRequestOperation);
     unrecognised!(TenantApiPrepareOfferResult, prepared);
-    impl ContainsUnrecognised for TenantApiPrepareOfferResultPrepared {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Ready(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Withdrawn(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiPrepareOfferResultPrepared, Ready, Withdrawn);
     unrecognised!(TenantApiProtocol, 0);
     unrecognised!(TenantApiPushDeliveryTarget, endpoint, events, keys);
     unrecognised!(TenantApiPushTargetInput, push_subscription_id, tenant_id);
@@ -51810,17 +51259,13 @@ pub mod types {
     unrecognised!(TenantApiRemoveSecretMemberRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiRemoveSecretMemberRequestOperation);
     unrecognised!(TenantApiRemoveSecretMemberResult, removed);
-    impl ContainsUnrecognised for TenantApiRemoveSecretMemberResultRemoved {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::MemberRemoved(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SetMissing(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::MemberNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SetUnreadable(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiRemoveSecretMemberResultRemoved,
+        MemberRemoved,
+        SetMissing,
+        MemberNotFound,
+        SetUnreadable
+    );
     unrecognised!(
         TenantApiRenameConnectorInput,
         connector_id,
@@ -51832,17 +51277,13 @@ pub mod types {
     unrecognised!(TenantApiRenameConnectorRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiRenameConnectorRequestOperation);
     unrecognised!(TenantApiRenameConnectorResult, written);
-    impl ContainsUnrecognised for TenantApiRenameConnectorResultWritten {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::WrittenOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NameTaken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Changed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiRenameConnectorResultWritten,
+        WrittenOk,
+        NotFound,
+        NameTaken,
+        Changed
+    );
     unrecognised!(
         TenantApiRepositoryReadTokenInput,
         now,
@@ -51860,32 +51301,20 @@ pub mod types {
     );
     unrecognised!(TenantApiRepositoryReadTokenRequestOperation);
     unrecognised!(TenantApiRepositoryReadTokenResult, read);
-    impl ContainsUnrecognised for TenantApiRepositoryReadTokenResultRead {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ReadTokenOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PrebuildRefused(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiRepositoryReadTokenResultRead, ReadTokenOk, PrebuildRefused);
     unrecognised!(TenantApiRepositoryRef, name, owner);
     unrecognised!(TenantApiResumeSubscriptionInput, now, subscription_id, tenant_id);
     unrecognised!(TenantApiResumeSubscriptionRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiResumeSubscriptionRequestOperation);
     unrecognised!(TenantApiResumeSubscriptionResult, resumed);
-    impl ContainsUnrecognised for TenantApiResumeSubscriptionResultResumed {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ChangedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::EndedState(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CursorExpired(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PersonaLacksTumpelMcp(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiResumeSubscriptionResultResumed,
+        ChangedOk,
+        NotFound,
+        EndedState,
+        CursorExpired,
+        PersonaLacksTumpelMcp
+    );
     unrecognised!(
         TenantApiRewriteSecretSetWrite,
         github_user,
@@ -51932,24 +51361,20 @@ pub mod types {
     unrecognised!(TenantApiSendTurnRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiSendTurnRequestOperation);
     unrecognised!(TenantApiSendTurnResult, sent);
-    impl ContainsUnrecognised for TenantApiSendTurnResultSent {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::TurnSentOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartDraining(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnStranded(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartUnplaced(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartConnectorDisconnected(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupReleaseUnreadable(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionStopping(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionArchivedState(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionFailedState(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnCredentialRefused(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiSendTurnResultSent,
+        TurnSentOk,
+        StartDraining,
+        TurnStranded,
+        StartUnplaced,
+        StartConnectorDisconnected,
+        ClaudeSetupReleaseUnreadable,
+        SessionNotFound,
+        SessionStopping,
+        SessionArchivedState,
+        SessionFailedState,
+        TurnCredentialRefused
+    );
     unrecognised!(TenantApiServeConnectorTokenInput, connector_id, now, turn_id);
     unrecognised!(
         TenantApiServeConnectorTokenRequest,
@@ -51959,18 +51384,14 @@ pub mod types {
     );
     unrecognised!(TenantApiServeConnectorTokenRequestOperation);
     unrecognised!(TenantApiServeConnectorTokenResult, served);
-    impl ContainsUnrecognised for TenantApiServeConnectorTokenResultServed {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::TokenServedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TokenRefused(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnNotRunning(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NoCredential(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RefreshFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiServeConnectorTokenResultServed,
+        TokenServedOk,
+        TokenRefused,
+        TurnNotRunning,
+        NoCredential,
+        RefreshFailed
+    );
     unrecognised!(TenantApiSessionArchivedOk, kind, session);
     unrecognised!(TenantApiSessionArchivedOkKind);
     unrecognised!(TenantApiSessionArchivedState, kind);
@@ -52020,30 +51441,18 @@ pub mod types {
     unrecognised!(TenantApiSetSecretMemberRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiSetSecretMemberRequestOperation);
     unrecognised!(TenantApiSetSecretMemberResult, set);
-    impl ContainsUnrecognised for TenantApiSetSecretMemberResultSet {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::MemberWritten(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SetMissing(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SetConflict(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SetUnreadable(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiSetSecretMemberResultSet,
+        MemberWritten,
+        SetMissing,
+        SetConflict,
+        SetUnreadable
+    );
     unrecognised!(TenantApiSetSessionTagsInput, now, session_id, tags, tenant_id);
     unrecognised!(TenantApiSetSessionTagsRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiSetSessionTagsRequestOperation);
     unrecognised!(TenantApiSetSessionTagsResult, tagged);
-    impl ContainsUnrecognised for TenantApiSetSessionTagsResultTagged {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Tagged(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiSetSessionTagsResultTagged, Tagged, NotFound);
     unrecognised!(
         TenantApiSetStaticTokenInput,
         connector_id,
@@ -52055,17 +51464,13 @@ pub mod types {
     unrecognised!(TenantApiSetStaticTokenRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiSetStaticTokenRequestOperation);
     unrecognised!(TenantApiSetStaticTokenResult, written);
-    impl ContainsUnrecognised for TenantApiSetStaticTokenResultWritten {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::WrittenOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NameTaken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Changed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiSetStaticTokenResultWritten,
+        WrittenOk,
+        NotFound,
+        NameTaken,
+        Changed
+    );
     unrecognised!(
         TenantApiSetWebhookEndpointStatusInput,
         status,
@@ -52084,18 +51489,14 @@ pub mod types {
     unrecognised!(TenantApiStartClaudeSetupRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiStartClaudeSetupRequestOperation);
     unrecognised!(TenantApiStartClaudeSetupResult, started);
-    impl ContainsUnrecognised for TenantApiStartClaudeSetupResultStarted {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ClaudeSetupStartedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupUnplaced(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupReleaseUnreadable(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AuthorizationNoSecretSet(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AuthorizationOtherCredential(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiStartClaudeSetupResultStarted,
+        ClaudeSetupStartedOk,
+        ClaudeSetupUnplaced,
+        ClaudeSetupReleaseUnreadable,
+        AuthorizationNoSecretSet,
+        AuthorizationOtherCredential
+    );
     unrecognised!(
         TenantApiStartConnectorAuthorizationInput,
         connector_id,
@@ -52113,18 +51514,14 @@ pub mod types {
     );
     unrecognised!(TenantApiStartConnectorAuthorizationRequestOperation);
     unrecognised!(TenantApiStartConnectorAuthorizationResult, started);
-    impl ContainsUnrecognised for TenantApiStartConnectorAuthorizationResultStarted {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::AuthorizeStartedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Changed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DiscoveryFailed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RegistrationUnsupported(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiStartConnectorAuthorizationResultStarted,
+        AuthorizeStartedOk,
+        NotFound,
+        Changed,
+        DiscoveryFailed,
+        RegistrationUnsupported
+    );
     unrecognised!(TenantApiStartConnectorDisconnected, kind, names);
     unrecognised!(TenantApiStartConnectorDisconnectedKind);
     unrecognised!(TenantApiStartDraining, kind);
@@ -52140,18 +51537,14 @@ pub mod types {
     unrecognised!(TenantApiStartHostPrebuildRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiStartHostPrebuildRequestOperation);
     unrecognised!(TenantApiStartHostPrebuildResult, started);
-    impl ContainsUnrecognised for TenantApiStartHostPrebuildResultStarted {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::HostPrebuildStarted(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartDraining(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartUnplaced(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartConnectorDisconnected(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupReleaseUnreadable(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiStartHostPrebuildResultStarted,
+        HostPrebuildStarted,
+        StartDraining,
+        StartUnplaced,
+        StartConnectorDisconnected,
+        ClaudeSetupReleaseUnreadable
+    );
     unrecognised!(
         TenantApiStartOpenRouterAuthorizationInput,
         input,
@@ -52167,16 +51560,12 @@ pub mod types {
     );
     unrecognised!(TenantApiStartOpenRouterAuthorizationRequestOperation);
     unrecognised!(TenantApiStartOpenRouterAuthorizationResult, started);
-    impl ContainsUnrecognised for TenantApiStartOpenRouterAuthorizationResultStarted {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::OpenRouterAuthorizationStartedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AuthorizationNoSecretSet(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AuthorizationOtherCredential(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiStartOpenRouterAuthorizationResultStarted,
+        OpenRouterAuthorizationStartedOk,
+        AuthorizationNoSecretSet,
+        AuthorizationOtherCredential
+    );
     unrecognised!(TenantApiStartSessionFromIssueInput, input, issue, now, tenant_id);
     unrecognised!(
         TenantApiStartSessionFromIssueRequest,
@@ -52186,36 +51575,28 @@ pub mod types {
     );
     unrecognised!(TenantApiStartSessionFromIssueRequestOperation);
     unrecognised!(TenantApiStartSessionFromIssueResult, started);
-    impl ContainsUnrecognised for TenantApiStartSessionFromIssueResultStarted {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SessionFromIssueStartedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartDraining(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartUnplaced(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartConnectorDisconnected(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupReleaseUnreadable(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionTagsOverLimit(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiStartSessionFromIssueResultStarted,
+        SessionFromIssueStartedOk,
+        StartDraining,
+        StartUnplaced,
+        StartConnectorDisconnected,
+        ClaudeSetupReleaseUnreadable,
+        SessionTagsOverLimit
+    );
     unrecognised!(TenantApiStartSessionInput, input, now, tenant_id);
     unrecognised!(TenantApiStartSessionRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiStartSessionRequestOperation);
     unrecognised!(TenantApiStartSessionResult, started);
-    impl ContainsUnrecognised for TenantApiStartSessionResultStarted {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SessionStartedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartDraining(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartUnplaced(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartConnectorDisconnected(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupReleaseUnreadable(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionTagsOverLimit(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiStartSessionResultStarted,
+        SessionStartedOk,
+        StartDraining,
+        StartUnplaced,
+        StartConnectorDisconnected,
+        ClaudeSetupReleaseUnreadable,
+        SessionTagsOverLimit
+    );
     unrecognised!(TenantApiStartUnplaced, hosts, kind);
     unrecognised!(TenantApiStartUnplacedKind);
     unrecognised!(TenantApiSteerInboxClosed, kind);
@@ -52226,17 +51607,13 @@ pub mod types {
     unrecognised!(TenantApiSteerTurnRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiSteerTurnRequestOperation);
     unrecognised!(TenantApiSteerTurnResult, sent);
-    impl ContainsUnrecognised for TenantApiSteerTurnResultSent {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SteerSentOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnNotRunning(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SteerUnsupported(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiSteerTurnResultSent,
+        SteerSentOk,
+        TurnNotFound,
+        TurnNotRunning,
+        SteerUnsupported
+    );
     unrecognised!(TenantApiSteerUnsupported, kind);
     unrecognised!(TenantApiSteerUnsupportedKind);
     unrecognised!(TenantApiSteersTaken, kind, prompts);
@@ -52245,18 +51622,14 @@ pub mod types {
     unrecognised!(TenantApiStopSessionRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiStopSessionRequestOperation);
     unrecognised!(TenantApiStopSessionResult, stopped);
-    impl ContainsUnrecognised for TenantApiStopSessionResultStopped {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SessionStoppingWith(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnInFlight(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CancelUnspoken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionArchivedState(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiStopSessionResultStopped,
+        SessionStoppingWith,
+        SessionNotFound,
+        TurnInFlight,
+        CancelUnspoken,
+        SessionArchivedState
+    );
     unrecognised!(TenantApiStoredClaudeSetupCode, box_id, claude_setup_id, type_);
     unrecognised!(TenantApiStoredClaudeSetupCodeType);
     unrecognised!(TenantApiStoredClaudeSetupOffer, box_id, claude_setup_id, type_);
@@ -52322,16 +51695,12 @@ pub mod types {
     );
     unrecognised!(TenantApiSubmitClaudeSetupCodeRequestOperation);
     unrecognised!(TenantApiSubmitClaudeSetupCodeResult, coded);
-    impl ContainsUnrecognised for TenantApiSubmitClaudeSetupCodeResultCoded {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ClaudeSetupCodedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AuthorizationNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AuthorizationNotWaiting(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiSubmitClaudeSetupCodeResultCoded,
+        ClaudeSetupCodedOk,
+        AuthorizationNotFound,
+        AuthorizationNotWaiting
+    );
     unrecognised!(TenantApiSubscriptionChangedOk, kind, subscription);
     unrecognised!(TenantApiSubscriptionChangedOkKind);
     unrecognised!(TenantApiSubscriptionCreatedOk, kind, subscription);
@@ -52356,15 +51725,7 @@ pub mod types {
     );
     unrecognised!(TenantApiSubscriptionPersonaLacksTumpelMcpKind);
     unrecognised!(TenantApiSupervisorUpdateInput, host_id, message);
-    impl ContainsUnrecognised for TenantApiSupervisorUpdateInputMessage {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Step(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Failed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiSupervisorUpdateInputMessage, Step, Failed);
     unrecognised!(TenantApiSupervisorUpdateRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiSupervisorUpdateRequestOperation);
     unrecognised!(TenantApiSupervisorUpdateResult, 0);
@@ -52381,15 +51742,7 @@ pub mod types {
     unrecognised!(TenantApiTakeSteersRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiTakeSteersRequestOperation);
     unrecognised!(TenantApiTakeSteersResult, taken);
-    impl ContainsUnrecognised for TenantApiTakeSteersResultTaken {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SteersTaken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SteerInboxClosed(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiTakeSteersResultTaken, SteersTaken, SteerInboxClosed);
     unrecognised!(
         TenantApiTenantApiVersionUnsupported,
         oldest_tenant_api_version,
@@ -52410,139 +51763,129 @@ pub mod types {
     unrecognised!(TenantApiTenantLimitReachedRefusal);
     unrecognised!(TenantApiTenantOperationUnknown, operation, refusal);
     unrecognised!(TenantApiTenantOperationUnknownRefusal);
-    impl ContainsUnrecognised for TenantApiTenantRefusal {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ApiVersionUnsupported(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::OperationUnknown(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RequestInvalid(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::LimitReached(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
-    impl ContainsUnrecognised for TenantApiTenantRequest {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ListPersonasRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetPersonaRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CreatePersonaRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UpdatePersonaRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PatchPersonaRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeletePersonaRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::OpenRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SupervisorUpdateRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SupervisorUpdatesRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListSecretSetsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetSecretSetRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CreateSecretSetRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UpdateSecretSetRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PatchSecretSetRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SetSecretMemberRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RemoveSecretMemberRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeleteSecretSetRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ApplyConfigRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListPinsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PinRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UnpinRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListConnectorsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetConnectorRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CreateConnectorRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RenameConnectorRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeleteConnectorRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SetStaticTokenRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClearConnectorCredentialRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartConnectorAuthorizationRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ConnectorCallbackRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ServeConnectorTokenRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UnknownConnectorsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartOpenRouterAuthorizationRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetOpenRouterAuthorizationRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::OpenRouterCallbackRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::OpenRouterAuthorizationDeadlineReachedRequest(field_0) => {
-                    ContainsUnrecognised::is_unrecognised(field_0)
-                }
-                Self::OpenRouterSecretSetsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartClaudeSetupRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetClaudeSetupRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListClaudeSetupsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SubmitClaudeSetupCodeRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::WriteClaudeSetupTokenRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupDeadlineReachedRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PrepareClaudeSetupRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListPrebuildsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListLatestPrebuildsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetPrebuildRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::HeldPrebuildRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RecordPrebuildBuildingRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PrebuildDeadlineReachedRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartHostPrebuildRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetPrebuildFailureRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RepositoryReadTokenRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartSessionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartSessionFromIssueRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SendTurnRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StopSessionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ArchiveSessionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SetSessionTagsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PatchSessionTagsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeleteSessionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetSessionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListSessionsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListTurnsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetTurnRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CancelTurnRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SteerTurnRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListSteersRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TakeSteersRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListEventsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RecordStartRefusalRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListWebhookEndpointsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CreateWebhookEndpointRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetWebhookEndpointRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeleteWebhookEndpointRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SetWebhookEndpointStatusRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListPushSubscriptionsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CreatePushSubscriptionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeletePushSubscriptionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ForgetPushSubscriptionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PushTargetRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CreateSubscriptionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListSubscriptionsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetSubscriptionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PauseSubscriptionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ResumeSubscriptionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeleteSubscriptionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CompleteSubscriptionRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CreateTriggerRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListTriggersRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetTriggerRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UpdateTriggerRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeleteTriggerRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TriggerFiredRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetTurnFailureRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListStopFailuresRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListSnapshotsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListCredentialHandoversRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::GetSnapshotRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TranscriptCursorRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::HostHelloRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::HostHeartbeatRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ForgetHostUsageRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RunningTurnsByHostRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ListHostUsageRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ReadUsageRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ReadLimitsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SetLimitsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeferredOffersRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnMetricDimensionsRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PrepareOfferRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::HostMessageRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DeadlineReachedRequest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiTenantRefusal,
+        ApiVersionUnsupported,
+        OperationUnknown,
+        RequestInvalid,
+        LimitReached
+    );
+    unrecognised_union!(
+        TenantApiTenantRequest,
+        ListPersonasRequest,
+        GetPersonaRequest,
+        CreatePersonaRequest,
+        UpdatePersonaRequest,
+        PatchPersonaRequest,
+        DeletePersonaRequest,
+        OpenRequest,
+        SupervisorUpdateRequest,
+        SupervisorUpdatesRequest,
+        ListSecretSetsRequest,
+        GetSecretSetRequest,
+        CreateSecretSetRequest,
+        UpdateSecretSetRequest,
+        PatchSecretSetRequest,
+        SetSecretMemberRequest,
+        RemoveSecretMemberRequest,
+        DeleteSecretSetRequest,
+        ApplyConfigRequest,
+        ListPinsRequest,
+        PinRequest,
+        UnpinRequest,
+        ListConnectorsRequest,
+        GetConnectorRequest,
+        CreateConnectorRequest,
+        RenameConnectorRequest,
+        DeleteConnectorRequest,
+        SetStaticTokenRequest,
+        ClearConnectorCredentialRequest,
+        StartConnectorAuthorizationRequest,
+        ConnectorCallbackRequest,
+        ServeConnectorTokenRequest,
+        UnknownConnectorsRequest,
+        StartOpenRouterAuthorizationRequest,
+        GetOpenRouterAuthorizationRequest,
+        OpenRouterCallbackRequest,
+        OpenRouterAuthorizationDeadlineReachedRequest,
+        OpenRouterSecretSetsRequest,
+        StartClaudeSetupRequest,
+        GetClaudeSetupRequest,
+        ListClaudeSetupsRequest,
+        SubmitClaudeSetupCodeRequest,
+        WriteClaudeSetupTokenRequest,
+        ClaudeSetupDeadlineReachedRequest,
+        PrepareClaudeSetupRequest,
+        ListPrebuildsRequest,
+        ListLatestPrebuildsRequest,
+        GetPrebuildRequest,
+        HeldPrebuildRequest,
+        RecordPrebuildBuildingRequest,
+        PrebuildDeadlineReachedRequest,
+        StartHostPrebuildRequest,
+        GetPrebuildFailureRequest,
+        RepositoryReadTokenRequest,
+        StartSessionRequest,
+        StartSessionFromIssueRequest,
+        SendTurnRequest,
+        StopSessionRequest,
+        ArchiveSessionRequest,
+        SetSessionTagsRequest,
+        PatchSessionTagsRequest,
+        DeleteSessionRequest,
+        GetSessionRequest,
+        ListSessionsRequest,
+        ListTurnsRequest,
+        GetTurnRequest,
+        CancelTurnRequest,
+        SteerTurnRequest,
+        ListSteersRequest,
+        TakeSteersRequest,
+        ListEventsRequest,
+        RecordStartRefusalRequest,
+        ListWebhookEndpointsRequest,
+        CreateWebhookEndpointRequest,
+        GetWebhookEndpointRequest,
+        DeleteWebhookEndpointRequest,
+        SetWebhookEndpointStatusRequest,
+        ListPushSubscriptionsRequest,
+        CreatePushSubscriptionRequest,
+        DeletePushSubscriptionRequest,
+        ForgetPushSubscriptionRequest,
+        PushTargetRequest,
+        CreateSubscriptionRequest,
+        ListSubscriptionsRequest,
+        GetSubscriptionRequest,
+        PauseSubscriptionRequest,
+        ResumeSubscriptionRequest,
+        DeleteSubscriptionRequest,
+        CompleteSubscriptionRequest,
+        CreateTriggerRequest,
+        ListTriggersRequest,
+        GetTriggerRequest,
+        UpdateTriggerRequest,
+        DeleteTriggerRequest,
+        TriggerFiredRequest,
+        GetTurnFailureRequest,
+        ListStopFailuresRequest,
+        ListSnapshotsRequest,
+        ListCredentialHandoversRequest,
+        GetSnapshotRequest,
+        TranscriptCursorRequest,
+        HostHelloRequest,
+        HostHeartbeatRequest,
+        ForgetHostUsageRequest,
+        RunningTurnsByHostRequest,
+        ListHostUsageRequest,
+        ReadUsageRequest,
+        ReadLimitsRequest,
+        SetLimitsRequest,
+        DeferredOffersRequest,
+        TurnMetricDimensionsRequest,
+        PrepareOfferRequest,
+        HostMessageRequest,
+        DeadlineReachedRequest
+    );
     unrecognised!(TenantApiTenantRequestInvalid, issues, operation, refusal);
     unrecognised!(TenantApiTenantRequestInvalidRefusal);
     unrecognised!(
@@ -52582,15 +51925,7 @@ pub mod types {
         tenant_id,
         trigger_id
     );
-    impl ContainsUnrecognised for TenantApiTriggerFiredInputFired {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Matched(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Refused(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiTriggerFiredInputFired, Matched, Refused);
     unrecognised!(TenantApiTriggerFiredMatched, kind, prompt, repository);
     unrecognised!(TenantApiTriggerFiredMatchedKind);
     unrecognised!(TenantApiTriggerFiredRefused, kind, refusal);
@@ -52598,17 +51933,13 @@ pub mod types {
     unrecognised!(TenantApiTriggerFiredRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiTriggerFiredRequestOperation);
     unrecognised!(TenantApiTriggerFiredResult, fired);
-    impl ContainsUnrecognised for TenantApiTriggerFiredResultFired {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::SessionStartedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TriggerDeliveryRepeated(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TriggerNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TriggerStartRefusedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiTriggerFiredResultFired,
+        SessionStartedOk,
+        TriggerDeliveryRepeated,
+        TriggerNotFound,
+        TriggerStartRefusedOk
+    );
     unrecognised!(TenantApiTriggerNameTaken, kind);
     unrecognised!(TenantApiTriggerNameTakenKind);
     unrecognised!(TenantApiTriggerNotFound, kind);
@@ -52623,18 +51954,14 @@ pub mod types {
     unrecognised!(TenantApiTurnCancelledOkKind);
     unrecognised!(TenantApiTurnCredentialRefused, kind, persona_id, refusal);
     unrecognised!(TenantApiTurnCredentialRefusedKind);
-    impl ContainsUnrecognised for TenantApiTurnCredentialRefusedRefusal {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::NoCredentialRefusal(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NoModelCredentialRefusal(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UnsupportedCredentialRefusal(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ModelUnsupportedCredentialRefusal(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ExpiredCredentialRefusal(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiTurnCredentialRefusedRefusal,
+        NoCredentialRefusal,
+        NoModelCredentialRefusal,
+        UnsupportedCredentialRefusal,
+        ModelUnsupportedCredentialRefusal,
+        ExpiredCredentialRefusal
+    );
     unrecognised!(TenantApiTurnDeadline, at, turn_id);
     unrecognised!(TenantApiTurnHandoff, host_id, offer, type_);
     unrecognised!(TenantApiTurnHandoffType);
@@ -52670,21 +51997,17 @@ pub mod types {
     unrecognised!(TenantApiUnpinResult, unpinned);
     unrecognised!(TenantApiUnpinWrite, harness, kind);
     unrecognised!(TenantApiUnpinWriteKind);
-    impl ContainsUnrecognised for TenantApiUnplaceable {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::NotOnline(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotHealthy(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NoImage(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Full(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::MemoryFull(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NoMemory(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NoDisk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NoConnectors(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiUnplaceable,
+        NotOnline,
+        NotHealthy,
+        NoImage,
+        Full,
+        MemoryFull,
+        NoMemory,
+        NoDisk,
+        NoConnectors
+    );
     unrecognised!(TenantApiUnplaceableFull, host, kind, reason, usage);
     unrecognised!(TenantApiUnplaceableFullKind);
     unrecognised!(TenantApiUnplaceableFullReason);
@@ -52728,15 +52051,7 @@ pub mod types {
     unrecognised!(TenantApiUpdatePersonaRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiUpdatePersonaRequestOperation);
     unrecognised!(TenantApiUpdatePersonaResult, written);
-    impl ContainsUnrecognised for TenantApiUpdatePersonaResultWritten {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::PersonaUpdated(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::WriteConflict(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantApiUpdatePersonaResultWritten, PersonaUpdated, WriteConflict);
     unrecognised!(TenantApiUpdatePersonaWrite, kind, persona, persona_id);
     unrecognised!(TenantApiUpdatePersonaWriteKind);
     unrecognised!(
@@ -52750,18 +52065,14 @@ pub mod types {
     unrecognised!(TenantApiUpdateSecretSetRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiUpdateSecretSetRequestOperation);
     unrecognised!(TenantApiUpdateSecretSetResult, updated);
-    impl ContainsUnrecognised for TenantApiUpdateSecretSetResultUpdated {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Updated(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Missing(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Conflict(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NoStoredValue(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UncheckedToken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiUpdateSecretSetResultUpdated,
+        Updated,
+        Missing,
+        Conflict,
+        NoStoredValue,
+        UncheckedToken
+    );
     unrecognised!(
         TenantApiUpdateTriggerInput,
         now,
@@ -52773,17 +52084,13 @@ pub mod types {
     unrecognised!(TenantApiUpdateTriggerRequest, input, operation, tenant_api_version);
     unrecognised!(TenantApiUpdateTriggerRequestOperation);
     unrecognised!(TenantApiUpdateTriggerResult, updated);
-    impl ContainsUnrecognised for TenantApiUpdateTriggerResultUpdated {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::UpdatedOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::NameTaken(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PersonaNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiUpdateTriggerResultUpdated,
+        UpdatedOk,
+        NotFound,
+        NameTaken,
+        PersonaNotFound
+    );
     unrecognised!(TenantApiUpdateTriggerWrite, kind, principal_id, trigger, trigger_id);
     unrecognised!(TenantApiUpdateTriggerWriteKind);
     unrecognised!(
@@ -52803,18 +52110,14 @@ pub mod types {
     );
     unrecognised!(TenantApiWriteClaudeSetupTokenRequestOperation);
     unrecognised!(TenantApiWriteClaudeSetupTokenResult, stored);
-    impl ContainsUnrecognised for TenantApiWriteClaudeSetupTokenResultStored {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::ClaudeSetupStoredOk(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AuthorizationNotFound(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupRefused(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::AuthorizationNotWaiting(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::ClaudeSetupNotStored(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantApiWriteClaudeSetupTokenResultStored,
+        ClaudeSetupStoredOk,
+        AuthorizationNotFound,
+        ClaudeSetupRefused,
+        AuthorizationNotWaiting,
+        ClaudeSetupNotStored
+    );
     unrecognised!(TenantApiWriteConflict, constraint, ok);
     unrecognised!(
         TenantConfig,
@@ -52827,47 +52130,35 @@ pub mod types {
     );
     unrecognised!(TenantConfigApply, config, expiry_values, files, secret_values);
     unrecognised!(TenantConfigPlanRequest, config, expiry_values, files, secret_values);
-    impl ContainsUnrecognised for TenantEvent {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::TurnStartedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnCompletedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TurnFailedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionIdleEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionStoppedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionFailedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionArchivedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::HostOnlineEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::HostOfflineEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PrebuildDoneEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::PrebuildFailedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SubscriptionPausedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SubscriptionEndedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::TriggerStartRefusedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::StartRefusedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CapacityAvailableEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::SessionStartedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UsageNearLimitEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UsageLimitReachedEvent(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(
+        TenantEvent,
+        TurnStartedEvent,
+        TurnCompletedEvent,
+        TurnFailedEvent,
+        SessionIdleEvent,
+        SessionStoppedEvent,
+        SessionFailedEvent,
+        SessionArchivedEvent,
+        HostOnlineEvent,
+        HostOfflineEvent,
+        PrebuildDoneEvent,
+        PrebuildFailedEvent,
+        SubscriptionPausedEvent,
+        SubscriptionEndedEvent,
+        TriggerStartRefusedEvent,
+        StartRefusedEvent,
+        CapacityAvailableEvent,
+        SessionStartedEvent,
+        UsageNearLimitEvent,
+        UsageLimitReachedEvent
+    );
     unrecognised!(TenantEventEnvelope, created_at, event_id, tenant_id);
     unrecognised!(TenantEventType);
     unrecognised!(TenantLimit, limit, measure, window);
     unrecognised!(TenantLimits, profile, source);
     unrecognised!(TenantLimitsProfile, host_frames_per_minute, usage, writes_per_minute);
     unrecognised!(TenantLimitsReset, reset);
-    impl ContainsUnrecognised for TenantLimitsSet {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Reset(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Profile(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TenantLimitsSet, Reset, Profile);
     unrecognised!(TenantLimitsSource);
     unrecognised!(TenantMetricCatalog, metrics, usage);
     unrecognised!(TenantTier);
@@ -52887,15 +52178,7 @@ pub mod types {
         text,
         turn_id
     );
-    impl ContainsUnrecognised for TranscriptPage {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::RawTranscriptPage(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CompactTranscriptPage(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TranscriptPage, RawTranscriptPage, CompactTranscriptPage);
     unrecognised!(
         Trigger,
         created_at,
@@ -52932,28 +52215,9 @@ pub mod types {
         trigger_id
     );
     unrecognised!(TriggerStartRefusedEventEvent);
-    impl ContainsUnrecognised for TriggerTest {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::StoredTriggerTest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::DraftTriggerTest(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TriggerTest, StoredTriggerTest, DraftTriggerTest);
     unrecognised!(TriggerTestResult, conditions, matched, missing_fields, prompt);
-    impl ContainsUnrecognised for Turn {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::OfferedTurn(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::RunningTurn(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::CompletedTurn(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::FailedTurn(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::UnknownTurn(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(Turn, OfferedTurn, RunningTurn, CompletedTurn, FailedTurn, UnknownTurn);
     unrecognised!(
         TurnBase, box_id, created_at, goal, image, line_count, prompt, session_id, tenant_id, turn_id, updated_at
     );
@@ -52992,15 +52256,7 @@ pub mod types {
     unrecognised!(TurnFailureReason);
     unrecognised!(TurnFullImage, guest_image_digest, kind);
     unrecognised!(TurnFullImageKind);
-    impl ContainsUnrecognised for TurnImage {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::FullImage(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::LayeredImage(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(TurnImage, FullImage, LayeredImage);
     unrecognised!(TurnLayeredImage, base_image_digest, harness_layer_digest, kind);
     unrecognised!(TurnLayeredImageKind);
     unrecognised!(TurnOrigin, kind, session_id, turn_id);
@@ -53095,15 +52351,7 @@ pub mod types {
     unrecognised!(WebhookDelivering, delivery);
     unrecognised!(WebhookDeliveringDelivery);
     unrecognised!(WebhookDelivery);
-    impl ContainsUnrecognised for WebhookDeliveryStatus {
-        fn is_unrecognised(&self) -> bool {
-            match self {
-                Self::Delivering(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Failing(field_0) => ContainsUnrecognised::is_unrecognised(field_0),
-                Self::Unrecognised(..) => true,
-            }
-        }
-    }
+    unrecognised_union!(WebhookDeliveryStatus, Delivering, Failing);
     unrecognised!(
         WebhookEndpoint,
         created_at,
