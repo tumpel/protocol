@@ -232,11 +232,9 @@ model StartRefusedEvent {
   refusal: StartRefusal;
   personaId: EntityId;
   `model`: ModelName;
-  @doc("The harness version the request resolved, if any.")
-  harnessVersion?: HarnessVersion;
   caller: RequestCaller;
 
-  @doc("The crew tags the session would carry.")
+  @doc("The crew tags the session carries for a send or would carry after inheritance for a start.")
   @maxItems(16)
   crewTags: SessionTag[];
 }
@@ -249,10 +247,7 @@ model SessionStartedEvent {
   caller: SessionStartedBy;
 }
 
-@doc("""
-  The host freed enough memory and disk for the refused box or came online. It reaches each
-  subscription with a pending room refusal.
-  """)
+@doc("Room on a host may have changed; placement decides whether a start fits. One signal answers every room refusal recorded since the previous signal.")
 model CapacityAvailableEvent {
   event: "CapacityAvailable";
   ...TenantEventEnvelope;

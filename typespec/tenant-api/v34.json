@@ -463,7 +463,7 @@
           "description": "PoolExhausted signals freed room; NoHostAvailable signals a host coming online."
         }
       },
-      "description": "The host freed enough memory and disk for the refused box or came online. It reaches each\nsubscription with a pending room refusal."
+      "description": "Room on a host may have changed; placement decides whether a start fits. One signal answers every room refusal recorded since the previous signal."
     },
     "CapacityRefusalCode": {
       "type": "string",
@@ -6492,14 +6492,6 @@
         "model": {
           "$ref": "#/components/schemas/ModelName"
         },
-        "harnessVersion": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/HarnessVersion"
-            }
-          ],
-          "description": "The harness version the request resolved, if any."
-        },
         "caller": {
           "$ref": "#/components/schemas/RequestCaller"
         },
@@ -6509,7 +6501,7 @@
             "$ref": "#/components/schemas/SessionTag"
           },
           "maxItems": 16,
-          "description": "The crew tags the session would carry."
+          "description": "The crew tags the session carries for a send or would carry after inheritance for a start."
         }
       },
       "description": "A refused session start or turn send. It reaches the\ncalling session's subscription, identified by the turn token's session, or a subscription whose\ncrew tags the refused session would carry.\nExhausted provider credit stays a turn failure with the CreditExhausted pause reason."
@@ -7391,7 +7383,7 @@
           ]
         }
       },
-      "description": "10 CapacityAvailable deliveries reached the subscription without a successful start; it pauses instead of waking again."
+      "description": "Ten claimed deliveries carrying StartRefused or CapacityAvailable passed without a successful start by the subscription's session."
     },
     "SubscriptionPauseMessage": {
       "type": "string",
@@ -14290,71 +14282,43 @@
       "type": "object",
       "required": [
         "tenantId",
-        "event",
+        "refusal",
+        "personaId",
+        "model",
+        "caller",
+        "requestedTags",
         "now"
       ],
       "properties": {
         "tenantId": {
           "$ref": "#/components/schemas/EntityId"
         },
-        "event": {
-          "type": "object",
-          "required": [
-            "event",
-            "operation",
-            "refusal",
-            "personaId",
-            "model",
-            "caller",
-            "crewTags"
-          ],
-          "properties": {
-            "event": {
-              "type": "string",
-              "enum": [
-                "StartRefused"
-              ]
-            },
-            "operation": {
-              "$ref": "#/components/schemas/StartRefusedOperation"
-            },
-            "refusal": {
-              "$ref": "#/components/schemas/StartRefusal"
-            },
-            "personaId": {
-              "$ref": "#/components/schemas/EntityId"
-            },
-            "model": {
-              "$ref": "#/components/schemas/ModelName"
-            },
-            "harnessVersion": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/HarnessVersion"
-                }
-              ],
-              "description": "The harness version the request resolved, if any."
-            },
-            "caller": {
-              "$ref": "#/components/schemas/RequestCaller"
-            },
-            "crewTags": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/SessionTag"
-              },
-              "maxItems": 16,
-              "description": "The crew tags the session would carry."
-            }
+        "refusal": {
+          "$ref": "#/components/schemas/StartRefusal"
+        },
+        "personaId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "model": {
+          "$ref": "#/components/schemas/ModelName"
+        },
+        "caller": {
+          "$ref": "#/components/schemas/RequestCaller"
+        },
+        "requestedTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
           },
-          "description": "The template for omitting properties."
+          "maxItems": 16,
+          "description": "The tags requested for the session before the tenant adds inherited crew tags."
         },
         "now": {
           "type": "integer",
           "format": "int64"
         }
       },
-      "description": "For a start, event.crewTags contains the requested tags. The tenant resolves inherited tags\nbefore appending the event. For a send, event.crewTags contains the target session's tags."
+      "description": "A start refusal the Worker decided before calling the tenant to start the session."
     },
     "TenantApi.RecordStartRefusalRequest": {
       "type": "object",
@@ -14385,14 +14349,14 @@
           "$ref": "#/components/schemas/TenantApi.StartRefusalRecorded"
         },
         {
-          "$ref": "#/components/schemas/TenantApi.SessionTagsOverLimit"
+          "$ref": "#/components/schemas/TenantApi.StartRefusalTagsOverLimit"
         }
       ],
       "discriminator": {
         "propertyName": "kind",
         "mapping": {
           "Recorded": "#/components/schemas/TenantApi.StartRefusalRecorded",
-          "TagsOverLimit": "#/components/schemas/TenantApi.SessionTagsOverLimit"
+          "TagsOverLimit": "#/components/schemas/TenantApi.StartRefusalTagsOverLimit"
         }
       },
       "description": "The tenant records the refusal with the resolved tags, or returns TagsOverLimit without appending an event."
@@ -15072,19 +15036,43 @@
     "TenantApi.SendTurnInput": {
       "type": "object",
       "required": [
+        "tenantId",
+        "sessionId",
+        "send",
+        "hosts",
+        "now",
         "caller"
       ],
       "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "send": {
+          "$ref": "#/components/schemas/TurnSend"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/TenantApi.HostRecord"
+          },
+          "maxItems": 1000
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        },
         "caller": {
-          "$ref": "#/components/schemas/RequestCaller"
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/RequestCaller"
+            }
+          ],
+          "description": "The authenticated person or turn that requested the send."
         }
-      },
-      "allOf": [
-        {
-          "$ref": "#/components/schemas/TenantApi.SendTurnV33Input"
-        }
-      ],
-      "description": "A turn send includes its authenticated caller from tenant protocol version 34."
+      }
     },
     "TenantApi.SendTurnRequest": {
       "type": "object",
@@ -15104,10 +15092,9 @@
           ]
         },
         "input": {
-          "$ref": "#/components/schemas/TenantApi.SendTurnV33Input"
+          "$ref": "#/components/schemas/TenantApi.SendTurnInput"
         }
-      },
-      "description": "The legacy turn send route for callers through tenant protocol version 33."
+      }
     },
     "TenantApi.SendTurnResult": {
       "type": "object",
@@ -15153,62 +15140,6 @@
           ]
         }
       }
-    },
-    "TenantApi.SendTurnV33Input": {
-      "type": "object",
-      "required": [
-        "tenantId",
-        "sessionId",
-        "send",
-        "hosts",
-        "now"
-      ],
-      "properties": {
-        "tenantId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "sessionId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "send": {
-          "$ref": "#/components/schemas/TurnSend"
-        },
-        "hosts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/TenantApi.HostRecord"
-          },
-          "maxItems": 1000
-        },
-        "now": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "description": "The turn send input for tenant protocol versions through 33."
-    },
-    "TenantApi.SendTurnWithCallerRequest": {
-      "type": "object",
-      "required": [
-        "tenantApiVersion",
-        "operation",
-        "input"
-      ],
-      "properties": {
-        "tenantApiVersion": {
-          "$ref": "#/components/schemas/TenantApiProtocol"
-        },
-        "operation": {
-          "type": "string",
-          "enum": [
-            "sendTurnWithCaller"
-          ]
-        },
-        "input": {
-          "$ref": "#/components/schemas/TenantApi.SendTurnInput"
-        }
-      },
-      "description": "Callers from tenant protocol version 34 use this turn send route with their authenticated caller."
     },
     "TenantApi.ServeConnectorTokenInput": {
       "type": "object",
@@ -16200,6 +16131,31 @@
           "enum": [
             "Recorded"
           ]
+        }
+      }
+    },
+    "TenantApi.StartRefusalTagsOverLimit": {
+      "type": "object",
+      "required": [
+        "kind",
+        "tagCount",
+        "limit"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "TagsOverLimit"
+          ]
+        },
+        "tagCount": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 17
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -17504,9 +17460,6 @@
           "$ref": "#/components/schemas/TenantApi.SendTurnRequest"
         },
         {
-          "$ref": "#/components/schemas/TenantApi.SendTurnWithCallerRequest"
-        },
-        {
           "$ref": "#/components/schemas/TenantApi.StopSessionRequest"
         },
         {
@@ -17737,7 +17690,6 @@
           "startSession": "#/components/schemas/TenantApi.StartSessionRequest",
           "startSessionFromIssue": "#/components/schemas/TenantApi.StartSessionFromIssueRequest",
           "sendTurn": "#/components/schemas/TenantApi.SendTurnRequest",
-          "sendTurnWithCaller": "#/components/schemas/TenantApi.SendTurnWithCallerRequest",
           "stopSession": "#/components/schemas/TenantApi.StopSessionRequest",
           "archiveSession": "#/components/schemas/TenantApi.ArchiveSessionRequest",
           "setSessionTags": "#/components/schemas/TenantApi.SetSessionTagsRequest",

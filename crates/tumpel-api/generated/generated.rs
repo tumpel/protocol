@@ -596,8 +596,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///The host freed enough memory and disk for the refused box or came online. It reaches each
-    ///subscription with a pending room refusal.
+    ///Room on a host may have changed; placement decides whether a start fits. One signal answers every room refusal recorded since the previous signal.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct CapacityAvailableEvent {
         ///PoolExhausted signals freed room; NoHostAvailable signals a host coming online.
@@ -23205,15 +23204,12 @@ pub mod types {
         pub caller: RequestCaller,
         #[serde(rename = "createdAt")]
         pub created_at: i64,
-        ///The crew tags the session would carry.
+        ///The crew tags the session carries for a send or would carry after inheritance for a start.
         #[serde(rename = "crewTags")]
         pub crew_tags: ::std::vec::Vec<SessionTag>,
         pub event: StartRefusedEventEvent,
         #[serde(rename = "eventId")]
         pub event_id: Sequence,
-        ///The harness version the request resolved, if any.
-        #[serde(rename = "harnessVersion", skip_serializing_if = "::std::option::Option::is_none")]
-        pub harness_version: ::std::option::Option<HarnessVersion>,
         pub model: ModelName,
         pub operation: StartRefusedOperation,
         #[serde(rename = "personaId")]
@@ -24617,7 +24613,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///10 CapacityAvailable deliveries reached the subscription without a successful start; it pauses instead of waking again.
+    ///Ten claimed deliveries carrying StartRefused or CapacityAvailable passed without a successful start by the subscription's session.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SubscriptionPausedStartsRefused {
         pub kind: SubscriptionPausedStartsRefusedKind,
@@ -35793,67 +35789,20 @@ pub mod types {
             Self(value)
         }
     }
-    ///For a start, event.crewTags contains the requested tags. The tenant resolves inherited tags
-    ///before appending the event. For a send, event.crewTags contains the target session's tags.
+    ///A start refusal the Worker decided before calling the tenant to start the session.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiRecordStartRefusalInput {
-        pub event: TenantApiRecordStartRefusalInputEvent,
-        pub now: i64,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///The template for omitting properties.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiRecordStartRefusalInputEvent {
         pub caller: RequestCaller,
-        ///The crew tags the session would carry.
-        #[serde(rename = "crewTags")]
-        pub crew_tags: ::std::vec::Vec<SessionTag>,
-        pub event: TenantApiRecordStartRefusalInputEventEvent,
-        ///The harness version the request resolved, if any.
-        #[serde(rename = "harnessVersion", skip_serializing_if = "::std::option::Option::is_none")]
-        pub harness_version: ::std::option::Option<HarnessVersion>,
         pub model: ModelName,
-        pub operation: StartRefusedOperation,
+        pub now: i64,
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
         pub refusal: StartRefusal,
-    }
-    ///`TenantApiRecordStartRefusalInputEventEvent`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiRecordStartRefusalInputEventEvent {
-        StartRefused,
-        #[serde(untagged)]
-        Unrecognised(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiRecordStartRefusalInputEventEvent {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::StartRefused => f.write_str("StartRefused"),
-                Self::Unrecognised(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiRecordStartRefusalInputEventEvent {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "StartRefused" => Ok(Self::StartRefused),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiRecordStartRefusalInputEventEvent {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiRecordStartRefusalInputEventEvent {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
+        ///The tags requested for the session before the tenant adds inherited crew tags.
+        #[serde(rename = "requestedTags")]
+        pub requested_tags: ::std::vec::Vec<SessionTag>,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
     }
     ///`TenantApiRecordStartRefusalRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -35904,18 +35853,18 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiRecordStartRefusalResult {
-        StartRefusalRecorded(TenantApiStartRefusalRecorded),
-        SessionTagsOverLimit(TenantApiSessionTagsOverLimit),
+        Recorded(TenantApiStartRefusalRecorded),
+        TagsOverLimit(TenantApiStartRefusalTagsOverLimit),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiStartRefusalRecorded> for TenantApiRecordStartRefusalResult {
         fn from(value: TenantApiStartRefusalRecorded) -> Self {
-            Self::StartRefusalRecorded(value)
+            Self::Recorded(value)
         }
     }
-    impl ::std::convert::From<TenantApiSessionTagsOverLimit> for TenantApiRecordStartRefusalResult {
-        fn from(value: TenantApiSessionTagsOverLimit) -> Self {
-            Self::SessionTagsOverLimit(value)
+    impl ::std::convert::From<TenantApiStartRefusalTagsOverLimit> for TenantApiRecordStartRefusalResult {
+        fn from(value: TenantApiStartRefusalTagsOverLimit) -> Self {
+            Self::TagsOverLimit(value)
         }
     }
     ///`TenantApiRemoveSecretMemberInput`
@@ -37051,9 +37000,10 @@ pub mod types {
             value.parse()
         }
     }
-    ///A turn send includes its authenticated caller from tenant protocol version 34.
+    ///`TenantApiSendTurnInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSendTurnInput {
+        ///The authenticated person or turn that requested the send.
         pub caller: RequestCaller,
         pub hosts: ::std::vec::Vec<TenantApiHostRecord>,
         pub now: i64,
@@ -37063,10 +37013,10 @@ pub mod types {
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
     }
-    ///The legacy turn send route for callers through tenant protocol version 33.
+    ///`TenantApiSendTurnRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSendTurnRequest {
-        pub input: TenantApiSendTurnV33Input,
+        pub input: TenantApiSendTurnInput,
         pub operation: TenantApiSendTurnRequestOperation,
         #[serde(rename = "tenantApiVersion")]
         pub tenant_api_version: TenantApiProtocol,
@@ -37183,62 +37133,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiTurnCredentialRefused> for TenantApiSendTurnResultSent {
         fn from(value: TenantApiTurnCredentialRefused) -> Self {
             Self::TurnCredentialRefused(value)
-        }
-    }
-    ///The turn send input for tenant protocol versions through 33.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiSendTurnV33Input {
-        pub hosts: ::std::vec::Vec<TenantApiHostRecord>,
-        pub now: i64,
-        pub send: TurnSend,
-        #[serde(rename = "sessionId")]
-        pub session_id: EntityId,
-        #[serde(rename = "tenantId")]
-        pub tenant_id: EntityId,
-    }
-    ///Callers from tenant protocol version 34 use this turn send route with their authenticated caller.
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiSendTurnWithCallerRequest {
-        pub input: TenantApiSendTurnInput,
-        pub operation: TenantApiSendTurnWithCallerRequestOperation,
-        #[serde(rename = "tenantApiVersion")]
-        pub tenant_api_version: TenantApiProtocol,
-    }
-    ///`TenantApiSendTurnWithCallerRequestOperation`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiSendTurnWithCallerRequestOperation {
-        #[serde(rename = "sendTurnWithCaller")]
-        SendTurnWithCaller,
-        #[serde(untagged)]
-        Unrecognised(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiSendTurnWithCallerRequestOperation {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::SendTurnWithCaller => f.write_str("sendTurnWithCaller"),
-                Self::Unrecognised(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiSendTurnWithCallerRequestOperation {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "sendTurnWithCaller" => Ok(Self::SendTurnWithCaller),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiSendTurnWithCallerRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSendTurnWithCallerRequestOperation {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///`TenantApiServeConnectorTokenInput`
@@ -38812,6 +38706,50 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiStartRefusalRecordedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`TenantApiStartRefusalTagsOverLimit`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiStartRefusalTagsOverLimit {
+        pub kind: TenantApiStartRefusalTagsOverLimitKind,
+        pub limit: i32,
+        #[serde(rename = "tagCount")]
+        pub tag_count: i32,
+    }
+    ///`TenantApiStartRefusalTagsOverLimitKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiStartRefusalTagsOverLimitKind {
+        TagsOverLimit,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for TenantApiStartRefusalTagsOverLimitKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::TagsOverLimit => f.write_str("TagsOverLimit"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiStartRefusalTagsOverLimitKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "TagsOverLimit" => Ok(Self::TagsOverLimit),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiStartRefusalTagsOverLimitKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiStartRefusalTagsOverLimitKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -40582,7 +40520,6 @@ pub mod types {
         StartSessionRequest(TenantApiStartSessionRequest),
         StartSessionFromIssueRequest(TenantApiStartSessionFromIssueRequest),
         SendTurnRequest(TenantApiSendTurnRequest),
-        SendTurnWithCallerRequest(TenantApiSendTurnWithCallerRequest),
         StopSessionRequest(TenantApiStopSessionRequest),
         ArchiveSessionRequest(TenantApiArchiveSessionRequest),
         SetSessionTagsRequest(TenantApiSetSessionTagsRequest),
@@ -40920,11 +40857,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiSendTurnRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiSendTurnRequest) -> Self {
             Self::SendTurnRequest(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiSendTurnWithCallerRequest> for TenantApiTenantRequest {
-        fn from(value: TenantApiSendTurnWithCallerRequest) -> Self {
-            Self::SendTurnWithCallerRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiStopSessionRequest> for TenantApiTenantRequest {
@@ -47409,12 +47341,12 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Recorded") => Self::StartRefusalRecorded(
+                Some("Recorded") => Self::Recorded(
                     ::serde_json::from_value::<TenantApiStartRefusalRecorded>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                Some("TagsOverLimit") => Self::SessionTagsOverLimit(
-                    ::serde_json::from_value::<TenantApiSessionTagsOverLimit>(value.clone())
+                Some("TagsOverLimit") => Self::TagsOverLimit(
+                    ::serde_json::from_value::<TenantApiStartRefusalTagsOverLimit>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
                 _ => Self::Unrecognised(value),
@@ -47677,10 +47609,6 @@ pub mod types {
                 ),
                 Some("sendTurn") => Self::SendTurnRequest(
                     ::serde_json::from_value::<TenantApiSendTurnRequest>(value.clone())
-                        .map_err(::serde::de::Error::custom)?,
-                ),
-                Some("sendTurnWithCaller") => Self::SendTurnWithCallerRequest(
-                    ::serde_json::from_value::<TenantApiSendTurnWithCallerRequest>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
                 Some("stopSession") => Self::StopSessionRequest(

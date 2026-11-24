@@ -60,7 +60,7 @@ model SubscriptionPausedCreditExhausted {
   turnId: EntityId;
 }
 
-@doc("10 CapacityAvailable deliveries reached the subscription without a successful start; it pauses instead of waking again.")
+@doc("Ten claimed deliveries carrying StartRefused or CapacityAvailable passed without a successful start by the subscription's session.")
 model SubscriptionPausedStartsRefused {
   kind: "StartsRefused";
 }

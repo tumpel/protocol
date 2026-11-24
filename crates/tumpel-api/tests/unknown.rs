@@ -1,6 +1,4 @@
-use tumpel_api::types::{
-    ChannelControlEnvelope, SessionState, SubscriptionPauseReason, TenantApiRecordStartRefusalResult, TurnFailureReason,
-};
+use tumpel_api::types::{ChannelControlEnvelope, SessionState, SubscriptionPauseReason, TurnFailureReason};
 
 #[test]
 fn unknown_values_decode_explicitly_and_preserve_the_wire_value() {
@@ -21,18 +19,6 @@ fn unknown_values_decode_explicitly_and_preserve_the_wire_value() {
 fn known_discriminators_still_choose_the_correct_variant() {
     let reason: SubscriptionPauseReason = serde_json::from_str(r#"{"kind":"CrewFailing","extra":true}"#).unwrap();
     assert!(matches!(reason, SubscriptionPauseReason::CrewFailing(_)));
-}
-
-#[test]
-fn refusal_recording_preserves_the_tags_that_overflowed() {
-    let tags: Vec<_> = (0..17).map(|index| format!("crew:{index}")).collect();
-    let value = serde_json::json!({"kind": "TagsOverLimit", "tags": tags});
-    let result: TenantApiRecordStartRefusalResult = serde_json::from_value(value.clone()).unwrap();
-    assert!(matches!(
-        result,
-        TenantApiRecordStartRefusalResult::SessionTagsOverLimit(_)
-    ));
-    assert_eq!(serde_json::to_value(&result).unwrap(), value);
 }
 
 #[test]

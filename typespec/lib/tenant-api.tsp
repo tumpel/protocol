@@ -612,17 +612,14 @@ model StartSessionFromIssueInput {
   now: int64;
 }
 
-@doc("The turn send input for tenant protocol versions through 33.")
-model SendTurnV33Input {
+model SendTurnInput {
   tenantId: EntityId;
   sessionId: EntityId;
   send: TurnSend;
   @maxItems(1000) hosts: HostRecord[];
   now: int64;
-}
 
-@doc("A turn send includes its authenticated caller from tenant protocol version 34.")
-model SendTurnInput extends SendTurnV33Input {
+  @doc("The authenticated person or turn that requested the send.")
   caller: RequestCaller;
 }
 
@@ -715,13 +712,17 @@ model CancelTurnInput {
   now: int64;
 }
 
-@doc("""
-  For a start, event.crewTags contains the requested tags. The tenant resolves inherited tags
-  before appending the event. For a send, event.crewTags contains the target session's tags.
-  """)
+@doc("A start refusal the Worker decided before calling the tenant to start the session.")
 model RecordStartRefusalInput {
   tenantId: EntityId;
-  event: OmitProperties<StartRefusedEvent, "eventId" | "tenantId" | "createdAt">;
+  refusal: StartRefusal;
+  personaId: EntityId;
+  `model`: ModelName;
+  caller: RequestCaller;
+
+  @doc("The tags requested for the session before the tenant adds inherited crew tags.")
+  @maxItems(16)
+  requestedTags: SessionTag[];
   now: int64;
 }
 
@@ -729,11 +730,17 @@ model StartRefusalRecorded {
   kind: "Recorded";
 }
 
+model StartRefusalTagsOverLimit {
+  kind: "TagsOverLimit";
+  @minValue(17) tagCount: int32;
+  limit: int32;
+}
+
 @doc("The tenant records the refusal with the resolved tags, or returns TagsOverLimit without appending an event.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union RecordStartRefusalResult {
   Recorded: StartRefusalRecorded,
-  TagsOverLimit: SessionTagsOverLimit,
+  TagsOverLimit: StartRefusalTagsOverLimit,
 }
 
 model RecordStartRefusalRequest {
@@ -1384,17 +1391,9 @@ model StartSessionFromIssueRequest {
   input: StartSessionFromIssueInput;
 }
 
-@doc("The legacy turn send route for callers through tenant protocol version 33.")
 model SendTurnRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "sendTurn";
-  input: SendTurnV33Input;
-}
-
-@doc("Callers from tenant protocol version 34 use this turn send route with their authenticated caller.")
-model SendTurnWithCallerRequest {
-  tenantApiVersion: TenantApiProtocol;
-  operation: "sendTurnWithCaller";
   input: SendTurnInput;
 }
 
@@ -1793,7 +1792,6 @@ union TenantRequest {
   startSession: StartSessionRequest,
   startSessionFromIssue: StartSessionFromIssueRequest,
   sendTurn: SendTurnRequest,
-  sendTurnWithCaller: SendTurnWithCallerRequest,
   stopSession: StopSessionRequest,
   archiveSession: ArchiveSessionRequest,
   setSessionTags: SetSessionTagsRequest,
