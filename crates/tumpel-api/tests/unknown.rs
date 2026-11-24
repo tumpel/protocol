@@ -4,6 +4,11 @@ use tumpel_api::types::{
 use tumpel_api::ContainsUnrecognised;
 
 #[test]
+fn unit_answers_are_recognised() {
+    assert!(!().contains_unrecognised());
+}
+
+#[test]
 fn unknown_values_decode_explicitly_and_preserve_the_wire_value() {
     let state: SessionState = serde_json::from_str(r#""FutureState""#).unwrap();
     assert_eq!(state, SessionState::Unrecognised("FutureState".to_string()));

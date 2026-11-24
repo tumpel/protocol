@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::num::{NonZeroU32, NonZeroU64};
 
+/// HTTP 204 answers decode as `()` and are always recognised.
 pub trait ContainsUnrecognised {
     fn contains_unrecognised(&self) -> bool;
 }
@@ -34,6 +35,7 @@ macro_rules! always_recognised {
 }
 
 always_recognised!(
+    (),
     bool,
     f64,
     i32,
