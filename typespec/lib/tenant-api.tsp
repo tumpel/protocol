@@ -713,7 +713,7 @@ model CancelTurnInput {
 }
 
 model RecordStartRefusalStart {
-  kind: "Start";
+  kind: StartRefusedOperation.Start;
 
   @doc("The tags requested for the session before the tenant adds inherited crew tags.")
   @maxItems(16)
@@ -721,7 +721,7 @@ model RecordStartRefusalStart {
 }
 
 model RecordStartRefusalSend {
-  kind: "Send";
+  kind: StartRefusedOperation.Send;
 
   @doc("The target session whose tags the tenant reads for the refusal.")
   sessionId: EntityId;
