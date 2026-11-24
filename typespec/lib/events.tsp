@@ -13,6 +13,8 @@ enum TenantEventType {
   @doc("A host claimed a turn and its harness runs it.")
   TurnStarted: "TurnStarted",
 
+  SessionStarted: "SessionStarted",
+
   @doc("A turn ended Completed.")
   TurnCompleted: "TurnCompleted",
 
@@ -244,6 +246,14 @@ model StartRefusedEvent {
   crewTags: SessionTag[];
 }
 
+@doc("A session start succeeded, with its caller recorded for subscription progress.")
+model SessionStartedEvent {
+  event: "SessionStarted";
+  ...TenantEventEnvelope;
+  sessionId: EntityId;
+  caller: SessionStartedBy;
+}
+
 @doc("""
   The host freed enough memory and disk for the refused box or came online. It reaches each
   subscription with a pending room refusal.
@@ -251,10 +261,9 @@ model StartRefusedEvent {
 model CapacityAvailableEvent {
   event: "CapacityAvailable";
   ...TenantEventEnvelope;
-  subscriptionId: EntityId;
   hostId: EntityId;
 
-  @doc("The pending room refusal's code that this event answers.")
+  @doc("PoolExhausted signals freed room; NoHostAvailable signals a host coming online.")
   code: CapacityRefusalCode;
 }
 
@@ -295,6 +304,7 @@ union TenantEvent {
   TriggerStartRefused: TriggerStartRefusedEvent,
   StartRefused: StartRefusedEvent,
   CapacityAvailable: CapacityAvailableEvent,
+  SessionStarted: SessionStartedEvent,
   UsageNearLimit: UsageNearLimitEvent,
   UsageLimitReached: UsageLimitReachedEvent,
 }
