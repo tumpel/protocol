@@ -1032,6 +1032,13 @@ model TurnOrigin {
   turnId: EntityId;
 }
 
+@doc("The person or turn that made a request.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union RequestCaller {
+  Person: PersonOrigin,
+  Turn: TurnOrigin,
+}
+
 @doc("A trigger started the session when one delivery of an event matched it. The session runs as the trigger's principalId.")
 model TriggerOrigin {
   kind: "Trigger";
