@@ -727,17 +727,11 @@ model StartRefusalRecorded {
   kind: "Recorded";
 }
 
-model StartRefusalTagsOverLimit {
-  kind: "TagsOverLimit";
-  @minValue(17) tagCount: int32;
-  limit: int32;
-}
-
 @doc("The tenant records the refusal with the resolved tags, or returns TagsOverLimit without appending an event.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union RecordStartRefusalResult {
   Recorded: StartRefusalRecorded,
-  TagsOverLimit: StartRefusalTagsOverLimit,
+  TagsOverLimit: SessionTagsOverLimit,
 }
 
 model RecordStartRefusalRequest {
@@ -2596,14 +2590,15 @@ model SessionTagged {
   session: Session;
 }
 
-@doc("A patch or a start whose tags, with the crew tags a start inherits, would number more than 16; nothing changes.")
+@doc("The resolved session tags exceed the limit of 16. A start includes its inherited crew tags.")
 model SessionTagsOverLimit {
   kind: "TagsOverLimit";
-  @maxItems(64) tags: SessionTag[];
+  @doc("The number of distinct resolved tags.")
+  tagCount: int32;
 }
 
 model SetSessionTagsResult {
-  tagged: SessionTagged | SessionNotFound;
+  tagged: SessionTagged | SessionNotFound | SessionTagsOverLimit;
 }
 
 model PatchSessionTagsResult {

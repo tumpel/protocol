@@ -35853,18 +35853,18 @@ pub mod types {
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiRecordStartRefusalResult {
-        Recorded(TenantApiStartRefusalRecorded),
-        TagsOverLimit(TenantApiStartRefusalTagsOverLimit),
+        StartRefusalRecorded(TenantApiStartRefusalRecorded),
+        SessionTagsOverLimit(TenantApiSessionTagsOverLimit),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiStartRefusalRecorded> for TenantApiRecordStartRefusalResult {
         fn from(value: TenantApiStartRefusalRecorded) -> Self {
-            Self::Recorded(value)
+            Self::StartRefusalRecorded(value)
         }
     }
-    impl ::std::convert::From<TenantApiStartRefusalTagsOverLimit> for TenantApiRecordStartRefusalResult {
-        fn from(value: TenantApiStartRefusalTagsOverLimit) -> Self {
-            Self::TagsOverLimit(value)
+    impl ::std::convert::From<TenantApiSessionTagsOverLimit> for TenantApiRecordStartRefusalResult {
+        fn from(value: TenantApiSessionTagsOverLimit) -> Self {
+            Self::SessionTagsOverLimit(value)
         }
     }
     ///`TenantApiRemoveSecretMemberInput`
@@ -37763,11 +37763,13 @@ pub mod types {
             value.parse()
         }
     }
-    ///A patch or a start whose tags, with the crew tags a start inherits, would number more than 16; nothing changes.
+    ///The resolved session tags exceed the limit of 16. A start includes its inherited crew tags.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSessionTagsOverLimit {
         pub kind: TenantApiSessionTagsOverLimitKind,
-        pub tags: ::std::vec::Vec<SessionTag>,
+        ///The number of distinct resolved tags.
+        #[serde(rename = "tagCount")]
+        pub tag_count: i32,
     }
     ///`TenantApiSessionTagsOverLimitKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -38021,6 +38023,7 @@ pub mod types {
     pub enum TenantApiSetSessionTagsResultTagged {
         Tagged(TenantApiSessionTagged),
         NotFound(TenantApiSessionNotFound),
+        TagsOverLimit(TenantApiSessionTagsOverLimit),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionTagged> for TenantApiSetSessionTagsResultTagged {
@@ -38031,6 +38034,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiSessionNotFound> for TenantApiSetSessionTagsResultTagged {
         fn from(value: TenantApiSessionNotFound) -> Self {
             Self::NotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionTagsOverLimit> for TenantApiSetSessionTagsResultTagged {
+        fn from(value: TenantApiSessionTagsOverLimit) -> Self {
+            Self::TagsOverLimit(value)
         }
     }
     ///`TenantApiSetStaticTokenInput`
@@ -38706,50 +38714,6 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiStartRefusalRecordedKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiStartRefusalTagsOverLimit`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiStartRefusalTagsOverLimit {
-        pub kind: TenantApiStartRefusalTagsOverLimitKind,
-        pub limit: i32,
-        #[serde(rename = "tagCount")]
-        pub tag_count: i32,
-    }
-    ///`TenantApiStartRefusalTagsOverLimitKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiStartRefusalTagsOverLimitKind {
-        TagsOverLimit,
-        #[serde(untagged)]
-        Unrecognised(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiStartRefusalTagsOverLimitKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::TagsOverLimit => f.write_str("TagsOverLimit"),
-                Self::Unrecognised(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiStartRefusalTagsOverLimitKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "TagsOverLimit" => Ok(Self::TagsOverLimit),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiStartRefusalTagsOverLimitKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiStartRefusalTagsOverLimitKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -47341,12 +47305,12 @@ pub mod types {
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Recorded") => Self::Recorded(
+                Some("Recorded") => Self::StartRefusalRecorded(
                     ::serde_json::from_value::<TenantApiStartRefusalRecorded>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                Some("TagsOverLimit") => Self::TagsOverLimit(
-                    ::serde_json::from_value::<TenantApiStartRefusalTagsOverLimit>(value.clone())
+                Some("TagsOverLimit") => Self::SessionTagsOverLimit(
+                    ::serde_json::from_value::<TenantApiSessionTagsOverLimit>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
                 _ => Self::Unrecognised(value),

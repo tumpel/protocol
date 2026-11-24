@@ -14349,14 +14349,14 @@
           "$ref": "#/components/schemas/TenantApi.StartRefusalRecorded"
         },
         {
-          "$ref": "#/components/schemas/TenantApi.StartRefusalTagsOverLimit"
+          "$ref": "#/components/schemas/TenantApi.SessionTagsOverLimit"
         }
       ],
       "discriminator": {
         "propertyName": "kind",
         "mapping": {
           "Recorded": "#/components/schemas/TenantApi.StartRefusalRecorded",
-          "TagsOverLimit": "#/components/schemas/TenantApi.StartRefusalTagsOverLimit"
+          "TagsOverLimit": "#/components/schemas/TenantApi.SessionTagsOverLimit"
         }
       },
       "description": "The tenant records the refusal with the resolved tags, or returns TagsOverLimit without appending an event."
@@ -15450,7 +15450,7 @@
       "type": "object",
       "required": [
         "kind",
-        "tags"
+        "tagCount"
       ],
       "properties": {
         "kind": {
@@ -15459,15 +15459,13 @@
             "TagsOverLimit"
           ]
         },
-        "tags": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/SessionTag"
-          },
-          "maxItems": 64
+        "tagCount": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The number of distinct resolved tags."
         }
       },
-      "description": "A patch or a start whose tags, with the crew tags a start inherits, would number more than 16; nothing changes."
+      "description": "The resolved session tags exceed the limit of 16. A start includes its inherited crew tags."
     },
     "TenantApi.SetLimitsInput": {
       "type": "object",
@@ -15665,6 +15663,9 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.SessionNotFound"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.SessionTagsOverLimit"
             }
           ]
         }
@@ -16131,31 +16132,6 @@
           "enum": [
             "Recorded"
           ]
-        }
-      }
-    },
-    "TenantApi.StartRefusalTagsOverLimit": {
-      "type": "object",
-      "required": [
-        "kind",
-        "tagCount",
-        "limit"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "TagsOverLimit"
-          ]
-        },
-        "tagCount": {
-          "type": "integer",
-          "format": "int32",
-          "minimum": 17
-        },
-        "limit": {
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
