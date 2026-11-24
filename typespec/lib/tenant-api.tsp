@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 31;
+const TenantApiVersion = 33;
 
 namespace TenantApi {
 
@@ -707,6 +707,20 @@ model CancelTurnInput {
   turnId: EntityId;
   cancelledBy: ShortText;
   now: int64;
+}
+
+model RecordStartRefusalInput {
+  tenantId: EntityId;
+  event: OmitProperties<StartRefusedEvent, "eventId" | "tenantId" | "createdAt">;
+  now: int64;
+}
+
+model RecordStartRefusalResult {}
+
+model RecordStartRefusalRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "recordStartRefusal";
+  input: RecordStartRefusalInput;
 }
 
 model ListEventsInput {
@@ -1766,6 +1780,7 @@ union TenantRequest {
   listSteers: ListSteersRequest,
   takeSteers: TakeSteersRequest,
   listEvents: ListEventsRequest,
+  recordStartRefusal: RecordStartRefusalRequest,
   listWebhookEndpoints: ListWebhookEndpointsRequest,
   createWebhookEndpoint: CreateWebhookEndpointRequest,
   getWebhookEndpoint: GetWebhookEndpointRequest,

@@ -13,6 +13,8 @@ enum TenantEventType {
   @doc("A host claimed a turn and its harness runs it.")
   TurnStarted: "TurnStarted",
 
+  SessionStarted: "SessionStarted",
+
   @doc("A turn ended Completed.")
   TurnCompleted: "TurnCompleted",
 
@@ -217,6 +219,13 @@ model StartRefusal {
   detail: Detail;
 }
 
+@doc("The person or turn that made the refused request.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union StartRefusedCaller {
+  Person: PersonOrigin,
+  Turn: TurnOrigin,
+}
+
 @doc("""
   A refused session start or turn send. It reaches the
   calling session's subscription, identified by the turn token's session, or a subscription whose
@@ -230,11 +239,19 @@ model StartRefusedEvent {
   refusal: StartRefusal;
   personaId: EntityId;
   `model`: ModelName;
-  harnessVersion: ShortText;
+  caller: StartRefusedCaller;
 
   @doc("The crew tags the session would carry.")
   @maxItems(16)
   crewTags: SessionTag[];
+}
+
+@doc("A session start succeeded, with its caller recorded for subscription progress.")
+model SessionStartedEvent {
+  event: "SessionStarted";
+  ...TenantEventEnvelope;
+  sessionId: EntityId;
+  caller: SessionStartedBy;
 }
 
 @doc("""
@@ -244,10 +261,9 @@ model StartRefusedEvent {
 model CapacityAvailableEvent {
   event: "CapacityAvailable";
   ...TenantEventEnvelope;
-  subscriptionId: EntityId;
   hostId: EntityId;
 
-  @doc("The pending room refusal's code that this event answers.")
+  @doc("PoolExhausted signals freed room; NoHostAvailable signals a host coming online.")
   code: CapacityRefusalCode;
 }
 
@@ -288,6 +304,7 @@ union TenantEvent {
   TriggerStartRefused: TriggerStartRefusedEvent,
   StartRefused: StartRefusedEvent,
   CapacityAvailable: CapacityAvailableEvent,
+  SessionStarted: SessionStartedEvent,
   UsageNearLimit: UsageNearLimitEvent,
   UsageLimitReached: UsageLimitReachedEvent,
 }
