@@ -53540,8 +53540,9 @@ impl Client {
     ///session's harness takes no goal, when the plan and the goal leave no room for one event, or
     ///when crewTags is not empty and the session's persona has tumpelMcp disabled. That problem's
     ///detail names the persona and its fix says to enable tumpelMcp on it before trying again.
-    ///At most 128 Active or Paused subscriptions belong to one tenant; creating another is refused
-    ///InvalidRequest until a subscription ends or is deleted. Refused SessionArchived or SessionFailed when the session is.
+    ///At most 128 Active or Paused subscriptions listing StartRefused belong to one tenant; creating
+    ///another is refused InvalidRequest until one ends or is deleted. Other event subscriptions
+    ///do not count toward this limit. Refused SessionArchived or SessionFailed when the session is.
     ///
     ///Sends a `POST` request to `/v1/subscriptions`
     ///
