@@ -217,6 +217,13 @@ model StartRefusal {
   detail: Detail;
 }
 
+@doc("The person or turn that made the refused request.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union StartRefusedCaller {
+  Person: PersonOrigin,
+  Turn: TurnOrigin,
+}
+
 @doc("""
   A refused session start or turn send. It reaches the
   calling session's subscription, identified by the turn token's session, or a subscription whose
@@ -230,7 +237,7 @@ model StartRefusedEvent {
   refusal: StartRefusal;
   personaId: EntityId;
   `model`: ModelName;
-  harnessVersion: ShortText;
+  caller: StartRefusedCaller;
 
   @doc("The crew tags the session would carry.")
   @maxItems(16)
