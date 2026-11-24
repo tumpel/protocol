@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 34;
+const TenantApiVersion = 35;
 
 namespace TenantApi {
 
@@ -712,14 +712,32 @@ model CancelTurnInput {
   now: int64;
 }
 
-@doc("A start refusal the Worker decided before calling the tenant to start the session.")
-model RecordStartRefusalInput {
-  tenantId: EntityId;
-  ...OmitProperties<StartRefusedEvent, "event" | "eventId" | "tenantId" | "createdAt" | "operation" | "crewTags">;
+model RecordStartRefusalStart {
+  kind: "Start";
 
   @doc("The tags requested for the session before the tenant adds inherited crew tags.")
   @maxItems(16)
   requestedTags: SessionTag[];
+}
+
+model RecordStartRefusalSend {
+  kind: "Send";
+
+  @doc("The target session whose tags the tenant reads for the refusal.")
+  sessionId: EntityId;
+}
+
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union RecordStartRefusalOperation {
+  Start: RecordStartRefusalStart,
+  Send: RecordStartRefusalSend,
+}
+
+@doc("A session start or turn send refusal the Worker asks the tenant to record.")
+model RecordStartRefusalInput {
+  tenantId: EntityId;
+  ...OmitProperties<StartRefusedEvent, "event" | "eventId" | "tenantId" | "createdAt" | "operation" | "crewTags">;
+  operation: RecordStartRefusalOperation;
   now: int64;
 }
 

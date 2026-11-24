@@ -13,8 +13,6 @@ enum TenantEventType {
   @doc("A host claimed a turn and its harness runs it.")
   TurnStarted: "TurnStarted",
 
-  SessionStarted: "SessionStarted",
-
   @doc("A turn ended Completed.")
   TurnCompleted: "TurnCompleted",
 
@@ -239,14 +237,6 @@ model StartRefusedEvent {
   crewTags: SessionTag[];
 }
 
-@doc("A session start succeeded, with its caller recorded for subscription progress.")
-model SessionStartedEvent {
-  event: "SessionStarted";
-  ...TenantEventEnvelope;
-  sessionId: EntityId;
-  caller: SessionStartedBy;
-}
-
 @doc("Room on a host may have changed; placement decides whether a start fits. One signal answers every room refusal recorded since the previous signal.")
 model CapacityAvailableEvent {
   event: "CapacityAvailable";
@@ -294,7 +284,6 @@ union TenantEvent {
   TriggerStartRefused: TriggerStartRefusedEvent,
   StartRefused: StartRefusedEvent,
   CapacityAvailable: CapacityAvailableEvent,
-  SessionStarted: SessionStartedEvent,
   UsageNearLimit: UsageNearLimitEvent,
   UsageLimitReached: UsageLimitReachedEvent,
 }
