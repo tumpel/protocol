@@ -6,7 +6,7 @@ export type AcceptedCredential = CatalogEntry["credentials"][number];
 type Provider = AcceptedCredential["provider"];
 export type SecretMember = z.infer<typeof SecretSetCreateSchema>["secrets"][number];
 export type SecretKey = z.infer<typeof SecretSetSchema>["keys"][number];
-type Credential<T extends SecretKey | SecretMember> = Exclude<T, { kind: "Variable" }>;
+type Credential<T extends SecretKey | SecretMember> = Exclude<T, { kind: "Variable" | "Unrecognised" }>;
 
 export interface DispatchVariable {
   name: string;
@@ -39,10 +39,10 @@ export type CredentialCheck<T extends SecretKey | SecretMember> =
 export type CredentialProblem = z.infer<typeof ProblemSchema>;
 
 const isCredential = <T extends SecretKey | SecretMember>(member: T): member is Credential<T> =>
-  member.kind !== "Variable";
+  member.kind !== "Variable" && member.kind !== "Unrecognised";
 
 const accepts = (accepted: AcceptedCredential, member: { provider: string; kind: string }): boolean =>
-  accepted.provider === member.provider && accepted.kind === member.kind;
+  accepted.provider !== "Unrecognised" && accepted.provider === member.provider && accepted.kind === member.kind;
 
 const pick = <T extends SecretKey | SecretMember>(
   accepted: AcceptedCredential[],
@@ -178,6 +178,7 @@ export const dispatchVariables = (
   const path = entry.credentials.find((each) => each.kind === "CredentialFile" && each.variable === variable)?.path;
   const taken = new Set(entry.credentials.flatMap((each) => [each.variable, ...each.fixed.map(({ name }) => name)]));
   const others = members
+    .filter((member) => member.kind !== "Unrecognised")
     .filter((member) => member !== credential && !taken.has(member.name))
     .map((member) => ({ name: member.name, value: member.value }));
   if (credential.kind === "CredentialFile") {

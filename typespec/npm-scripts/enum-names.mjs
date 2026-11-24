@@ -34,10 +34,10 @@ writeFileSync(openapiFile, JSON.stringify(openapi, null, 2));
 const schemasFile = join(build, "schemas", "schemas.ts");
 const named = [...numeric].reduce(
   (text, [name, members]) => {
-    const declared = new RegExp(`^export const ${name}Schema = z\\.enum\\(\\[[^\\]]*\\]\\);\\n`, "m");
-    if (!declared.test(text)) throw new Error(`no generated z.enum to name: ${name}Schema`);
+    const declared = new RegExp(`^export const ${name}Schema = openEnum\\(\\[[^\\]]*\\]\\);\\n`, "m");
+    if (!declared.test(text)) throw new Error(`no generated openEnum to name: ${name}Schema`);
     const entries = members.map(([member, value]) => `${member}: ${value}`).join(", ");
-    const replacement = `export const ${name} = { ${entries} } as const;\n\nexport const ${name}Schema = z.enum(${name});\n`;
+    const replacement = `export const ${name} = { ${entries} } as const;\n\nexport const ${name}Schema = openEnum(Object.values(${name}));\n`;
     return text.replace(declared, () => replacement);
   },
   readFileSync(schemasFile, "utf8"),
