@@ -35739,36 +35739,95 @@ pub mod types {
             Self(value)
         }
     }
-    ///A session start or turn send refusal the Worker asks the tenant to record.
+    ///A turn send refusal the Worker asks the tenant to record.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiRecordSendRefusalInput {
+        pub caller: RequestCaller,
+        pub now: i64,
+        pub refusal: StartRefusal,
+        ///The target session whose persona, model and tags the tenant reads for the refusal.
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        #[serde(rename = "tenantId")]
+        pub tenant_id: EntityId,
+    }
+    ///`TenantApiRecordSendRefusalRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiRecordSendRefusalRequest {
+        pub input: TenantApiRecordSendRefusalInput,
+        pub operation: TenantApiRecordSendRefusalRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiRecordSendRefusalRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiRecordSendRefusalRequestOperation {
+        #[serde(rename = "recordSendRefusal")]
+        RecordSendRefusal,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for TenantApiRecordSendRefusalRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::RecordSendRefusal => f.write_str("recordSendRefusal"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiRecordSendRefusalRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "recordSendRefusal" => Ok(Self::RecordSendRefusal),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiRecordSendRefusalRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiRecordSendRefusalRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The tenant records the refusal using the target session or returns NotFound without appending an event.
+    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum TenantApiRecordSendRefusalResult {
+        StartRefusalRecorded(TenantApiStartRefusalRecorded),
+        SessionNotFound(TenantApiSessionNotFound),
+        Unrecognised(::serde_json::Value),
+    }
+    impl ::std::convert::From<TenantApiStartRefusalRecorded> for TenantApiRecordSendRefusalResult {
+        fn from(value: TenantApiStartRefusalRecorded) -> Self {
+            Self::StartRefusalRecorded(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionNotFound> for TenantApiRecordSendRefusalResult {
+        fn from(value: TenantApiSessionNotFound) -> Self {
+            Self::SessionNotFound(value)
+        }
+    }
+    ///A start refusal the Worker decided before calling the tenant to start the session.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiRecordStartRefusalInput {
         pub caller: RequestCaller,
         pub model: ModelName,
         pub now: i64,
-        pub operation: TenantApiRecordStartRefusalOperation,
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
         pub refusal: StartRefusal,
+        ///The tags requested for the session before the tenant adds inherited crew tags.
+        #[serde(rename = "requestedTags")]
+        pub requested_tags: ::std::vec::Vec<SessionTag>,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
-    }
-    ///`TenantApiRecordStartRefusalOperation`
-    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
-    #[serde(untagged)]
-    pub enum TenantApiRecordStartRefusalOperation {
-        Start(TenantApiRecordStartRefusalStart),
-        Send(TenantApiRecordStartRefusalSend),
-        Unrecognised(::serde_json::Value),
-    }
-    impl ::std::convert::From<TenantApiRecordStartRefusalStart> for TenantApiRecordStartRefusalOperation {
-        fn from(value: TenantApiRecordStartRefusalStart) -> Self {
-            Self::Start(value)
-        }
-    }
-    impl ::std::convert::From<TenantApiRecordStartRefusalSend> for TenantApiRecordStartRefusalOperation {
-        fn from(value: TenantApiRecordStartRefusalSend) -> Self {
-            Self::Send(value)
-        }
     }
     ///`TenantApiRecordStartRefusalRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -35831,94 +35890,6 @@ pub mod types {
     impl ::std::convert::From<TenantApiSessionTagsOverLimit> for TenantApiRecordStartRefusalResult {
         fn from(value: TenantApiSessionTagsOverLimit) -> Self {
             Self::SessionTagsOverLimit(value)
-        }
-    }
-    ///`TenantApiRecordStartRefusalSend`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiRecordStartRefusalSend {
-        pub kind: TenantApiRecordStartRefusalSendKind,
-        ///The target session whose tags the tenant reads for the refusal.
-        #[serde(rename = "sessionId")]
-        pub session_id: EntityId,
-    }
-    ///`TenantApiRecordStartRefusalSendKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiRecordStartRefusalSendKind {
-        Send,
-        #[serde(untagged)]
-        Unrecognised(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiRecordStartRefusalSendKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Send => f.write_str("Send"),
-                Self::Unrecognised(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiRecordStartRefusalSendKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Send" => Ok(Self::Send),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiRecordStartRefusalSendKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiRecordStartRefusalSendKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    ///`TenantApiRecordStartRefusalStart`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
-    pub struct TenantApiRecordStartRefusalStart {
-        pub kind: TenantApiRecordStartRefusalStartKind,
-        ///The tags requested for the session before the tenant adds inherited crew tags.
-        #[serde(rename = "requestedTags")]
-        pub requested_tags: ::std::vec::Vec<SessionTag>,
-    }
-    ///`TenantApiRecordStartRefusalStartKind`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-    pub enum TenantApiRecordStartRefusalStartKind {
-        Start,
-        #[serde(untagged)]
-        Unrecognised(::std::string::String),
-    }
-    impl ::std::fmt::Display for TenantApiRecordStartRefusalStartKind {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::Start => f.write_str("Start"),
-                Self::Unrecognised(ref code) => f.write_str(code),
-            }
-        }
-    }
-    impl ::std::str::FromStr for TenantApiRecordStartRefusalStartKind {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "Start" => Ok(Self::Start),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-    impl ::std::convert::TryFrom<&str> for TenantApiRecordStartRefusalStartKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-    impl ::std::convert::TryFrom<::std::string::String> for TenantApiRecordStartRefusalStartKind {
-        type Error = self::error::ConversionError;
-        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
     ///`TenantApiRemoveSecretMemberInput`
@@ -40547,6 +40518,7 @@ pub mod types {
         TakeSteersRequest(TenantApiTakeSteersRequest),
         ListEventsRequest(TenantApiListEventsRequest),
         RecordStartRefusalRequest(TenantApiRecordStartRefusalRequest),
+        RecordSendRefusalRequest(TenantApiRecordSendRefusalRequest),
         ListWebhookEndpointsRequest(TenantApiListWebhookEndpointsRequest),
         CreateWebhookEndpointRequest(TenantApiCreateWebhookEndpointRequest),
         GetWebhookEndpointRequest(TenantApiGetWebhookEndpointRequest),
@@ -40944,6 +40916,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiRecordStartRefusalRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiRecordStartRefusalRequest) -> Self {
             Self::RecordStartRefusalRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiRecordSendRefusalRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiRecordSendRefusalRequest) -> Self {
+            Self::RecordSendRefusalRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiListWebhookEndpointsRequest> for TenantApiTenantRequest {
@@ -47337,19 +47314,19 @@ pub mod types {
             })
         }
     }
-    impl<'de> ::serde::Deserialize<'de> for TenantApiRecordStartRefusalOperation {
+    impl<'de> ::serde::Deserialize<'de> for TenantApiRecordSendRefusalResult {
         fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
         where
             D: ::serde::Deserializer<'de>,
         {
             let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
             Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
-                Some("Start") => Self::Start(
-                    ::serde_json::from_value::<TenantApiRecordStartRefusalStart>(value.clone())
+                Some("Recorded") => Self::StartRefusalRecorded(
+                    ::serde_json::from_value::<TenantApiStartRefusalRecorded>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
-                Some("Send") => Self::Send(
-                    ::serde_json::from_value::<TenantApiRecordStartRefusalSend>(value.clone())
+                Some("NotFound") => Self::SessionNotFound(
+                    ::serde_json::from_value::<TenantApiSessionNotFound>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
                 _ => Self::Unrecognised(value),
@@ -47691,6 +47668,10 @@ pub mod types {
                 ),
                 Some("recordStartRefusal") => Self::RecordStartRefusalRequest(
                     ::serde_json::from_value::<TenantApiRecordStartRefusalRequest>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("recordSendRefusal") => Self::RecordSendRefusalRequest(
+                    ::serde_json::from_value::<TenantApiRecordSendRefusalRequest>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
                 Some("listWebhookEndpoints") => Self::ListWebhookEndpointsRequest(

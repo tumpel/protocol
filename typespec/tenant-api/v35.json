@@ -14242,6 +14242,81 @@
     "TenantApi.RecordPrebuildBuildingResult": {
       "type": "object"
     },
+    "TenantApi.RecordSendRefusalInput": {
+      "type": "object",
+      "required": [
+        "tenantId",
+        "refusal",
+        "caller",
+        "sessionId",
+        "now"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "refusal": {
+          "$ref": "#/components/schemas/StartRefusal"
+        },
+        "caller": {
+          "$ref": "#/components/schemas/RequestCaller"
+        },
+        "sessionId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "The target session whose persona, model and tags the tenant reads for the refusal."
+        },
+        "now": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "A turn send refusal the Worker asks the tenant to record."
+    },
+    "TenantApi.RecordSendRefusalRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "recordSendRefusal"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.RecordSendRefusalInput"
+        }
+      }
+    },
+    "TenantApi.RecordSendRefusalResult": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/TenantApi.StartRefusalRecorded"
+        },
+        {
+          "$ref": "#/components/schemas/TenantApi.SessionNotFound"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Recorded": "#/components/schemas/TenantApi.StartRefusalRecorded",
+          "NotFound": "#/components/schemas/TenantApi.SessionNotFound"
+        }
+      },
+      "description": "The tenant records the refusal using the target session or returns NotFound without appending an event."
+    },
     "TenantApi.RecordStartRefusalInput": {
       "type": "object",
       "required": [
@@ -14250,7 +14325,7 @@
         "personaId",
         "model",
         "caller",
-        "operation",
+        "requestedTags",
         "now"
       ],
       "properties": {
@@ -14269,33 +14344,20 @@
         "caller": {
           "$ref": "#/components/schemas/RequestCaller"
         },
-        "operation": {
-          "$ref": "#/components/schemas/TenantApi.RecordStartRefusalOperation"
+        "requestedTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/SessionTag"
+          },
+          "maxItems": 16,
+          "description": "The tags requested for the session before the tenant adds inherited crew tags."
         },
         "now": {
           "type": "integer",
           "format": "int64"
         }
       },
-      "description": "A session start or turn send refusal the Worker asks the tenant to record."
-    },
-    "TenantApi.RecordStartRefusalOperation": {
-      "type": "object",
-      "oneOf": [
-        {
-          "$ref": "#/components/schemas/TenantApi.RecordStartRefusalStart"
-        },
-        {
-          "$ref": "#/components/schemas/TenantApi.RecordStartRefusalSend"
-        }
-      ],
-      "discriminator": {
-        "propertyName": "kind",
-        "mapping": {
-          "Start": "#/components/schemas/TenantApi.RecordStartRefusalStart",
-          "Send": "#/components/schemas/TenantApi.RecordStartRefusalSend"
-        }
-      }
+      "description": "A start refusal the Worker decided before calling the tenant to start the session."
     },
     "TenantApi.RecordStartRefusalRequest": {
       "type": "object",
@@ -14337,52 +14399,6 @@
         }
       },
       "description": "The tenant records the refusal with the resolved tags, or returns TagsOverLimit without appending an event."
-    },
-    "TenantApi.RecordStartRefusalSend": {
-      "type": "object",
-      "required": [
-        "kind",
-        "sessionId"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "Send"
-          ]
-        },
-        "sessionId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "description": "The target session whose tags the tenant reads for the refusal."
-        }
-      }
-    },
-    "TenantApi.RecordStartRefusalStart": {
-      "type": "object",
-      "required": [
-        "kind",
-        "requestedTags"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "Start"
-          ]
-        },
-        "requestedTags": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/SessionTag"
-          },
-          "maxItems": 16,
-          "description": "The tags requested for the session before the tenant adds inherited crew tags."
-        }
-      }
     },
     "TenantApi.RemoveSecretMemberInput": {
       "type": "object",
@@ -17502,6 +17518,9 @@
           "$ref": "#/components/schemas/TenantApi.RecordStartRefusalRequest"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.RecordSendRefusalRequest"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.ListWebhookEndpointsRequest"
         },
         {
@@ -17702,6 +17721,7 @@
           "takeSteers": "#/components/schemas/TenantApi.TakeSteersRequest",
           "listEvents": "#/components/schemas/TenantApi.ListEventsRequest",
           "recordStartRefusal": "#/components/schemas/TenantApi.RecordStartRefusalRequest",
+          "recordSendRefusal": "#/components/schemas/TenantApi.RecordSendRefusalRequest",
           "listWebhookEndpoints": "#/components/schemas/TenantApi.ListWebhookEndpointsRequest",
           "createWebhookEndpoint": "#/components/schemas/TenantApi.CreateWebhookEndpointRequest",
           "getWebhookEndpoint": "#/components/schemas/TenantApi.GetWebhookEndpointRequest",

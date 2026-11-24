@@ -712,32 +712,14 @@ model CancelTurnInput {
   now: int64;
 }
 
-model RecordStartRefusalStart {
-  kind: StartRefusedOperation.Start;
+@doc("A start refusal the Worker decided before calling the tenant to start the session.")
+model RecordStartRefusalInput {
+  tenantId: EntityId;
+  ...OmitProperties<StartRefusedEvent, "event" | "eventId" | "tenantId" | "createdAt" | "operation" | "crewTags">;
 
   @doc("The tags requested for the session before the tenant adds inherited crew tags.")
   @maxItems(16)
   requestedTags: SessionTag[];
-}
-
-model RecordStartRefusalSend {
-  kind: StartRefusedOperation.Send;
-
-  @doc("The target session whose tags the tenant reads for the refusal.")
-  sessionId: EntityId;
-}
-
-@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
-union RecordStartRefusalOperation {
-  Start: RecordStartRefusalStart,
-  Send: RecordStartRefusalSend,
-}
-
-@doc("A session start or turn send refusal the Worker asks the tenant to record.")
-model RecordStartRefusalInput {
-  tenantId: EntityId;
-  ...OmitProperties<StartRefusedEvent, "event" | "eventId" | "tenantId" | "createdAt" | "operation" | "crewTags">;
-  operation: RecordStartRefusalOperation;
   now: int64;
 }
 
@@ -756,6 +738,29 @@ model RecordStartRefusalRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "recordStartRefusal";
   input: RecordStartRefusalInput;
+}
+
+@doc("A turn send refusal the Worker asks the tenant to record.")
+model RecordSendRefusalInput {
+  tenantId: EntityId;
+  ...PickProperties<StartRefusedEvent, "refusal" | "caller">;
+
+  @doc("The target session whose persona, model and tags the tenant reads for the refusal.")
+  sessionId: EntityId;
+  now: int64;
+}
+
+@doc("The tenant records the refusal using the target session or returns NotFound without appending an event.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union RecordSendRefusalResult {
+  Recorded: StartRefusalRecorded,
+  NotFound: SessionNotFound,
+}
+
+model RecordSendRefusalRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "recordSendRefusal";
+  input: RecordSendRefusalInput;
 }
 
 model ListEventsInput {
@@ -1816,6 +1821,7 @@ union TenantRequest {
   takeSteers: TakeSteersRequest,
   listEvents: ListEventsRequest,
   recordStartRefusal: RecordStartRefusalRequest,
+  recordSendRefusal: RecordSendRefusalRequest,
   listWebhookEndpoints: ListWebhookEndpointsRequest,
   createWebhookEndpoint: CreateWebhookEndpointRequest,
   getWebhookEndpoint: GetWebhookEndpointRequest,
