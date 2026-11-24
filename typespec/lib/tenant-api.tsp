@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 31;
+const TenantApiVersion = 32;
 
 namespace TenantApi {
 
@@ -2723,8 +2723,13 @@ model SubscriptionPersonaLacksTumpelMcp {
   personaName: DisplayName;
 }
 
+model SubscriptionLimitReached {
+  kind: "LimitReached";
+  limit: 128;
+}
+
 model CreateSubscriptionResult {
-  created: SubscriptionCreatedOk | SessionNotFound | SessionArchivedState | SessionFailedState | SubscriptionPersonaLacksTumpelMcp;
+  created: SubscriptionCreatedOk | SessionNotFound | SessionArchivedState | SessionFailedState | SubscriptionPersonaLacksTumpelMcp | SubscriptionLimitReached;
 }
 
 model ListSubscriptionsResult {
