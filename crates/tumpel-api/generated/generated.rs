@@ -48005,8 +48005,8 @@ pub mod types {
             })
         }
     }
-    use crate::response::{unrecognised, unrecognised_union};
-    unrecognised!(
+    use crate::response::{fields_contain_unrecognised, unrecognised_union};
+    fields_contain_unrecognised!(
         ActiveSubscription,
         created_at,
         crew_failures_in_a_row,
@@ -48023,18 +48023,18 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(ActiveSubscriptionState);
-    unrecognised!(ApiKeyKey, kind, name, provider, updated_at);
-    unrecognised!(ApiKeyKeyKind);
-    unrecognised!(ApiKeyMember, kind, name, provider);
-    unrecognised!(ApiKeyMemberKind);
-    unrecognised!(ApiKeyUpdate, kind, name, previous_name, provider, value);
-    unrecognised!(ApiKeyUpdateKind);
-    unrecognised!(ApiKeyValue, kind, name, provider, value);
-    unrecognised!(ApiKeyValueKind);
-    unrecognised!(ArchiveInstallRecipe, archives, kind, strip_components);
-    unrecognised!(ArchiveInstallRecipeKind);
-    unrecognised!(
+    unrecognised_union!(ActiveSubscriptionState,);
+    fields_contain_unrecognised!(ApiKeyKey, kind, name, provider, updated_at);
+    unrecognised_union!(ApiKeyKeyKind,);
+    fields_contain_unrecognised!(ApiKeyMember, kind, name, provider);
+    unrecognised_union!(ApiKeyMemberKind,);
+    fields_contain_unrecognised!(ApiKeyUpdate, kind, name, previous_name, provider, value);
+    unrecognised_union!(ApiKeyUpdateKind,);
+    fields_contain_unrecognised!(ApiKeyValue, kind, name, provider, value);
+    unrecognised_union!(ApiKeyValueKind,);
+    fields_contain_unrecognised!(ArchiveInstallRecipe, archives, kind, strip_components);
+    unrecognised_union!(ArchiveInstallRecipeKind,);
+    fields_contain_unrecognised!(
         ArchivedSession,
         box_id,
         box_retention,
@@ -48060,8 +48060,8 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(ArchivedSessionState);
-    unrecognised!(
+    unrecognised_union!(ArchivedSessionState,);
+    fields_contain_unrecognised!(
         AuthorizationServerMetadata,
         authorization_endpoint,
         authorization_response_iss_parameter_supported,
@@ -48077,7 +48077,7 @@ pub mod types {
         token_endpoint,
         token_endpoint_auth_methods_supported
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         BaseImageManifest,
         base_layout_version,
         base_rootfs_digest,
@@ -48087,12 +48087,12 @@ pub mod types {
         kernel_digest,
         kernel_url
     );
-    unrecognised!(BaseLayout, 0);
-    unrecognised!(BoxBudgets, boot_seconds, first_line_seconds, snapshot_seconds);
-    unrecognised!(BoxDiskLimit, 0);
-    unrecognised!(BoxMemoryLimit, 0);
-    unrecognised!(BoxRetention);
-    unrecognised!(
+    fields_contain_unrecognised!(BaseLayout, 0);
+    fields_contain_unrecognised!(BoxBudgets, boot_seconds, first_line_seconds, snapshot_seconds);
+    fields_contain_unrecognised!(BoxDiskLimit, 0);
+    fields_contain_unrecognised!(BoxMemoryLimit, 0);
+    unrecognised_union!(BoxRetention,);
+    fields_contain_unrecognised!(
         CapacityAvailableEvent,
         code,
         created_at,
@@ -48101,11 +48101,11 @@ pub mod types {
         host_id,
         tenant_id
     );
-    unrecognised!(CapacityAvailableEventEvent);
-    unrecognised!(CapacityRefusalCode);
-    unrecognised!(ChannelAck, seq, type_);
-    unrecognised!(ChannelAckType);
-    unrecognised!(
+    unrecognised_union!(CapacityAvailableEventEvent,);
+    unrecognised_union!(CapacityRefusalCode,);
+    fields_contain_unrecognised!(ChannelAck, seq, type_);
+    unrecognised_union!(ChannelAckType,);
+    fields_contain_unrecognised!(
         ChannelBaseImageDownload,
         image_digest,
         image_url,
@@ -48115,12 +48115,12 @@ pub mod types {
         manifest_url
     );
     unrecognised_union!(ChannelBootImage, GuestImageDownload, LayeredImageDownload);
-    unrecognised!(ChannelBoxDiscard, box_id, session_id, type_);
-    unrecognised!(ChannelBoxDiscardType);
-    unrecognised!(ChannelBoxGone, box_id, session_id, type_);
-    unrecognised!(ChannelBoxGoneType);
-    unrecognised!(ChannelBoxTeardown, box_id, session_id, type_);
-    unrecognised!(
+    fields_contain_unrecognised!(ChannelBoxDiscard, box_id, session_id, type_);
+    unrecognised_union!(ChannelBoxDiscardType,);
+    fields_contain_unrecognised!(ChannelBoxGone, box_id, session_id, type_);
+    unrecognised_union!(ChannelBoxGoneType,);
+    fields_contain_unrecognised!(ChannelBoxTeardown, box_id, session_id, type_);
+    fields_contain_unrecognised!(
         ChannelBoxTeardownFailed,
         box_id,
         detail,
@@ -48129,14 +48129,14 @@ pub mod types {
         session_id,
         type_
     );
-    unrecognised!(ChannelBoxTeardownFailedType);
-    unrecognised!(ChannelBoxTeardownFailureReason);
-    unrecognised!(ChannelBoxTeardownType);
-    unrecognised!(ChannelChallenge, nonce, type_);
-    unrecognised!(ChannelChallengeNonce, 0);
-    unrecognised!(ChannelChallengeType);
-    unrecognised!(ChannelChunkPlacement, digest, length, offset, pack_digest);
-    unrecognised!(
+    unrecognised_union!(ChannelBoxTeardownFailedType,);
+    unrecognised_union!(ChannelBoxTeardownFailureReason,);
+    unrecognised_union!(ChannelBoxTeardownType,);
+    fields_contain_unrecognised!(ChannelChallenge, nonce, type_);
+    fields_contain_unrecognised!(ChannelChallengeNonce, 0);
+    unrecognised_union!(ChannelChallengeType,);
+    fields_contain_unrecognised!(ChannelChunkPlacement, digest, length, offset, pack_digest);
+    fields_contain_unrecognised!(
         ChannelClaudeSetupBoxCode,
         box_id,
         claude_setup_id,
@@ -48144,10 +48144,10 @@ pub mod types {
         mint_budget_seconds,
         type_
     );
-    unrecognised!(ChannelClaudeSetupBoxCodeType);
-    unrecognised!(ChannelClaudeSetupBoxDiscard, box_id, claude_setup_id, type_);
-    unrecognised!(ChannelClaudeSetupBoxDiscardType);
-    unrecognised!(
+    unrecognised_union!(ChannelClaudeSetupBoxCodeType,);
+    fields_contain_unrecognised!(ChannelClaudeSetupBoxDiscard, box_id, claude_setup_id, type_);
+    unrecognised_union!(ChannelClaudeSetupBoxDiscardType,);
+    fields_contain_unrecognised!(
         ChannelClaudeSetupBoxFailed,
         claude_setup_id,
         detail,
@@ -48155,8 +48155,8 @@ pub mod types {
         reason,
         type_
     );
-    unrecognised!(ChannelClaudeSetupBoxFailedType);
-    unrecognised!(
+    unrecognised_union!(ChannelClaudeSetupBoxFailedType,);
+    fields_contain_unrecognised!(
         ChannelClaudeSetupBoxOffer,
         box_id,
         claude_setup_id,
@@ -48171,12 +48171,12 @@ pub mod types {
         type_,
         url_seconds
     );
-    unrecognised!(ChannelClaudeSetupBoxOfferTokenCredential, 0);
-    unrecognised!(ChannelClaudeSetupBoxOfferType);
-    unrecognised!(ChannelClaudeSetupBoxUrl, claude_setup_id, sign_in_url, type_, user_code);
-    unrecognised!(ChannelClaudeSetupBoxUrlType);
-    unrecognised!(ChannelClaudeSetupBoxUrlUserCode, 0);
-    unrecognised!(ChannelCloseCode, 0);
+    fields_contain_unrecognised!(ChannelClaudeSetupBoxOfferTokenCredential, 0);
+    unrecognised_union!(ChannelClaudeSetupBoxOfferType,);
+    fields_contain_unrecognised!(ChannelClaudeSetupBoxUrl, claude_setup_id, sign_in_url, type_, user_code);
+    unrecognised_union!(ChannelClaudeSetupBoxUrlType,);
+    fields_contain_unrecognised!(ChannelClaudeSetupBoxUrlUserCode, 0);
+    fields_contain_unrecognised!(ChannelCloseCode, 0);
     unrecognised_union!(
         ChannelControlEnvelope,
         Challenge,
@@ -48188,8 +48188,8 @@ pub mod types {
         Ack,
         ControlFrame
     );
-    unrecognised!(ChannelControlFrame, ack, message, seq, type_);
-    unrecognised!(ChannelControlFrameType);
+    fields_contain_unrecognised!(ChannelControlFrame, ack, message, seq, type_);
+    unrecognised_union!(ChannelControlFrameType,);
     unrecognised_union!(
         ChannelControlMessage,
         TurnOffer,
@@ -48206,7 +48206,7 @@ pub mod types {
         ClaudeSetupBoxCode,
         ClaudeSetupBoxDiscard
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         ChannelDispatchConnector,
         connector_id,
         name,
@@ -48214,8 +48214,8 @@ pub mod types {
         token_url,
         url
     );
-    unrecognised!(ChannelDispatchConnectorTokenCredential, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(ChannelDispatchConnectorTokenCredential, 0);
+    fields_contain_unrecognised!(
         ChannelDispatchGrant,
         arguments,
         connectors,
@@ -48224,13 +48224,13 @@ pub mod types {
         expires_at,
         variables
     );
-    unrecognised!(ChannelDispatchGrantCredentialFile, path, value);
-    unrecognised!(ChannelDispatchGrantCredentialFilePath, 0);
-    unrecognised!(ChannelDispatchGrantCredentialFileValue, 0);
-    unrecognised!(ChannelDispatchVariable, name, value);
-    unrecognised!(ChannelDispatchVariableName, 0);
-    unrecognised!(ChannelDispatchVariableValue, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(ChannelDispatchGrantCredentialFile, path, value);
+    fields_contain_unrecognised!(ChannelDispatchGrantCredentialFilePath, 0);
+    fields_contain_unrecognised!(ChannelDispatchGrantCredentialFileValue, 0);
+    fields_contain_unrecognised!(ChannelDispatchVariable, name, value);
+    fields_contain_unrecognised!(ChannelDispatchVariableName, 0);
+    fields_contain_unrecognised!(ChannelDispatchVariableValue, 0);
+    fields_contain_unrecognised!(
         ChannelFrameRateLimited,
         frames_per_minute,
         reason,
@@ -48238,12 +48238,12 @@ pub mod types {
         seq,
         type_
     );
-    unrecognised!(ChannelFrameRateLimitedReason, 0);
-    unrecognised!(ChannelFrameRateLimitedType);
-    unrecognised!(ChannelFrameRefused, reason, seq, type_);
-    unrecognised!(ChannelFrameRefusedReason, 0);
-    unrecognised!(ChannelFrameRefusedType);
-    unrecognised!(
+    fields_contain_unrecognised!(ChannelFrameRateLimitedReason, 0);
+    unrecognised_union!(ChannelFrameRateLimitedType,);
+    fields_contain_unrecognised!(ChannelFrameRefused, reason, seq, type_);
+    fields_contain_unrecognised!(ChannelFrameRefusedReason, 0);
+    unrecognised_union!(ChannelFrameRefusedType,);
+    fields_contain_unrecognised!(
         ChannelGuestImageDownload,
         download_expires_at,
         fetch_seconds,
@@ -48255,11 +48255,11 @@ pub mod types {
         manifest_digest,
         manifest_url
     );
-    unrecognised!(ChannelGuestImageDownloadKind);
-    unrecognised!(ChannelHarnessLayerDownload, layer, layer_url, manifest_url);
-    unrecognised!(ChannelHeartbeat, sent_at, type_);
-    unrecognised!(ChannelHeartbeatType);
-    unrecognised!(
+    unrecognised_union!(ChannelGuestImageDownloadKind,);
+    fields_contain_unrecognised!(ChannelHarnessLayerDownload, layer, layer_url, manifest_url);
+    fields_contain_unrecognised!(ChannelHeartbeat, sent_at, type_);
+    unrecognised_union!(ChannelHeartbeatType,);
+    fields_contain_unrecognised!(
         ChannelHello,
         box_capacity,
         channel_protocol_oldest,
@@ -48273,13 +48273,13 @@ pub mod types {
         type_,
         usage
     );
-    unrecognised!(ChannelHelloSignature, 0);
-    unrecognised!(ChannelHelloSupervisorVersion, 0);
-    unrecognised!(ChannelHelloType);
+    fields_contain_unrecognised!(ChannelHelloSignature, 0);
+    fields_contain_unrecognised!(ChannelHelloSupervisorVersion, 0);
+    unrecognised_union!(ChannelHelloType,);
     unrecognised_union!(ChannelHostEnvelope, Hello, HostHeartbeat, HostFrame);
-    unrecognised!(ChannelHostFrame, ack, message, seq, type_);
-    unrecognised!(ChannelHostFrameType);
-    unrecognised!(
+    fields_contain_unrecognised!(ChannelHostFrame, ack, message, seq, type_);
+    unrecognised_union!(ChannelHostFrameType,);
+    fields_contain_unrecognised!(
         ChannelHostHeartbeat,
         ack,
         health,
@@ -48291,7 +48291,7 @@ pub mod types {
         type_,
         usage
     );
-    unrecognised!(ChannelHostHeartbeatType);
+    unrecognised_union!(ChannelHostHeartbeatType,);
     unrecognised_union!(
         ChannelHostMessage,
         TurnImageFetching,
@@ -48313,7 +48313,7 @@ pub mod types {
         SupervisorUpdateStep,
         SupervisorUpdateFailed
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         ChannelLayeredImageDownload,
         base,
         download_expires_at,
@@ -48321,10 +48321,10 @@ pub mod types {
         kind,
         layer
     );
-    unrecognised!(ChannelLayeredImageDownloadKind);
-    unrecognised!(ChannelPack, pack_digest, size_bytes);
-    unrecognised!(ChannelPackUrl, pack_digest, size_bytes, url);
-    unrecognised!(
+    unrecognised_union!(ChannelLayeredImageDownloadKind,);
+    fields_contain_unrecognised!(ChannelPack, pack_digest, size_bytes);
+    fields_contain_unrecognised!(ChannelPackUrl, pack_digest, size_bytes, url);
+    fields_contain_unrecognised!(
         ChannelPersonaFileDownload,
         digest,
         download_expires_at,
@@ -48332,13 +48332,13 @@ pub mod types {
         path,
         size_bytes
     );
-    unrecognised!(ChannelProtocol, 0);
-    unrecognised!(ChannelReleasePublished, release_version, type_);
-    unrecognised!(ChannelReleasePublishedReleaseVersion, 0);
-    unrecognised!(ChannelReleasePublishedType);
-    unrecognised!(ChannelRestoreChunks, chunks, part, turn_id, type_);
-    unrecognised!(ChannelRestoreChunksType);
-    unrecognised!(
+    fields_contain_unrecognised!(ChannelProtocol, 0);
+    fields_contain_unrecognised!(ChannelReleasePublished, release_version, type_);
+    fields_contain_unrecognised!(ChannelReleasePublishedReleaseVersion, 0);
+    unrecognised_union!(ChannelReleasePublishedType,);
+    fields_contain_unrecognised!(ChannelRestoreChunks, chunks, part, turn_id, type_);
+    unrecognised_union!(ChannelRestoreChunksType,);
+    fields_contain_unrecognised!(
         ChannelRestoreDownloads,
         download_expires_at,
         packs,
@@ -48346,15 +48346,15 @@ pub mod types {
         turn_id,
         type_
     );
-    unrecognised!(ChannelRestoreDownloadsType);
-    unrecognised!(ChannelSequenced, ack, seq);
-    unrecognised!(ChannelSnapshotChunks, digests, part, snapshot_id, type_);
-    unrecognised!(ChannelSnapshotChunksHeld, held, part, snapshot_id, type_);
-    unrecognised!(ChannelSnapshotChunksHeldType);
-    unrecognised!(ChannelSnapshotChunksType);
-    unrecognised!(ChannelSnapshotDone, chunk_count, snapshot_id, type_, uploaded_bytes);
-    unrecognised!(ChannelSnapshotDoneType);
-    unrecognised!(
+    unrecognised_union!(ChannelRestoreDownloadsType,);
+    fields_contain_unrecognised!(ChannelSequenced, ack, seq);
+    fields_contain_unrecognised!(ChannelSnapshotChunks, digests, part, snapshot_id, type_);
+    fields_contain_unrecognised!(ChannelSnapshotChunksHeld, held, part, snapshot_id, type_);
+    unrecognised_union!(ChannelSnapshotChunksHeldType,);
+    unrecognised_union!(ChannelSnapshotChunksType,);
+    fields_contain_unrecognised!(ChannelSnapshotDone, chunk_count, snapshot_id, type_, uploaded_bytes);
+    unrecognised_union!(ChannelSnapshotDoneType,);
+    fields_contain_unrecognised!(
         ChannelSnapshotDownload,
         download_expires_at,
         download_url,
@@ -48362,10 +48362,10 @@ pub mod types {
         snapshot_seq,
         storage_key
     );
-    unrecognised!(ChannelSnapshotFailed, detail, failed_at, reason, snapshot_id, type_);
-    unrecognised!(ChannelSnapshotFailedType);
-    unrecognised!(ChannelSnapshotFailureReason);
-    unrecognised!(
+    fields_contain_unrecognised!(ChannelSnapshotFailed, detail, failed_at, reason, snapshot_id, type_);
+    unrecognised_union!(ChannelSnapshotFailedType,);
+    unrecognised_union!(ChannelSnapshotFailureReason,);
+    fields_contain_unrecognised!(
         ChannelSnapshotPackUploads,
         part,
         snapshot_id,
@@ -48373,8 +48373,8 @@ pub mod types {
         upload_expires_at,
         uploads
     );
-    unrecognised!(ChannelSnapshotPackUploadsType);
-    unrecognised!(
+    unrecognised_union!(ChannelSnapshotPackUploadsType,);
+    fields_contain_unrecognised!(
         ChannelSnapshotPacks,
         chunks,
         packs,
@@ -48383,8 +48383,8 @@ pub mod types {
         snapshot_id,
         type_
     );
-    unrecognised!(ChannelSnapshotPacksType);
-    unrecognised!(
+    unrecognised_union!(ChannelSnapshotPacksType,);
+    fields_contain_unrecognised!(
         ChannelSnapshotRequest,
         box_id,
         session_id,
@@ -48396,10 +48396,10 @@ pub mod types {
         upload_expires_at,
         upload_url
     );
-    unrecognised!(ChannelSnapshotRequestType);
-    unrecognised!(ChannelStoredHostFrame, ack, message, seq, type_);
-    unrecognised!(ChannelStoredHostFrameType);
-    unrecognised!(
+    unrecognised_union!(ChannelSnapshotRequestType,);
+    fields_contain_unrecognised!(ChannelStoredHostFrame, ack, message, seq, type_);
+    unrecognised_union!(ChannelStoredHostFrameType,);
+    fields_contain_unrecognised!(
         ChannelSupervisorUpdateFailed,
         detail,
         failed_at,
@@ -48409,8 +48409,8 @@ pub mod types {
         to_sha256,
         type_
     );
-    unrecognised!(ChannelSupervisorUpdateFailedType);
-    unrecognised!(
+    unrecognised_union!(ChannelSupervisorUpdateFailedType,);
+    fields_contain_unrecognised!(
         ChannelSupervisorUpdateStep,
         at,
         boxes_running,
@@ -48420,15 +48420,15 @@ pub mod types {
         to_sha256,
         type_
     );
-    unrecognised!(ChannelSupervisorUpdateStepReleaseVersion, 0);
-    unrecognised!(ChannelSupervisorUpdateStepType);
-    unrecognised!(ChannelTurnCancel, turn_id, type_);
-    unrecognised!(ChannelTurnCancelType);
-    unrecognised!(ChannelTurnClaim, box_id, turn_id, type_);
-    unrecognised!(ChannelTurnClaimType);
-    unrecognised!(ChannelTurnClaimed, turn_id, type_);
-    unrecognised!(ChannelTurnClaimedType);
-    unrecognised!(
+    fields_contain_unrecognised!(ChannelSupervisorUpdateStepReleaseVersion, 0);
+    unrecognised_union!(ChannelSupervisorUpdateStepType,);
+    fields_contain_unrecognised!(ChannelTurnCancel, turn_id, type_);
+    unrecognised_union!(ChannelTurnCancelType,);
+    fields_contain_unrecognised!(ChannelTurnClaim, box_id, turn_id, type_);
+    unrecognised_union!(ChannelTurnClaimType,);
+    fields_contain_unrecognised!(ChannelTurnClaimed, turn_id, type_);
+    unrecognised_union!(ChannelTurnClaimedType,);
+    fields_contain_unrecognised!(
         ChannelTurnComplete,
         completed_at,
         credential_file,
@@ -48437,10 +48437,10 @@ pub mod types {
         type_,
         warning
     );
-    unrecognised!(ChannelTurnCompleteCredentialFile, 0);
-    unrecognised!(ChannelTurnCompleteType);
-    unrecognised!(ChannelTurnCompleteWarning, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(ChannelTurnCompleteCredentialFile, 0);
+    unrecognised_union!(ChannelTurnCompleteType,);
+    fields_contain_unrecognised!(ChannelTurnCompleteWarning, 0);
+    fields_contain_unrecognised!(
         ChannelTurnFailed,
         credential_file,
         detail,
@@ -48449,13 +48449,13 @@ pub mod types {
         turn_id,
         type_
     );
-    unrecognised!(ChannelTurnFailedCredentialFile, 0);
-    unrecognised!(ChannelTurnFailedType);
-    unrecognised!(ChannelTurnImageFetching, image_digest, turn_id, type_);
-    unrecognised!(ChannelTurnImageFetchingType);
-    unrecognised!(ChannelTurnLines, first_line_seq, lines, turn_id, type_);
-    unrecognised!(ChannelTurnLinesType);
-    unrecognised!(
+    fields_contain_unrecognised!(ChannelTurnFailedCredentialFile, 0);
+    unrecognised_union!(ChannelTurnFailedType,);
+    fields_contain_unrecognised!(ChannelTurnImageFetching, image_digest, turn_id, type_);
+    unrecognised_union!(ChannelTurnImageFetchingType,);
+    fields_contain_unrecognised!(ChannelTurnLines, first_line_seq, lines, turn_id, type_);
+    unrecognised_union!(ChannelTurnLinesType,);
+    fields_contain_unrecognised!(
         ChannelTurnOffer,
         box_disk_mib,
         box_id,
@@ -48480,10 +48480,10 @@ pub mod types {
         turn_seconds,
         type_
     );
-    unrecognised!(ChannelTurnOfferHarnessVersion, 0);
-    unrecognised!(ChannelTurnOfferPrebuildCommitSha, 0);
-    unrecognised!(ChannelTurnOfferType);
-    unrecognised!(
+    fields_contain_unrecognised!(ChannelTurnOfferHarnessVersion, 0);
+    fields_contain_unrecognised!(ChannelTurnOfferPrebuildCommitSha, 0);
+    unrecognised_union!(ChannelTurnOfferType,);
+    fields_contain_unrecognised!(
         ChannelTurnRepositoryCloneFailed,
         cause,
         detail,
@@ -48491,15 +48491,15 @@ pub mod types {
         turn_id,
         type_
     );
-    unrecognised!(ChannelTurnRepositoryCloneFailedType);
-    unrecognised!(ChannelTurnRepositoryReady, turn_id, type_);
-    unrecognised!(ChannelTurnRepositoryReadyType);
-    unrecognised!(ChannelTurnWithdrawn, turn_id, type_);
-    unrecognised!(ChannelTurnWithdrawnType);
-    unrecognised!(ChannelWelcome, host_id, protocol_version, type_);
-    unrecognised!(ChannelWelcomeType);
-    unrecognised!(ChunkExchange, 0);
-    unrecognised!(
+    unrecognised_union!(ChannelTurnRepositoryCloneFailedType,);
+    fields_contain_unrecognised!(ChannelTurnRepositoryReady, turn_id, type_);
+    unrecognised_union!(ChannelTurnRepositoryReadyType,);
+    fields_contain_unrecognised!(ChannelTurnWithdrawn, turn_id, type_);
+    unrecognised_union!(ChannelTurnWithdrawnType,);
+    fields_contain_unrecognised!(ChannelWelcome, host_id, protocol_version, type_);
+    unrecognised_union!(ChannelWelcomeType,);
+    fields_contain_unrecognised!(ChunkExchange, 0);
+    fields_contain_unrecognised!(
         ClaudeSetup,
         box_id,
         claude_setup_id,
@@ -48513,33 +48513,33 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(ClaudeSetupAwaitingCode, code_due_at, sign_in_url, state, user_code);
-    unrecognised!(ClaudeSetupAwaitingCodeState);
-    unrecognised!(ClaudeSetupCodeSubmit, code);
-    unrecognised!(ClaudeSetupCodeText, 0);
-    unrecognised!(ClaudeSetupCompleted, completed_at, expires_at, member_name, state);
-    unrecognised!(ClaudeSetupCompletedState);
-    unrecognised!(ClaudeSetupFailed, detail, failed_at, reason, state);
-    unrecognised!(ClaudeSetupFailedState);
-    unrecognised!(ClaudeSetupFailureReason);
-    unrecognised!(ClaudeSetupHarness);
-    unrecognised!(ClaudeSetupMember);
-    unrecognised!(ClaudeSetupMinting, state, token_due_at);
-    unrecognised!(ClaudeSetupMintingState);
-    unrecognised!(ClaudeSetupStart, harness, secret_set_id);
-    unrecognised!(ClaudeSetupStarting, state, url_due_at);
-    unrecognised!(ClaudeSetupStartingState);
-    unrecognised!(ClaudeSetupState);
+    fields_contain_unrecognised!(ClaudeSetupAwaitingCode, code_due_at, sign_in_url, state, user_code);
+    unrecognised_union!(ClaudeSetupAwaitingCodeState,);
+    fields_contain_unrecognised!(ClaudeSetupCodeSubmit, code);
+    fields_contain_unrecognised!(ClaudeSetupCodeText, 0);
+    fields_contain_unrecognised!(ClaudeSetupCompleted, completed_at, expires_at, member_name, state);
+    unrecognised_union!(ClaudeSetupCompletedState,);
+    fields_contain_unrecognised!(ClaudeSetupFailed, detail, failed_at, reason, state);
+    unrecognised_union!(ClaudeSetupFailedState,);
+    unrecognised_union!(ClaudeSetupFailureReason,);
+    unrecognised_union!(ClaudeSetupHarness,);
+    unrecognised_union!(ClaudeSetupMember,);
+    fields_contain_unrecognised!(ClaudeSetupMinting, state, token_due_at);
+    unrecognised_union!(ClaudeSetupMintingState,);
+    fields_contain_unrecognised!(ClaudeSetupStart, harness, secret_set_id);
+    fields_contain_unrecognised!(ClaudeSetupStarting, state, url_due_at);
+    unrecognised_union!(ClaudeSetupStartingState,);
+    unrecognised_union!(ClaudeSetupState,);
     unrecognised_union!(ClaudeSetupStatus, Starting, AwaitingCode, Minting, Completed, Failed);
-    unrecognised!(ClaudeSetupTokenWrite, expires_at, tenant_id, value);
-    unrecognised!(ClaudeSetupUserCode, 0);
-    unrecognised!(CliCredentials, endpoint, token);
-    unrecognised!(CliCredentialsToken, 0);
-    unrecognised!(CliProofCredentials, client_id, client_secret);
-    unrecognised!(CliProofCredentialsClientId, 0);
-    unrecognised!(CliProofCredentialsClientSecret, 0);
-    unrecognised!(CompactTranscriptLine, line_seq, text);
-    unrecognised!(
+    fields_contain_unrecognised!(ClaudeSetupTokenWrite, expires_at, tenant_id, value);
+    fields_contain_unrecognised!(ClaudeSetupUserCode, 0);
+    fields_contain_unrecognised!(CliCredentials, endpoint, token);
+    fields_contain_unrecognised!(CliCredentialsToken, 0);
+    fields_contain_unrecognised!(CliProofCredentials, client_id, client_secret);
+    fields_contain_unrecognised!(CliProofCredentialsClientId, 0);
+    fields_contain_unrecognised!(CliProofCredentialsClientSecret, 0);
+    fields_contain_unrecognised!(CompactTranscriptLine, line_seq, text);
+    fields_contain_unrecognised!(
         CompactTranscriptPage,
         cursor,
         finished,
@@ -48548,9 +48548,9 @@ pub mod types {
         session_state,
         turns
     );
-    unrecognised!(CompactTranscriptPageForm);
-    unrecognised!(CompactTranscriptTurn, lines, turn_id);
-    unrecognised!(
+    unrecognised_union!(CompactTranscriptPageForm,);
+    fields_contain_unrecognised!(CompactTranscriptTurn, lines, turn_id);
+    fields_contain_unrecognised!(
         CompletedTurn,
         box_id,
         created_at,
@@ -48565,18 +48565,18 @@ pub mod types {
         updated_at,
         warning
     );
-    unrecognised!(CompletedTurnState);
-    unrecognised!(CompletedTurnWarning, 0);
-    unrecognised!(ConfigApiKey, kind, name, provider, value_from);
-    unrecognised!(ConfigApiKeyKind);
-    unrecognised!(ConfigChange, action, description, name, resource);
-    unrecognised!(ConfigChangeAction);
+    unrecognised_union!(CompletedTurnState,);
+    fields_contain_unrecognised!(CompletedTurnWarning, 0);
+    fields_contain_unrecognised!(ConfigApiKey, kind, name, provider, value_from);
+    unrecognised_union!(ConfigApiKeyKind,);
+    fields_contain_unrecognised!(ConfigChange, action, description, name, resource);
+    unrecognised_union!(ConfigChangeAction,);
     unrecognised_union!(ConfigExpiry, DateTime, SecretValueSource);
-    unrecognised!(ConfigExpiryValue, env, expires_at);
-    unrecognised!(ConfigFileDigest, digest, from, size_bytes);
+    fields_contain_unrecognised!(ConfigExpiryValue, env, expires_at);
+    fields_contain_unrecognised!(ConfigFileDigest, digest, from, size_bytes);
     unrecognised_union!(ConfigFileWrite, InlineConfigFile, StoredConfigFile);
-    unrecognised!(ConfigHost, host_id, labels);
-    unrecognised!(
+    fields_contain_unrecognised!(ConfigHost, host_id, labels);
+    fields_contain_unrecognised!(
         ConfigPersona,
         box_disk_mib,
         box_memory_mib,
@@ -48588,21 +48588,21 @@ pub mod types {
         secret_set_name,
         tumpel_mcp
     );
-    unrecognised!(ConfigPersonaFile, from, path);
-    unrecognised!(ConfigPlan, changes);
-    unrecognised!(ConfigResource);
+    fields_contain_unrecognised!(ConfigPersonaFile, from, path);
+    fields_contain_unrecognised!(ConfigPlan, changes);
+    unrecognised_union!(ConfigResource,);
     unrecognised_union!(ConfigSecret, SecretVariable, ApiKey, SubscriptionToken);
-    unrecognised!(ConfigSecretSet, name, secrets);
-    unrecognised!(ConfigSecretValue, env, value);
-    unrecognised!(ConfigSecretVariable, kind, name, value_from);
-    unrecognised!(ConfigSecretVariableKind);
-    unrecognised!(ConfigSubscriptionToken, expires_at, kind, name, provider, value_from);
-    unrecognised!(ConfigSubscriptionTokenKind);
-    unrecognised!(ConfigTrigger, model, name, persona_name, prompt, source);
-    unrecognised!(ConnectedConnection, account, kind, state);
-    unrecognised!(ConnectedConnectionState);
-    unrecognised!(ConnectionKind);
-    unrecognised!(ConnectionState);
+    fields_contain_unrecognised!(ConfigSecretSet, name, secrets);
+    fields_contain_unrecognised!(ConfigSecretValue, env, value);
+    fields_contain_unrecognised!(ConfigSecretVariable, kind, name, value_from);
+    unrecognised_union!(ConfigSecretVariableKind,);
+    fields_contain_unrecognised!(ConfigSubscriptionToken, expires_at, kind, name, provider, value_from);
+    unrecognised_union!(ConfigSubscriptionTokenKind,);
+    fields_contain_unrecognised!(ConfigTrigger, model, name, persona_name, prompt, source);
+    fields_contain_unrecognised!(ConnectedConnection, account, kind, state);
+    unrecognised_union!(ConnectedConnectionState,);
+    unrecognised_union!(ConnectionKind,);
+    unrecognised_union!(ConnectionState,);
     unrecognised_union!(
         ConnectionSummary,
         ConnectedConnection,
@@ -48610,23 +48610,23 @@ pub mod types {
         NotConfiguredConnection
     );
     unrecognised_union!(Connector, StaticConnector, OAuthConnector);
-    unrecognised!(ConnectorAccessToken, access_token, expires_at);
-    unrecognised!(ConnectorAuth);
-    unrecognised!(
+    fields_contain_unrecognised!(ConnectorAccessToken, access_token, expires_at);
+    unrecognised_union!(ConnectorAuth,);
+    fields_contain_unrecognised!(
         ConnectorAuthorization,
         authorize_url,
         callback_due_at,
         connector_authorization_id,
         connector_id
     );
-    unrecognised!(ConnectorAuthorizationFailed, detail, failed_at, reason, state);
-    unrecognised!(ConnectorAuthorizationFailedState);
-    unrecognised!(ConnectorAuthorizationFailureReason);
-    unrecognised!(ConnectorConnected, connected_at, state);
-    unrecognised!(ConnectorConnectedState);
-    unrecognised!(ConnectorDisconnected, disconnected_at, state);
-    unrecognised!(ConnectorDisconnectedState);
-    unrecognised!(
+    fields_contain_unrecognised!(ConnectorAuthorizationFailed, detail, failed_at, reason, state);
+    unrecognised_union!(ConnectorAuthorizationFailedState,);
+    unrecognised_union!(ConnectorAuthorizationFailureReason,);
+    fields_contain_unrecognised!(ConnectorConnected, connected_at, state);
+    unrecognised_union!(ConnectorConnectedState,);
+    fields_contain_unrecognised!(ConnectorDisconnected, disconnected_at, state);
+    unrecognised_union!(ConnectorDisconnectedState,);
+    fields_contain_unrecognised!(
         ConnectorFields,
         connector_id,
         created_at,
@@ -48636,9 +48636,9 @@ pub mod types {
         updated_at,
         url
     );
-    unrecognised!(ConnectorNotConnected, state);
-    unrecognised!(ConnectorNotConnectedState);
-    unrecognised!(ConnectorState);
+    fields_contain_unrecognised!(ConnectorNotConnected, state);
+    unrecognised_union!(ConnectorNotConnectedState,);
+    unrecognised_union!(ConnectorState,);
     unrecognised_union!(
         ConnectorStatus,
         NotConnected,
@@ -48646,9 +48646,9 @@ pub mod types {
         Disconnected,
         AuthorizationFailed
     );
-    unrecognised!(ConnectorUpdate, name);
-    unrecognised!(ConnectorUrl, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(ConnectorUpdate, name);
+    fields_contain_unrecognised!(ConnectorUrl, 0);
+    fields_contain_unrecognised!(
         ControlPlaneLimits,
         ceiling,
         configured,
@@ -48658,7 +48658,7 @@ pub mod types {
         reads_per_minute,
         writes_per_minute
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         ControlPlaneSettings,
         claude_setup_code_budget_seconds,
         claude_setup_mint_budget_seconds,
@@ -48675,13 +48675,13 @@ pub mod types {
         turn_offer_ttl_seconds,
         turn_total_budget_seconds
     );
-    unrecognised!(CostBasis);
-    unrecognised!(CredentialChoice);
-    unrecognised!(CredentialFileKey, expires_at, kind, name, provider, updated_at);
-    unrecognised!(CredentialFileKeyKind);
-    unrecognised!(CredentialFileMember, expires_at, kind, name, provider);
-    unrecognised!(CredentialFileMemberKind);
-    unrecognised!(
+    unrecognised_union!(CostBasis,);
+    unrecognised_union!(CredentialChoice,);
+    fields_contain_unrecognised!(CredentialFileKey, expires_at, kind, name, provider, updated_at);
+    unrecognised_union!(CredentialFileKeyKind,);
+    fields_contain_unrecognised!(CredentialFileMember, expires_at, kind, name, provider);
+    unrecognised_union!(CredentialFileMemberKind,);
+    fields_contain_unrecognised!(
         CredentialFileUpdate,
         expires_at,
         kind,
@@ -48690,10 +48690,10 @@ pub mod types {
         provider,
         value
     );
-    unrecognised!(CredentialFileUpdateKind);
-    unrecognised!(CredentialFileValue, expires_at, kind, name, provider, value);
-    unrecognised!(CredentialFileValueKind);
-    unrecognised!(
+    unrecognised_union!(CredentialFileUpdateKind,);
+    fields_contain_unrecognised!(CredentialFileValue, expires_at, kind, name, provider, value);
+    unrecognised_union!(CredentialFileValueKind,);
+    fields_contain_unrecognised!(
         CredentialHandover,
         box_id,
         created_at,
@@ -48705,9 +48705,9 @@ pub mod types {
         turn_id,
         variable_names
     );
-    unrecognised!(CredentialKind);
-    unrecognised!(CredentialText, 0);
-    unrecognised!(
+    unrecognised_union!(CredentialKind,);
+    fields_contain_unrecognised!(CredentialText, 0);
+    fields_contain_unrecognised!(
         DegradedHost,
         architecture,
         channel_protocol,
@@ -48730,13 +48730,13 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(DegradedHostPresence);
-    unrecognised!(DegradedHostPublicKey, 0);
-    unrecognised!(DegradedHostSupervisorVersion, 0);
-    unrecognised!(DeployDrain, drain_token);
-    unrecognised!(DeployDrainDrainToken, 0);
-    unrecognised!(Detail, 0);
-    unrecognised!(
+    unrecognised_union!(DegradedHostPresence,);
+    fields_contain_unrecognised!(DegradedHostPublicKey, 0);
+    fields_contain_unrecognised!(DegradedHostSupervisorVersion, 0);
+    fields_contain_unrecognised!(DeployDrain, drain_token);
+    fields_contain_unrecognised!(DeployDrainDrainToken, 0);
+    fields_contain_unrecognised!(Detail, 0);
+    fields_contain_unrecognised!(
         Device,
         created_at,
         device_id,
@@ -48745,8 +48745,8 @@ pub mod types {
         principal_id,
         tenant_id
     );
-    unrecognised!(DeviceApproval, tenant_id, user_code);
-    unrecognised!(
+    fields_contain_unrecognised!(DeviceApproval, tenant_id, user_code);
+    fields_contain_unrecognised!(
         DeviceAuthorization,
         device_code,
         expires_in,
@@ -48755,21 +48755,21 @@ pub mod types {
         verification_uri,
         verification_uri_complete
     );
-    unrecognised!(DeviceCodeRequest, device_name);
-    unrecognised!(DeviceDecision, user_code);
-    unrecognised!(DeviceToken, access_token, token_type);
-    unrecognised!(DeviceTokenRequest, device_code, grant_type);
-    unrecognised!(DeviceTokenRequestGrantType);
-    unrecognised!(DeviceTokenTokenType);
-    unrecognised!(DisplayName, 0);
-    unrecognised!(DraftTriggerTest, kind, payload, trigger);
-    unrecognised!(DraftTriggerTestKind);
-    unrecognised!(EditPersonaFilePatch, kind, new_text, old_text, path);
-    unrecognised!(EditPersonaFilePatchKind);
-    unrecognised!(EditPersonaFilePatchOldText, 0);
-    unrecognised!(EffectiveHarnessVersion, harness, harness_version, pinned);
-    unrecognised!(EmailAddress, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(DeviceCodeRequest, device_name);
+    fields_contain_unrecognised!(DeviceDecision, user_code);
+    fields_contain_unrecognised!(DeviceToken, access_token, token_type);
+    fields_contain_unrecognised!(DeviceTokenRequest, device_code, grant_type);
+    unrecognised_union!(DeviceTokenRequestGrantType,);
+    unrecognised_union!(DeviceTokenTokenType,);
+    fields_contain_unrecognised!(DisplayName, 0);
+    fields_contain_unrecognised!(DraftTriggerTest, kind, payload, trigger);
+    unrecognised_union!(DraftTriggerTestKind,);
+    fields_contain_unrecognised!(EditPersonaFilePatch, kind, new_text, old_text, path);
+    unrecognised_union!(EditPersonaFilePatchKind,);
+    fields_contain_unrecognised!(EditPersonaFilePatchOldText, 0);
+    fields_contain_unrecognised!(EffectiveHarnessVersion, harness, harness_version, pinned);
+    fields_contain_unrecognised!(EmailAddress, 0);
+    fields_contain_unrecognised!(
         EndedSubscription,
         created_at,
         crew_failures_in_a_row,
@@ -48788,8 +48788,8 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(EndedSubscriptionState);
-    unrecognised!(
+    unrecognised_union!(EndedSubscriptionState,);
+    fields_contain_unrecognised!(
         EnrolmentToken,
         created_at,
         enrolment_token_id,
@@ -48799,15 +48799,15 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(EnrolmentTokenMint, expires_in_seconds);
-    unrecognised!(EnrolmentTokenState);
-    unrecognised!(EntityId, 0);
-    unrecognised!(EnvironmentVariableName, 0);
-    unrecognised!(EventCursorExpiredProblem, code, detail, fix, oldest_event_id, title);
-    unrecognised!(EventCursorExpiredProblemCode);
-    unrecognised!(EventPage, events, last_event_id);
+    fields_contain_unrecognised!(EnrolmentTokenMint, expires_in_seconds);
+    unrecognised_union!(EnrolmentTokenState,);
+    fields_contain_unrecognised!(EntityId, 0);
+    fields_contain_unrecognised!(EnvironmentVariableName, 0);
+    fields_contain_unrecognised!(EventCursorExpiredProblem, code, detail, fix, oldest_event_id, title);
+    unrecognised_union!(EventCursorExpiredProblemCode,);
+    fields_contain_unrecognised!(EventPage, events, last_event_id);
     unrecognised_union!(EventProblem, EventCursorExpiredProblem, Problem);
-    unrecognised!(
+    fields_contain_unrecognised!(
         FailedSession,
         box_id,
         box_retention,
@@ -48833,25 +48833,25 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(FailedSessionState);
-    unrecognised!(
+    unrecognised_union!(FailedSessionState,);
+    fields_contain_unrecognised!(
         FailedTurn, box_id, created_at, detail, failed_at, goal, image, line_count, prompt, reason, session_id, state,
         tenant_id, turn_id, updated_at
     );
-    unrecognised!(FailedTurnState);
-    unrecognised!(FixedVariable, name, value);
-    unrecognised!(FixedVariableValue, 0);
-    unrecognised!(GitHubAccountType);
-    unrecognised!(GitHubAppMissing, setup_url, state);
-    unrecognised!(GitHubAppMissingState);
-    unrecognised!(GitHubAppReady, app_slug, state);
-    unrecognised!(GitHubAppReadyState);
+    unrecognised_union!(FailedTurnState,);
+    fields_contain_unrecognised!(FixedVariable, name, value);
+    fields_contain_unrecognised!(FixedVariableValue, 0);
+    unrecognised_union!(GitHubAccountType,);
+    fields_contain_unrecognised!(GitHubAppMissing, setup_url, state);
+    unrecognised_union!(GitHubAppMissingState,);
+    fields_contain_unrecognised!(GitHubAppReady, app_slug, state);
+    unrecognised_union!(GitHubAppReadyState,);
     unrecognised_union!(GitHubAppState, Ready, Missing);
-    unrecognised!(GitHubConnection, app, tenant_id);
-    unrecognised!(GitHubId, 0);
-    unrecognised!(GitHubInstallRefusal);
-    unrecognised!(GitHubInstallStart, expires_at, install_url);
-    unrecognised!(
+    fields_contain_unrecognised!(GitHubConnection, app, tenant_id);
+    fields_contain_unrecognised!(GitHubId, 0);
+    unrecognised_union!(GitHubInstallRefusal,);
+    fields_contain_unrecognised!(GitHubInstallStart, expires_at, install_url);
+    fields_contain_unrecognised!(
         GitHubInstallation,
         account_login,
         account_type,
@@ -48861,23 +48861,23 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(GitHubInstallationStatus);
-    unrecognised!(GitHubIssue, html_url, issue_number, labels, title, updated_at);
-    unrecognised!(GitHubIssueNumber, 0);
-    unrecognised!(GitHubLogin, 0);
-    unrecognised!(GitHubRepository, default_branch, html_url, name, owner, private);
-    unrecognised!(GitHubRepositoryName, 0);
-    unrecognised!(GitHubTriggerEvent);
-    unrecognised!(GitHubTriggerSource, conditions, event, kind);
-    unrecognised!(GitHubTriggerSourceKind);
-    unrecognised!(Goal, 0);
-    unrecognised!(GuestBufferText, 0);
-    unrecognised!(GuestClaudeSetupCode, claude_setup_id, code, mint_budget_seconds, type_);
-    unrecognised!(GuestClaudeSetupCodeType);
-    unrecognised!(GuestClaudeSetupFailed, claude_setup_id, detail, reason, type_);
-    unrecognised!(GuestClaudeSetupFailedType);
-    unrecognised!(GuestClaudeSetupFailureReason);
-    unrecognised!(
+    unrecognised_union!(GitHubInstallationStatus,);
+    fields_contain_unrecognised!(GitHubIssue, html_url, issue_number, labels, title, updated_at);
+    fields_contain_unrecognised!(GitHubIssueNumber, 0);
+    fields_contain_unrecognised!(GitHubLogin, 0);
+    fields_contain_unrecognised!(GitHubRepository, default_branch, html_url, name, owner, private);
+    fields_contain_unrecognised!(GitHubRepositoryName, 0);
+    unrecognised_union!(GitHubTriggerEvent,);
+    fields_contain_unrecognised!(GitHubTriggerSource, conditions, event, kind);
+    unrecognised_union!(GitHubTriggerSourceKind,);
+    fields_contain_unrecognised!(Goal, 0);
+    fields_contain_unrecognised!(GuestBufferText, 0);
+    fields_contain_unrecognised!(GuestClaudeSetupCode, claude_setup_id, code, mint_budget_seconds, type_);
+    unrecognised_union!(GuestClaudeSetupCodeType,);
+    fields_contain_unrecognised!(GuestClaudeSetupFailed, claude_setup_id, detail, reason, type_);
+    unrecognised_union!(GuestClaudeSetupFailedType,);
+    unrecognised_union!(GuestClaudeSetupFailureReason,);
+    fields_contain_unrecognised!(
         GuestClaudeSetupStart,
         claude_setup_id,
         tenant_id,
@@ -48885,17 +48885,17 @@ pub mod types {
         token_url,
         type_
     );
-    unrecognised!(GuestClaudeSetupStartTokenCredential, 0);
-    unrecognised!(GuestClaudeSetupStartType);
-    unrecognised!(GuestClaudeSetupStored, claude_setup_id, type_);
-    unrecognised!(GuestClaudeSetupStoredType);
-    unrecognised!(GuestClaudeSetupUrl, claude_setup_id, sign_in_url, type_, user_code);
-    unrecognised!(GuestClaudeSetupUrlType);
-    unrecognised!(GuestEnvironment, home, lang, path);
-    unrecognised!(GuestEnvironmentHome, 0);
-    unrecognised!(GuestEnvironmentLang, 0);
-    unrecognised!(GuestEnvironmentPath, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(GuestClaudeSetupStartTokenCredential, 0);
+    unrecognised_union!(GuestClaudeSetupStartType,);
+    fields_contain_unrecognised!(GuestClaudeSetupStored, claude_setup_id, type_);
+    unrecognised_union!(GuestClaudeSetupStoredType,);
+    fields_contain_unrecognised!(GuestClaudeSetupUrl, claude_setup_id, sign_in_url, type_, user_code);
+    unrecognised_union!(GuestClaudeSetupUrlType,);
+    fields_contain_unrecognised!(GuestEnvironment, home, lang, path);
+    fields_contain_unrecognised!(GuestEnvironmentHome, 0);
+    fields_contain_unrecognised!(GuestEnvironmentLang, 0);
+    fields_contain_unrecognised!(GuestEnvironmentPath, 0);
+    fields_contain_unrecognised!(
         GuestHarness,
         clone_seconds,
         command,
@@ -48906,11 +48906,11 @@ pub mod types {
         protocol,
         working_directory
     );
-    unrecognised!(GuestHarnessHarness, 0);
-    unrecognised!(GuestHarnessHarnessVersion, 0);
-    unrecognised!(GuestHarnessProtocol);
-    unrecognised!(GuestHarnessWorkingDirectory, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(GuestHarnessHarness, 0);
+    fields_contain_unrecognised!(GuestHarnessHarnessVersion, 0);
+    unrecognised_union!(GuestHarnessProtocol,);
+    fields_contain_unrecognised!(GuestHarnessWorkingDirectory, 0);
+    fields_contain_unrecognised!(
         GuestHello,
         harness,
         harness_version,
@@ -48918,13 +48918,13 @@ pub mod types {
         protocol_version,
         type_
     );
-    unrecognised!(GuestHelloHarness, 0);
-    unrecognised!(GuestHelloHarnessVersion, 0);
-    unrecognised!(GuestHelloType);
-    unrecognised!(GuestImageComponent, digest, name, url, version);
-    unrecognised!(GuestImageComponentName, 0);
-    unrecognised!(GuestImageComponentVersion, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(GuestHelloHarness, 0);
+    fields_contain_unrecognised!(GuestHelloHarnessVersion, 0);
+    unrecognised_union!(GuestHelloType,);
+    fields_contain_unrecognised!(GuestImageComponent, digest, name, url, version);
+    fields_contain_unrecognised!(GuestImageComponentName, 0);
+    fields_contain_unrecognised!(GuestImageComponentVersion, 0);
+    fields_contain_unrecognised!(
         GuestImageManifest,
         base_rootfs_digest,
         base_rootfs_url,
@@ -48946,16 +48946,16 @@ pub mod types {
         ClaudeSetupStored,
         ClaudeSetupFailed
     );
-    unrecognised!(GuestMetric, description, dimensions, kind, metric, unit, value);
-    unrecognised!(GuestMetricDescription, 0);
-    unrecognised!(GuestMetricUnit, 0);
-    unrecognised!(GuestPersonaFile, content, digest, path);
-    unrecognised!(GuestPersonaFileContent, 0);
-    unrecognised!(GuestProtocol, 0);
-    unrecognised!(GuestProtocolRange, guest_protocol_oldest, guest_protocol_version);
-    unrecognised!(GuestTurnCancel, turn_id, type_);
-    unrecognised!(GuestTurnCancelType);
-    unrecognised!(
+    fields_contain_unrecognised!(GuestMetric, description, dimensions, kind, metric, unit, value);
+    fields_contain_unrecognised!(GuestMetricDescription, 0);
+    fields_contain_unrecognised!(GuestMetricUnit, 0);
+    fields_contain_unrecognised!(GuestPersonaFile, content, digest, path);
+    fields_contain_unrecognised!(GuestPersonaFileContent, 0);
+    fields_contain_unrecognised!(GuestProtocol, 0);
+    fields_contain_unrecognised!(GuestProtocolRange, guest_protocol_oldest, guest_protocol_version);
+    fields_contain_unrecognised!(GuestTurnCancel, turn_id, type_);
+    unrecognised_union!(GuestTurnCancelType,);
+    fields_contain_unrecognised!(
         GuestTurnEnd,
         credential_file,
         detail,
@@ -48966,17 +48966,17 @@ pub mod types {
         type_,
         warning
     );
-    unrecognised!(GuestTurnEndCredentialFile, 0);
-    unrecognised!(GuestTurnEndReason);
-    unrecognised!(GuestTurnEndType);
-    unrecognised!(GuestTurnEndWarning, 0);
-    unrecognised!(GuestTurnLine, line_seq, text, turn_id, type_);
-    unrecognised!(GuestTurnLineType);
-    unrecognised!(GuestTurnRepositoryCloneFailed, cause, detail, turn_id, type_);
-    unrecognised!(GuestTurnRepositoryCloneFailedType);
-    unrecognised!(GuestTurnRepositoryReady, turn_id, type_);
-    unrecognised!(GuestTurnRepositoryReadyType);
-    unrecognised!(
+    fields_contain_unrecognised!(GuestTurnEndCredentialFile, 0);
+    unrecognised_union!(GuestTurnEndReason,);
+    unrecognised_union!(GuestTurnEndType,);
+    fields_contain_unrecognised!(GuestTurnEndWarning, 0);
+    fields_contain_unrecognised!(GuestTurnLine, line_seq, text, turn_id, type_);
+    unrecognised_union!(GuestTurnLineType,);
+    fields_contain_unrecognised!(GuestTurnRepositoryCloneFailed, cause, detail, turn_id, type_);
+    unrecognised_union!(GuestTurnRepositoryCloneFailedType,);
+    fields_contain_unrecognised!(GuestTurnRepositoryReady, turn_id, type_);
+    unrecognised_union!(GuestTurnRepositoryReadyType,);
+    fields_contain_unrecognised!(
         GuestTurnStart,
         credential,
         files,
@@ -48991,10 +48991,10 @@ pub mod types {
         turn_seconds,
         type_
     );
-    unrecognised!(GuestTurnStartPrebuildCommitSha, 0);
-    unrecognised!(GuestTurnStartType);
-    unrecognised!(Harness);
-    unrecognised!(
+    fields_contain_unrecognised!(GuestTurnStartPrebuildCommitSha, 0);
+    unrecognised_union!(GuestTurnStartType,);
+    unrecognised_union!(Harness,);
+    fields_contain_unrecognised!(
         HarnessCatalogEntry,
         compact_transcript,
         credential_choice,
@@ -49005,7 +49005,7 @@ pub mod types {
         install_recipe,
         persona_file_paths
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         HarnessCredential,
         arguments,
         cost_basis,
@@ -49016,15 +49016,15 @@ pub mod types {
         provider,
         variable
     );
-    unrecognised!(HarnessLayerManifest, architecture, harness, layer_digest, recipe_digest);
-    unrecognised!(HarnessPin, harness, harness_version, updated_at);
-    unrecognised!(HarnessPinCreate, harness, harness_version);
-    unrecognised!(HarnessVersion, 0);
-    unrecognised!(Health, status);
-    unrecognised!(HealthStatus);
+    fields_contain_unrecognised!(HarnessLayerManifest, architecture, harness, layer_digest, recipe_digest);
+    fields_contain_unrecognised!(HarnessPin, harness, harness_version, updated_at);
+    fields_contain_unrecognised!(HarnessPinCreate, harness, harness_version);
+    fields_contain_unrecognised!(HarnessVersion, 0);
+    fields_contain_unrecognised!(Health, status);
+    unrecognised_union!(HealthStatus,);
     unrecognised_union!(Host, OnlineHost, DegradedHost, OfflineHost);
-    unrecognised!(HostArchitecture);
-    unrecognised!(
+    unrecognised_union!(HostArchitecture,);
+    fields_contain_unrecognised!(
         HostBase,
         architecture,
         channel_protocol,
@@ -49045,17 +49045,17 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(HostBasePublicKey, 0);
-    unrecognised!(HostBaseSupervisorVersion, 0);
+    fields_contain_unrecognised!(HostBasePublicKey, 0);
+    fields_contain_unrecognised!(HostBaseSupervisorVersion, 0);
     unrecognised_union!(HostChannelProtocol, ProtocolNotReported, ChannelProtocolReported);
-    unrecognised!(
+    fields_contain_unrecognised!(
         HostChannelProtocolReported,
         channel_protocol_oldest,
         channel_protocol_version,
         state
     );
-    unrecognised!(HostChannelProtocolReportedState);
-    unrecognised!(
+    unrecognised_union!(HostChannelProtocolReportedState,);
+    fields_contain_unrecognised!(
         HostEnrol,
         architecture,
         cpu_count,
@@ -49065,31 +49065,31 @@ pub mod types {
         public_key,
         supervisor_version
     );
-    unrecognised!(HostEnrolEnrolmentToken, 0);
-    unrecognised!(HostEnrolPublicKey, 0);
-    unrecognised!(HostEnrolSupervisorVersion, 0);
+    fields_contain_unrecognised!(HostEnrolEnrolmentToken, 0);
+    fields_contain_unrecognised!(HostEnrolPublicKey, 0);
+    fields_contain_unrecognised!(HostEnrolSupervisorVersion, 0);
     unrecognised_union!(HostGuestProtocol, ProtocolNotReported, GuestProtocolReported);
-    unrecognised!(
+    fields_contain_unrecognised!(
         HostGuestProtocolReported,
         guest_protocol_oldest,
         guest_protocol_version,
         state
     );
-    unrecognised!(HostGuestProtocolReportedState);
-    unrecognised!(HostHealth);
-    unrecognised!(HostLabel, 0);
-    unrecognised!(HostLabels, labels);
-    unrecognised!(HostLabelsPatch, add, remove);
-    unrecognised!(HostOfflineEvent, created_at, event, event_id, host_id, tenant_id);
-    unrecognised!(HostOfflineEventEvent);
-    unrecognised!(HostOnlineEvent, created_at, event, event_id, host_id, tenant_id);
-    unrecognised!(HostOnlineEventEvent);
-    unrecognised!(HostPresence);
-    unrecognised!(HostProtocolNotReported, state);
-    unrecognised!(HostProtocolNotReportedState);
-    unrecognised!(HostReportedHealth);
-    unrecognised!(HostState);
-    unrecognised!(
+    unrecognised_union!(HostGuestProtocolReportedState,);
+    unrecognised_union!(HostHealth,);
+    fields_contain_unrecognised!(HostLabel, 0);
+    fields_contain_unrecognised!(HostLabels, labels);
+    fields_contain_unrecognised!(HostLabelsPatch, add, remove);
+    fields_contain_unrecognised!(HostOfflineEvent, created_at, event, event_id, host_id, tenant_id);
+    unrecognised_union!(HostOfflineEventEvent,);
+    fields_contain_unrecognised!(HostOnlineEvent, created_at, event, event_id, host_id, tenant_id);
+    unrecognised_union!(HostOnlineEventEvent,);
+    unrecognised_union!(HostPresence,);
+    fields_contain_unrecognised!(HostProtocolNotReported, state);
+    unrecognised_union!(HostProtocolNotReportedState,);
+    unrecognised_union!(HostReportedHealth,);
+    unrecognised_union!(HostState,);
+    fields_contain_unrecognised!(
         HostUsage,
         disk_budget_mib,
         disk_held_mib,
@@ -49098,8 +49098,8 @@ pub mod types {
         memory_budget_mib,
         memory_held_mib
     );
-    unrecognised!(HttpUrl, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(HttpUrl, 0);
+    fields_contain_unrecognised!(
         IdleSession,
         box_id,
         box_retention,
@@ -49125,9 +49125,9 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(IdleSessionState);
-    unrecognised!(ImageHarness);
-    unrecognised!(
+    unrecognised_union!(IdleSessionState,);
+    unrecognised_union!(ImageHarness,);
+    fields_contain_unrecognised!(
         ImageRelease,
         base_layout_version,
         bases,
@@ -49136,12 +49136,12 @@ pub mod types {
         image_release_version,
         images
     );
-    unrecognised!(ImageReleaseCommit, 0);
-    unrecognised!(ImageReleaseImageReleaseVersion, 0);
-    unrecognised!(InlineConfigFile, content, from, source);
-    unrecognised!(InlineConfigFileSource);
-    unrecognised!(InlinePersonaFile, content, path, source);
-    unrecognised!(
+    fields_contain_unrecognised!(ImageReleaseCommit, 0);
+    fields_contain_unrecognised!(ImageReleaseImageReleaseVersion, 0);
+    fields_contain_unrecognised!(InlineConfigFile, content, from, source);
+    unrecognised_union!(InlineConfigFileSource,);
+    fields_contain_unrecognised!(InlinePersonaFile, content, path, source);
+    fields_contain_unrecognised!(
         InlinePersonaFileRead,
         content,
         created_at,
@@ -49151,9 +49151,9 @@ pub mod types {
         source,
         updated_at
     );
-    unrecognised!(InlinePersonaFileReadSource);
-    unrecognised!(InlinePersonaFileSource);
-    unrecognised!(
+    unrecognised_union!(InlinePersonaFileReadSource,);
+    unrecognised_union!(InlinePersonaFileSource,);
+    fields_contain_unrecognised!(
         InstallArchive,
         architecture,
         binary_path,
@@ -49161,10 +49161,10 @@ pub mod types {
         sibling_binary_paths,
         url
     );
-    unrecognised!(InstallArchiveBinaryPath, 0);
-    unrecognised!(InstallArchiveUrl, 0);
+    fields_contain_unrecognised!(InstallArchiveBinaryPath, 0);
+    fields_contain_unrecognised!(InstallArchiveUrl, 0);
     unrecognised_union!(InstallRecipe, NpmInstallRecipe, ArchiveInstallRecipe);
-    unrecognised!(
+    fields_contain_unrecognised!(
         Invitation,
         created_at,
         email,
@@ -49174,56 +49174,56 @@ pub mod types {
         role,
         tenant_id
     );
-    unrecognised!(InvitationAccept, token);
-    unrecognised!(InvitationAcceptToken, 0);
-    unrecognised!(InvitationCreate, email, role);
-    unrecognised!(InvitationCreated, accept_url, invitation);
-    unrecognised!(IssuerJwk, alg, e, kid, kty, n, use_);
-    unrecognised!(IssuerJwkAlg);
-    unrecognised!(IssuerJwkE, 0);
-    unrecognised!(IssuerJwkKty);
-    unrecognised!(IssuerJwkN, 0);
-    unrecognised!(IssuerJwkUse);
-    unrecognised!(IssuerJwks, keys);
-    unrecognised!(IssuerKeyId, 0);
-    unrecognised!(LocalFilePath, 0);
-    unrecognised!(LongText, 0);
-    unrecognised!(Membership, created_at, role, tenant);
-    unrecognised!(MetricBatch, instruments, samples, turns);
-    unrecognised!(MetricBucket);
-    unrecognised!(MetricCatalog, metrics);
-    unrecognised!(MetricEntry, description, facets, kind, metric, unit);
-    unrecognised!(MetricEntryDescription, 0);
-    unrecognised!(MetricEntryUnit, 0);
-    unrecognised!(MetricFacet, dimension, values);
-    unrecognised!(MetricFacetValue, series_count, value);
-    unrecognised!(MetricInstrument, description, kind, metric, unit);
-    unrecognised!(MetricInstrumentDescription, 0);
-    unrecognised!(MetricInstrumentUnit, 0);
-    unrecognised!(MetricKind);
-    unrecognised!(MetricName, 0);
-    unrecognised!(MetricPoint, bucket_start, count, max, min, p50, p90, p99, sum);
-    unrecognised!(MetricSeries, group, points);
-    unrecognised!(MetricSeriesSet, bucket, metric, series, unit);
-    unrecognised!(MetricTurnPage, cursor, finished, points);
-    unrecognised!(MetricTurnPoint, at, dimensions, session_id, turn_id, value);
-    unrecognised!(MintedEnrolmentToken, enrolment_token, install_command, token);
-    unrecognised!(ModelName, 0);
-    unrecognised!(ModelProvider);
+    fields_contain_unrecognised!(InvitationAccept, token);
+    fields_contain_unrecognised!(InvitationAcceptToken, 0);
+    fields_contain_unrecognised!(InvitationCreate, email, role);
+    fields_contain_unrecognised!(InvitationCreated, accept_url, invitation);
+    fields_contain_unrecognised!(IssuerJwk, alg, e, kid, kty, n, use_);
+    unrecognised_union!(IssuerJwkAlg,);
+    fields_contain_unrecognised!(IssuerJwkE, 0);
+    unrecognised_union!(IssuerJwkKty,);
+    fields_contain_unrecognised!(IssuerJwkN, 0);
+    unrecognised_union!(IssuerJwkUse,);
+    fields_contain_unrecognised!(IssuerJwks, keys);
+    fields_contain_unrecognised!(IssuerKeyId, 0);
+    fields_contain_unrecognised!(LocalFilePath, 0);
+    fields_contain_unrecognised!(LongText, 0);
+    fields_contain_unrecognised!(Membership, created_at, role, tenant);
+    fields_contain_unrecognised!(MetricBatch, instruments, samples, turns);
+    unrecognised_union!(MetricBucket,);
+    fields_contain_unrecognised!(MetricCatalog, metrics);
+    fields_contain_unrecognised!(MetricEntry, description, facets, kind, metric, unit);
+    fields_contain_unrecognised!(MetricEntryDescription, 0);
+    fields_contain_unrecognised!(MetricEntryUnit, 0);
+    fields_contain_unrecognised!(MetricFacet, dimension, values);
+    fields_contain_unrecognised!(MetricFacetValue, series_count, value);
+    fields_contain_unrecognised!(MetricInstrument, description, kind, metric, unit);
+    fields_contain_unrecognised!(MetricInstrumentDescription, 0);
+    fields_contain_unrecognised!(MetricInstrumentUnit, 0);
+    unrecognised_union!(MetricKind,);
+    fields_contain_unrecognised!(MetricName, 0);
+    fields_contain_unrecognised!(MetricPoint, bucket_start, count, max, min, p50, p90, p99, sum);
+    fields_contain_unrecognised!(MetricSeries, group, points);
+    fields_contain_unrecognised!(MetricSeriesSet, bucket, metric, series, unit);
+    fields_contain_unrecognised!(MetricTurnPage, cursor, finished, points);
+    fields_contain_unrecognised!(MetricTurnPoint, at, dimensions, session_id, turn_id, value);
+    fields_contain_unrecognised!(MintedEnrolmentToken, enrolment_token, install_command, token);
+    fields_contain_unrecognised!(ModelName, 0);
+    unrecognised_union!(ModelProvider,);
     unrecognised_union!(ModelSupport, Listed, ProviderChecked);
-    unrecognised!(ModelSupportListed, kind, models);
-    unrecognised!(ModelSupportListedKind);
-    unrecognised!(ModelSupportProviderChecked, kind);
-    unrecognised!(ModelSupportProviderCheckedKind);
-    unrecognised!(NotConfiguredConnection, kind, state);
-    unrecognised!(NotConfiguredConnectionState);
-    unrecognised!(NotConnectedConnection, kind, state);
-    unrecognised!(NotConnectedConnectionState);
-    unrecognised!(NpmInstallRecipe, kind, package, package_version);
-    unrecognised!(NpmInstallRecipeKind);
-    unrecognised!(NpmInstallRecipePackage, 0);
-    unrecognised!(NpmInstallRecipePackageVersion, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(ModelSupportListed, kind, models);
+    unrecognised_union!(ModelSupportListedKind,);
+    fields_contain_unrecognised!(ModelSupportProviderChecked, kind);
+    unrecognised_union!(ModelSupportProviderCheckedKind,);
+    fields_contain_unrecognised!(NotConfiguredConnection, kind, state);
+    unrecognised_union!(NotConfiguredConnectionState,);
+    fields_contain_unrecognised!(NotConnectedConnection, kind, state);
+    unrecognised_union!(NotConnectedConnectionState,);
+    fields_contain_unrecognised!(NpmInstallRecipe, kind, package, package_version);
+    unrecognised_union!(NpmInstallRecipeKind,);
+    fields_contain_unrecognised!(NpmInstallRecipePackage, 0);
+    fields_contain_unrecognised!(NpmInstallRecipePackageVersion, 0);
+    fields_contain_unrecognised!(
         OAuthAuthorizationCodeRequest,
         client_id,
         code,
@@ -49232,8 +49232,8 @@ pub mod types {
         redirect_uri,
         resource
     );
-    unrecognised!(OAuthAuthorizationCodeRequestGrantType);
-    unrecognised!(
+    unrecognised_union!(OAuthAuthorizationCodeRequestGrantType,);
+    fields_contain_unrecognised!(
         OAuthClient,
         client_id,
         client_id_issued_at,
@@ -49244,9 +49244,9 @@ pub mod types {
         scope,
         token_endpoint_auth_method
     );
-    unrecognised!(OAuthClientRegistration, client_name, redirect_uris);
-    unrecognised!(OAuthClientTokenEndpointAuthMethod);
-    unrecognised!(
+    fields_contain_unrecognised!(OAuthClientRegistration, client_name, redirect_uris);
+    unrecognised_union!(OAuthClientTokenEndpointAuthMethod,);
+    fields_contain_unrecognised!(
         OAuthConnector,
         auth,
         connector_id,
@@ -49257,11 +49257,11 @@ pub mod types {
         updated_at,
         url
     );
-    unrecognised!(OAuthConnectorAuth);
-    unrecognised!(OAuthConnectorCreate, name, url);
-    unrecognised!(OAuthError, error, error_description);
-    unrecognised!(OAuthErrorCode);
-    unrecognised!(
+    unrecognised_union!(OAuthConnectorAuth,);
+    fields_contain_unrecognised!(OAuthConnectorCreate, name, url);
+    fields_contain_unrecognised!(OAuthError, error, error_description);
+    unrecognised_union!(OAuthErrorCode,);
+    fields_contain_unrecognised!(
         OAuthGrant,
         client_id,
         client_name,
@@ -49269,13 +49269,13 @@ pub mod types {
         last_issued_at,
         redirect_origin
     );
-    unrecognised!(OAuthRefreshTokenRequest, client_id, grant_type, refresh_token, resource);
-    unrecognised!(OAuthRefreshTokenRequestGrantType);
-    unrecognised!(OAuthRevocationRequest, client_id, token, token_type_hint);
-    unrecognised!(OAuthToken, access_token, expires_in, refresh_token, scope, token_type);
+    fields_contain_unrecognised!(OAuthRefreshTokenRequest, client_id, grant_type, refresh_token, resource);
+    unrecognised_union!(OAuthRefreshTokenRequestGrantType,);
+    fields_contain_unrecognised!(OAuthRevocationRequest, client_id, token, token_type_hint);
+    fields_contain_unrecognised!(OAuthToken, access_token, expires_in, refresh_token, scope, token_type);
     unrecognised_union!(OAuthTokenRequest, AuthorizationCodeRequest, RefreshTokenRequest);
-    unrecognised!(OAuthTokenTokenType);
-    unrecognised!(
+    unrecognised_union!(OAuthTokenTokenType,);
+    fields_contain_unrecognised!(
         OfferedTurn,
         box_id,
         created_at,
@@ -49289,8 +49289,8 @@ pub mod types {
         turn_id,
         updated_at
     );
-    unrecognised!(OfferedTurnState);
-    unrecognised!(
+    unrecognised_union!(OfferedTurnState,);
+    fields_contain_unrecognised!(
         OfflineHost,
         architecture,
         channel_protocol,
@@ -49312,10 +49312,10 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(OfflineHostPresence);
-    unrecognised!(OfflineHostPublicKey, 0);
-    unrecognised!(OfflineHostSupervisorVersion, 0);
-    unrecognised!(
+    unrecognised_union!(OfflineHostPresence,);
+    fields_contain_unrecognised!(OfflineHostPublicKey, 0);
+    fields_contain_unrecognised!(OfflineHostSupervisorVersion, 0);
+    fields_contain_unrecognised!(
         OnlineHost,
         architecture,
         channel_protocol,
@@ -49338,10 +49338,10 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(OnlineHostPresence);
-    unrecognised!(OnlineHostPublicKey, 0);
-    unrecognised!(OnlineHostSupervisorVersion, 0);
-    unrecognised!(
+    unrecognised_union!(OnlineHostPresence,);
+    fields_contain_unrecognised!(OnlineHostPublicKey, 0);
+    fields_contain_unrecognised!(OnlineHostSupervisorVersion, 0);
+    fields_contain_unrecognised!(
         OpenIdConfiguration,
         claims_supported,
         id_token_signing_alg_values_supported,
@@ -49351,12 +49351,12 @@ pub mod types {
         scopes_supported,
         subject_types_supported
     );
-    unrecognised!(OpenIdConfigurationClaimsSupportedItem);
-    unrecognised!(OpenIdConfigurationIdTokenSigningAlgValuesSupportedItem);
-    unrecognised!(OpenIdConfigurationResponseTypesSupportedItem);
-    unrecognised!(OpenIdConfigurationScopesSupportedItem);
-    unrecognised!(OpenIdConfigurationSubjectTypesSupportedItem);
-    unrecognised!(
+    unrecognised_union!(OpenIdConfigurationClaimsSupportedItem,);
+    unrecognised_union!(OpenIdConfigurationIdTokenSigningAlgValuesSupportedItem,);
+    unrecognised_union!(OpenIdConfigurationResponseTypesSupportedItem,);
+    unrecognised_union!(OpenIdConfigurationScopesSupportedItem,);
+    unrecognised_union!(OpenIdConfigurationSubjectTypesSupportedItem,);
+    fields_contain_unrecognised!(
         OpenRouterAuthorization,
         created_at,
         open_router_authorization_id,
@@ -49366,22 +49366,22 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         OpenRouterAuthorizationAwaitingCallback,
         authorize_url,
         callback_due_at,
         state
     );
-    unrecognised!(OpenRouterAuthorizationAwaitingCallbackState);
-    unrecognised!(OpenRouterAuthorizationCompleted, completed_at, key_label, state);
-    unrecognised!(OpenRouterAuthorizationCompletedState);
-    unrecognised!(OpenRouterAuthorizationExchanging, exchange_due_at, state);
-    unrecognised!(OpenRouterAuthorizationExchangingState);
-    unrecognised!(OpenRouterAuthorizationFailed, detail, failed_at, reason, state);
-    unrecognised!(OpenRouterAuthorizationFailedState);
-    unrecognised!(OpenRouterAuthorizationFailureReason);
-    unrecognised!(OpenRouterAuthorizationStart, secret_set_id);
-    unrecognised!(OpenRouterAuthorizationState);
+    unrecognised_union!(OpenRouterAuthorizationAwaitingCallbackState,);
+    fields_contain_unrecognised!(OpenRouterAuthorizationCompleted, completed_at, key_label, state);
+    unrecognised_union!(OpenRouterAuthorizationCompletedState,);
+    fields_contain_unrecognised!(OpenRouterAuthorizationExchanging, exchange_due_at, state);
+    unrecognised_union!(OpenRouterAuthorizationExchangingState,);
+    fields_contain_unrecognised!(OpenRouterAuthorizationFailed, detail, failed_at, reason, state);
+    unrecognised_union!(OpenRouterAuthorizationFailedState,);
+    unrecognised_union!(OpenRouterAuthorizationFailureReason,);
+    fields_contain_unrecognised!(OpenRouterAuthorizationStart, secret_set_id);
+    unrecognised_union!(OpenRouterAuthorizationState,);
     unrecognised_union!(
         OpenRouterAuthorizationStatus,
         AwaitingCallback,
@@ -49389,8 +49389,8 @@ pub mod types {
         Completed,
         Failed
     );
-    unrecognised!(PathText, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(PathText, 0);
+    fields_contain_unrecognised!(
         PausedSubscription,
         created_at,
         crew_failures_in_a_row,
@@ -49409,10 +49409,10 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(PausedSubscriptionState);
-    unrecognised!(PersonOrigin, kind, principal_id);
-    unrecognised!(PersonOriginKind);
-    unrecognised!(
+    unrecognised_union!(PausedSubscriptionState,);
+    fields_contain_unrecognised!(PersonOrigin, kind, principal_id);
+    unrecognised_union!(PersonOriginKind,);
+    fields_contain_unrecognised!(
         Persona,
         box_disk_mib,
         box_memory_mib,
@@ -49428,7 +49428,7 @@ pub mod types {
         tumpel_mcp,
         updated_at
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         PersonaCreate,
         box_disk_mib,
         box_memory_mib,
@@ -49441,23 +49441,23 @@ pub mod types {
         tumpel_mcp
     );
     unrecognised_union!(PersonaFile, InlinePersonaFileRead, StoredPersonaFileRead);
-    unrecognised!(PersonaFileContent, 0);
-    unrecognised!(PersonaFileLimit, 0);
-    unrecognised!(PersonaFileMetadata, created_at, digest, path, size_bytes, updated_at);
+    fields_contain_unrecognised!(PersonaFileContent, 0);
+    fields_contain_unrecognised!(PersonaFileLimit, 0);
+    fields_contain_unrecognised!(PersonaFileMetadata, created_at, digest, path, size_bytes, updated_at);
     unrecognised_union!(
         PersonaFilePatch,
         PutPersonaFilePatch,
         RemovePersonaFilePatch,
         EditPersonaFilePatch
     );
-    unrecognised!(PersonaFilePatchKind);
-    unrecognised!(PersonaFilePath, 0);
-    unrecognised!(PersonaFileSize, 0);
-    unrecognised!(PersonaFileSource);
-    unrecognised!(PersonaFileUpload, digest, size_bytes, upload_expires_at, upload_url);
-    unrecognised!(PersonaFileUploadRequest, digest, size_bytes);
+    unrecognised_union!(PersonaFilePatchKind,);
+    fields_contain_unrecognised!(PersonaFilePath, 0);
+    fields_contain_unrecognised!(PersonaFileSize, 0);
+    unrecognised_union!(PersonaFileSource,);
+    fields_contain_unrecognised!(PersonaFileUpload, digest, size_bytes, upload_expires_at, upload_url);
+    fields_contain_unrecognised!(PersonaFileUploadRequest, digest, size_bytes);
     unrecognised_union!(PersonaFileWrite, InlinePersonaFile, StoredPersonaFile);
-    unrecognised!(
+    fields_contain_unrecognised!(
         PersonaMetadata,
         box_disk_mib,
         box_memory_mib,
@@ -49473,8 +49473,8 @@ pub mod types {
         tumpel_mcp,
         updated_at
     );
-    unrecognised!(PersonaMetadataList, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(PersonaMetadataList, 0);
+    fields_contain_unrecognised!(
         PersonaPatch,
         box_disk_mib,
         box_memory_mib,
@@ -49484,7 +49484,7 @@ pub mod types {
         secret_set_id,
         tumpel_mcp
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         PersonaUpdate,
         box_disk_mib,
         box_memory_mib,
@@ -49495,7 +49495,7 @@ pub mod types {
         secret_set_id,
         tumpel_mcp
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         Prebuild,
         config_source,
         created_at,
@@ -49510,15 +49510,15 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(PrebuildBuilding, state);
-    unrecognised!(PrebuildBuildingState);
-    unrecognised!(PrebuildConfigSource);
-    unrecognised!(PrebuildConverting, layer_digest, layer_size_bytes, state, uploaded_at);
-    unrecognised!(PrebuildConvertingState);
-    unrecognised!(PrebuildDispatched, state);
-    unrecognised!(PrebuildDispatchedState);
-    unrecognised!(PrebuildDone, finished_at, layer_digest, layer_size_bytes, state);
-    unrecognised!(
+    fields_contain_unrecognised!(PrebuildBuilding, state);
+    unrecognised_union!(PrebuildBuildingState,);
+    unrecognised_union!(PrebuildConfigSource,);
+    fields_contain_unrecognised!(PrebuildConverting, layer_digest, layer_size_bytes, state, uploaded_at);
+    unrecognised_union!(PrebuildConvertingState,);
+    fields_contain_unrecognised!(PrebuildDispatched, state);
+    unrecognised_union!(PrebuildDispatchedState,);
+    fields_contain_unrecognised!(PrebuildDone, finished_at, layer_digest, layer_size_bytes, state);
+    fields_contain_unrecognised!(
         PrebuildDoneEvent,
         created_at,
         event,
@@ -49527,10 +49527,10 @@ pub mod types {
         repository,
         tenant_id
     );
-    unrecognised!(PrebuildDoneEventEvent);
-    unrecognised!(PrebuildDoneState);
-    unrecognised!(PrebuildFailed, finished_at, phase, state);
-    unrecognised!(
+    unrecognised_union!(PrebuildDoneEventEvent,);
+    unrecognised_union!(PrebuildDoneState,);
+    fields_contain_unrecognised!(PrebuildFailed, finished_at, phase, state);
+    fields_contain_unrecognised!(
         PrebuildFailedEvent,
         created_at,
         event,
@@ -49540,15 +49540,15 @@ pub mod types {
         repository,
         tenant_id
     );
-    unrecognised!(PrebuildFailedEventEvent);
-    unrecognised!(PrebuildFailedState);
-    unrecognised!(PrebuildFailure, created_at, detail, fix, phase, prebuild_id, tenant_id);
-    unrecognised!(PrebuildFailurePhase);
-    unrecognised!(PrebuildFinding, code, detail, field, fix);
-    unrecognised!(PrebuildFindingCode);
-    unrecognised!(PrebuildLayerAbsence);
-    unrecognised!(PrebuildLifecycleCommand);
-    unrecognised!(
+    unrecognised_union!(PrebuildFailedEventEvent,);
+    unrecognised_union!(PrebuildFailedState,);
+    fields_contain_unrecognised!(PrebuildFailure, created_at, detail, fix, phase, prebuild_id, tenant_id);
+    unrecognised_union!(PrebuildFailurePhase,);
+    fields_contain_unrecognised!(PrebuildFinding, code, detail, field, fix);
+    unrecognised_union!(PrebuildFindingCode,);
+    unrecognised_union!(PrebuildLayerAbsence,);
+    unrecognised_union!(PrebuildLifecycleCommand,);
+    fields_contain_unrecognised!(
         PrebuildPreview,
         commands,
         config_source,
@@ -49557,21 +49557,21 @@ pub mod types {
         input_digest,
         repository
     );
-    unrecognised!(PrebuildPreviewCommand, argv, label, lifecycle);
-    unrecognised!(PrebuildPreviewOfRepository, persona_id, repository, source);
-    unrecognised!(PrebuildPreviewOfRepositorySource);
-    unrecognised!(PrebuildPreviewOfSupplied, devcontainer, persona_id, repository, source);
-    unrecognised!(PrebuildPreviewOfSuppliedDevcontainer, 0);
-    unrecognised!(PrebuildPreviewOfSuppliedSource);
+    fields_contain_unrecognised!(PrebuildPreviewCommand, argv, label, lifecycle);
+    fields_contain_unrecognised!(PrebuildPreviewOfRepository, persona_id, repository, source);
+    unrecognised_union!(PrebuildPreviewOfRepositorySource,);
+    fields_contain_unrecognised!(PrebuildPreviewOfSupplied, devcontainer, persona_id, repository, source);
+    fields_contain_unrecognised!(PrebuildPreviewOfSuppliedDevcontainer, 0);
+    unrecognised_union!(PrebuildPreviewOfSuppliedSource,);
     unrecognised_union!(PrebuildPreviewRequest, Repository, Supplied);
-    unrecognised!(PrebuildPreviewSource);
-    unrecognised!(PrebuildStart, persona_id, rebuild, repository);
-    unrecognised!(PrebuildState);
+    unrecognised_union!(PrebuildPreviewSource,);
+    fields_contain_unrecognised!(PrebuildStart, persona_id, rebuild, repository);
+    unrecognised_union!(PrebuildState,);
     unrecognised_union!(PrebuildStatus, Dispatched, Building, Converting, Done, Failed);
-    unrecognised!(PrebuildTemplate, prebuild_template_id, versions);
-    unrecognised!(PrebuildTemplateId, 0);
-    unrecognised!(PrebuildTemplateManifest, installs, summary, toolchains);
-    unrecognised!(
+    fields_contain_unrecognised!(PrebuildTemplate, prebuild_template_id, versions);
+    fields_contain_unrecognised!(PrebuildTemplateId, 0);
+    fields_contain_unrecognised!(PrebuildTemplateManifest, installs, summary, toolchains);
+    fields_contain_unrecognised!(
         PrebuildTemplatePullRequest,
         branch,
         pull_request_number,
@@ -49579,17 +49579,17 @@ pub mod types {
         state,
         url
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         PrebuildTemplatePullRequestOpen,
         prebuild_template_id,
         prebuild_template_version,
         replace,
         repository
     );
-    unrecognised!(PrebuildTemplateSummary, 0);
-    unrecognised!(PrebuildTemplateToolchain, toolchain, toolchain_version);
-    unrecognised!(PrebuildTemplateToolchainToolchainVersion, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(PrebuildTemplateSummary, 0);
+    fields_contain_unrecognised!(PrebuildTemplateToolchain, toolchain, toolchain_version);
+    fields_contain_unrecognised!(PrebuildTemplateToolchainToolchainVersion, 0);
+    fields_contain_unrecognised!(
         PrebuildTemplateVersion,
         devcontainer,
         digest,
@@ -49599,8 +49599,8 @@ pub mod types {
         summary,
         toolchains
     );
-    unrecognised!(PrebuildTemplateVersionNumber, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(PrebuildTemplateVersionNumber, 0);
+    fields_contain_unrecognised!(
         PrebuildTemplateVersionSummary,
         digest,
         installs,
@@ -49608,12 +49608,12 @@ pub mod types {
         summary,
         toolchains
     );
-    unrecognised!(Principal, created_at, email, principal_id, role, tenant_id, updated_at);
-    unrecognised!(PrincipalRole);
-    unrecognised!(Problem, code, detail, fix, title);
-    unrecognised!(ProblemCode);
-    unrecognised!(Prompt, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(Principal, created_at, email, principal_id, role, tenant_id, updated_at);
+    unrecognised_union!(PrincipalRole,);
+    fields_contain_unrecognised!(Problem, code, detail, fix, title);
+    unrecognised_union!(ProblemCode,);
+    fields_contain_unrecognised!(Prompt, 0);
+    fields_contain_unrecognised!(
         ProtectedResourceMetadata,
         authorization_servers,
         bearer_methods_supported,
@@ -49621,13 +49621,13 @@ pub mod types {
         resource_name,
         scopes_supported
     );
-    unrecognised!(PullRequestState);
-    unrecognised!(PushEndpointUrl, 0);
-    unrecognised!(PushKey, application_server_key);
-    unrecognised!(PushKeyApplicationServerKey, 0);
-    unrecognised!(PushNotification, body, path, title);
-    unrecognised!(PushNotificationPath, 0);
-    unrecognised!(
+    unrecognised_union!(PullRequestState,);
+    fields_contain_unrecognised!(PushEndpointUrl, 0);
+    fields_contain_unrecognised!(PushKey, application_server_key);
+    fields_contain_unrecognised!(PushKeyApplicationServerKey, 0);
+    fields_contain_unrecognised!(PushNotification, body, path, title);
+    fields_contain_unrecognised!(PushNotificationPath, 0);
+    fields_contain_unrecognised!(
         PushSubscription,
         created_at,
         endpoint,
@@ -49636,15 +49636,15 @@ pub mod types {
         push_subscription_id,
         tenant_id
     );
-    unrecognised!(PushSubscriptionCreate, endpoint, events, keys);
-    unrecognised!(PushSubscriptionKeys, auth, p256dh);
-    unrecognised!(PushSubscriptionKeysAuth, 0);
-    unrecognised!(PushSubscriptionKeysP256dh, 0);
-    unrecognised!(PutPersonaFilePatch, file, kind);
-    unrecognised!(PutPersonaFilePatchKind);
-    unrecognised!(RawTranscriptPage, cursor, finished, form, lines, session_state);
-    unrecognised!(RawTranscriptPageForm);
-    unrecognised!(
+    fields_contain_unrecognised!(PushSubscriptionCreate, endpoint, events, keys);
+    fields_contain_unrecognised!(PushSubscriptionKeys, auth, p256dh);
+    fields_contain_unrecognised!(PushSubscriptionKeysAuth, 0);
+    fields_contain_unrecognised!(PushSubscriptionKeysP256dh, 0);
+    fields_contain_unrecognised!(PutPersonaFilePatch, file, kind);
+    unrecognised_union!(PutPersonaFilePatchKind,);
+    fields_contain_unrecognised!(RawTranscriptPage, cursor, finished, form, lines, session_state);
+    unrecognised_union!(RawTranscriptPageForm,);
+    fields_contain_unrecognised!(
         ReleaseBaseImage,
         architecture,
         image_digest,
@@ -49653,9 +49653,9 @@ pub mod types {
         oci_digest,
         rootfs_digest
     );
-    unrecognised!(ReleaseCli, architecture, cli_version, download_url, sha256, size_bytes);
-    unrecognised!(ReleaseCliCliVersion, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(ReleaseCli, architecture, cli_version, download_url, sha256, size_bytes);
+    fields_contain_unrecognised!(ReleaseCliCliVersion, 0);
+    fields_contain_unrecognised!(
         ReleaseHarnessLayer,
         architecture,
         harness,
@@ -49664,7 +49664,7 @@ pub mod types {
         manifest_digest,
         size_bytes
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         ReleaseImage,
         architecture,
         harness,
@@ -49675,7 +49675,7 @@ pub mod types {
         oci_digest,
         rootfs_digest
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         ReleaseManifest,
         bases,
         channel_protocol_version,
@@ -49687,11 +49687,11 @@ pub mod types {
         rollback,
         supervisors
     );
-    unrecognised!(ReleaseManifestCommit, 0);
-    unrecognised!(ReleaseManifestReleaseVersion, 0);
-    unrecognised!(ReleaseRollout, channel_protocols, deployed_commit, drained, hosts);
-    unrecognised!(ReleaseRolloutDeployedCommit, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(ReleaseManifestCommit, 0);
+    fields_contain_unrecognised!(ReleaseManifestReleaseVersion, 0);
+    fields_contain_unrecognised!(ReleaseRollout, channel_protocols, deployed_commit, drained, hosts);
+    fields_contain_unrecognised!(ReleaseRolloutDeployedCommit, 0);
+    fields_contain_unrecognised!(
         ReleaseSupervisor,
         architecture,
         download_url,
@@ -49700,10 +49700,10 @@ pub mod types {
         size_bytes,
         supervisor_version
     );
-    unrecognised!(ReleaseSupervisorSupervisorVersion, 0);
-    unrecognised!(RemovePersonaFilePatch, kind, path);
-    unrecognised!(RemovePersonaFilePatchKind);
-    unrecognised!(
+    fields_contain_unrecognised!(ReleaseSupervisorSupervisorVersion, 0);
+    fields_contain_unrecognised!(RemovePersonaFilePatch, kind, path);
+    unrecognised_union!(RemovePersonaFilePatchKind,);
+    fields_contain_unrecognised!(
         ReportedHostUsage,
         box_capacity,
         boxes_running,
@@ -49720,12 +49720,12 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(RepositoryCloneFailureCause);
-    unrecognised!(RepositoryCredentialSource);
-    unrecognised!(RepositoryUrl, 0);
-    unrecognised!(RolloutChannelProtocol, channel_protocol_version, host_count);
-    unrecognised!(RolloutHost, host_id, running_turns, tenant_id);
-    unrecognised!(
+    unrecognised_union!(RepositoryCloneFailureCause,);
+    unrecognised_union!(RepositoryCredentialSource,);
+    fields_contain_unrecognised!(RepositoryUrl, 0);
+    fields_contain_unrecognised!(RolloutChannelProtocol, channel_protocol_version, host_count);
+    fields_contain_unrecognised!(RolloutHost, host_id, running_turns, tenant_id);
+    fields_contain_unrecognised!(
         RunningSession,
         box_id,
         box_retention,
@@ -49751,8 +49751,8 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(RunningSessionState);
-    unrecognised!(
+    unrecognised_union!(RunningSessionState,);
+    fields_contain_unrecognised!(
         RunningTurn,
         box_id,
         created_at,
@@ -49766,8 +49766,8 @@ pub mod types {
         turn_id,
         updated_at
     );
-    unrecognised!(RunningTurnState);
-    unrecognised!(SamplePoint, at, dimensions, metric, value);
+    unrecognised_union!(RunningTurnState,);
+    fields_contain_unrecognised!(SamplePoint, at, dimensions, metric, value);
     unrecognised_union!(
         SecretKey,
         SecretVariableKey,
@@ -49775,7 +49775,7 @@ pub mod types {
         SubscriptionTokenKey,
         CredentialFileKey
     );
-    unrecognised!(SecretKind);
+    unrecognised_union!(SecretKind,);
     unrecognised_union!(
         SecretMemberUpdate,
         SecretVariableUpdate,
@@ -49783,12 +49783,12 @@ pub mod types {
         SubscriptionTokenUpdate,
         CredentialFileUpdate
     );
-    unrecognised!(SecretName, 0);
-    unrecognised!(SecretSet, created_at, keys, name, secret_set_id, tenant_id, updated_at);
-    unrecognised!(SecretSetCreate, name, secrets);
-    unrecognised!(SecretSetPatch, name, secrets);
-    unrecognised!(SecretSetUpdate, name, secrets);
-    unrecognised!(SecretText, 0);
+    fields_contain_unrecognised!(SecretName, 0);
+    fields_contain_unrecognised!(SecretSet, created_at, keys, name, secret_set_id, tenant_id, updated_at);
+    fields_contain_unrecognised!(SecretSetCreate, name, secrets);
+    fields_contain_unrecognised!(SecretSetPatch, name, secrets);
+    fields_contain_unrecognised!(SecretSetUpdate, name, secrets);
+    fields_contain_unrecognised!(SecretText, 0);
     unrecognised_union!(
         SecretValue,
         SecretVariableValue,
@@ -49796,16 +49796,16 @@ pub mod types {
         SubscriptionTokenValue,
         CredentialFileValue
     );
-    unrecognised!(SecretValueSource, env);
-    unrecognised!(SecretVariableKey, kind, name, updated_at);
-    unrecognised!(SecretVariableKeyKind);
-    unrecognised!(SecretVariableMember, kind, name);
-    unrecognised!(SecretVariableMemberKind);
-    unrecognised!(SecretVariableUpdate, kind, name, previous_name, value);
-    unrecognised!(SecretVariableUpdateKind);
-    unrecognised!(SecretVariableValue, kind, name, value);
-    unrecognised!(SecretVariableValueKind);
-    unrecognised!(Sequence, 0);
+    fields_contain_unrecognised!(SecretValueSource, env);
+    fields_contain_unrecognised!(SecretVariableKey, kind, name, updated_at);
+    unrecognised_union!(SecretVariableKeyKind,);
+    fields_contain_unrecognised!(SecretVariableMember, kind, name);
+    unrecognised_union!(SecretVariableMemberKind,);
+    fields_contain_unrecognised!(SecretVariableUpdate, kind, name, previous_name, value);
+    unrecognised_union!(SecretVariableUpdateKind,);
+    fields_contain_unrecognised!(SecretVariableValue, kind, name, value);
+    unrecognised_union!(SecretVariableValueKind,);
+    fields_contain_unrecognised!(Sequence, 0);
     unrecognised_union!(
         Session,
         StartingSession,
@@ -49817,9 +49817,9 @@ pub mod types {
         FailedSession,
         UnknownSession
     );
-    unrecognised!(SessionArchivedEvent, created_at, event, event_id, session_id, tenant_id);
-    unrecognised!(SessionArchivedEventEvent);
-    unrecognised!(
+    fields_contain_unrecognised!(SessionArchivedEvent, created_at, event, event_id, session_id, tenant_id);
+    unrecognised_union!(SessionArchivedEventEvent,);
+    fields_contain_unrecognised!(
         SessionBase,
         box_id,
         box_retention,
@@ -49844,9 +49844,9 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(SessionFailedEvent, created_at, event, event_id, session_id, tenant_id);
-    unrecognised!(SessionFailedEventEvent);
-    unrecognised!(
+    fields_contain_unrecognised!(SessionFailedEvent, created_at, event, event_id, session_id, tenant_id);
+    unrecognised_union!(SessionFailedEventEvent,);
+    fields_contain_unrecognised!(
         SessionIdleEvent,
         created_at,
         event,
@@ -49855,20 +49855,20 @@ pub mod types {
         tenant_id,
         turn_id
     );
-    unrecognised!(SessionIdleEventEvent);
-    unrecognised!(SessionIssue, branch, html_url, issue_number, session_id, title);
-    unrecognised!(SessionIssueOrigin, branch, html_url, issue_number, kind, title);
-    unrecognised!(SessionIssueOriginKind);
+    unrecognised_union!(SessionIdleEventEvent,);
+    fields_contain_unrecognised!(SessionIssue, branch, html_url, issue_number, session_id, title);
+    fields_contain_unrecognised!(SessionIssueOrigin, branch, html_url, issue_number, kind, title);
+    unrecognised_union!(SessionIssueOriginKind,);
     unrecognised_union!(SessionOrigin, PromptOrigin, IssueOrigin);
     unrecognised_union!(SessionPrebuildLayer, Stored, Absent);
-    unrecognised!(SessionPrebuildLayerAbsent, detail, layer, reason);
-    unrecognised!(SessionPrebuildLayerAbsentLayer);
-    unrecognised!(SessionPrebuildLayerStored, layer, layer_digest, prebuild_id);
-    unrecognised!(SessionPrebuildLayerStoredLayer);
-    unrecognised!(SessionPromptOrigin, kind);
-    unrecognised!(SessionPromptOriginKind);
-    unrecognised!(SessionStart, box_retention, model, persona_id, prompt, repository, tags);
-    unrecognised!(
+    fields_contain_unrecognised!(SessionPrebuildLayerAbsent, detail, layer, reason);
+    unrecognised_union!(SessionPrebuildLayerAbsentLayer,);
+    fields_contain_unrecognised!(SessionPrebuildLayerStored, layer, layer_digest, prebuild_id);
+    unrecognised_union!(SessionPrebuildLayerStoredLayer,);
+    fields_contain_unrecognised!(SessionPromptOrigin, kind);
+    unrecognised_union!(SessionPromptOriginKind,);
+    fields_contain_unrecognised!(SessionStart, box_retention, model, persona_id, prompt, repository, tags);
+    fields_contain_unrecognised!(
         SessionStartFromIssue,
         box_retention,
         issue_number,
@@ -49879,7 +49879,7 @@ pub mod types {
         tags
     );
     unrecognised_union!(SessionStartedBy, PersonOrigin, TurnOrigin, TriggerOrigin);
-    unrecognised!(
+    fields_contain_unrecognised!(
         SessionStartedEvent,
         caller,
         created_at,
@@ -49888,17 +49888,17 @@ pub mod types {
         session_id,
         tenant_id
     );
-    unrecognised!(SessionStartedEventEvent);
-    unrecognised!(SessionState);
-    unrecognised!(SessionStoppedEvent, created_at, event, event_id, session_id, tenant_id);
-    unrecognised!(SessionStoppedEventEvent);
-    unrecognised!(SessionTag, 0);
-    unrecognised!(SessionTags, tags);
-    unrecognised!(SessionTagsPatch, add, remove);
-    unrecognised!(Sha256Digest, 0);
-    unrecognised!(ShortText, 0);
-    unrecognised!(SignUp, name);
-    unrecognised!(
+    unrecognised_union!(SessionStartedEventEvent,);
+    unrecognised_union!(SessionState,);
+    fields_contain_unrecognised!(SessionStoppedEvent, created_at, event, event_id, session_id, tenant_id);
+    unrecognised_union!(SessionStoppedEventEvent,);
+    fields_contain_unrecognised!(SessionTag, 0);
+    fields_contain_unrecognised!(SessionTags, tags);
+    fields_contain_unrecognised!(SessionTagsPatch, add, remove);
+    fields_contain_unrecognised!(Sha256Digest, 0);
+    fields_contain_unrecognised!(ShortText, 0);
+    fields_contain_unrecognised!(SignUp, name);
+    fields_contain_unrecognised!(
         Snapshot,
         box_id,
         created_at,
@@ -49911,7 +49911,7 @@ pub mod types {
         turn_id,
         updated_at
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         SnapshotDirectoryEntry,
         gid,
         kind,
@@ -49921,8 +49921,8 @@ pub mod types {
         path,
         uid
     );
-    unrecognised!(SnapshotDirectoryEntryKind);
-    unrecognised!(SnapshotDirectoryEntryPath, 0);
+    unrecognised_union!(SnapshotDirectoryEntryKind,);
+    fields_contain_unrecognised!(SnapshotDirectoryEntryPath, 0);
     unrecognised_union!(
         SnapshotEntry,
         FileEntry,
@@ -49931,11 +49931,11 @@ pub mod types {
         SymlinkEntry,
         WhiteoutEntry
     );
-    unrecognised!(SnapshotEntryCommon, gid, mode, mtime_nanos, mtime_seconds, path, uid);
-    unrecognised!(SnapshotEntryCommonPath, 0);
-    unrecognised!(SnapshotFailure, detail, failed_at, reason, state);
-    unrecognised!(SnapshotFailureState);
-    unrecognised!(
+    fields_contain_unrecognised!(SnapshotEntryCommon, gid, mode, mtime_nanos, mtime_seconds, path, uid);
+    fields_contain_unrecognised!(SnapshotEntryCommonPath, 0);
+    fields_contain_unrecognised!(SnapshotFailure, detail, failed_at, reason, state);
+    unrecognised_union!(SnapshotFailureState,);
+    fields_contain_unrecognised!(
         SnapshotFileEntry,
         chunks,
         gid,
@@ -49947,10 +49947,10 @@ pub mod types {
         size_bytes,
         uid
     );
-    unrecognised!(SnapshotFileEntryKind);
-    unrecognised!(SnapshotFileEntryPath, 0);
-    unrecognised!(SnapshotManifest, entries);
-    unrecognised!(
+    unrecognised_union!(SnapshotFileEntryKind,);
+    fields_contain_unrecognised!(SnapshotFileEntryPath, 0);
+    fields_contain_unrecognised!(SnapshotManifest, entries);
+    fields_contain_unrecognised!(
         SnapshotOpaqueDirectoryEntry,
         gid,
         kind,
@@ -49960,13 +49960,13 @@ pub mod types {
         path,
         uid
     );
-    unrecognised!(SnapshotOpaqueDirectoryEntryKind);
-    unrecognised!(SnapshotOpaqueDirectoryEntryPath, 0);
+    unrecognised_union!(SnapshotOpaqueDirectoryEntryKind,);
+    fields_contain_unrecognised!(SnapshotOpaqueDirectoryEntryPath, 0);
     unrecognised_union!(SnapshotOutcome, Stored, Failure);
-    unrecognised!(SnapshotRoot, manifest);
-    unrecognised!(SnapshotStored, state, uploaded_bytes);
-    unrecognised!(SnapshotStoredState);
-    unrecognised!(
+    fields_contain_unrecognised!(SnapshotRoot, manifest);
+    fields_contain_unrecognised!(SnapshotStored, state, uploaded_bytes);
+    unrecognised_union!(SnapshotStoredState,);
+    fields_contain_unrecognised!(
         SnapshotSymlinkEntry,
         gid,
         kind,
@@ -49977,10 +49977,10 @@ pub mod types {
         target,
         uid
     );
-    unrecognised!(SnapshotSymlinkEntryKind);
-    unrecognised!(SnapshotSymlinkEntryPath, 0);
-    unrecognised!(SnapshotSymlinkEntryTarget, 0);
-    unrecognised!(
+    unrecognised_union!(SnapshotSymlinkEntryKind,);
+    fields_contain_unrecognised!(SnapshotSymlinkEntryPath, 0);
+    fields_contain_unrecognised!(SnapshotSymlinkEntryTarget, 0);
+    fields_contain_unrecognised!(
         SnapshotWhiteoutEntry,
         gid,
         kind,
@@ -49990,12 +49990,12 @@ pub mod types {
         path,
         uid
     );
-    unrecognised!(SnapshotWhiteoutEntryKind);
-    unrecognised!(SnapshotWhiteoutEntryPath, 0);
-    unrecognised!(StartRefusal, code, detail);
-    unrecognised!(StartRefusalCode);
+    unrecognised_union!(SnapshotWhiteoutEntryKind,);
+    fields_contain_unrecognised!(SnapshotWhiteoutEntryPath, 0);
+    fields_contain_unrecognised!(StartRefusal, code, detail);
+    unrecognised_union!(StartRefusalCode,);
     unrecognised_union!(StartRefusedCaller, PersonOrigin, TurnOrigin);
-    unrecognised!(
+    fields_contain_unrecognised!(
         StartRefusedEvent,
         caller,
         created_at,
@@ -50008,11 +50008,11 @@ pub mod types {
         refusal,
         tenant_id
     );
-    unrecognised!(StartRefusedEventEvent);
-    unrecognised!(StartRefusedOperation);
-    unrecognised!(StartedSession, session, turn);
-    unrecognised!(StartedSessionFromIssue, issue, session, turn);
-    unrecognised!(
+    unrecognised_union!(StartRefusedEventEvent,);
+    unrecognised_union!(StartRefusedOperation,);
+    fields_contain_unrecognised!(StartedSession, session, turn);
+    fields_contain_unrecognised!(StartedSessionFromIssue, issue, session, turn);
+    fields_contain_unrecognised!(
         StartingSession,
         box_id,
         box_retention,
@@ -50038,8 +50038,8 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(StartingSessionState);
-    unrecognised!(
+    unrecognised_union!(StartingSessionState,);
+    fields_contain_unrecognised!(
         StaticConnector,
         auth,
         connector_id,
@@ -50050,13 +50050,13 @@ pub mod types {
         updated_at,
         url
     );
-    unrecognised!(StaticConnectorAuth);
-    unrecognised!(StaticConnectorCreate, name, url);
-    unrecognised!(StaticConnectorTokenWrite, value);
-    unrecognised!(Steer, created_at, prompt, state, steer_id, turn_id);
-    unrecognised!(SteerCreate, prompt);
-    unrecognised!(SteerState);
-    unrecognised!(
+    unrecognised_union!(StaticConnectorAuth,);
+    fields_contain_unrecognised!(StaticConnectorCreate, name, url);
+    fields_contain_unrecognised!(StaticConnectorTokenWrite, value);
+    fields_contain_unrecognised!(Steer, created_at, prompt, state, steer_id, turn_id);
+    fields_contain_unrecognised!(SteerCreate, prompt);
+    unrecognised_union!(SteerState,);
+    fields_contain_unrecognised!(
         StopFailure,
         created_at,
         detail,
@@ -50066,8 +50066,8 @@ pub mod types {
         stop_failure_id,
         tenant_id
     );
-    unrecognised!(StopFailureReason);
-    unrecognised!(
+    unrecognised_union!(StopFailureReason,);
+    fields_contain_unrecognised!(
         StoppedSession,
         box_id,
         box_retention,
@@ -50093,8 +50093,8 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(StoppedSessionState);
-    unrecognised!(
+    unrecognised_union!(StoppedSessionState,);
+    fields_contain_unrecognised!(
         StoppingSession,
         box_id,
         box_retention,
@@ -50120,12 +50120,12 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(StoppingSessionState);
-    unrecognised!(StorageKey, 0);
-    unrecognised!(StoredConfigFile, digest, from, size_bytes, source);
-    unrecognised!(StoredConfigFileSource);
-    unrecognised!(StoredPersonaFile, digest, path, size_bytes, source);
-    unrecognised!(
+    unrecognised_union!(StoppingSessionState,);
+    fields_contain_unrecognised!(StorageKey, 0);
+    fields_contain_unrecognised!(StoredConfigFile, digest, from, size_bytes, source);
+    unrecognised_union!(StoredConfigFileSource,);
+    fields_contain_unrecognised!(StoredPersonaFile, digest, path, size_bytes, source);
+    fields_contain_unrecognised!(
         StoredPersonaFileRead,
         created_at,
         digest,
@@ -50136,13 +50136,13 @@ pub mod types {
         source,
         updated_at
     );
-    unrecognised!(StoredPersonaFileReadSource);
-    unrecognised!(StoredPersonaFileSource);
-    unrecognised!(StoredTriggerTest, kind, payload, trigger_id);
-    unrecognised!(StoredTriggerTestKind);
-    unrecognised!(StoredValueChange, previous_name, value);
+    unrecognised_union!(StoredPersonaFileReadSource,);
+    unrecognised_union!(StoredPersonaFileSource,);
+    fields_contain_unrecognised!(StoredTriggerTest, kind, payload, trigger_id);
+    unrecognised_union!(StoredTriggerTestKind,);
+    fields_contain_unrecognised!(StoredValueChange, previous_name, value);
     unrecognised_union!(Subscription, ActiveSubscription, PausedSubscription, EndedSubscription);
-    unrecognised!(
+    fields_contain_unrecognised!(
         SubscriptionBase,
         created_at,
         crew_failures_in_a_row,
@@ -50158,7 +50158,7 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         SubscriptionCreate,
         crew_tags,
         events,
@@ -50167,8 +50167,8 @@ pub mod types {
         prompt,
         session_id
     );
-    unrecognised!(SubscriptionEndReason);
-    unrecognised!(
+    unrecognised_union!(SubscriptionEndReason,);
+    fields_contain_unrecognised!(
         SubscriptionEndedEvent,
         created_at,
         event,
@@ -50178,10 +50178,10 @@ pub mod types {
         subscription_id,
         tenant_id
     );
-    unrecognised!(SubscriptionEndedEventEvent);
-    unrecognised!(SubscriptionEventType);
-    unrecognised!(SubscriptionPause, message);
-    unrecognised!(SubscriptionPauseMessage, 0);
+    unrecognised_union!(SubscriptionEndedEventEvent,);
+    unrecognised_union!(SubscriptionEventType,);
+    fields_contain_unrecognised!(SubscriptionPause, message);
+    fields_contain_unrecognised!(SubscriptionPauseMessage, 0);
     unrecognised_union!(
         SubscriptionPauseReason,
         ByRequest,
@@ -50190,15 +50190,15 @@ pub mod types {
         CreditExhausted,
         StartsRefused
     );
-    unrecognised!(SubscriptionPausedByRequest, kind, message);
-    unrecognised!(SubscriptionPausedByRequestKind);
-    unrecognised!(SubscriptionPausedCreditExhausted, kind, turn_id);
-    unrecognised!(SubscriptionPausedCreditExhaustedKind);
-    unrecognised!(SubscriptionPausedCrewFailing, kind);
-    unrecognised!(SubscriptionPausedCrewFailingKind);
-    unrecognised!(SubscriptionPausedDeliveryFailed, kind, turn_id);
-    unrecognised!(SubscriptionPausedDeliveryFailedKind);
-    unrecognised!(
+    fields_contain_unrecognised!(SubscriptionPausedByRequest, kind, message);
+    unrecognised_union!(SubscriptionPausedByRequestKind,);
+    fields_contain_unrecognised!(SubscriptionPausedCreditExhausted, kind, turn_id);
+    unrecognised_union!(SubscriptionPausedCreditExhaustedKind,);
+    fields_contain_unrecognised!(SubscriptionPausedCrewFailing, kind);
+    unrecognised_union!(SubscriptionPausedCrewFailingKind,);
+    fields_contain_unrecognised!(SubscriptionPausedDeliveryFailed, kind, turn_id);
+    unrecognised_union!(SubscriptionPausedDeliveryFailedKind,);
+    fields_contain_unrecognised!(
         SubscriptionPausedEvent,
         created_at,
         event,
@@ -50208,15 +50208,15 @@ pub mod types {
         subscription_id,
         tenant_id
     );
-    unrecognised!(SubscriptionPausedEventEvent);
-    unrecognised!(SubscriptionPausedStartsRefused, kind);
-    unrecognised!(SubscriptionPausedStartsRefusedKind);
-    unrecognised!(SubscriptionState);
-    unrecognised!(SubscriptionTokenKey, expires_at, kind, name, provider, updated_at);
-    unrecognised!(SubscriptionTokenKeyKind);
-    unrecognised!(SubscriptionTokenMember, expires_at, kind, name, provider);
-    unrecognised!(SubscriptionTokenMemberKind);
-    unrecognised!(
+    unrecognised_union!(SubscriptionPausedEventEvent,);
+    fields_contain_unrecognised!(SubscriptionPausedStartsRefused, kind);
+    unrecognised_union!(SubscriptionPausedStartsRefusedKind,);
+    unrecognised_union!(SubscriptionState,);
+    fields_contain_unrecognised!(SubscriptionTokenKey, expires_at, kind, name, provider, updated_at);
+    unrecognised_union!(SubscriptionTokenKeyKind,);
+    fields_contain_unrecognised!(SubscriptionTokenMember, expires_at, kind, name, provider);
+    unrecognised_union!(SubscriptionTokenMemberKind,);
+    fields_contain_unrecognised!(
         SubscriptionTokenUpdate,
         expires_at,
         kind,
@@ -50225,22 +50225,22 @@ pub mod types {
         provider,
         value
     );
-    unrecognised!(SubscriptionTokenUpdateKind);
-    unrecognised!(SubscriptionTokenValue, expires_at, kind, name, provider, value);
-    unrecognised!(SubscriptionTokenValueKind);
-    unrecognised!(Summary, 0);
-    unrecognised!(SupervisorChannelState, received, sent, unacked);
-    unrecognised!(
+    unrecognised_union!(SubscriptionTokenUpdateKind,);
+    fields_contain_unrecognised!(SubscriptionTokenValue, expires_at, kind, name, provider, value);
+    unrecognised_union!(SubscriptionTokenValueKind,);
+    fields_contain_unrecognised!(Summary, 0);
+    fields_contain_unrecognised!(SupervisorChannelState, received, sent, unacked);
+    fields_contain_unrecognised!(
         SupervisorCheckReport,
         channel_protocol_version,
         guest_protocol_version,
         supervisor_version
     );
-    unrecognised!(SupervisorCheckReportSupervisorVersion, 0);
-    unrecognised!(SupervisorConfig, endpoint, host_id, tenant_id);
-    unrecognised!(SupervisorFailure);
-    unrecognised!(SupervisorHandover, boxes, handed_at);
-    unrecognised!(
+    fields_contain_unrecognised!(SupervisorCheckReportSupervisorVersion, 0);
+    fields_contain_unrecognised!(SupervisorConfig, endpoint, host_id, tenant_id);
+    unrecognised_union!(SupervisorFailure,);
+    fields_contain_unrecognised!(SupervisorHandover, boxes, handed_at);
+    fields_contain_unrecognised!(
         SupervisorHandoverBox,
         box_id,
         box_retention,
@@ -50256,14 +50256,14 @@ pub mod types {
     );
     unrecognised_union!(SupervisorHandoverBoxState, Warm, Turn);
     unrecognised_union!(SupervisorHandoverCommand, Snapshot, Teardown, Discard);
-    unrecognised!(SupervisorHandoverDiscard, kind);
-    unrecognised!(SupervisorHandoverDiscardKind);
-    unrecognised!(SupervisorHandoverFullImage, kind, manifest);
-    unrecognised!(SupervisorHandoverFullImageKind);
+    fields_contain_unrecognised!(SupervisorHandoverDiscard, kind);
+    unrecognised_union!(SupervisorHandoverDiscardKind,);
+    fields_contain_unrecognised!(SupervisorHandoverFullImage, kind, manifest);
+    unrecognised_union!(SupervisorHandoverFullImageKind,);
     unrecognised_union!(SupervisorHandoverImage, FullImage, LayeredImage);
-    unrecognised!(SupervisorHandoverLayeredImage, base, kind, layer, layer_path);
-    unrecognised!(SupervisorHandoverLayeredImageKind);
-    unrecognised!(
+    fields_contain_unrecognised!(SupervisorHandoverLayeredImage, base, kind, layer, layer_path);
+    unrecognised_union!(SupervisorHandoverLayeredImageKind,);
+    fields_contain_unrecognised!(
         SupervisorHandoverMachine,
         api_socket,
         console_tail,
@@ -50274,7 +50274,7 @@ pub mod types {
         stdout_fd,
         vsock
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         SupervisorHandoverSnapshot,
         kind,
         snapshot_id,
@@ -50282,10 +50282,10 @@ pub mod types {
         upload_expires_at,
         upload_url
     );
-    unrecognised!(SupervisorHandoverSnapshotKind);
-    unrecognised!(SupervisorHandoverTeardown, kind);
-    unrecognised!(SupervisorHandoverTeardownKind);
-    unrecognised!(
+    unrecognised_union!(SupervisorHandoverSnapshotKind,);
+    fields_contain_unrecognised!(SupervisorHandoverTeardown, kind);
+    unrecognised_union!(SupervisorHandoverTeardownKind,);
+    fields_contain_unrecognised!(
         SupervisorHandoverTurn,
         cancelled,
         error,
@@ -50296,14 +50296,14 @@ pub mod types {
         turn_id,
         turn_milliseconds
     );
-    unrecognised!(SupervisorHandoverTurnError, detail, reason);
-    unrecognised!(SupervisorHandoverTurnKind);
-    unrecognised!(SupervisorHandoverWarm, kind);
-    unrecognised!(SupervisorHandoverWarmKind);
-    unrecognised!(SupervisorHostKey, private_key, public_key);
-    unrecognised!(SupervisorHostKeyPrivateKey, 0);
-    unrecognised!(SupervisorHostKeyPublicKey, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(SupervisorHandoverTurnError, detail, reason);
+    unrecognised_union!(SupervisorHandoverTurnKind,);
+    fields_contain_unrecognised!(SupervisorHandoverWarm, kind);
+    unrecognised_union!(SupervisorHandoverWarmKind,);
+    fields_contain_unrecognised!(SupervisorHostKey, private_key, public_key);
+    fields_contain_unrecognised!(SupervisorHostKeyPrivateKey, 0);
+    fields_contain_unrecognised!(SupervisorHostKeyPublicKey, 0);
+    fields_contain_unrecognised!(
         SupervisorRelease,
         binaries,
         channel_protocol_oldest,
@@ -50313,10 +50313,10 @@ pub mod types {
         supervisor_version,
         tumpel_api_version
     );
-    unrecognised!(SupervisorReleaseBinary, architecture, sha256, size_bytes);
-    unrecognised!(SupervisorReleaseSupervisorVersion, 0);
-    unrecognised!(SupervisorReleaseTumpelApiVersion, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(SupervisorReleaseBinary, architecture, sha256, size_bytes);
+    fields_contain_unrecognised!(SupervisorReleaseSupervisorVersion, 0);
+    fields_contain_unrecognised!(SupervisorReleaseTumpelApiVersion, 0);
+    fields_contain_unrecognised!(
         SupervisorRuntime,
         box_capacity,
         budgets,
@@ -50331,11 +50331,11 @@ pub mod types {
         update_grace_seconds,
         vcpu_count
     );
-    unrecognised!(SupervisorRuntimeDataDir, 0);
-    unrecognised!(SupervisorRuntimeFirecrackerPath, 0);
-    unrecognised!(SupervisorRuntimeImageCacheDir, 0);
-    unrecognised!(SupervisorUpdateFailureReason);
-    unrecognised!(
+    fields_contain_unrecognised!(SupervisorRuntimeDataDir, 0);
+    fields_contain_unrecognised!(SupervisorRuntimeFirecrackerPath, 0);
+    fields_contain_unrecognised!(SupervisorRuntimeImageCacheDir, 0);
+    unrecognised_union!(SupervisorUpdateFailureReason,);
+    fields_contain_unrecognised!(
         SupervisorUpdateFailureReport,
         detail,
         failed_at,
@@ -50344,16 +50344,16 @@ pub mod types {
         reason,
         to_sha256
     );
-    unrecognised!(SupervisorUpdateFailureReported, failure, state);
-    unrecognised!(SupervisorUpdateFailureReportedState);
+    fields_contain_unrecognised!(SupervisorUpdateFailureReported, failure, state);
+    unrecognised_union!(SupervisorUpdateFailureReportedState,);
     unrecognised_union!(SupervisorUpdateLatestFailure, NotReported, FailureReported);
     unrecognised_union!(SupervisorUpdateLatestStep, NotReported, StepReported);
-    unrecognised!(SupervisorUpdateNotReported, state);
-    unrecognised!(SupervisorUpdateNotReportedState);
-    unrecognised!(SupervisorUpdatePending, from_sha256, swapped_at, to_sha256);
-    unrecognised!(SupervisorUpdatePhase);
-    unrecognised!(SupervisorUpdateRefusal, reason, refused_at, to_sha256);
-    unrecognised!(
+    fields_contain_unrecognised!(SupervisorUpdateNotReported, state);
+    unrecognised_union!(SupervisorUpdateNotReportedState,);
+    fields_contain_unrecognised!(SupervisorUpdatePending, from_sha256, swapped_at, to_sha256);
+    unrecognised_union!(SupervisorUpdatePhase,);
+    fields_contain_unrecognised!(SupervisorUpdateRefusal, reason, refused_at, to_sha256);
+    fields_contain_unrecognised!(
         SupervisorUpdateStepReport,
         at,
         boxes_running,
@@ -50362,80 +50362,80 @@ pub mod types {
         release_version,
         to_sha256
     );
-    unrecognised!(SupervisorUpdateStepReportReleaseVersion, 0);
-    unrecognised!(SupervisorUpdateStepReported, state, step);
-    unrecognised!(SupervisorUpdateStepReportedState);
-    unrecognised!(Tenant, created_at, name, tenant_id, tier, updated_at);
-    unrecognised!(TenantApiApplyConfigInput, now, tenant_id, writes);
-    unrecognised!(TenantApiApplyConfigRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiApplyConfigRequestOperation);
-    unrecognised!(TenantApiApplyConfigResult, applied);
+    fields_contain_unrecognised!(SupervisorUpdateStepReportReleaseVersion, 0);
+    fields_contain_unrecognised!(SupervisorUpdateStepReported, state, step);
+    unrecognised_union!(SupervisorUpdateStepReportedState,);
+    fields_contain_unrecognised!(Tenant, created_at, name, tenant_id, tier, updated_at);
+    fields_contain_unrecognised!(TenantApiApplyConfigInput, now, tenant_id, writes);
+    fields_contain_unrecognised!(TenantApiApplyConfigRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiApplyConfigRequestOperation,);
+    fields_contain_unrecognised!(TenantApiApplyConfigResult, applied);
     unrecognised_union!(TenantApiApplyConfigResultApplied, Applied, Conflict, ResourceDeleted);
-    unrecognised!(TenantApiArchiveSessionInput, now, session_id, tenant_id);
-    unrecognised!(TenantApiArchiveSessionRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiArchiveSessionRequestOperation);
-    unrecognised!(TenantApiArchiveSessionResult, archived);
+    fields_contain_unrecognised!(TenantApiArchiveSessionInput, now, session_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiArchiveSessionRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiArchiveSessionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiArchiveSessionResult, archived);
     unrecognised_union!(TenantApiArchiveSessionResultArchived, ArchivedOk, NotFound, NotStopped);
-    unrecognised!(TenantApiAuthorizationNoSecretSet, kind);
-    unrecognised!(TenantApiAuthorizationNoSecretSetKind);
-    unrecognised!(TenantApiAuthorizationNotFound, kind);
-    unrecognised!(TenantApiAuthorizationNotFoundKind);
-    unrecognised!(TenantApiAuthorizationNotWaiting, detail, kind);
-    unrecognised!(TenantApiAuthorizationNotWaitingKind);
-    unrecognised!(TenantApiAuthorizationOtherCredential, kind, name);
-    unrecognised!(TenantApiAuthorizationOtherCredentialKind);
-    unrecognised!(TenantApiByteRange, length, offset);
-    unrecognised!(TenantApiCancelTurnInput, cancelled_by, now, tenant_id, turn_id);
-    unrecognised!(TenantApiCancelTurnRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiCancelTurnRequestOperation);
-    unrecognised!(TenantApiCancelTurnResult, cancelled);
+    fields_contain_unrecognised!(TenantApiAuthorizationNoSecretSet, kind);
+    unrecognised_union!(TenantApiAuthorizationNoSecretSetKind,);
+    fields_contain_unrecognised!(TenantApiAuthorizationNotFound, kind);
+    unrecognised_union!(TenantApiAuthorizationNotFoundKind,);
+    fields_contain_unrecognised!(TenantApiAuthorizationNotWaiting, detail, kind);
+    unrecognised_union!(TenantApiAuthorizationNotWaitingKind,);
+    fields_contain_unrecognised!(TenantApiAuthorizationOtherCredential, kind, name);
+    unrecognised_union!(TenantApiAuthorizationOtherCredentialKind,);
+    fields_contain_unrecognised!(TenantApiByteRange, length, offset);
+    fields_contain_unrecognised!(TenantApiCancelTurnInput, cancelled_by, now, tenant_id, turn_id);
+    fields_contain_unrecognised!(TenantApiCancelTurnRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiCancelTurnRequestOperation,);
+    fields_contain_unrecognised!(TenantApiCancelTurnResult, cancelled);
     unrecognised_union!(TenantApiCancelTurnResultCancelled, CancelledOk, NotFound, NotWaiting);
-    unrecognised!(TenantApiCancelUnspoken, host, kind, turn_id);
-    unrecognised!(TenantApiCancelUnspokenKind);
-    unrecognised!(TenantApiClaudeSetupCodedOk, kind, setup);
-    unrecognised!(TenantApiClaudeSetupCodedOkKind);
-    unrecognised!(TenantApiClaudeSetupDeadline, at, claude_setup_id);
-    unrecognised!(TenantApiClaudeSetupDeadlineReachedInput, deadline, tenant_id);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiCancelUnspoken, host, kind, turn_id);
+    unrecognised_union!(TenantApiCancelUnspokenKind,);
+    fields_contain_unrecognised!(TenantApiClaudeSetupCodedOk, kind, setup);
+    unrecognised_union!(TenantApiClaudeSetupCodedOkKind,);
+    fields_contain_unrecognised!(TenantApiClaudeSetupDeadline, at, claude_setup_id);
+    fields_contain_unrecognised!(TenantApiClaudeSetupDeadlineReachedInput, deadline, tenant_id);
+    fields_contain_unrecognised!(
         TenantApiClaudeSetupDeadlineReachedRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiClaudeSetupDeadlineReachedRequestOperation);
-    unrecognised!(TenantApiClaudeSetupDeadlineReachedResult, 0);
-    unrecognised!(TenantApiClaudeSetupNotStored, detail, kind);
-    unrecognised!(TenantApiClaudeSetupNotStoredKind);
-    unrecognised!(TenantApiClaudeSetupReady, kind, message);
-    unrecognised!(TenantApiClaudeSetupReadyKind);
+    unrecognised_union!(TenantApiClaudeSetupDeadlineReachedRequestOperation,);
+    fields_contain_unrecognised!(TenantApiClaudeSetupDeadlineReachedResult, 0);
+    fields_contain_unrecognised!(TenantApiClaudeSetupNotStored, detail, kind);
+    unrecognised_union!(TenantApiClaudeSetupNotStoredKind,);
+    fields_contain_unrecognised!(TenantApiClaudeSetupReady, kind, message);
+    unrecognised_union!(TenantApiClaudeSetupReadyKind,);
     unrecognised_union!(TenantApiClaudeSetupReadyMessage, Offer, Code);
-    unrecognised!(TenantApiClaudeSetupRefused, kind);
-    unrecognised!(TenantApiClaudeSetupRefusedKind);
-    unrecognised!(TenantApiClaudeSetupReleaseUnreadable, detail, kind);
-    unrecognised!(TenantApiClaudeSetupReleaseUnreadableKind);
-    unrecognised!(TenantApiClaudeSetupStartedOk, kind, setup);
-    unrecognised!(TenantApiClaudeSetupStartedOkKind);
-    unrecognised!(TenantApiClaudeSetupStoredOk, kind);
-    unrecognised!(TenantApiClaudeSetupStoredOkKind);
-    unrecognised!(TenantApiClaudeSetupUnplaced, hosts, kind);
-    unrecognised!(TenantApiClaudeSetupUnplacedKind);
-    unrecognised!(TenantApiClaudeSetupWithdrawn, kind, message);
-    unrecognised!(TenantApiClaudeSetupWithdrawnKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiClaudeSetupRefused, kind);
+    unrecognised_union!(TenantApiClaudeSetupRefusedKind,);
+    fields_contain_unrecognised!(TenantApiClaudeSetupReleaseUnreadable, detail, kind);
+    unrecognised_union!(TenantApiClaudeSetupReleaseUnreadableKind,);
+    fields_contain_unrecognised!(TenantApiClaudeSetupStartedOk, kind, setup);
+    unrecognised_union!(TenantApiClaudeSetupStartedOkKind,);
+    fields_contain_unrecognised!(TenantApiClaudeSetupStoredOk, kind);
+    unrecognised_union!(TenantApiClaudeSetupStoredOkKind,);
+    fields_contain_unrecognised!(TenantApiClaudeSetupUnplaced, hosts, kind);
+    unrecognised_union!(TenantApiClaudeSetupUnplacedKind,);
+    fields_contain_unrecognised!(TenantApiClaudeSetupWithdrawn, kind, message);
+    unrecognised_union!(TenantApiClaudeSetupWithdrawnKind,);
+    fields_contain_unrecognised!(
         TenantApiClearConnectorCredentialInput,
         connector_id,
         now,
         tenant_id,
         updated_at
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiClearConnectorCredentialRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiClearConnectorCredentialRequestOperation);
-    unrecognised!(TenantApiClearConnectorCredentialResult, written);
+    unrecognised_union!(TenantApiClearConnectorCredentialRequestOperation,);
+    fields_contain_unrecognised!(TenantApiClearConnectorCredentialResult, written);
     unrecognised_union!(
         TenantApiClearConnectorCredentialResultWritten,
         WrittenOk,
@@ -50443,27 +50443,27 @@ pub mod types {
         NameTaken,
         Changed
     );
-    unrecognised!(TenantApiCompleteSubscriptionInput, now, subscription_id, tenant_id);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiCompleteSubscriptionInput, now, subscription_id, tenant_id);
+    fields_contain_unrecognised!(
         TenantApiCompleteSubscriptionRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiCompleteSubscriptionRequestOperation);
-    unrecognised!(TenantApiCompleteSubscriptionResult, completed);
+    unrecognised_union!(TenantApiCompleteSubscriptionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiCompleteSubscriptionResult, completed);
     unrecognised_union!(
         TenantApiCompleteSubscriptionResultCompleted,
         ChangedOk,
         NotFound,
         EndedState
     );
-    unrecognised!(TenantApiConfigApplied, kind);
-    unrecognised!(TenantApiConfigAppliedKind);
-    unrecognised!(TenantApiConfigConflict, constraint, kind);
-    unrecognised!(TenantApiConfigConflictKind);
-    unrecognised!(TenantApiConfigResourceDeleted, kind, resource);
-    unrecognised!(TenantApiConfigResourceDeletedKind);
+    fields_contain_unrecognised!(TenantApiConfigApplied, kind);
+    unrecognised_union!(TenantApiConfigAppliedKind,);
+    fields_contain_unrecognised!(TenantApiConfigConflict, constraint, kind);
+    unrecognised_union!(TenantApiConfigConflictKind,);
+    fields_contain_unrecognised!(TenantApiConfigResourceDeleted, kind, resource);
+    unrecognised_union!(TenantApiConfigResourceDeletedKind,);
     unrecognised_union!(
         TenantApiConfigWrite,
         CreateSecretSetWrite,
@@ -50478,15 +50478,15 @@ pub mod types {
         UpdateTriggerWrite,
         DeleteTriggerWrite
     );
-    unrecognised!(TenantApiConnectorAuthorizeStartedOk, authorization, kind);
-    unrecognised!(TenantApiConnectorAuthorizeStartedOkKind);
-    unrecognised!(TenantApiConnectorCallbackCode, code, issuer, kind);
-    unrecognised!(TenantApiConnectorCallbackCodeKind);
-    unrecognised!(TenantApiConnectorCallbackConnected, kind, name);
-    unrecognised!(TenantApiConnectorCallbackConnectedKind);
-    unrecognised!(TenantApiConnectorCallbackError, error, kind);
-    unrecognised!(TenantApiConnectorCallbackErrorKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiConnectorAuthorizeStartedOk, authorization, kind);
+    unrecognised_union!(TenantApiConnectorAuthorizeStartedOkKind,);
+    fields_contain_unrecognised!(TenantApiConnectorCallbackCode, code, issuer, kind);
+    unrecognised_union!(TenantApiConnectorCallbackCodeKind,);
+    fields_contain_unrecognised!(TenantApiConnectorCallbackConnected, kind, name);
+    unrecognised_union!(TenantApiConnectorCallbackConnectedKind,);
+    fields_contain_unrecognised!(TenantApiConnectorCallbackError, error, kind);
+    unrecognised_union!(TenantApiConnectorCallbackErrorKind,);
+    fields_contain_unrecognised!(
         TenantApiConnectorCallbackInput,
         callback,
         claims,
@@ -50495,31 +50495,31 @@ pub mod types {
         state_hash
     );
     unrecognised_union!(TenantApiConnectorCallbackInputCallback, Code, Error);
-    unrecognised!(TenantApiConnectorCallbackNotConnected, detail, kind);
-    unrecognised!(TenantApiConnectorCallbackNotConnectedKind);
-    unrecognised!(TenantApiConnectorCallbackRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiConnectorCallbackRequestOperation);
-    unrecognised!(TenantApiConnectorCallbackResult, settled);
+    fields_contain_unrecognised!(TenantApiConnectorCallbackNotConnected, detail, kind);
+    unrecognised_union!(TenantApiConnectorCallbackNotConnectedKind,);
+    fields_contain_unrecognised!(TenantApiConnectorCallbackRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiConnectorCallbackRequestOperation,);
+    fields_contain_unrecognised!(TenantApiConnectorCallbackResult, settled);
     unrecognised_union!(TenantApiConnectorCallbackResultSettled, Connected, NotConnected);
-    unrecognised!(TenantApiConnectorChanged, kind);
-    unrecognised!(TenantApiConnectorChangedKind);
-    unrecognised!(TenantApiConnectorDeletedOk, kind);
-    unrecognised!(TenantApiConnectorDeletedOkKind);
-    unrecognised!(TenantApiConnectorDiscoveryFailed, detail, kind);
-    unrecognised!(TenantApiConnectorDiscoveryFailedKind);
-    unrecognised!(TenantApiConnectorInUse, detail, kind);
-    unrecognised!(TenantApiConnectorInUseKind);
-    unrecognised!(TenantApiConnectorNameTaken, kind);
-    unrecognised!(TenantApiConnectorNameTakenKind);
-    unrecognised!(TenantApiConnectorNoCredential, kind, name);
-    unrecognised!(TenantApiConnectorNoCredentialKind);
-    unrecognised!(TenantApiConnectorNotFound, kind);
-    unrecognised!(TenantApiConnectorNotFoundKind);
-    unrecognised!(TenantApiConnectorRefreshFailed, detail, kind);
-    unrecognised!(TenantApiConnectorRefreshFailedKind);
-    unrecognised!(TenantApiConnectorRegistrationUnsupported, detail, kind);
-    unrecognised!(TenantApiConnectorRegistrationUnsupportedKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiConnectorChanged, kind);
+    unrecognised_union!(TenantApiConnectorChangedKind,);
+    fields_contain_unrecognised!(TenantApiConnectorDeletedOk, kind);
+    unrecognised_union!(TenantApiConnectorDeletedOkKind,);
+    fields_contain_unrecognised!(TenantApiConnectorDiscoveryFailed, detail, kind);
+    unrecognised_union!(TenantApiConnectorDiscoveryFailedKind,);
+    fields_contain_unrecognised!(TenantApiConnectorInUse, detail, kind);
+    unrecognised_union!(TenantApiConnectorInUseKind,);
+    fields_contain_unrecognised!(TenantApiConnectorNameTaken, kind);
+    unrecognised_union!(TenantApiConnectorNameTakenKind,);
+    fields_contain_unrecognised!(TenantApiConnectorNoCredential, kind, name);
+    unrecognised_union!(TenantApiConnectorNoCredentialKind,);
+    fields_contain_unrecognised!(TenantApiConnectorNotFound, kind);
+    unrecognised_union!(TenantApiConnectorNotFoundKind,);
+    fields_contain_unrecognised!(TenantApiConnectorRefreshFailed, detail, kind);
+    unrecognised_union!(TenantApiConnectorRefreshFailedKind,);
+    fields_contain_unrecognised!(TenantApiConnectorRegistrationUnsupported, detail, kind);
+    unrecognised_union!(TenantApiConnectorRegistrationUnsupportedKind,);
+    fields_contain_unrecognised!(
         TenantApiConnectorStateClaims,
         connector_authorization_id,
         connector_id,
@@ -50527,20 +50527,20 @@ pub mod types {
         purpose,
         tenant_id
     );
-    unrecognised!(TenantApiConnectorStateClaimsConnectorAuthorizationId, 0);
-    unrecognised!(TenantApiConnectorStateClaimsConnectorId, 0);
-    unrecognised!(TenantApiConnectorStateClaimsPrincipalId, 0);
-    unrecognised!(TenantApiConnectorStateClaimsPurpose);
-    unrecognised!(TenantApiConnectorStateClaimsTenantId, 0);
-    unrecognised!(TenantApiConnectorTokenRefused, kind);
-    unrecognised!(TenantApiConnectorTokenRefusedKind);
-    unrecognised!(TenantApiConnectorTokenServedOk, kind, token);
-    unrecognised!(TenantApiConnectorTokenServedOkKind);
-    unrecognised!(TenantApiConnectorTurnNotRunning, kind);
-    unrecognised!(TenantApiConnectorTurnNotRunningKind);
-    unrecognised!(TenantApiConnectorWrittenOk, connector, kind);
-    unrecognised!(TenantApiConnectorWrittenOkKind);
-    unrecognised!(TenantApiConnectorWrittenResult, written);
+    fields_contain_unrecognised!(TenantApiConnectorStateClaimsConnectorAuthorizationId, 0);
+    fields_contain_unrecognised!(TenantApiConnectorStateClaimsConnectorId, 0);
+    fields_contain_unrecognised!(TenantApiConnectorStateClaimsPrincipalId, 0);
+    unrecognised_union!(TenantApiConnectorStateClaimsPurpose,);
+    fields_contain_unrecognised!(TenantApiConnectorStateClaimsTenantId, 0);
+    fields_contain_unrecognised!(TenantApiConnectorTokenRefused, kind);
+    unrecognised_union!(TenantApiConnectorTokenRefusedKind,);
+    fields_contain_unrecognised!(TenantApiConnectorTokenServedOk, kind, token);
+    unrecognised_union!(TenantApiConnectorTokenServedOkKind,);
+    fields_contain_unrecognised!(TenantApiConnectorTurnNotRunning, kind);
+    unrecognised_union!(TenantApiConnectorTurnNotRunningKind,);
+    fields_contain_unrecognised!(TenantApiConnectorWrittenOk, connector, kind);
+    unrecognised_union!(TenantApiConnectorWrittenOkKind,);
+    fields_contain_unrecognised!(TenantApiConnectorWrittenResult, written);
     unrecognised_union!(
         TenantApiConnectorWrittenResultWritten,
         WrittenOk,
@@ -50548,10 +50548,10 @@ pub mod types {
         NameTaken,
         Changed
     );
-    unrecognised!(TenantApiCreateConnectorInput, auth, name, now, tenant_id, url);
-    unrecognised!(TenantApiCreateConnectorRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiCreateConnectorRequestOperation);
-    unrecognised!(TenantApiCreateConnectorResult, written);
+    fields_contain_unrecognised!(TenantApiCreateConnectorInput, auth, name, now, tenant_id, url);
+    fields_contain_unrecognised!(TenantApiCreateConnectorRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiCreateConnectorRequestOperation,);
+    fields_contain_unrecognised!(TenantApiCreateConnectorResult, written);
     unrecognised_union!(
         TenantApiCreateConnectorResultWritten,
         WrittenOk,
@@ -50559,45 +50559,45 @@ pub mod types {
         NameTaken,
         Changed
     );
-    unrecognised!(TenantApiCreatePersonaInput, now, persona, tenant_id);
-    unrecognised!(TenantApiCreatePersonaRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiCreatePersonaRequestOperation);
-    unrecognised!(TenantApiCreatePersonaResult, written);
+    fields_contain_unrecognised!(TenantApiCreatePersonaInput, now, persona, tenant_id);
+    fields_contain_unrecognised!(TenantApiCreatePersonaRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiCreatePersonaRequestOperation,);
+    fields_contain_unrecognised!(TenantApiCreatePersonaResult, written);
     unrecognised_union!(TenantApiCreatePersonaResultWritten, PersonaWritten, WriteConflict);
-    unrecognised!(TenantApiCreatePersonaWrite, kind, persona);
-    unrecognised!(TenantApiCreatePersonaWriteKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiCreatePersonaWrite, kind, persona);
+    unrecognised_union!(TenantApiCreatePersonaWriteKind,);
+    fields_contain_unrecognised!(
         TenantApiCreatePushSubscriptionInput,
         now,
         principal_id,
         subscription,
         tenant_id
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiCreatePushSubscriptionRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiCreatePushSubscriptionRequestOperation);
-    unrecognised!(TenantApiCreatePushSubscriptionResult, subscription);
-    unrecognised!(TenantApiCreateSecretSetInput, github_user, now, secret_set, tenant_id);
-    unrecognised!(TenantApiCreateSecretSetRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiCreateSecretSetRequestOperation);
-    unrecognised!(TenantApiCreateSecretSetResult, written);
+    unrecognised_union!(TenantApiCreatePushSubscriptionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiCreatePushSubscriptionResult, subscription);
+    fields_contain_unrecognised!(TenantApiCreateSecretSetInput, github_user, now, secret_set, tenant_id);
+    fields_contain_unrecognised!(TenantApiCreateSecretSetRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiCreateSecretSetRequestOperation,);
+    fields_contain_unrecognised!(TenantApiCreateSecretSetResult, written);
     unrecognised_union!(TenantApiCreateSecretSetResultWritten, SecretSetWritten, WriteConflict);
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiCreateSecretSetWrite,
         github_user,
         kind,
         secret_set,
         secret_set_id
     );
-    unrecognised!(TenantApiCreateSecretSetWriteKind);
-    unrecognised!(TenantApiCreateSubscriptionInput, now, subscription, tenant_id);
-    unrecognised!(TenantApiCreateSubscriptionRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiCreateSubscriptionRequestOperation);
-    unrecognised!(TenantApiCreateSubscriptionResult, created);
+    unrecognised_union!(TenantApiCreateSecretSetWriteKind,);
+    fields_contain_unrecognised!(TenantApiCreateSubscriptionInput, now, subscription, tenant_id);
+    fields_contain_unrecognised!(TenantApiCreateSubscriptionRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiCreateSubscriptionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiCreateSubscriptionResult, created);
     unrecognised_union!(
         TenantApiCreateSubscriptionResultCreated,
         SubscriptionCreatedOk,
@@ -50606,39 +50606,39 @@ pub mod types {
         SessionFailedState,
         SubscriptionPersonaLacksTumpelMcp
     );
-    unrecognised!(TenantApiCreateTriggerInput, now, principal_id, tenant_id, trigger);
-    unrecognised!(TenantApiCreateTriggerRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiCreateTriggerRequestOperation);
-    unrecognised!(TenantApiCreateTriggerResult, created);
+    fields_contain_unrecognised!(TenantApiCreateTriggerInput, now, principal_id, tenant_id, trigger);
+    fields_contain_unrecognised!(TenantApiCreateTriggerRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiCreateTriggerRequestOperation,);
+    fields_contain_unrecognised!(TenantApiCreateTriggerResult, created);
     unrecognised_union!(
         TenantApiCreateTriggerResultCreated,
         CreatedOk,
         NameTaken,
         PersonaNotFound
     );
-    unrecognised!(TenantApiCreateTriggerWrite, kind, principal_id, trigger);
-    unrecognised!(TenantApiCreateTriggerWriteKind);
-    unrecognised!(TenantApiCreateWebhookEndpointInput, endpoint, now, tenant_id);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiCreateTriggerWrite, kind, principal_id, trigger);
+    unrecognised_union!(TenantApiCreateTriggerWriteKind,);
+    fields_contain_unrecognised!(TenantApiCreateWebhookEndpointInput, endpoint, now, tenant_id);
+    fields_contain_unrecognised!(
         TenantApiCreateWebhookEndpointRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiCreateWebhookEndpointRequestOperation);
-    unrecognised!(TenantApiCreateWebhookEndpointResult, endpoint);
-    unrecognised!(TenantApiDeadlineReachedInput, due, retries, tenant_id);
-    unrecognised!(TenantApiDeadlineReachedRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiDeadlineReachedRequestOperation);
-    unrecognised!(TenantApiDeadlineReachedResult, 0);
-    unrecognised!(TenantApiDeferredOffersInput, host_id, tenant_id);
-    unrecognised!(TenantApiDeferredOffersRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiDeferredOffersRequestOperation);
-    unrecognised!(TenantApiDeferredOffersResult, handoffs);
-    unrecognised!(TenantApiDeleteConnectorInput, connector_id, updated_at);
-    unrecognised!(TenantApiDeleteConnectorRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiDeleteConnectorRequestOperation);
-    unrecognised!(TenantApiDeleteConnectorResult, deleted);
+    unrecognised_union!(TenantApiCreateWebhookEndpointRequestOperation,);
+    fields_contain_unrecognised!(TenantApiCreateWebhookEndpointResult, endpoint);
+    fields_contain_unrecognised!(TenantApiDeadlineReachedInput, due, retries, tenant_id);
+    fields_contain_unrecognised!(TenantApiDeadlineReachedRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiDeadlineReachedRequestOperation,);
+    fields_contain_unrecognised!(TenantApiDeadlineReachedResult, 0);
+    fields_contain_unrecognised!(TenantApiDeferredOffersInput, host_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiDeferredOffersRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiDeferredOffersRequestOperation,);
+    fields_contain_unrecognised!(TenantApiDeferredOffersResult, handoffs);
+    fields_contain_unrecognised!(TenantApiDeleteConnectorInput, connector_id, updated_at);
+    fields_contain_unrecognised!(TenantApiDeleteConnectorRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiDeleteConnectorRequestOperation,);
+    fields_contain_unrecognised!(TenantApiDeleteConnectorResult, deleted);
     unrecognised_union!(
         TenantApiDeleteConnectorResultDeleted,
         DeletedOk,
@@ -50646,157 +50646,157 @@ pub mod types {
         Changed,
         InUse
     );
-    unrecognised!(TenantApiDeletePersonaInput, persona_id, tenant_id);
-    unrecognised!(TenantApiDeletePersonaRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiDeletePersonaRequestOperation);
-    unrecognised!(TenantApiDeletePersonaResult, deleted);
+    fields_contain_unrecognised!(TenantApiDeletePersonaInput, persona_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiDeletePersonaRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiDeletePersonaRequestOperation,);
+    fields_contain_unrecognised!(TenantApiDeletePersonaResult, deleted);
     unrecognised_union!(TenantApiDeletePersonaResultDeleted, Deleted, NotFound, InUse);
-    unrecognised!(TenantApiDeletePersonaWrite, kind, persona_id);
-    unrecognised!(TenantApiDeletePersonaWriteKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiDeletePersonaWrite, kind, persona_id);
+    unrecognised_union!(TenantApiDeletePersonaWriteKind,);
+    fields_contain_unrecognised!(
         TenantApiDeletePushSubscriptionInput,
         principal_id,
         push_subscription_id,
         tenant_id
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiDeletePushSubscriptionRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiDeletePushSubscriptionRequestOperation);
-    unrecognised!(TenantApiDeletePushSubscriptionResult, deleted);
-    unrecognised!(TenantApiDeleteSecretSetInput, secret_set_id);
-    unrecognised!(TenantApiDeleteSecretSetRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiDeleteSecretSetRequestOperation);
-    unrecognised!(TenantApiDeleteSecretSetResult, deleted);
+    unrecognised_union!(TenantApiDeletePushSubscriptionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiDeletePushSubscriptionResult, deleted);
+    fields_contain_unrecognised!(TenantApiDeleteSecretSetInput, secret_set_id);
+    fields_contain_unrecognised!(TenantApiDeleteSecretSetRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiDeleteSecretSetRequestOperation,);
+    fields_contain_unrecognised!(TenantApiDeleteSecretSetResult, deleted);
     unrecognised_union!(TenantApiDeleteSecretSetResultDeleted, Deleted, NotFound, InUse);
-    unrecognised!(TenantApiDeleteSecretSetWrite, kind, secret_set_id);
-    unrecognised!(TenantApiDeleteSecretSetWriteKind);
-    unrecognised!(TenantApiDeleteSessionInput, session_id, tenant_id);
-    unrecognised!(TenantApiDeleteSessionRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiDeleteSessionRequestOperation);
-    unrecognised!(TenantApiDeleteSessionResult, deleted);
+    fields_contain_unrecognised!(TenantApiDeleteSecretSetWrite, kind, secret_set_id);
+    unrecognised_union!(TenantApiDeleteSecretSetWriteKind,);
+    fields_contain_unrecognised!(TenantApiDeleteSessionInput, session_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiDeleteSessionRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiDeleteSessionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiDeleteSessionResult, deleted);
     unrecognised_union!(TenantApiDeleteSessionResultDeleted, Deleted, NotFound, NotStopped);
-    unrecognised!(TenantApiDeleteSubscriptionInput, now, subscription_id, tenant_id);
-    unrecognised!(TenantApiDeleteSubscriptionRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiDeleteSubscriptionRequestOperation);
-    unrecognised!(TenantApiDeleteSubscriptionResult, deleted);
-    unrecognised!(TenantApiDeleteTriggerInput, now, tenant_id, trigger_id);
-    unrecognised!(TenantApiDeleteTriggerRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiDeleteTriggerRequestOperation);
-    unrecognised!(TenantApiDeleteTriggerResult, deleted);
-    unrecognised!(TenantApiDeleteTriggerWrite, kind, trigger_id);
-    unrecognised!(TenantApiDeleteTriggerWriteKind);
-    unrecognised!(TenantApiDeleteWebhookEndpointInput, tenant_id, webhook_endpoint_id);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiDeleteSubscriptionInput, now, subscription_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiDeleteSubscriptionRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiDeleteSubscriptionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiDeleteSubscriptionResult, deleted);
+    fields_contain_unrecognised!(TenantApiDeleteTriggerInput, now, tenant_id, trigger_id);
+    fields_contain_unrecognised!(TenantApiDeleteTriggerRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiDeleteTriggerRequestOperation,);
+    fields_contain_unrecognised!(TenantApiDeleteTriggerResult, deleted);
+    fields_contain_unrecognised!(TenantApiDeleteTriggerWrite, kind, trigger_id);
+    unrecognised_union!(TenantApiDeleteTriggerWriteKind,);
+    fields_contain_unrecognised!(TenantApiDeleteWebhookEndpointInput, tenant_id, webhook_endpoint_id);
+    fields_contain_unrecognised!(
         TenantApiDeleteWebhookEndpointRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiDeleteWebhookEndpointRequestOperation);
-    unrecognised!(TenantApiDeleteWebhookEndpointResult, deleted);
-    unrecognised!(TenantApiEventCursorExpired, kind, oldest_event_id);
-    unrecognised!(TenantApiEventCursorExpiredKind);
-    unrecognised!(TenantApiEventsRead, kind, page);
-    unrecognised!(TenantApiEventsReadKind);
-    unrecognised!(TenantApiExpiredCredentialRefusal, expires_at, kind, name);
-    unrecognised!(TenantApiExpiredCredentialRefusalKind);
-    unrecognised!(TenantApiForgetHostUsageInput, host_id);
-    unrecognised!(TenantApiForgetHostUsageRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiForgetHostUsageRequestOperation);
-    unrecognised!(TenantApiForgetHostUsageResult, 0);
-    unrecognised!(TenantApiForgetPushSubscriptionInput, push_subscription_id, tenant_id);
-    unrecognised!(
+    unrecognised_union!(TenantApiDeleteWebhookEndpointRequestOperation,);
+    fields_contain_unrecognised!(TenantApiDeleteWebhookEndpointResult, deleted);
+    fields_contain_unrecognised!(TenantApiEventCursorExpired, kind, oldest_event_id);
+    unrecognised_union!(TenantApiEventCursorExpiredKind,);
+    fields_contain_unrecognised!(TenantApiEventsRead, kind, page);
+    unrecognised_union!(TenantApiEventsReadKind,);
+    fields_contain_unrecognised!(TenantApiExpiredCredentialRefusal, expires_at, kind, name);
+    unrecognised_union!(TenantApiExpiredCredentialRefusalKind,);
+    fields_contain_unrecognised!(TenantApiForgetHostUsageInput, host_id);
+    fields_contain_unrecognised!(TenantApiForgetHostUsageRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiForgetHostUsageRequestOperation,);
+    fields_contain_unrecognised!(TenantApiForgetHostUsageResult, 0);
+    fields_contain_unrecognised!(TenantApiForgetPushSubscriptionInput, push_subscription_id, tenant_id);
+    fields_contain_unrecognised!(
         TenantApiForgetPushSubscriptionRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiForgetPushSubscriptionRequestOperation);
-    unrecognised!(TenantApiForgetPushSubscriptionResult, 0);
-    unrecognised!(TenantApiGetClaudeSetupInput, claude_setup_id, now, tenant_id);
-    unrecognised!(TenantApiGetClaudeSetupRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetClaudeSetupRequestOperation);
-    unrecognised!(TenantApiGetClaudeSetupResult, setup);
-    unrecognised!(TenantApiGetConnectorInput, connector_id, now, tenant_id);
-    unrecognised!(TenantApiGetConnectorRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetConnectorRequestOperation);
-    unrecognised!(TenantApiGetConnectorResult, connector);
-    unrecognised!(
+    unrecognised_union!(TenantApiForgetPushSubscriptionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiForgetPushSubscriptionResult, 0);
+    fields_contain_unrecognised!(TenantApiGetClaudeSetupInput, claude_setup_id, now, tenant_id);
+    fields_contain_unrecognised!(TenantApiGetClaudeSetupRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetClaudeSetupRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetClaudeSetupResult, setup);
+    fields_contain_unrecognised!(TenantApiGetConnectorInput, connector_id, now, tenant_id);
+    fields_contain_unrecognised!(TenantApiGetConnectorRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetConnectorRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetConnectorResult, connector);
+    fields_contain_unrecognised!(
         TenantApiGetOpenRouterAuthorizationInput,
         open_router_authorization_id,
         principal_id,
         tenant_id
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiGetOpenRouterAuthorizationRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiGetOpenRouterAuthorizationRequestOperation);
-    unrecognised!(TenantApiGetOpenRouterAuthorizationResult, read);
+    unrecognised_union!(TenantApiGetOpenRouterAuthorizationRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetOpenRouterAuthorizationResult, read);
     unrecognised_union!(
         TenantApiGetOpenRouterAuthorizationResultRead,
         OpenRouterAuthorizationFound,
         AuthorizationNotFound
     );
-    unrecognised!(TenantApiGetPersonaInput, persona_id, tenant_id);
-    unrecognised!(TenantApiGetPersonaRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetPersonaRequestOperation);
-    unrecognised!(TenantApiGetPersonaResult, persona);
-    unrecognised!(TenantApiGetPrebuildFailureInput, prebuild_id, tenant_id);
-    unrecognised!(TenantApiGetPrebuildFailureRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetPrebuildFailureRequestOperation);
-    unrecognised!(TenantApiGetPrebuildFailureResult, failure);
-    unrecognised!(TenantApiGetPrebuildInput, prebuild_id, tenant_id);
-    unrecognised!(TenantApiGetPrebuildRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetPrebuildRequestOperation);
-    unrecognised!(TenantApiGetPrebuildResult, prebuild);
-    unrecognised!(TenantApiGetSecretSetInput, secret_set_id, tenant_id);
-    unrecognised!(TenantApiGetSecretSetRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetSecretSetRequestOperation);
-    unrecognised!(TenantApiGetSecretSetResult, read);
+    fields_contain_unrecognised!(TenantApiGetPersonaInput, persona_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiGetPersonaRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetPersonaRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetPersonaResult, persona);
+    fields_contain_unrecognised!(TenantApiGetPrebuildFailureInput, prebuild_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiGetPrebuildFailureRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetPrebuildFailureRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetPrebuildFailureResult, failure);
+    fields_contain_unrecognised!(TenantApiGetPrebuildInput, prebuild_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiGetPrebuildRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetPrebuildRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetPrebuildResult, prebuild);
+    fields_contain_unrecognised!(TenantApiGetSecretSetInput, secret_set_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiGetSecretSetRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetSecretSetRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetSecretSetResult, read);
     unrecognised_union!(TenantApiGetSecretSetResultRead, Found, NotFound, Unreadable);
-    unrecognised!(TenantApiGetSessionInput, session_id, tenant_id);
-    unrecognised!(TenantApiGetSessionRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetSessionRequestOperation);
-    unrecognised!(TenantApiGetSessionResult, session);
-    unrecognised!(TenantApiGetSnapshotInput, snapshot_id, tenant_id);
-    unrecognised!(TenantApiGetSnapshotRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetSnapshotRequestOperation);
-    unrecognised!(TenantApiGetSnapshotResult, snapshot);
-    unrecognised!(TenantApiGetSubscriptionInput, subscription_id, tenant_id);
-    unrecognised!(TenantApiGetSubscriptionRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetSubscriptionRequestOperation);
-    unrecognised!(TenantApiGetSubscriptionResult, subscription);
-    unrecognised!(TenantApiGetTriggerInput, tenant_id, trigger_id);
-    unrecognised!(TenantApiGetTriggerRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetTriggerRequestOperation);
-    unrecognised!(TenantApiGetTriggerResult, trigger);
-    unrecognised!(TenantApiGetTurnFailureInput, tenant_id, turn_id);
-    unrecognised!(TenantApiGetTurnFailureRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetTurnFailureRequestOperation);
-    unrecognised!(TenantApiGetTurnFailureResult, failure);
-    unrecognised!(TenantApiGetTurnInput, tenant_id, turn_id);
-    unrecognised!(TenantApiGetTurnRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetTurnRequestOperation);
-    unrecognised!(TenantApiGetTurnResult, turn);
-    unrecognised!(TenantApiGetWebhookEndpointInput, tenant_id, webhook_endpoint_id);
-    unrecognised!(TenantApiGetWebhookEndpointRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiGetWebhookEndpointRequestOperation);
-    unrecognised!(TenantApiGetWebhookEndpointResult, endpoint);
-    unrecognised!(TenantApiGitHubUser, github_user_id, login);
-    unrecognised!(TenantApiHeldPrebuildInput, key, tenant_id);
-    unrecognised!(TenantApiHeldPrebuildRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiHeldPrebuildRequestOperation);
-    unrecognised!(TenantApiHeldPrebuildResult, prebuild);
-    unrecognised!(TenantApiHostFrameRefused, reason, type_);
-    unrecognised!(TenantApiHostFrameRefusedType);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiGetSessionInput, session_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiGetSessionRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetSessionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetSessionResult, session);
+    fields_contain_unrecognised!(TenantApiGetSnapshotInput, snapshot_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiGetSnapshotRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetSnapshotRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetSnapshotResult, snapshot);
+    fields_contain_unrecognised!(TenantApiGetSubscriptionInput, subscription_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiGetSubscriptionRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetSubscriptionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetSubscriptionResult, subscription);
+    fields_contain_unrecognised!(TenantApiGetTriggerInput, tenant_id, trigger_id);
+    fields_contain_unrecognised!(TenantApiGetTriggerRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetTriggerRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetTriggerResult, trigger);
+    fields_contain_unrecognised!(TenantApiGetTurnFailureInput, tenant_id, turn_id);
+    fields_contain_unrecognised!(TenantApiGetTurnFailureRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetTurnFailureRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetTurnFailureResult, failure);
+    fields_contain_unrecognised!(TenantApiGetTurnInput, tenant_id, turn_id);
+    fields_contain_unrecognised!(TenantApiGetTurnRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetTurnRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetTurnResult, turn);
+    fields_contain_unrecognised!(TenantApiGetWebhookEndpointInput, tenant_id, webhook_endpoint_id);
+    fields_contain_unrecognised!(TenantApiGetWebhookEndpointRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiGetWebhookEndpointRequestOperation,);
+    fields_contain_unrecognised!(TenantApiGetWebhookEndpointResult, endpoint);
+    fields_contain_unrecognised!(TenantApiGitHubUser, github_user_id, login);
+    fields_contain_unrecognised!(TenantApiHeldPrebuildInput, key, tenant_id);
+    fields_contain_unrecognised!(TenantApiHeldPrebuildRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiHeldPrebuildRequestOperation,);
+    fields_contain_unrecognised!(TenantApiHeldPrebuildResult, prebuild);
+    fields_contain_unrecognised!(TenantApiHostFrameRefused, reason, type_);
+    unrecognised_union!(TenantApiHostFrameRefusedType,);
+    fields_contain_unrecognised!(
         TenantApiHostHeartbeatInput,
         box_capacity,
         channel_protocol,
@@ -50809,10 +50809,10 @@ pub mod types {
         tenant_id,
         usage
     );
-    unrecognised!(TenantApiHostHeartbeatRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiHostHeartbeatRequestOperation);
-    unrecognised!(TenantApiHostHeartbeatResult, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiHostHeartbeatRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiHostHeartbeatRequestOperation,);
+    fields_contain_unrecognised!(TenantApiHostHeartbeatResult, 0);
+    fields_contain_unrecognised!(
         TenantApiHostHelloInput,
         box_capacity,
         channel_protocol,
@@ -50822,10 +50822,10 @@ pub mod types {
         tenant_id,
         usage
     );
-    unrecognised!(TenantApiHostHelloRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiHostHelloRequestOperation);
-    unrecognised!(TenantApiHostHelloResult, 0);
-    unrecognised!(TenantApiHostMessageInput, host_id, message, tenant_id);
+    fields_contain_unrecognised!(TenantApiHostHelloRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiHostHelloRequestOperation,);
+    fields_contain_unrecognised!(TenantApiHostHelloResult, 0);
+    fields_contain_unrecognised!(TenantApiHostMessageInput, host_id, message, tenant_id);
     unrecognised_union!(
         TenantApiHostMessageInputMessage,
         TurnImageFetching,
@@ -50845,10 +50845,10 @@ pub mod types {
         ClaudeSetupBoxUrl,
         ClaudeSetupBoxFailed
     );
-    unrecognised!(TenantApiHostMessageRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiHostMessageRequestOperation);
-    unrecognised!(TenantApiHostMessageResult, reply);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiHostMessageRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiHostMessageRequestOperation,);
+    fields_contain_unrecognised!(TenantApiHostMessageResult, reply);
+    fields_contain_unrecognised!(
         TenantApiHostMessageResultReply,
         subtype_0,
         subtype_1,
@@ -50861,9 +50861,9 @@ pub mod types {
         subtype_8,
         subtype_9
     );
-    unrecognised!(TenantApiHostPrebuildStarted, kind, started);
-    unrecognised!(TenantApiHostPrebuildStartedKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiHostPrebuildStarted, kind, started);
+    unrecognised_union!(TenantApiHostPrebuildStartedKind,);
+    fields_contain_unrecognised!(
         TenantApiHostRecord,
         architecture,
         cpu_count,
@@ -50880,28 +50880,28 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(TenantApiHostRecordPublicKey, 0);
-    unrecognised!(TenantApiHostRecordSupervisorVersion, 0);
-    unrecognised!(TenantApiImageAvailability, architectures, harness, harness_version);
-    unrecognised!(TenantApiIssueOfSession, branch, html_url, issue_number, title);
-    unrecognised!(TenantApiListClaudeSetupsInput, now, secret_set_id, tenant_id);
-    unrecognised!(TenantApiListClaudeSetupsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListClaudeSetupsRequestOperation);
-    unrecognised!(TenantApiListClaudeSetupsResult, setups);
-    unrecognised!(TenantApiListConnectorsInput, now, tenant_id);
-    unrecognised!(TenantApiListConnectorsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListConnectorsRequestOperation);
-    unrecognised!(TenantApiListConnectorsResult, connectors);
-    unrecognised!(TenantApiListCredentialHandoversInput, session_id, tenant_id);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiHostRecordPublicKey, 0);
+    fields_contain_unrecognised!(TenantApiHostRecordSupervisorVersion, 0);
+    fields_contain_unrecognised!(TenantApiImageAvailability, architectures, harness, harness_version);
+    fields_contain_unrecognised!(TenantApiIssueOfSession, branch, html_url, issue_number, title);
+    fields_contain_unrecognised!(TenantApiListClaudeSetupsInput, now, secret_set_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiListClaudeSetupsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListClaudeSetupsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListClaudeSetupsResult, setups);
+    fields_contain_unrecognised!(TenantApiListConnectorsInput, now, tenant_id);
+    fields_contain_unrecognised!(TenantApiListConnectorsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListConnectorsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListConnectorsResult, connectors);
+    fields_contain_unrecognised!(TenantApiListCredentialHandoversInput, session_id, tenant_id);
+    fields_contain_unrecognised!(
         TenantApiListCredentialHandoversRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiListCredentialHandoversRequestOperation);
-    unrecognised!(TenantApiListCredentialHandoversResult, handovers);
-    unrecognised!(
+    unrecognised_union!(TenantApiListCredentialHandoversRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListCredentialHandoversResult, handovers);
+    fields_contain_unrecognised!(
         TenantApiListEventsInput,
         after_event_id,
         events,
@@ -50909,87 +50909,87 @@ pub mod types {
         tenant_id,
         trigger_id
     );
-    unrecognised!(TenantApiListEventsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListEventsRequestOperation);
-    unrecognised!(TenantApiListEventsResult, listed);
+    fields_contain_unrecognised!(TenantApiListEventsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListEventsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListEventsResult, listed);
     unrecognised_union!(TenantApiListEventsResultListed, EventsRead, EventCursorExpired);
-    unrecognised!(TenantApiListHostUsageInput, tenant_id);
-    unrecognised!(TenantApiListHostUsageRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListHostUsageRequestOperation);
-    unrecognised!(TenantApiListHostUsageResult, usage);
-    unrecognised!(TenantApiListLatestPrebuildsInput, tenant_id);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiListHostUsageInput, tenant_id);
+    fields_contain_unrecognised!(TenantApiListHostUsageRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListHostUsageRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListHostUsageResult, usage);
+    fields_contain_unrecognised!(TenantApiListLatestPrebuildsInput, tenant_id);
+    fields_contain_unrecognised!(
         TenantApiListLatestPrebuildsRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiListLatestPrebuildsRequestOperation);
-    unrecognised!(TenantApiListLatestPrebuildsResult, prebuilds);
-    unrecognised!(TenantApiListPersonasInput, tenant_id);
-    unrecognised!(TenantApiListPersonasRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListPersonasRequestOperation);
-    unrecognised!(TenantApiListPersonasResult, personas);
-    unrecognised!(TenantApiListPinsInput, 0);
-    unrecognised!(TenantApiListPinsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListPinsRequestOperation);
-    unrecognised!(TenantApiListPinsResult, pins);
-    unrecognised!(TenantApiListPrebuildsInput, repository, tenant_id);
-    unrecognised!(TenantApiListPrebuildsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListPrebuildsRequestOperation);
-    unrecognised!(TenantApiListPrebuildsResult, prebuilds);
-    unrecognised!(TenantApiListPushSubscriptionsInput, principal_id, tenant_id);
-    unrecognised!(
+    unrecognised_union!(TenantApiListLatestPrebuildsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListLatestPrebuildsResult, prebuilds);
+    fields_contain_unrecognised!(TenantApiListPersonasInput, tenant_id);
+    fields_contain_unrecognised!(TenantApiListPersonasRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListPersonasRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListPersonasResult, personas);
+    fields_contain_unrecognised!(TenantApiListPinsInput, 0);
+    fields_contain_unrecognised!(TenantApiListPinsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListPinsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListPinsResult, pins);
+    fields_contain_unrecognised!(TenantApiListPrebuildsInput, repository, tenant_id);
+    fields_contain_unrecognised!(TenantApiListPrebuildsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListPrebuildsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListPrebuildsResult, prebuilds);
+    fields_contain_unrecognised!(TenantApiListPushSubscriptionsInput, principal_id, tenant_id);
+    fields_contain_unrecognised!(
         TenantApiListPushSubscriptionsRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiListPushSubscriptionsRequestOperation);
-    unrecognised!(TenantApiListPushSubscriptionsResult, subscriptions);
-    unrecognised!(TenantApiListSecretSetsInput, tenant_id);
-    unrecognised!(TenantApiListSecretSetsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListSecretSetsRequestOperation);
-    unrecognised!(TenantApiListSecretSetsResult, read);
+    unrecognised_union!(TenantApiListPushSubscriptionsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListPushSubscriptionsResult, subscriptions);
+    fields_contain_unrecognised!(TenantApiListSecretSetsInput, tenant_id);
+    fields_contain_unrecognised!(TenantApiListSecretSetsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListSecretSetsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListSecretSetsResult, read);
     unrecognised_union!(TenantApiListSecretSetsResultRead, SetsRead, SetUnreadable);
-    unrecognised!(TenantApiListSessionsInput, filter, tenant_id);
-    unrecognised!(TenantApiListSessionsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListSessionsRequestOperation);
-    unrecognised!(TenantApiListSessionsResult, sessions);
-    unrecognised!(TenantApiListSnapshotsInput, session_id, tenant_id);
-    unrecognised!(TenantApiListSnapshotsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListSnapshotsRequestOperation);
-    unrecognised!(TenantApiListSnapshotsResult, snapshots);
-    unrecognised!(TenantApiListSteersInput, tenant_id, turn_id);
-    unrecognised!(TenantApiListSteersRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListSteersRequestOperation);
-    unrecognised!(TenantApiListSteersResult, steers);
-    unrecognised!(TenantApiListStopFailuresInput, session_id, tenant_id);
-    unrecognised!(TenantApiListStopFailuresRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListStopFailuresRequestOperation);
-    unrecognised!(TenantApiListStopFailuresResult, failures);
-    unrecognised!(TenantApiListSubscriptionsInput, filter, tenant_id);
-    unrecognised!(TenantApiListSubscriptionsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListSubscriptionsRequestOperation);
-    unrecognised!(TenantApiListSubscriptionsResult, subscriptions);
-    unrecognised!(TenantApiListTriggersInput, tenant_id);
-    unrecognised!(TenantApiListTriggersRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListTriggersRequestOperation);
-    unrecognised!(TenantApiListTriggersResult, triggers);
-    unrecognised!(TenantApiListTurnsInput, session_id, tenant_id);
-    unrecognised!(TenantApiListTurnsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiListTurnsRequestOperation);
-    unrecognised!(TenantApiListTurnsResult, turns);
-    unrecognised!(TenantApiListWebhookEndpointsInput, tenant_id);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiListSessionsInput, filter, tenant_id);
+    fields_contain_unrecognised!(TenantApiListSessionsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListSessionsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListSessionsResult, sessions);
+    fields_contain_unrecognised!(TenantApiListSnapshotsInput, session_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiListSnapshotsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListSnapshotsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListSnapshotsResult, snapshots);
+    fields_contain_unrecognised!(TenantApiListSteersInput, tenant_id, turn_id);
+    fields_contain_unrecognised!(TenantApiListSteersRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListSteersRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListSteersResult, steers);
+    fields_contain_unrecognised!(TenantApiListStopFailuresInput, session_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiListStopFailuresRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListStopFailuresRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListStopFailuresResult, failures);
+    fields_contain_unrecognised!(TenantApiListSubscriptionsInput, filter, tenant_id);
+    fields_contain_unrecognised!(TenantApiListSubscriptionsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListSubscriptionsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListSubscriptionsResult, subscriptions);
+    fields_contain_unrecognised!(TenantApiListTriggersInput, tenant_id);
+    fields_contain_unrecognised!(TenantApiListTriggersRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListTriggersRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListTriggersResult, triggers);
+    fields_contain_unrecognised!(TenantApiListTurnsInput, session_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiListTurnsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiListTurnsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListTurnsResult, turns);
+    fields_contain_unrecognised!(TenantApiListWebhookEndpointsInput, tenant_id);
+    fields_contain_unrecognised!(
         TenantApiListWebhookEndpointsRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiListWebhookEndpointsRequestOperation);
-    unrecognised!(TenantApiListWebhookEndpointsResult, endpoints);
-    unrecognised!(
+    unrecognised_union!(TenantApiListWebhookEndpointsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiListWebhookEndpointsResult, endpoints);
+    fields_contain_unrecognised!(
         TenantApiModelUnsupportedCredentialRefusal,
         allowed,
         credential_kind,
@@ -50997,8 +50997,8 @@ pub mod types {
         model,
         name
     );
-    unrecognised!(TenantApiModelUnsupportedCredentialRefusalKind);
-    unrecognised!(
+    unrecognised_union!(TenantApiModelUnsupportedCredentialRefusalKind,);
+    fields_contain_unrecognised!(
         TenantApiNewClaudeSetup,
         endpoint,
         harness,
@@ -51007,8 +51007,8 @@ pub mod types {
         principal_id,
         secret_set_id
     );
-    unrecognised!(TenantApiNewOpenRouterAuthorization, control_plane_origin, secret_set_id);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiNewOpenRouterAuthorization, control_plane_origin, secret_set_id);
+    fields_contain_unrecognised!(
         TenantApiNewSession,
         endpoint,
         harness,
@@ -51018,11 +51018,11 @@ pub mod types {
         start,
         started_by
     );
-    unrecognised!(TenantApiNoCredentialRefusal, accepted, kind);
-    unrecognised!(TenantApiNoCredentialRefusalKind);
-    unrecognised!(TenantApiNoModelCredentialRefusal, accepted, kind, model, provider);
-    unrecognised!(TenantApiNoModelCredentialRefusalKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiNoCredentialRefusal, accepted, kind);
+    unrecognised_union!(TenantApiNoCredentialRefusalKind,);
+    fields_contain_unrecognised!(TenantApiNoModelCredentialRefusal, accepted, kind, model, provider);
+    unrecognised_union!(TenantApiNoModelCredentialRefusalKind,);
+    fields_contain_unrecognised!(
         TenantApiOfferReady,
         credential,
         git_author_email,
@@ -51033,34 +51033,34 @@ pub mod types {
         persona_files,
         snapshots
     );
-    unrecognised!(TenantApiOfferReadyKind);
-    unrecognised!(TenantApiOfferWithdrawn, kind);
-    unrecognised!(TenantApiOfferWithdrawnKind);
-    unrecognised!(TenantApiOpenInput, now, tenant_id);
-    unrecognised!(TenantApiOpenRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiOpenRequestOperation);
-    unrecognised!(TenantApiOpenResult, 0);
-    unrecognised!(
+    unrecognised_union!(TenantApiOfferReadyKind,);
+    fields_contain_unrecognised!(TenantApiOfferWithdrawn, kind);
+    unrecognised_union!(TenantApiOfferWithdrawnKind,);
+    fields_contain_unrecognised!(TenantApiOpenInput, now, tenant_id);
+    fields_contain_unrecognised!(TenantApiOpenRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiOpenRequestOperation,);
+    fields_contain_unrecognised!(TenantApiOpenResult, 0);
+    fields_contain_unrecognised!(
         TenantApiOpenRouterAuthorizationDeadline,
         at,
         open_router_authorization_id
     );
-    unrecognised!(TenantApiOpenRouterAuthorizationDeadlineReachedInput, deadline);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiOpenRouterAuthorizationDeadlineReachedInput, deadline);
+    fields_contain_unrecognised!(
         TenantApiOpenRouterAuthorizationDeadlineReachedRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiOpenRouterAuthorizationDeadlineReachedRequestOperation);
-    unrecognised!(TenantApiOpenRouterAuthorizationDeadlineReachedResult, 0);
-    unrecognised!(TenantApiOpenRouterAuthorizationFound, authorization, kind);
-    unrecognised!(TenantApiOpenRouterAuthorizationFoundKind);
-    unrecognised!(TenantApiOpenRouterAuthorizationStartedOk, authorization, kind);
-    unrecognised!(TenantApiOpenRouterAuthorizationStartedOkKind);
-    unrecognised!(TenantApiOpenRouterCallbackCode, code, kind);
-    unrecognised!(TenantApiOpenRouterCallbackCodeKind);
-    unrecognised!(
+    unrecognised_union!(TenantApiOpenRouterAuthorizationDeadlineReachedRequestOperation,);
+    fields_contain_unrecognised!(TenantApiOpenRouterAuthorizationDeadlineReachedResult, 0);
+    fields_contain_unrecognised!(TenantApiOpenRouterAuthorizationFound, authorization, kind);
+    unrecognised_union!(TenantApiOpenRouterAuthorizationFoundKind,);
+    fields_contain_unrecognised!(TenantApiOpenRouterAuthorizationStartedOk, authorization, kind);
+    unrecognised_union!(TenantApiOpenRouterAuthorizationStartedOkKind,);
+    fields_contain_unrecognised!(TenantApiOpenRouterCallbackCode, code, kind);
+    unrecognised_union!(TenantApiOpenRouterCallbackCodeKind,);
+    fields_contain_unrecognised!(
         TenantApiOpenRouterCallbackInput,
         callback,
         now,
@@ -51068,33 +51068,33 @@ pub mod types {
         tenant_id
     );
     unrecognised_union!(TenantApiOpenRouterCallbackInputCallback, Code, NoCode);
-    unrecognised!(TenantApiOpenRouterCallbackNoCode, kind);
-    unrecognised!(TenantApiOpenRouterCallbackNoCodeKind);
-    unrecognised!(TenantApiOpenRouterCallbackRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiOpenRouterCallbackRequestOperation);
-    unrecognised!(TenantApiOpenRouterCallbackResult, settled);
+    fields_contain_unrecognised!(TenantApiOpenRouterCallbackNoCode, kind);
+    unrecognised_union!(TenantApiOpenRouterCallbackNoCodeKind,);
+    fields_contain_unrecognised!(TenantApiOpenRouterCallbackRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiOpenRouterCallbackRequestOperation,);
+    fields_contain_unrecognised!(TenantApiOpenRouterCallbackResult, settled);
     unrecognised_union!(
         TenantApiOpenRouterCallbackResultSettled,
         OpenRouterReturned,
         AuthorizationNotFound
     );
-    unrecognised!(TenantApiOpenRouterReturned, kind, secret_set_id);
-    unrecognised!(TenantApiOpenRouterReturnedKind);
-    unrecognised!(TenantApiOpenRouterSecretSetsInput, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiOpenRouterReturned, kind, secret_set_id);
+    unrecognised_union!(TenantApiOpenRouterReturnedKind,);
+    fields_contain_unrecognised!(TenantApiOpenRouterSecretSetsInput, 0);
+    fields_contain_unrecognised!(
         TenantApiOpenRouterSecretSetsRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiOpenRouterSecretSetsRequestOperation);
-    unrecognised!(TenantApiOpenRouterSecretSetsResult, names);
-    unrecognised!(TenantApiPatchPersonaInput, now, patch, persona_id, tenant_id);
-    unrecognised!(TenantApiPatchPersonaRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiPatchPersonaRequestOperation);
-    unrecognised!(TenantApiPatchPersonaResult, written);
+    unrecognised_union!(TenantApiOpenRouterSecretSetsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiOpenRouterSecretSetsResult, names);
+    fields_contain_unrecognised!(TenantApiPatchPersonaInput, now, patch, persona_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiPatchPersonaRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiPatchPersonaRequestOperation,);
+    fields_contain_unrecognised!(TenantApiPatchPersonaResult, written);
     unrecognised_union!(TenantApiPatchPersonaResultWritten, PersonaUpdated, WriteConflict);
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiPatchSecretSetInput,
         github_user,
         now,
@@ -51102,9 +51102,9 @@ pub mod types {
         secret_set_id,
         tenant_id
     );
-    unrecognised!(TenantApiPatchSecretSetRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiPatchSecretSetRequestOperation);
-    unrecognised!(TenantApiPatchSecretSetResult, patched);
+    fields_contain_unrecognised!(TenantApiPatchSecretSetRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiPatchSecretSetRequestOperation,);
+    fields_contain_unrecognised!(TenantApiPatchSecretSetResult, patched);
     unrecognised_union!(
         TenantApiPatchSecretSetResultPatched,
         Updated,
@@ -51113,23 +51113,23 @@ pub mod types {
         NoStoredValue,
         UncheckedToken
     );
-    unrecognised!(TenantApiPatchSessionTagsInput, now, patch, session_id, tenant_id);
-    unrecognised!(TenantApiPatchSessionTagsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiPatchSessionTagsRequestOperation);
-    unrecognised!(TenantApiPatchSessionTagsResult, tagged);
+    fields_contain_unrecognised!(TenantApiPatchSessionTagsInput, now, patch, session_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiPatchSessionTagsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiPatchSessionTagsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiPatchSessionTagsResult, tagged);
     unrecognised_union!(TenantApiPatchSessionTagsResultTagged, Tagged, NotFound, TagsOverLimit);
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiPauseSubscriptionInput,
         message,
         now,
         subscription_id,
         tenant_id
     );
-    unrecognised!(TenantApiPauseSubscriptionRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiPauseSubscriptionRequestOperation);
-    unrecognised!(TenantApiPauseSubscriptionResult, paused);
+    fields_contain_unrecognised!(TenantApiPauseSubscriptionRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiPauseSubscriptionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiPauseSubscriptionResult, paused);
     unrecognised_union!(TenantApiPauseSubscriptionResultPaused, ChangedOk, NotFound, EndedState);
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiPersonaChange,
         box_disk_mib,
         box_memory_mib,
@@ -51140,13 +51140,13 @@ pub mod types {
         secret_set_id,
         tumpel_mcp
     );
-    unrecognised!(TenantApiPersonaDeleted, kind);
-    unrecognised!(TenantApiPersonaDeletedKind);
-    unrecognised!(TenantApiPersonaInUse, kind, sessions);
-    unrecognised!(TenantApiPersonaInUseKind);
-    unrecognised!(TenantApiPersonaNotFound, kind);
-    unrecognised!(TenantApiPersonaNotFoundKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiPersonaDeleted, kind);
+    unrecognised_union!(TenantApiPersonaDeletedKind,);
+    fields_contain_unrecognised!(TenantApiPersonaInUse, kind, sessions);
+    unrecognised_union!(TenantApiPersonaInUseKind,);
+    fields_contain_unrecognised!(TenantApiPersonaNotFound, kind);
+    unrecognised_union!(TenantApiPersonaNotFoundKind,);
+    fields_contain_unrecognised!(
         TenantApiPersonaPatchChange,
         box_disk_mib,
         box_memory_mib,
@@ -51156,8 +51156,8 @@ pub mod types {
         secret_set_id,
         tumpel_mcp
     );
-    unrecognised!(TenantApiPersonaUpdated, ok, value);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiPersonaUpdated, ok, value);
+    fields_contain_unrecognised!(
         TenantApiPersonaWrite,
         box_disk_mib,
         box_memory_mib,
@@ -51169,16 +51169,16 @@ pub mod types {
         secret_set_id,
         tumpel_mcp
     );
-    unrecognised!(TenantApiPersonaWritten, ok, value);
-    unrecognised!(TenantApiPinInput, now, pin);
-    unrecognised!(TenantApiPinRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiPinRequestOperation);
-    unrecognised!(TenantApiPinResult, pin);
-    unrecognised!(TenantApiPinWrite, kind, pin);
-    unrecognised!(TenantApiPinWriteKind);
-    unrecognised!(TenantApiPrebuildBuildDue, deadline, name);
-    unrecognised!(TenantApiPrebuildBuildDueName);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiPersonaWritten, ok, value);
+    fields_contain_unrecognised!(TenantApiPinInput, now, pin);
+    fields_contain_unrecognised!(TenantApiPinRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiPinRequestOperation,);
+    fields_contain_unrecognised!(TenantApiPinResult, pin);
+    fields_contain_unrecognised!(TenantApiPinWrite, kind, pin);
+    unrecognised_union!(TenantApiPinWriteKind,);
+    fields_contain_unrecognised!(TenantApiPrebuildBuildDue, deadline, name);
+    unrecognised_union!(TenantApiPrebuildBuildDueName,);
+    fields_contain_unrecognised!(
         TenantApiPrebuildCommitStart,
         config_source,
         default_branch,
@@ -51188,60 +51188,60 @@ pub mod types {
         prebuild_id,
         rootfs_key
     );
-    unrecognised!(TenantApiPrebuildDeadline, at, prebuild_id);
-    unrecognised!(TenantApiPrebuildDeadlineReachedInput, due, retries, tenant_id);
+    fields_contain_unrecognised!(TenantApiPrebuildDeadline, at, prebuild_id);
+    fields_contain_unrecognised!(TenantApiPrebuildDeadlineReachedInput, due, retries, tenant_id);
     unrecognised_union!(TenantApiPrebuildDeadlineReachedInputDue, DispatchDue, BuildDue);
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiPrebuildDeadlineReachedRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiPrebuildDeadlineReachedRequestOperation);
-    unrecognised!(TenantApiPrebuildDeadlineReachedResult, 0);
-    unrecognised!(TenantApiPrebuildDispatchDue, deadline, name);
-    unrecognised!(TenantApiPrebuildDispatchDueName);
-    unrecognised!(TenantApiPrebuildKey, guest_image_digest, input_digest, repository);
-    unrecognised!(TenantApiPrebuildRefused, detail, kind);
-    unrecognised!(TenantApiPrebuildRefusedKind);
-    unrecognised!(TenantApiPrepareClaudeSetupInput, host_id, now, stored, tenant_id);
+    unrecognised_union!(TenantApiPrebuildDeadlineReachedRequestOperation,);
+    fields_contain_unrecognised!(TenantApiPrebuildDeadlineReachedResult, 0);
+    fields_contain_unrecognised!(TenantApiPrebuildDispatchDue, deadline, name);
+    unrecognised_union!(TenantApiPrebuildDispatchDueName,);
+    fields_contain_unrecognised!(TenantApiPrebuildKey, guest_image_digest, input_digest, repository);
+    fields_contain_unrecognised!(TenantApiPrebuildRefused, detail, kind);
+    unrecognised_union!(TenantApiPrebuildRefusedKind,);
+    fields_contain_unrecognised!(TenantApiPrepareClaudeSetupInput, host_id, now, stored, tenant_id);
     unrecognised_union!(TenantApiPrepareClaudeSetupInputStored, Offer, Code);
-    unrecognised!(TenantApiPrepareClaudeSetupRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiPrepareClaudeSetupRequestOperation);
-    unrecognised!(TenantApiPrepareClaudeSetupResult, prepared);
+    fields_contain_unrecognised!(TenantApiPrepareClaudeSetupRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiPrepareClaudeSetupRequestOperation,);
+    fields_contain_unrecognised!(TenantApiPrepareClaudeSetupResult, prepared);
     unrecognised_union!(TenantApiPrepareClaudeSetupResultPrepared, Ready, Withdrawn);
-    unrecognised!(TenantApiPrepareOfferInput, host_id, now, tenant_id, turn_id);
-    unrecognised!(TenantApiPrepareOfferRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiPrepareOfferRequestOperation);
-    unrecognised!(TenantApiPrepareOfferResult, prepared);
+    fields_contain_unrecognised!(TenantApiPrepareOfferInput, host_id, now, tenant_id, turn_id);
+    fields_contain_unrecognised!(TenantApiPrepareOfferRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiPrepareOfferRequestOperation,);
+    fields_contain_unrecognised!(TenantApiPrepareOfferResult, prepared);
     unrecognised_union!(TenantApiPrepareOfferResultPrepared, Ready, Withdrawn);
-    unrecognised!(TenantApiProtocol, 0);
-    unrecognised!(TenantApiPushDeliveryTarget, endpoint, events, keys);
-    unrecognised!(TenantApiPushTargetInput, push_subscription_id, tenant_id);
-    unrecognised!(TenantApiPushTargetRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiPushTargetRequestOperation);
-    unrecognised!(TenantApiPushTargetResult, target);
-    unrecognised!(TenantApiReadLimitsInput, tenant_id);
-    unrecognised!(TenantApiReadLimitsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiReadLimitsRequestOperation);
-    unrecognised!(TenantApiReadLimitsResult, limits);
-    unrecognised!(TenantApiReadTokenOk, kind, token);
-    unrecognised!(TenantApiReadTokenOkKind);
-    unrecognised!(TenantApiReadUsageInput, tenant_id);
-    unrecognised!(TenantApiReadUsageRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiReadUsageRequestOperation);
-    unrecognised!(TenantApiReadUsageResult, usage);
-    unrecognised!(TenantApiRecordPrebuildBuildingInput, now, prebuild_id, tenant_id);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiProtocol, 0);
+    fields_contain_unrecognised!(TenantApiPushDeliveryTarget, endpoint, events, keys);
+    fields_contain_unrecognised!(TenantApiPushTargetInput, push_subscription_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiPushTargetRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiPushTargetRequestOperation,);
+    fields_contain_unrecognised!(TenantApiPushTargetResult, target);
+    fields_contain_unrecognised!(TenantApiReadLimitsInput, tenant_id);
+    fields_contain_unrecognised!(TenantApiReadLimitsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiReadLimitsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiReadLimitsResult, limits);
+    fields_contain_unrecognised!(TenantApiReadTokenOk, kind, token);
+    unrecognised_union!(TenantApiReadTokenOkKind,);
+    fields_contain_unrecognised!(TenantApiReadUsageInput, tenant_id);
+    fields_contain_unrecognised!(TenantApiReadUsageRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiReadUsageRequestOperation,);
+    fields_contain_unrecognised!(TenantApiReadUsageResult, usage);
+    fields_contain_unrecognised!(TenantApiRecordPrebuildBuildingInput, now, prebuild_id, tenant_id);
+    fields_contain_unrecognised!(
         TenantApiRecordPrebuildBuildingRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiRecordPrebuildBuildingRequestOperation);
-    unrecognised!(TenantApiRecordPrebuildBuildingResult, 0);
-    unrecognised!(TenantApiRecordStartRefusalInput, event, now, tenant_id);
-    unrecognised!(
+    unrecognised_union!(TenantApiRecordPrebuildBuildingRequestOperation,);
+    fields_contain_unrecognised!(TenantApiRecordPrebuildBuildingResult, 0);
+    fields_contain_unrecognised!(TenantApiRecordStartRefusalInput, event, now, tenant_id);
+    fields_contain_unrecognised!(
         TenantApiRecordStartRefusalInputEvent,
         caller,
         crew_tags,
@@ -51251,14 +51251,14 @@ pub mod types {
         persona_id,
         refusal
     );
-    unrecognised!(TenantApiRecordStartRefusalInputEventEvent);
-    unrecognised!(TenantApiRecordStartRefusalRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiRecordStartRefusalRequestOperation);
-    unrecognised!(TenantApiRecordStartRefusalResult, 0);
-    unrecognised!(TenantApiRemoveSecretMemberInput, name, now, secret_set_id, tenant_id);
-    unrecognised!(TenantApiRemoveSecretMemberRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiRemoveSecretMemberRequestOperation);
-    unrecognised!(TenantApiRemoveSecretMemberResult, removed);
+    unrecognised_union!(TenantApiRecordStartRefusalInputEventEvent,);
+    fields_contain_unrecognised!(TenantApiRecordStartRefusalRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiRecordStartRefusalRequestOperation,);
+    fields_contain_unrecognised!(TenantApiRecordStartRefusalResult, 0);
+    fields_contain_unrecognised!(TenantApiRemoveSecretMemberInput, name, now, secret_set_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiRemoveSecretMemberRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiRemoveSecretMemberRequestOperation,);
+    fields_contain_unrecognised!(TenantApiRemoveSecretMemberResult, removed);
     unrecognised_union!(
         TenantApiRemoveSecretMemberResultRemoved,
         MemberRemoved,
@@ -51266,7 +51266,7 @@ pub mod types {
         MemberNotFound,
         SetUnreadable
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiRenameConnectorInput,
         connector_id,
         name,
@@ -51274,9 +51274,9 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(TenantApiRenameConnectorRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiRenameConnectorRequestOperation);
-    unrecognised!(TenantApiRenameConnectorResult, written);
+    fields_contain_unrecognised!(TenantApiRenameConnectorRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiRenameConnectorRequestOperation,);
+    fields_contain_unrecognised!(TenantApiRenameConnectorResult, written);
     unrecognised_union!(
         TenantApiRenameConnectorResultWritten,
         WrittenOk,
@@ -51284,7 +51284,7 @@ pub mod types {
         NameTaken,
         Changed
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiRepositoryReadTokenInput,
         now,
         permissions,
@@ -51292,21 +51292,21 @@ pub mod types {
         repository,
         tenant_id
     );
-    unrecognised!(TenantApiRepositoryReadTokenInputPermissionsValue);
-    unrecognised!(
+    unrecognised_union!(TenantApiRepositoryReadTokenInputPermissionsValue,);
+    fields_contain_unrecognised!(
         TenantApiRepositoryReadTokenRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiRepositoryReadTokenRequestOperation);
-    unrecognised!(TenantApiRepositoryReadTokenResult, read);
+    unrecognised_union!(TenantApiRepositoryReadTokenRequestOperation,);
+    fields_contain_unrecognised!(TenantApiRepositoryReadTokenResult, read);
     unrecognised_union!(TenantApiRepositoryReadTokenResultRead, ReadTokenOk, PrebuildRefused);
-    unrecognised!(TenantApiRepositoryRef, name, owner);
-    unrecognised!(TenantApiResumeSubscriptionInput, now, subscription_id, tenant_id);
-    unrecognised!(TenantApiResumeSubscriptionRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiResumeSubscriptionRequestOperation);
-    unrecognised!(TenantApiResumeSubscriptionResult, resumed);
+    fields_contain_unrecognised!(TenantApiRepositoryRef, name, owner);
+    fields_contain_unrecognised!(TenantApiResumeSubscriptionInput, now, subscription_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiResumeSubscriptionRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiResumeSubscriptionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiResumeSubscriptionResult, resumed);
     unrecognised_union!(
         TenantApiResumeSubscriptionResultResumed,
         ChangedOk,
@@ -51315,52 +51315,52 @@ pub mod types {
         CursorExpired,
         PersonaLacksTumpelMcp
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiRewriteSecretSetWrite,
         github_user,
         kind,
         secret_set,
         secret_set_id
     );
-    unrecognised!(TenantApiRewriteSecretSetWriteKind);
-    unrecognised!(TenantApiRunningTurns, host_id, running_turns);
-    unrecognised!(TenantApiRunningTurnsByHostInput, 0);
-    unrecognised!(TenantApiRunningTurnsByHostRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiRunningTurnsByHostRequestOperation);
-    unrecognised!(TenantApiRunningTurnsByHostResult, running);
-    unrecognised!(TenantApiSecretMemberNotFound, kind);
-    unrecognised!(TenantApiSecretMemberNotFoundKind);
-    unrecognised!(TenantApiSecretMemberRemoved, kind, secret_set);
-    unrecognised!(TenantApiSecretMemberRemovedKind);
-    unrecognised!(TenantApiSecretMemberWritten, kind, secret_set);
-    unrecognised!(TenantApiSecretMemberWrittenKind);
-    unrecognised!(TenantApiSecretSetConflict, constraint, kind);
-    unrecognised!(TenantApiSecretSetConflictKind);
-    unrecognised!(TenantApiSecretSetDeleted, kind);
-    unrecognised!(TenantApiSecretSetDeletedKind);
-    unrecognised!(TenantApiSecretSetFound, kind, secret_set);
-    unrecognised!(TenantApiSecretSetFoundKind);
-    unrecognised!(TenantApiSecretSetInUse, kind, personas);
-    unrecognised!(TenantApiSecretSetInUseKind);
-    unrecognised!(TenantApiSecretSetMissing, kind);
-    unrecognised!(TenantApiSecretSetMissingKind);
-    unrecognised!(TenantApiSecretSetNoStoredValue, kind, name, source);
-    unrecognised!(TenantApiSecretSetNoStoredValueKind);
-    unrecognised!(TenantApiSecretSetNotFound, kind);
-    unrecognised!(TenantApiSecretSetNotFoundKind);
-    unrecognised!(TenantApiSecretSetUncheckedToken, kind, source);
-    unrecognised!(TenantApiSecretSetUncheckedTokenKind);
-    unrecognised!(TenantApiSecretSetUnreadable, detail, kind, member, name, secret_set_id);
-    unrecognised!(TenantApiSecretSetUnreadableKind);
-    unrecognised!(TenantApiSecretSetUpdated, kind, secret_set);
-    unrecognised!(TenantApiSecretSetUpdatedKind);
-    unrecognised!(TenantApiSecretSetWritten, ok, value);
-    unrecognised!(TenantApiSecretSetsRead, kind, secret_sets);
-    unrecognised!(TenantApiSecretSetsReadKind);
-    unrecognised!(TenantApiSendTurnInput, hosts, now, send, session_id, tenant_id);
-    unrecognised!(TenantApiSendTurnRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiSendTurnRequestOperation);
-    unrecognised!(TenantApiSendTurnResult, sent);
+    unrecognised_union!(TenantApiRewriteSecretSetWriteKind,);
+    fields_contain_unrecognised!(TenantApiRunningTurns, host_id, running_turns);
+    fields_contain_unrecognised!(TenantApiRunningTurnsByHostInput, 0);
+    fields_contain_unrecognised!(TenantApiRunningTurnsByHostRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiRunningTurnsByHostRequestOperation,);
+    fields_contain_unrecognised!(TenantApiRunningTurnsByHostResult, running);
+    fields_contain_unrecognised!(TenantApiSecretMemberNotFound, kind);
+    unrecognised_union!(TenantApiSecretMemberNotFoundKind,);
+    fields_contain_unrecognised!(TenantApiSecretMemberRemoved, kind, secret_set);
+    unrecognised_union!(TenantApiSecretMemberRemovedKind,);
+    fields_contain_unrecognised!(TenantApiSecretMemberWritten, kind, secret_set);
+    unrecognised_union!(TenantApiSecretMemberWrittenKind,);
+    fields_contain_unrecognised!(TenantApiSecretSetConflict, constraint, kind);
+    unrecognised_union!(TenantApiSecretSetConflictKind,);
+    fields_contain_unrecognised!(TenantApiSecretSetDeleted, kind);
+    unrecognised_union!(TenantApiSecretSetDeletedKind,);
+    fields_contain_unrecognised!(TenantApiSecretSetFound, kind, secret_set);
+    unrecognised_union!(TenantApiSecretSetFoundKind,);
+    fields_contain_unrecognised!(TenantApiSecretSetInUse, kind, personas);
+    unrecognised_union!(TenantApiSecretSetInUseKind,);
+    fields_contain_unrecognised!(TenantApiSecretSetMissing, kind);
+    unrecognised_union!(TenantApiSecretSetMissingKind,);
+    fields_contain_unrecognised!(TenantApiSecretSetNoStoredValue, kind, name, source);
+    unrecognised_union!(TenantApiSecretSetNoStoredValueKind,);
+    fields_contain_unrecognised!(TenantApiSecretSetNotFound, kind);
+    unrecognised_union!(TenantApiSecretSetNotFoundKind,);
+    fields_contain_unrecognised!(TenantApiSecretSetUncheckedToken, kind, source);
+    unrecognised_union!(TenantApiSecretSetUncheckedTokenKind,);
+    fields_contain_unrecognised!(TenantApiSecretSetUnreadable, detail, kind, member, name, secret_set_id);
+    unrecognised_union!(TenantApiSecretSetUnreadableKind,);
+    fields_contain_unrecognised!(TenantApiSecretSetUpdated, kind, secret_set);
+    unrecognised_union!(TenantApiSecretSetUpdatedKind,);
+    fields_contain_unrecognised!(TenantApiSecretSetWritten, ok, value);
+    fields_contain_unrecognised!(TenantApiSecretSetsRead, kind, secret_sets);
+    unrecognised_union!(TenantApiSecretSetsReadKind,);
+    fields_contain_unrecognised!(TenantApiSendTurnInput, hosts, now, send, session_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiSendTurnRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiSendTurnRequestOperation,);
+    fields_contain_unrecognised!(TenantApiSendTurnResult, sent);
     unrecognised_union!(
         TenantApiSendTurnResultSent,
         TurnSentOk,
@@ -51375,15 +51375,15 @@ pub mod types {
         SessionFailedState,
         TurnCredentialRefused
     );
-    unrecognised!(TenantApiServeConnectorTokenInput, connector_id, now, turn_id);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiServeConnectorTokenInput, connector_id, now, turn_id);
+    fields_contain_unrecognised!(
         TenantApiServeConnectorTokenRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiServeConnectorTokenRequestOperation);
-    unrecognised!(TenantApiServeConnectorTokenResult, served);
+    unrecognised_union!(TenantApiServeConnectorTokenRequestOperation,);
+    fields_contain_unrecognised!(TenantApiServeConnectorTokenResult, served);
     unrecognised_union!(
         TenantApiServeConnectorTokenResultServed,
         TokenServedOk,
@@ -51392,17 +51392,17 @@ pub mod types {
         NoCredential,
         RefreshFailed
     );
-    unrecognised!(TenantApiSessionArchivedOk, kind, session);
-    unrecognised!(TenantApiSessionArchivedOkKind);
-    unrecognised!(TenantApiSessionArchivedState, kind);
-    unrecognised!(TenantApiSessionArchivedStateKind);
-    unrecognised!(TenantApiSessionDeadlineName);
-    unrecognised!(TenantApiSessionDeleted, kind);
-    unrecognised!(TenantApiSessionDeletedKind);
-    unrecognised!(TenantApiSessionDueDeadline, deadline, name);
-    unrecognised!(TenantApiSessionFailedState, kind);
-    unrecognised!(TenantApiSessionFailedStateKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiSessionArchivedOk, kind, session);
+    unrecognised_union!(TenantApiSessionArchivedOkKind,);
+    fields_contain_unrecognised!(TenantApiSessionArchivedState, kind);
+    unrecognised_union!(TenantApiSessionArchivedStateKind,);
+    unrecognised_union!(TenantApiSessionDeadlineName,);
+    fields_contain_unrecognised!(TenantApiSessionDeleted, kind);
+    unrecognised_union!(TenantApiSessionDeletedKind,);
+    fields_contain_unrecognised!(TenantApiSessionDueDeadline, deadline, name);
+    fields_contain_unrecognised!(TenantApiSessionFailedState, kind);
+    unrecognised_union!(TenantApiSessionFailedStateKind,);
+    fields_contain_unrecognised!(
         TenantApiSessionFilter,
         host_id,
         last_turn_before,
@@ -51410,27 +51410,27 @@ pub mod types {
         tags,
         trigger_id
     );
-    unrecognised!(TenantApiSessionFromIssueStartedOk, kind, started);
-    unrecognised!(TenantApiSessionFromIssueStartedOkKind);
-    unrecognised!(TenantApiSessionNotFound, kind);
-    unrecognised!(TenantApiSessionNotFoundKind);
-    unrecognised!(TenantApiSessionNotStopped, kind, state);
-    unrecognised!(TenantApiSessionNotStoppedKind);
-    unrecognised!(TenantApiSessionStartedOk, kind, started);
-    unrecognised!(TenantApiSessionStartedOkKind);
-    unrecognised!(TenantApiSessionStopping, kind);
-    unrecognised!(TenantApiSessionStoppingKind);
-    unrecognised!(TenantApiSessionStoppingWith, kind, session);
-    unrecognised!(TenantApiSessionStoppingWithKind);
-    unrecognised!(TenantApiSessionTagged, kind, session);
-    unrecognised!(TenantApiSessionTaggedKind);
-    unrecognised!(TenantApiSessionTagsOverLimit, kind, tags);
-    unrecognised!(TenantApiSessionTagsOverLimitKind);
-    unrecognised!(TenantApiSetLimitsInput, limits, now, tenant_id);
-    unrecognised!(TenantApiSetLimitsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiSetLimitsRequestOperation);
-    unrecognised!(TenantApiSetLimitsResult, limits);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiSessionFromIssueStartedOk, kind, started);
+    unrecognised_union!(TenantApiSessionFromIssueStartedOkKind,);
+    fields_contain_unrecognised!(TenantApiSessionNotFound, kind);
+    unrecognised_union!(TenantApiSessionNotFoundKind,);
+    fields_contain_unrecognised!(TenantApiSessionNotStopped, kind, state);
+    unrecognised_union!(TenantApiSessionNotStoppedKind,);
+    fields_contain_unrecognised!(TenantApiSessionStartedOk, kind, started);
+    unrecognised_union!(TenantApiSessionStartedOkKind,);
+    fields_contain_unrecognised!(TenantApiSessionStopping, kind);
+    unrecognised_union!(TenantApiSessionStoppingKind,);
+    fields_contain_unrecognised!(TenantApiSessionStoppingWith, kind, session);
+    unrecognised_union!(TenantApiSessionStoppingWithKind,);
+    fields_contain_unrecognised!(TenantApiSessionTagged, kind, session);
+    unrecognised_union!(TenantApiSessionTaggedKind,);
+    fields_contain_unrecognised!(TenantApiSessionTagsOverLimit, kind, tags);
+    unrecognised_union!(TenantApiSessionTagsOverLimitKind,);
+    fields_contain_unrecognised!(TenantApiSetLimitsInput, limits, now, tenant_id);
+    fields_contain_unrecognised!(TenantApiSetLimitsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiSetLimitsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiSetLimitsResult, limits);
+    fields_contain_unrecognised!(
         TenantApiSetSecretMemberInput,
         github_user,
         member,
@@ -51438,9 +51438,9 @@ pub mod types {
         secret_set_id,
         tenant_id
     );
-    unrecognised!(TenantApiSetSecretMemberRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiSetSecretMemberRequestOperation);
-    unrecognised!(TenantApiSetSecretMemberResult, set);
+    fields_contain_unrecognised!(TenantApiSetSecretMemberRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiSetSecretMemberRequestOperation,);
+    fields_contain_unrecognised!(TenantApiSetSecretMemberResult, set);
     unrecognised_union!(
         TenantApiSetSecretMemberResultSet,
         MemberWritten,
@@ -51448,12 +51448,12 @@ pub mod types {
         SetConflict,
         SetUnreadable
     );
-    unrecognised!(TenantApiSetSessionTagsInput, now, session_id, tags, tenant_id);
-    unrecognised!(TenantApiSetSessionTagsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiSetSessionTagsRequestOperation);
-    unrecognised!(TenantApiSetSessionTagsResult, tagged);
+    fields_contain_unrecognised!(TenantApiSetSessionTagsInput, now, session_id, tags, tenant_id);
+    fields_contain_unrecognised!(TenantApiSetSessionTagsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiSetSessionTagsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiSetSessionTagsResult, tagged);
     unrecognised_union!(TenantApiSetSessionTagsResultTagged, Tagged, NotFound);
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiSetStaticTokenInput,
         connector_id,
         now,
@@ -51461,9 +51461,9 @@ pub mod types {
         updated_at,
         value
     );
-    unrecognised!(TenantApiSetStaticTokenRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiSetStaticTokenRequestOperation);
-    unrecognised!(TenantApiSetStaticTokenResult, written);
+    fields_contain_unrecognised!(TenantApiSetStaticTokenRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiSetStaticTokenRequestOperation,);
+    fields_contain_unrecognised!(TenantApiSetStaticTokenResult, written);
     unrecognised_union!(
         TenantApiSetStaticTokenResultWritten,
         WrittenOk,
@@ -51471,24 +51471,24 @@ pub mod types {
         NameTaken,
         Changed
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiSetWebhookEndpointStatusInput,
         status,
         tenant_id,
         webhook_endpoint_id
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiSetWebhookEndpointStatusRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiSetWebhookEndpointStatusRequestOperation);
-    unrecognised!(TenantApiSetWebhookEndpointStatusResult, 0);
-    unrecognised!(TenantApiStartClaudeSetupInput, input, now, tenant_id);
-    unrecognised!(TenantApiStartClaudeSetupRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiStartClaudeSetupRequestOperation);
-    unrecognised!(TenantApiStartClaudeSetupResult, started);
+    unrecognised_union!(TenantApiSetWebhookEndpointStatusRequestOperation,);
+    fields_contain_unrecognised!(TenantApiSetWebhookEndpointStatusResult, 0);
+    fields_contain_unrecognised!(TenantApiStartClaudeSetupInput, input, now, tenant_id);
+    fields_contain_unrecognised!(TenantApiStartClaudeSetupRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiStartClaudeSetupRequestOperation,);
+    fields_contain_unrecognised!(TenantApiStartClaudeSetupResult, started);
     unrecognised_union!(
         TenantApiStartClaudeSetupResultStarted,
         ClaudeSetupStartedOk,
@@ -51497,7 +51497,7 @@ pub mod types {
         AuthorizationNoSecretSet,
         AuthorizationOtherCredential
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiStartConnectorAuthorizationInput,
         connector_id,
         control_plane_origin,
@@ -51506,14 +51506,14 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiStartConnectorAuthorizationRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiStartConnectorAuthorizationRequestOperation);
-    unrecognised!(TenantApiStartConnectorAuthorizationResult, started);
+    unrecognised_union!(TenantApiStartConnectorAuthorizationRequestOperation,);
+    fields_contain_unrecognised!(TenantApiStartConnectorAuthorizationResult, started);
     unrecognised_union!(
         TenantApiStartConnectorAuthorizationResultStarted,
         AuthorizeStartedOk,
@@ -51522,11 +51522,11 @@ pub mod types {
         DiscoveryFailed,
         RegistrationUnsupported
     );
-    unrecognised!(TenantApiStartConnectorDisconnected, kind, names);
-    unrecognised!(TenantApiStartConnectorDisconnectedKind);
-    unrecognised!(TenantApiStartDraining, kind);
-    unrecognised!(TenantApiStartDrainingKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiStartConnectorDisconnected, kind, names);
+    unrecognised_union!(TenantApiStartConnectorDisconnectedKind,);
+    fields_contain_unrecognised!(TenantApiStartDraining, kind);
+    unrecognised_union!(TenantApiStartDrainingKind,);
+    fields_contain_unrecognised!(
         TenantApiStartHostPrebuildInput,
         api_origin,
         commit,
@@ -51534,9 +51534,9 @@ pub mod types {
         now,
         tenant_id
     );
-    unrecognised!(TenantApiStartHostPrebuildRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiStartHostPrebuildRequestOperation);
-    unrecognised!(TenantApiStartHostPrebuildResult, started);
+    fields_contain_unrecognised!(TenantApiStartHostPrebuildRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiStartHostPrebuildRequestOperation,);
+    fields_contain_unrecognised!(TenantApiStartHostPrebuildResult, started);
     unrecognised_union!(
         TenantApiStartHostPrebuildResultStarted,
         HostPrebuildStarted,
@@ -51545,36 +51545,36 @@ pub mod types {
         StartConnectorDisconnected,
         ClaudeSetupReleaseUnreadable
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiStartOpenRouterAuthorizationInput,
         input,
         now,
         principal_id,
         tenant_id
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiStartOpenRouterAuthorizationRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiStartOpenRouterAuthorizationRequestOperation);
-    unrecognised!(TenantApiStartOpenRouterAuthorizationResult, started);
+    unrecognised_union!(TenantApiStartOpenRouterAuthorizationRequestOperation,);
+    fields_contain_unrecognised!(TenantApiStartOpenRouterAuthorizationResult, started);
     unrecognised_union!(
         TenantApiStartOpenRouterAuthorizationResultStarted,
         OpenRouterAuthorizationStartedOk,
         AuthorizationNoSecretSet,
         AuthorizationOtherCredential
     );
-    unrecognised!(TenantApiStartSessionFromIssueInput, input, issue, now, tenant_id);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiStartSessionFromIssueInput, input, issue, now, tenant_id);
+    fields_contain_unrecognised!(
         TenantApiStartSessionFromIssueRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiStartSessionFromIssueRequestOperation);
-    unrecognised!(TenantApiStartSessionFromIssueResult, started);
+    unrecognised_union!(TenantApiStartSessionFromIssueRequestOperation,);
+    fields_contain_unrecognised!(TenantApiStartSessionFromIssueResult, started);
     unrecognised_union!(
         TenantApiStartSessionFromIssueResultStarted,
         SessionFromIssueStartedOk,
@@ -51584,10 +51584,10 @@ pub mod types {
         ClaudeSetupReleaseUnreadable,
         SessionTagsOverLimit
     );
-    unrecognised!(TenantApiStartSessionInput, input, now, tenant_id);
-    unrecognised!(TenantApiStartSessionRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiStartSessionRequestOperation);
-    unrecognised!(TenantApiStartSessionResult, started);
+    fields_contain_unrecognised!(TenantApiStartSessionInput, input, now, tenant_id);
+    fields_contain_unrecognised!(TenantApiStartSessionRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiStartSessionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiStartSessionResult, started);
     unrecognised_union!(
         TenantApiStartSessionResultStarted,
         SessionStartedOk,
@@ -51597,16 +51597,16 @@ pub mod types {
         ClaudeSetupReleaseUnreadable,
         SessionTagsOverLimit
     );
-    unrecognised!(TenantApiStartUnplaced, hosts, kind);
-    unrecognised!(TenantApiStartUnplacedKind);
-    unrecognised!(TenantApiSteerInboxClosed, kind);
-    unrecognised!(TenantApiSteerInboxClosedKind);
-    unrecognised!(TenantApiSteerSentOk, kind, steer);
-    unrecognised!(TenantApiSteerSentOkKind);
-    unrecognised!(TenantApiSteerTurnInput, now, steer, tenant_id, turn_id);
-    unrecognised!(TenantApiSteerTurnRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiSteerTurnRequestOperation);
-    unrecognised!(TenantApiSteerTurnResult, sent);
+    fields_contain_unrecognised!(TenantApiStartUnplaced, hosts, kind);
+    unrecognised_union!(TenantApiStartUnplacedKind,);
+    fields_contain_unrecognised!(TenantApiSteerInboxClosed, kind);
+    unrecognised_union!(TenantApiSteerInboxClosedKind,);
+    fields_contain_unrecognised!(TenantApiSteerSentOk, kind, steer);
+    unrecognised_union!(TenantApiSteerSentOkKind,);
+    fields_contain_unrecognised!(TenantApiSteerTurnInput, now, steer, tenant_id, turn_id);
+    fields_contain_unrecognised!(TenantApiSteerTurnRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiSteerTurnRequestOperation,);
+    fields_contain_unrecognised!(TenantApiSteerTurnResult, sent);
     unrecognised_union!(
         TenantApiSteerTurnResultSent,
         SteerSentOk,
@@ -51614,14 +51614,14 @@ pub mod types {
         TurnNotRunning,
         SteerUnsupported
     );
-    unrecognised!(TenantApiSteerUnsupported, kind);
-    unrecognised!(TenantApiSteerUnsupportedKind);
-    unrecognised!(TenantApiSteersTaken, kind, prompts);
-    unrecognised!(TenantApiSteersTakenKind);
-    unrecognised!(TenantApiStopSessionInput, cancelled_by, now, session_id, tenant_id);
-    unrecognised!(TenantApiStopSessionRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiStopSessionRequestOperation);
-    unrecognised!(TenantApiStopSessionResult, stopped);
+    fields_contain_unrecognised!(TenantApiSteerUnsupported, kind);
+    unrecognised_union!(TenantApiSteerUnsupportedKind,);
+    fields_contain_unrecognised!(TenantApiSteersTaken, kind, prompts);
+    unrecognised_union!(TenantApiSteersTakenKind,);
+    fields_contain_unrecognised!(TenantApiStopSessionInput, cancelled_by, now, session_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiStopSessionRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiStopSessionRequestOperation,);
+    fields_contain_unrecognised!(TenantApiStopSessionResult, stopped);
     unrecognised_union!(
         TenantApiStopSessionResultStopped,
         SessionStoppingWith,
@@ -51630,12 +51630,12 @@ pub mod types {
         CancelUnspoken,
         SessionArchivedState
     );
-    unrecognised!(TenantApiStoredClaudeSetupCode, box_id, claude_setup_id, type_);
-    unrecognised!(TenantApiStoredClaudeSetupCodeType);
-    unrecognised!(TenantApiStoredClaudeSetupOffer, box_id, claude_setup_id, type_);
-    unrecognised!(TenantApiStoredClaudeSetupOfferType);
-    unrecognised!(TenantApiStoredFile, digest, path, size_bytes);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiStoredClaudeSetupCode, box_id, claude_setup_id, type_);
+    unrecognised_union!(TenantApiStoredClaudeSetupCodeType,);
+    fields_contain_unrecognised!(TenantApiStoredClaudeSetupOffer, box_id, claude_setup_id, type_);
+    unrecognised_union!(TenantApiStoredClaudeSetupOfferType,);
+    fields_contain_unrecognised!(TenantApiStoredFile, digest, path, size_bytes);
+    fields_contain_unrecognised!(
         TenantApiStoredFileRead,
         created_at,
         digest,
@@ -51643,7 +51643,7 @@ pub mod types {
         size_bytes,
         updated_at
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiStoredPersona,
         box_disk_mib,
         box_memory_mib,
@@ -51659,7 +51659,7 @@ pub mod types {
         tumpel_mcp,
         updated_at
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiStoredTurnOffer,
         box_disk_mib,
         box_id,
@@ -51677,80 +51677,80 @@ pub mod types {
         turn_seconds,
         type_
     );
-    unrecognised!(TenantApiStoredTurnOfferHarnessVersion, 0);
-    unrecognised!(TenantApiStoredTurnOfferPrebuildCommitSha, 0);
-    unrecognised!(TenantApiStoredTurnOfferType);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiStoredTurnOfferHarnessVersion, 0);
+    fields_contain_unrecognised!(TenantApiStoredTurnOfferPrebuildCommitSha, 0);
+    unrecognised_union!(TenantApiStoredTurnOfferType,);
+    fields_contain_unrecognised!(
         TenantApiSubmitClaudeSetupCodeInput,
         claude_setup_id,
         code,
         now,
         tenant_id
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiSubmitClaudeSetupCodeRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiSubmitClaudeSetupCodeRequestOperation);
-    unrecognised!(TenantApiSubmitClaudeSetupCodeResult, coded);
+    unrecognised_union!(TenantApiSubmitClaudeSetupCodeRequestOperation,);
+    fields_contain_unrecognised!(TenantApiSubmitClaudeSetupCodeResult, coded);
     unrecognised_union!(
         TenantApiSubmitClaudeSetupCodeResultCoded,
         ClaudeSetupCodedOk,
         AuthorizationNotFound,
         AuthorizationNotWaiting
     );
-    unrecognised!(TenantApiSubscriptionChangedOk, kind, subscription);
-    unrecognised!(TenantApiSubscriptionChangedOkKind);
-    unrecognised!(TenantApiSubscriptionCreatedOk, kind, subscription);
-    unrecognised!(TenantApiSubscriptionCreatedOkKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiSubscriptionChangedOk, kind, subscription);
+    unrecognised_union!(TenantApiSubscriptionChangedOkKind,);
+    fields_contain_unrecognised!(TenantApiSubscriptionCreatedOk, kind, subscription);
+    unrecognised_union!(TenantApiSubscriptionCreatedOkKind,);
+    fields_contain_unrecognised!(
         TenantApiSubscriptionCursorExpired,
         cursor_event_id,
         kind,
         oldest_event_id
     );
-    unrecognised!(TenantApiSubscriptionCursorExpiredKind);
-    unrecognised!(TenantApiSubscriptionEndedState, kind, subscription);
-    unrecognised!(TenantApiSubscriptionEndedStateKind);
-    unrecognised!(TenantApiSubscriptionFilter, session_id, state);
-    unrecognised!(TenantApiSubscriptionNotFound, kind);
-    unrecognised!(TenantApiSubscriptionNotFoundKind);
-    unrecognised!(
+    unrecognised_union!(TenantApiSubscriptionCursorExpiredKind,);
+    fields_contain_unrecognised!(TenantApiSubscriptionEndedState, kind, subscription);
+    unrecognised_union!(TenantApiSubscriptionEndedStateKind,);
+    fields_contain_unrecognised!(TenantApiSubscriptionFilter, session_id, state);
+    fields_contain_unrecognised!(TenantApiSubscriptionNotFound, kind);
+    unrecognised_union!(TenantApiSubscriptionNotFoundKind,);
+    fields_contain_unrecognised!(
         TenantApiSubscriptionPersonaLacksTumpelMcp,
         kind,
         persona_id,
         persona_name
     );
-    unrecognised!(TenantApiSubscriptionPersonaLacksTumpelMcpKind);
-    unrecognised!(TenantApiSupervisorUpdateInput, host_id, message);
+    unrecognised_union!(TenantApiSubscriptionPersonaLacksTumpelMcpKind,);
+    fields_contain_unrecognised!(TenantApiSupervisorUpdateInput, host_id, message);
     unrecognised_union!(TenantApiSupervisorUpdateInputMessage, Step, Failed);
-    unrecognised!(TenantApiSupervisorUpdateRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiSupervisorUpdateRequestOperation);
-    unrecognised!(TenantApiSupervisorUpdateResult, 0);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiSupervisorUpdateRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiSupervisorUpdateRequestOperation,);
+    fields_contain_unrecognised!(TenantApiSupervisorUpdateResult, 0);
+    fields_contain_unrecognised!(
         TenantApiSupervisorUpdates,
         supervisor_update_failure,
         supervisor_update_step
     );
-    unrecognised!(TenantApiSupervisorUpdatesInput, host_ids);
-    unrecognised!(TenantApiSupervisorUpdatesRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiSupervisorUpdatesRequestOperation);
-    unrecognised!(TenantApiSupervisorUpdatesResult, by_host);
-    unrecognised!(TenantApiTakeSteersInput, now, turn_id);
-    unrecognised!(TenantApiTakeSteersRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiTakeSteersRequestOperation);
-    unrecognised!(TenantApiTakeSteersResult, taken);
+    fields_contain_unrecognised!(TenantApiSupervisorUpdatesInput, host_ids);
+    fields_contain_unrecognised!(TenantApiSupervisorUpdatesRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiSupervisorUpdatesRequestOperation,);
+    fields_contain_unrecognised!(TenantApiSupervisorUpdatesResult, by_host);
+    fields_contain_unrecognised!(TenantApiTakeSteersInput, now, turn_id);
+    fields_contain_unrecognised!(TenantApiTakeSteersRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiTakeSteersRequestOperation,);
+    fields_contain_unrecognised!(TenantApiTakeSteersResult, taken);
     unrecognised_union!(TenantApiTakeSteersResultTaken, SteersTaken, SteerInboxClosed);
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiTenantApiVersionUnsupported,
         oldest_tenant_api_version,
         refusal,
         tenant_api_version
     );
-    unrecognised!(TenantApiTenantApiVersionUnsupportedRefusal);
-    unrecognised!(
+    unrecognised_union!(TenantApiTenantApiVersionUnsupportedRefusal,);
+    fields_contain_unrecognised!(
         TenantApiTenantLimitReached,
         limit,
         measure,
@@ -51760,9 +51760,9 @@ pub mod types {
         used,
         window
     );
-    unrecognised!(TenantApiTenantLimitReachedRefusal);
-    unrecognised!(TenantApiTenantOperationUnknown, operation, refusal);
-    unrecognised!(TenantApiTenantOperationUnknownRefusal);
+    unrecognised_union!(TenantApiTenantLimitReachedRefusal,);
+    fields_contain_unrecognised!(TenantApiTenantOperationUnknown, operation, refusal);
+    unrecognised_union!(TenantApiTenantOperationUnknownRefusal,);
     unrecognised_union!(
         TenantApiTenantRefusal,
         ApiVersionUnsupported,
@@ -51886,9 +51886,9 @@ pub mod types {
         HostMessageRequest,
         DeadlineReachedRequest
     );
-    unrecognised!(TenantApiTenantRequestInvalid, issues, operation, refusal);
-    unrecognised!(TenantApiTenantRequestInvalidRefusal);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiTenantRequestInvalid, issues, operation, refusal);
+    unrecognised_union!(TenantApiTenantRequestInvalidRefusal,);
+    fields_contain_unrecognised!(
         TenantApiTranscriptChunk,
         harness,
         in_flight,
@@ -51898,13 +51898,13 @@ pub mod types {
         session_state,
         storage_key
     );
-    unrecognised!(TenantApiTranscriptChunkKind);
-    unrecognised!(TenantApiTranscriptCursorInput, after, session_id, tenant_id, turn_id);
-    unrecognised!(TenantApiTranscriptCursorRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiTranscriptCursorRequestOperation);
-    unrecognised!(TenantApiTranscriptCursorResult, cursor);
-    unrecognised!(TenantApiTranscriptCursorResultCursor, subtype_0, subtype_1);
-    unrecognised!(
+    unrecognised_union!(TenantApiTranscriptChunkKind,);
+    fields_contain_unrecognised!(TenantApiTranscriptCursorInput, after, session_id, tenant_id, turn_id);
+    fields_contain_unrecognised!(TenantApiTranscriptCursorRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiTranscriptCursorRequestOperation,);
+    fields_contain_unrecognised!(TenantApiTranscriptCursorResult, cursor);
+    fields_contain_unrecognised!(TenantApiTranscriptCursorResultCursor, subtype_0, subtype_1);
+    fields_contain_unrecognised!(
         TenantApiTranscriptLines,
         harness,
         in_flight,
@@ -51912,12 +51912,12 @@ pub mod types {
         last_line_seq,
         session_state
     );
-    unrecognised!(TenantApiTranscriptLinesKind);
-    unrecognised!(TenantApiTriggerCreatedOk, kind, trigger);
-    unrecognised!(TenantApiTriggerCreatedOkKind);
-    unrecognised!(TenantApiTriggerDeliveryRepeated, kind, session_id);
-    unrecognised!(TenantApiTriggerDeliveryRepeatedKind);
-    unrecognised!(
+    unrecognised_union!(TenantApiTranscriptLinesKind,);
+    fields_contain_unrecognised!(TenantApiTriggerCreatedOk, kind, trigger);
+    unrecognised_union!(TenantApiTriggerCreatedOkKind,);
+    fields_contain_unrecognised!(TenantApiTriggerDeliveryRepeated, kind, session_id);
+    unrecognised_union!(TenantApiTriggerDeliveryRepeatedKind,);
+    fields_contain_unrecognised!(
         TenantApiTriggerFiredInput,
         delivery_id,
         fired,
@@ -51926,13 +51926,13 @@ pub mod types {
         trigger_id
     );
     unrecognised_union!(TenantApiTriggerFiredInputFired, Matched, Refused);
-    unrecognised!(TenantApiTriggerFiredMatched, kind, prompt, repository);
-    unrecognised!(TenantApiTriggerFiredMatchedKind);
-    unrecognised!(TenantApiTriggerFiredRefused, kind, refusal);
-    unrecognised!(TenantApiTriggerFiredRefusedKind);
-    unrecognised!(TenantApiTriggerFiredRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiTriggerFiredRequestOperation);
-    unrecognised!(TenantApiTriggerFiredResult, fired);
+    fields_contain_unrecognised!(TenantApiTriggerFiredMatched, kind, prompt, repository);
+    unrecognised_union!(TenantApiTriggerFiredMatchedKind,);
+    fields_contain_unrecognised!(TenantApiTriggerFiredRefused, kind, refusal);
+    unrecognised_union!(TenantApiTriggerFiredRefusedKind,);
+    fields_contain_unrecognised!(TenantApiTriggerFiredRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiTriggerFiredRequestOperation,);
+    fields_contain_unrecognised!(TenantApiTriggerFiredResult, fired);
     unrecognised_union!(
         TenantApiTriggerFiredResultFired,
         SessionStartedOk,
@@ -51940,20 +51940,20 @@ pub mod types {
         TriggerNotFound,
         TriggerStartRefusedOk
     );
-    unrecognised!(TenantApiTriggerNameTaken, kind);
-    unrecognised!(TenantApiTriggerNameTakenKind);
-    unrecognised!(TenantApiTriggerNotFound, kind);
-    unrecognised!(TenantApiTriggerNotFoundKind);
-    unrecognised!(TenantApiTriggerPersonaNotFound, kind);
-    unrecognised!(TenantApiTriggerPersonaNotFoundKind);
-    unrecognised!(TenantApiTriggerStartRefusedOk, kind, refusal);
-    unrecognised!(TenantApiTriggerStartRefusedOkKind);
-    unrecognised!(TenantApiTriggerUpdatedOk, kind, trigger);
-    unrecognised!(TenantApiTriggerUpdatedOkKind);
-    unrecognised!(TenantApiTurnCancelledOk, kind, turn);
-    unrecognised!(TenantApiTurnCancelledOkKind);
-    unrecognised!(TenantApiTurnCredentialRefused, kind, persona_id, refusal);
-    unrecognised!(TenantApiTurnCredentialRefusedKind);
+    fields_contain_unrecognised!(TenantApiTriggerNameTaken, kind);
+    unrecognised_union!(TenantApiTriggerNameTakenKind,);
+    fields_contain_unrecognised!(TenantApiTriggerNotFound, kind);
+    unrecognised_union!(TenantApiTriggerNotFoundKind,);
+    fields_contain_unrecognised!(TenantApiTriggerPersonaNotFound, kind);
+    unrecognised_union!(TenantApiTriggerPersonaNotFoundKind,);
+    fields_contain_unrecognised!(TenantApiTriggerStartRefusedOk, kind, refusal);
+    unrecognised_union!(TenantApiTriggerStartRefusedOkKind,);
+    fields_contain_unrecognised!(TenantApiTriggerUpdatedOk, kind, trigger);
+    unrecognised_union!(TenantApiTriggerUpdatedOkKind,);
+    fields_contain_unrecognised!(TenantApiTurnCancelledOk, kind, turn);
+    unrecognised_union!(TenantApiTurnCancelledOkKind,);
+    fields_contain_unrecognised!(TenantApiTurnCredentialRefused, kind, persona_id, refusal);
+    unrecognised_union!(TenantApiTurnCredentialRefusedKind,);
     unrecognised_union!(
         TenantApiTurnCredentialRefusedRefusal,
         NoCredentialRefusal,
@@ -51962,41 +51962,41 @@ pub mod types {
         ModelUnsupportedCredentialRefusal,
         ExpiredCredentialRefusal
     );
-    unrecognised!(TenantApiTurnDeadline, at, turn_id);
-    unrecognised!(TenantApiTurnHandoff, host_id, offer, type_);
-    unrecognised!(TenantApiTurnHandoffType);
-    unrecognised!(TenantApiTurnInFlight, kind, turn_id);
-    unrecognised!(TenantApiTurnInFlightKind);
-    unrecognised!(TenantApiTurnMetricDimensions, 0);
-    unrecognised!(TenantApiTurnMetricDimensionsInput, turn_ids);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiTurnDeadline, at, turn_id);
+    fields_contain_unrecognised!(TenantApiTurnHandoff, host_id, offer, type_);
+    unrecognised_union!(TenantApiTurnHandoffType,);
+    fields_contain_unrecognised!(TenantApiTurnInFlight, kind, turn_id);
+    unrecognised_union!(TenantApiTurnInFlightKind,);
+    fields_contain_unrecognised!(TenantApiTurnMetricDimensions, 0);
+    fields_contain_unrecognised!(TenantApiTurnMetricDimensionsInput, turn_ids);
+    fields_contain_unrecognised!(
         TenantApiTurnMetricDimensionsRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiTurnMetricDimensionsRequestOperation);
-    unrecognised!(TenantApiTurnMetricDimensionsResult, dimensions);
-    unrecognised!(TenantApiTurnNotFound, kind);
-    unrecognised!(TenantApiTurnNotFoundKind);
-    unrecognised!(TenantApiTurnNotRunning, kind, state);
-    unrecognised!(TenantApiTurnNotRunningKind);
-    unrecognised!(TenantApiTurnNotWaiting, kind, state);
-    unrecognised!(TenantApiTurnNotWaitingKind);
-    unrecognised!(TenantApiTurnSentOk, kind, turn);
-    unrecognised!(TenantApiTurnSentOkKind);
-    unrecognised!(TenantApiTurnStranded, kind, missing_turn_ids);
-    unrecognised!(TenantApiTurnStrandedKind);
-    unrecognised!(TenantApiUnknownConnectorsInput, connector_ids);
-    unrecognised!(TenantApiUnknownConnectorsRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiUnknownConnectorsRequestOperation);
-    unrecognised!(TenantApiUnknownConnectorsResult, unknown_connector_ids);
-    unrecognised!(TenantApiUnpinInput, harness);
-    unrecognised!(TenantApiUnpinRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiUnpinRequestOperation);
-    unrecognised!(TenantApiUnpinResult, unpinned);
-    unrecognised!(TenantApiUnpinWrite, harness, kind);
-    unrecognised!(TenantApiUnpinWriteKind);
+    unrecognised_union!(TenantApiTurnMetricDimensionsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiTurnMetricDimensionsResult, dimensions);
+    fields_contain_unrecognised!(TenantApiTurnNotFound, kind);
+    unrecognised_union!(TenantApiTurnNotFoundKind,);
+    fields_contain_unrecognised!(TenantApiTurnNotRunning, kind, state);
+    unrecognised_union!(TenantApiTurnNotRunningKind,);
+    fields_contain_unrecognised!(TenantApiTurnNotWaiting, kind, state);
+    unrecognised_union!(TenantApiTurnNotWaitingKind,);
+    fields_contain_unrecognised!(TenantApiTurnSentOk, kind, turn);
+    unrecognised_union!(TenantApiTurnSentOkKind,);
+    fields_contain_unrecognised!(TenantApiTurnStranded, kind, missing_turn_ids);
+    unrecognised_union!(TenantApiTurnStrandedKind,);
+    fields_contain_unrecognised!(TenantApiUnknownConnectorsInput, connector_ids);
+    fields_contain_unrecognised!(TenantApiUnknownConnectorsRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiUnknownConnectorsRequestOperation,);
+    fields_contain_unrecognised!(TenantApiUnknownConnectorsResult, unknown_connector_ids);
+    fields_contain_unrecognised!(TenantApiUnpinInput, harness);
+    fields_contain_unrecognised!(TenantApiUnpinRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiUnpinRequestOperation,);
+    fields_contain_unrecognised!(TenantApiUnpinResult, unpinned);
+    fields_contain_unrecognised!(TenantApiUnpinWrite, harness, kind);
+    unrecognised_union!(TenantApiUnpinWriteKind,);
     unrecognised_union!(
         TenantApiUnplaceable,
         NotOnline,
@@ -52008,10 +52008,10 @@ pub mod types {
         NoDisk,
         NoConnectors
     );
-    unrecognised!(TenantApiUnplaceableFull, host, kind, reason, usage);
-    unrecognised!(TenantApiUnplaceableFullKind);
-    unrecognised!(TenantApiUnplaceableFullReason);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiUnplaceableFull, host, kind, reason, usage);
+    unrecognised_union!(TenantApiUnplaceableFullKind,);
+    unrecognised_union!(TenantApiUnplaceableFullReason,);
+    fields_contain_unrecognised!(
         TenantApiUnplaceableMemoryFull,
         box_memory_mib,
         host,
@@ -52019,42 +52019,42 @@ pub mod types {
         reason,
         usage
     );
-    unrecognised!(TenantApiUnplaceableMemoryFullKind);
-    unrecognised!(TenantApiUnplaceableMemoryFullReason);
-    unrecognised!(TenantApiUnplaceableNoConnectors, host, kind, reason, usage);
-    unrecognised!(TenantApiUnplaceableNoConnectorsKind);
-    unrecognised!(TenantApiUnplaceableNoConnectorsReason);
-    unrecognised!(TenantApiUnplaceableNoDisk, box_disk_mib, host, kind, reason, usage);
-    unrecognised!(TenantApiUnplaceableNoDiskKind);
-    unrecognised!(TenantApiUnplaceableNoDiskReason);
-    unrecognised!(TenantApiUnplaceableNoImage, host, image, kind, reason);
-    unrecognised!(TenantApiUnplaceableNoImageKind);
-    unrecognised!(TenantApiUnplaceableNoImageReason);
-    unrecognised!(TenantApiUnplaceableNoMemory, box_memory_mib, host, kind, reason, usage);
-    unrecognised!(TenantApiUnplaceableNoMemoryKind);
-    unrecognised!(TenantApiUnplaceableNoMemoryReason);
-    unrecognised!(TenantApiUnplaceableNotHealthy, host, kind, reason);
-    unrecognised!(TenantApiUnplaceableNotHealthyKind);
-    unrecognised!(TenantApiUnplaceableNotHealthyReason);
-    unrecognised!(TenantApiUnplaceableNotOnline, host, kind, reason);
-    unrecognised!(TenantApiUnplaceableNotOnlineKind);
-    unrecognised!(TenantApiUnplaceableNotOnlineReason);
-    unrecognised!(
+    unrecognised_union!(TenantApiUnplaceableMemoryFullKind,);
+    unrecognised_union!(TenantApiUnplaceableMemoryFullReason,);
+    fields_contain_unrecognised!(TenantApiUnplaceableNoConnectors, host, kind, reason, usage);
+    unrecognised_union!(TenantApiUnplaceableNoConnectorsKind,);
+    unrecognised_union!(TenantApiUnplaceableNoConnectorsReason,);
+    fields_contain_unrecognised!(TenantApiUnplaceableNoDisk, box_disk_mib, host, kind, reason, usage);
+    unrecognised_union!(TenantApiUnplaceableNoDiskKind,);
+    unrecognised_union!(TenantApiUnplaceableNoDiskReason,);
+    fields_contain_unrecognised!(TenantApiUnplaceableNoImage, host, image, kind, reason);
+    unrecognised_union!(TenantApiUnplaceableNoImageKind,);
+    unrecognised_union!(TenantApiUnplaceableNoImageReason,);
+    fields_contain_unrecognised!(TenantApiUnplaceableNoMemory, box_memory_mib, host, kind, reason, usage);
+    unrecognised_union!(TenantApiUnplaceableNoMemoryKind,);
+    unrecognised_union!(TenantApiUnplaceableNoMemoryReason,);
+    fields_contain_unrecognised!(TenantApiUnplaceableNotHealthy, host, kind, reason);
+    unrecognised_union!(TenantApiUnplaceableNotHealthyKind,);
+    unrecognised_union!(TenantApiUnplaceableNotHealthyReason,);
+    fields_contain_unrecognised!(TenantApiUnplaceableNotOnline, host, kind, reason);
+    unrecognised_union!(TenantApiUnplaceableNotOnlineKind,);
+    unrecognised_union!(TenantApiUnplaceableNotOnlineReason,);
+    fields_contain_unrecognised!(
         TenantApiUnsupportedCredentialRefusal,
         credential_kind,
         kind,
         name,
         supported
     );
-    unrecognised!(TenantApiUnsupportedCredentialRefusalKind);
-    unrecognised!(TenantApiUpdatePersonaInput, now, persona, persona_id, tenant_id);
-    unrecognised!(TenantApiUpdatePersonaRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiUpdatePersonaRequestOperation);
-    unrecognised!(TenantApiUpdatePersonaResult, written);
+    unrecognised_union!(TenantApiUnsupportedCredentialRefusalKind,);
+    fields_contain_unrecognised!(TenantApiUpdatePersonaInput, now, persona, persona_id, tenant_id);
+    fields_contain_unrecognised!(TenantApiUpdatePersonaRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiUpdatePersonaRequestOperation,);
+    fields_contain_unrecognised!(TenantApiUpdatePersonaResult, written);
     unrecognised_union!(TenantApiUpdatePersonaResultWritten, PersonaUpdated, WriteConflict);
-    unrecognised!(TenantApiUpdatePersonaWrite, kind, persona, persona_id);
-    unrecognised!(TenantApiUpdatePersonaWriteKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiUpdatePersonaWrite, kind, persona, persona_id);
+    unrecognised_union!(TenantApiUpdatePersonaWriteKind,);
+    fields_contain_unrecognised!(
         TenantApiUpdateSecretSetInput,
         change,
         github_user,
@@ -52062,9 +52062,9 @@ pub mod types {
         secret_set_id,
         tenant_id
     );
-    unrecognised!(TenantApiUpdateSecretSetRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiUpdateSecretSetRequestOperation);
-    unrecognised!(TenantApiUpdateSecretSetResult, updated);
+    fields_contain_unrecognised!(TenantApiUpdateSecretSetRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiUpdateSecretSetRequestOperation,);
+    fields_contain_unrecognised!(TenantApiUpdateSecretSetResult, updated);
     unrecognised_union!(
         TenantApiUpdateSecretSetResultUpdated,
         Updated,
@@ -52073,7 +52073,7 @@ pub mod types {
         NoStoredValue,
         UncheckedToken
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiUpdateTriggerInput,
         now,
         patch,
@@ -52081,9 +52081,9 @@ pub mod types {
         tenant_id,
         trigger_id
     );
-    unrecognised!(TenantApiUpdateTriggerRequest, input, operation, tenant_api_version);
-    unrecognised!(TenantApiUpdateTriggerRequestOperation);
-    unrecognised!(TenantApiUpdateTriggerResult, updated);
+    fields_contain_unrecognised!(TenantApiUpdateTriggerRequest, input, operation, tenant_api_version);
+    unrecognised_union!(TenantApiUpdateTriggerRequestOperation,);
+    fields_contain_unrecognised!(TenantApiUpdateTriggerResult, updated);
     unrecognised_union!(
         TenantApiUpdateTriggerResultUpdated,
         UpdatedOk,
@@ -52091,9 +52091,9 @@ pub mod types {
         NameTaken,
         PersonaNotFound
     );
-    unrecognised!(TenantApiUpdateTriggerWrite, kind, principal_id, trigger, trigger_id);
-    unrecognised!(TenantApiUpdateTriggerWriteKind);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiUpdateTriggerWrite, kind, principal_id, trigger, trigger_id);
+    unrecognised_union!(TenantApiUpdateTriggerWriteKind,);
+    fields_contain_unrecognised!(
         TenantApiWriteClaudeSetupTokenInput,
         claude_setup_id,
         credential,
@@ -52102,14 +52102,14 @@ pub mod types {
         token,
         token_expires_at
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TenantApiWriteClaudeSetupTokenRequest,
         input,
         operation,
         tenant_api_version
     );
-    unrecognised!(TenantApiWriteClaudeSetupTokenRequestOperation);
-    unrecognised!(TenantApiWriteClaudeSetupTokenResult, stored);
+    unrecognised_union!(TenantApiWriteClaudeSetupTokenRequestOperation,);
+    fields_contain_unrecognised!(TenantApiWriteClaudeSetupTokenResult, stored);
     unrecognised_union!(
         TenantApiWriteClaudeSetupTokenResultStored,
         ClaudeSetupStoredOk,
@@ -52118,8 +52118,8 @@ pub mod types {
         AuthorizationNotWaiting,
         ClaudeSetupNotStored
     );
-    unrecognised!(TenantApiWriteConflict, constraint, ok);
-    unrecognised!(
+    fields_contain_unrecognised!(TenantApiWriteConflict, constraint, ok);
+    fields_contain_unrecognised!(
         TenantConfig,
         harness_pins,
         hosts,
@@ -52128,8 +52128,8 @@ pub mod types {
         secret_sets,
         triggers
     );
-    unrecognised!(TenantConfigApply, config, expiry_values, files, secret_values);
-    unrecognised!(TenantConfigPlanRequest, config, expiry_values, files, secret_values);
+    fields_contain_unrecognised!(TenantConfigApply, config, expiry_values, files, secret_values);
+    fields_contain_unrecognised!(TenantConfigPlanRequest, config, expiry_values, files, secret_values);
     unrecognised_union!(
         TenantEvent,
         TurnStartedEvent,
@@ -52152,24 +52152,24 @@ pub mod types {
         UsageNearLimitEvent,
         UsageLimitReachedEvent
     );
-    unrecognised!(TenantEventEnvelope, created_at, event_id, tenant_id);
-    unrecognised!(TenantEventType);
-    unrecognised!(TenantLimit, limit, measure, window);
-    unrecognised!(TenantLimits, profile, source);
-    unrecognised!(TenantLimitsProfile, host_frames_per_minute, usage, writes_per_minute);
-    unrecognised!(TenantLimitsReset, reset);
+    fields_contain_unrecognised!(TenantEventEnvelope, created_at, event_id, tenant_id);
+    unrecognised_union!(TenantEventType,);
+    fields_contain_unrecognised!(TenantLimit, limit, measure, window);
+    fields_contain_unrecognised!(TenantLimits, profile, source);
+    fields_contain_unrecognised!(TenantLimitsProfile, host_frames_per_minute, usage, writes_per_minute);
+    fields_contain_unrecognised!(TenantLimitsReset, reset);
     unrecognised_union!(TenantLimitsSet, Reset, Profile);
-    unrecognised!(TenantLimitsSource);
-    unrecognised!(TenantMetricCatalog, metrics, usage);
-    unrecognised!(TenantTier);
-    unrecognised!(TenantUsage, counters, tier);
-    unrecognised!(TenantUsageCounter, limit, measure, resets_at, used, window);
-    unrecognised!(TenantUsageMeasure);
-    unrecognised!(TenantUsageWindow);
-    unrecognised!(Token, 0);
-    unrecognised!(TokenKind);
-    unrecognised!(Toolchain);
-    unrecognised!(
+    unrecognised_union!(TenantLimitsSource,);
+    fields_contain_unrecognised!(TenantMetricCatalog, metrics, usage);
+    unrecognised_union!(TenantTier,);
+    fields_contain_unrecognised!(TenantUsage, counters, tier);
+    fields_contain_unrecognised!(TenantUsageCounter, limit, measure, resets_at, used, window);
+    unrecognised_union!(TenantUsageMeasure,);
+    unrecognised_union!(TenantUsageWindow,);
+    fields_contain_unrecognised!(Token, 0);
+    unrecognised_union!(TokenKind,);
+    unrecognised_union!(Toolchain,);
+    fields_contain_unrecognised!(
         TranscriptLine,
         created_at,
         line_seq,
@@ -52179,7 +52179,7 @@ pub mod types {
         turn_id
     );
     unrecognised_union!(TranscriptPage, RawTranscriptPage, CompactTranscriptPage);
-    unrecognised!(
+    fields_contain_unrecognised!(
         Trigger,
         created_at,
         model,
@@ -52192,19 +52192,19 @@ pub mod types {
         trigger_id,
         updated_at
     );
-    unrecognised!(TriggerCondition, field, values);
-    unrecognised!(TriggerConditionValue, 0);
-    unrecognised!(TriggerConditionVerdict, actual, field, holds, values);
-    unrecognised!(TriggerCreate, model, name, persona_id, prompt, source);
-    unrecognised!(TriggerDeliveryId, 0);
-    unrecognised!(TriggerFieldPath, 0);
-    unrecognised!(TriggerOrigin, delivery_id, kind, trigger_id);
-    unrecognised!(TriggerOriginKind);
-    unrecognised!(TriggerPatch, model, name, persona_id, prompt, source);
-    unrecognised!(TriggerPayload, 0);
-    unrecognised!(TriggerSource, 0);
-    unrecognised!(TriggerStartRefusal, code, detail);
-    unrecognised!(
+    fields_contain_unrecognised!(TriggerCondition, field, values);
+    fields_contain_unrecognised!(TriggerConditionValue, 0);
+    fields_contain_unrecognised!(TriggerConditionVerdict, actual, field, holds, values);
+    fields_contain_unrecognised!(TriggerCreate, model, name, persona_id, prompt, source);
+    fields_contain_unrecognised!(TriggerDeliveryId, 0);
+    fields_contain_unrecognised!(TriggerFieldPath, 0);
+    fields_contain_unrecognised!(TriggerOrigin, delivery_id, kind, trigger_id);
+    unrecognised_union!(TriggerOriginKind,);
+    fields_contain_unrecognised!(TriggerPatch, model, name, persona_id, prompt, source);
+    fields_contain_unrecognised!(TriggerPayload, 0);
+    fields_contain_unrecognised!(TriggerSource, 0);
+    fields_contain_unrecognised!(TriggerStartRefusal, code, detail);
+    fields_contain_unrecognised!(
         TriggerStartRefusedEvent,
         created_at,
         delivery_id,
@@ -52214,14 +52214,14 @@ pub mod types {
         tenant_id,
         trigger_id
     );
-    unrecognised!(TriggerStartRefusedEventEvent);
+    unrecognised_union!(TriggerStartRefusedEventEvent,);
     unrecognised_union!(TriggerTest, StoredTriggerTest, DraftTriggerTest);
-    unrecognised!(TriggerTestResult, conditions, matched, missing_fields, prompt);
+    fields_contain_unrecognised!(TriggerTestResult, conditions, matched, missing_fields, prompt);
     unrecognised_union!(Turn, OfferedTurn, RunningTurn, CompletedTurn, FailedTurn, UnknownTurn);
-    unrecognised!(
+    fields_contain_unrecognised!(
         TurnBase, box_id, created_at, goal, image, line_count, prompt, session_id, tenant_id, turn_id, updated_at
     );
-    unrecognised!(
+    fields_contain_unrecognised!(
         TurnCompletedEvent,
         created_at,
         event,
@@ -52230,8 +52230,8 @@ pub mod types {
         tenant_id,
         turn_id
     );
-    unrecognised!(TurnCompletedEventEvent);
-    unrecognised!(
+    unrecognised_union!(TurnCompletedEventEvent,);
+    fields_contain_unrecognised!(
         TurnFailedEvent,
         created_at,
         detail,
@@ -52242,8 +52242,8 @@ pub mod types {
         tenant_id,
         turn_id
     );
-    unrecognised!(TurnFailedEventEvent);
-    unrecognised!(
+    unrecognised_union!(TurnFailedEventEvent,);
+    fields_contain_unrecognised!(
         TurnFailure,
         created_at,
         detail,
@@ -52253,17 +52253,17 @@ pub mod types {
         tenant_id,
         turn_id
     );
-    unrecognised!(TurnFailureReason);
-    unrecognised!(TurnFullImage, guest_image_digest, kind);
-    unrecognised!(TurnFullImageKind);
+    unrecognised_union!(TurnFailureReason,);
+    fields_contain_unrecognised!(TurnFullImage, guest_image_digest, kind);
+    unrecognised_union!(TurnFullImageKind,);
     unrecognised_union!(TurnImage, FullImage, LayeredImage);
-    unrecognised!(TurnLayeredImage, base_image_digest, harness_layer_digest, kind);
-    unrecognised!(TurnLayeredImageKind);
-    unrecognised!(TurnOrigin, kind, session_id, turn_id);
-    unrecognised!(TurnOriginKind);
-    unrecognised!(TurnPoint, at, dimensions, metric, session_id, turn_id, value);
-    unrecognised!(TurnSend, goal, prompt);
-    unrecognised!(
+    fields_contain_unrecognised!(TurnLayeredImage, base_image_digest, harness_layer_digest, kind);
+    unrecognised_union!(TurnLayeredImageKind,);
+    fields_contain_unrecognised!(TurnOrigin, kind, session_id, turn_id);
+    unrecognised_union!(TurnOriginKind,);
+    fields_contain_unrecognised!(TurnPoint, at, dimensions, metric, session_id, turn_id, value);
+    fields_contain_unrecognised!(TurnSend, goal, prompt);
+    fields_contain_unrecognised!(
         TurnStartedEvent,
         created_at,
         event,
@@ -52272,9 +52272,9 @@ pub mod types {
         tenant_id,
         turn_id
     );
-    unrecognised!(TurnStartedEventEvent);
-    unrecognised!(TurnState);
-    unrecognised!(
+    unrecognised_union!(TurnStartedEventEvent,);
+    unrecognised_union!(TurnState,);
+    fields_contain_unrecognised!(
         UnknownSession,
         box_id,
         box_retention,
@@ -52301,8 +52301,8 @@ pub mod types {
         tenant_id,
         updated_at
     );
-    unrecognised!(UnknownSessionState);
-    unrecognised!(
+    unrecognised_union!(UnknownSessionState,);
+    fields_contain_unrecognised!(
         UnknownTurn,
         box_id,
         created_at,
@@ -52318,9 +52318,9 @@ pub mod types {
         turn_id,
         updated_at
     );
-    unrecognised!(UnknownTurnState);
-    unrecognised!(UrlText, 0);
-    unrecognised!(
+    unrecognised_union!(UnknownTurnState,);
+    fields_contain_unrecognised!(UrlText, 0);
+    fields_contain_unrecognised!(
         UsageLimitReachedEvent,
         created_at,
         event,
@@ -52333,8 +52333,8 @@ pub mod types {
         used,
         window
     );
-    unrecognised!(UsageLimitReachedEventEvent);
-    unrecognised!(
+    unrecognised_union!(UsageLimitReachedEventEvent,);
+    fields_contain_unrecognised!(
         UsageNearLimitEvent,
         created_at,
         event,
@@ -52347,12 +52347,12 @@ pub mod types {
         used,
         window
     );
-    unrecognised!(UsageNearLimitEventEvent);
-    unrecognised!(WebhookDelivering, delivery);
-    unrecognised!(WebhookDeliveringDelivery);
-    unrecognised!(WebhookDelivery);
+    unrecognised_union!(UsageNearLimitEventEvent,);
+    fields_contain_unrecognised!(WebhookDelivering, delivery);
+    unrecognised_union!(WebhookDeliveringDelivery,);
+    unrecognised_union!(WebhookDelivery,);
     unrecognised_union!(WebhookDeliveryStatus, Delivering, Failing);
-    unrecognised!(
+    fields_contain_unrecognised!(
         WebhookEndpoint,
         created_at,
         events,
@@ -52361,15 +52361,15 @@ pub mod types {
         url,
         webhook_endpoint_id
     );
-    unrecognised!(WebhookEndpointCreate, events, url);
-    unrecognised!(WebhookFailing, delivery, detail, failing_since);
-    unrecognised!(WebhookFailingDelivery);
-    unrecognised!(WebhookSigningKey, algorithm, public_key);
-    unrecognised!(WebhookSigningKeyAlgorithm);
-    unrecognised!(WebhookSigningKeyPublicKey, 0);
-    unrecognised!(WebhookUrl, 0);
-    unrecognised!(Whoami, principal, tenant);
-    unrecognised!(WhoamiWithEndpoint, endpoint, principal, tenant);
+    fields_contain_unrecognised!(WebhookEndpointCreate, events, url);
+    fields_contain_unrecognised!(WebhookFailing, delivery, detail, failing_since);
+    unrecognised_union!(WebhookFailingDelivery,);
+    fields_contain_unrecognised!(WebhookSigningKey, algorithm, public_key);
+    unrecognised_union!(WebhookSigningKeyAlgorithm,);
+    fields_contain_unrecognised!(WebhookSigningKeyPublicKey, 0);
+    fields_contain_unrecognised!(WebhookUrl, 0);
+    fields_contain_unrecognised!(Whoami, principal, tenant);
+    fields_contain_unrecognised!(WhoamiWithEndpoint, endpoint, principal, tenant);
 }
 #[derive(Clone, Debug)]
 ///Client for tumpel

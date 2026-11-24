@@ -63,7 +63,7 @@ always_recognised!(
     ByteStream,
 );
 
-macro_rules! unrecognised {
+macro_rules! fields_contain_unrecognised {
     ($ty:ident, $($field:tt),*) => {
         impl $crate::ContainsUnrecognised for $ty {
             fn contains_unrecognised(&self) -> bool {
@@ -71,25 +71,21 @@ macro_rules! unrecognised {
             }
         }
     };
-    ($ty:ident) => {
-        impl $crate::ContainsUnrecognised for $ty {
-            fn contains_unrecognised(&self) -> bool {
-                matches!(self, Self::Unrecognised(..))
-            }
-        }
-    };
 }
+
 macro_rules! unrecognised_union {
-    ($ty:ident, $($variant:ident),+) => {
+    ($ty:ident, $($variant:ident),*) => {
         impl $crate::ContainsUnrecognised for $ty {
             fn contains_unrecognised(&self) -> bool {
                 match self {
-                    $(Self::$variant(value) => $crate::ContainsUnrecognised::contains_unrecognised(value),)+
+                    $(Self::$variant(value) => $crate::ContainsUnrecognised::contains_unrecognised(value),)*
                     Self::Unrecognised(..) => true,
+                    #[allow(unreachable_patterns)]
+                    _ => false,
                 }
             }
         }
     };
 }
 
-pub(crate) use {unrecognised, unrecognised_union};
+pub(crate) use {fields_contain_unrecognised, unrecognised_union};

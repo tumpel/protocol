@@ -563,26 +563,22 @@ fn unrecognised_predicates(types: &mut Vec<syn::Item>) {
             syn::Item::Struct(declared) => {
                 let name = &declared.ident;
                 let fields = declared.fields.members();
-                Some(syn::parse_quote!(unrecognised!(#name, #(#fields),*);))
+                Some(syn::parse_quote!(fields_contain_unrecognised!(#name, #(#fields),*);))
             }
             syn::Item::Enum(declared) => {
                 let name = &declared.ident;
-                let variants: Vec<_> = declared
+                let variants = declared
                     .variants
                     .iter()
                     .filter(|variant| variant.ident != "Unrecognised" && !matches!(variant.fields, syn::Fields::Unit))
-                    .map(|variant| &variant.ident)
-                    .collect();
-                if variants.is_empty() {
-                    return Some(syn::parse_quote!(unrecognised!(#name);));
-                }
+                    .map(|variant| &variant.ident);
                 Some(syn::parse_quote!(unrecognised_union!(#name, #(#variants),*);))
             }
             _ => None,
         })
         .collect();
     types.push(syn::parse_quote!(
-        use crate::response::{unrecognised, unrecognised_union};
+        use crate::response::{fields_contain_unrecognised, unrecognised_union};
     ));
     types.extend(implementations);
 }
