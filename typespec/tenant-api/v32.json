@@ -6398,6 +6398,25 @@
       ],
       "description": "A refusal code that produces a StartRefused event."
     },
+    "StartRefusedCaller": {
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/PersonOrigin"
+        },
+        {
+          "$ref": "#/components/schemas/TurnOrigin"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "Person": "#/components/schemas/PersonOrigin",
+          "Turn": "#/components/schemas/TurnOrigin"
+        }
+      },
+      "description": "The person or turn that made the refused request."
+    },
     "StartRefusedEvent": {
       "type": "object",
       "required": [
@@ -6409,6 +6428,7 @@
         "refusal",
         "personaId",
         "model",
+        "caller",
         "crewTags"
       ],
       "properties": {
@@ -6440,8 +6460,8 @@
         "model": {
           "$ref": "#/components/schemas/ModelName"
         },
-        "callerSessionId": {
-          "$ref": "#/components/schemas/EntityId"
+        "caller": {
+          "$ref": "#/components/schemas/StartRefusedCaller"
         },
         "crewTags": {
           "type": "array",

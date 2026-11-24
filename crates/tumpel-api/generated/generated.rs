@@ -23130,14 +23130,31 @@ pub mod types {
             value.parse()
         }
     }
+    ///The person or turn that made the refused request.
+    #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
+    #[serde(untagged)]
+    pub enum StartRefusedCaller {
+        PersonOrigin(PersonOrigin),
+        TurnOrigin(TurnOrigin),
+        Unrecognised(::serde_json::Value),
+    }
+    impl ::std::convert::From<PersonOrigin> for StartRefusedCaller {
+        fn from(value: PersonOrigin) -> Self {
+            Self::PersonOrigin(value)
+        }
+    }
+    impl ::std::convert::From<TurnOrigin> for StartRefusedCaller {
+        fn from(value: TurnOrigin) -> Self {
+            Self::TurnOrigin(value)
+        }
+    }
     ///A refused session start or turn send. It reaches the
     ///calling session's subscription, identified by the turn token's session, or a subscription whose
     ///crew tags the refused session would carry.
     ///Exhausted provider credit stays a turn failure with the CreditExhausted pause reason.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct StartRefusedEvent {
-        #[serde(rename = "callerSessionId", skip_serializing_if = "::std::option::Option::is_none")]
-        pub caller_session_id: ::std::option::Option<EntityId>,
+        pub caller: StartRefusedCaller,
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///The crew tags the session would carry.
@@ -46862,6 +46879,23 @@ pub mod types {
                 ),
                 Some("Failed") => Self::Failure(
                     ::serde_json::from_value::<SnapshotFailure>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                _ => Self::Unrecognised(value),
+            })
+        }
+    }
+    impl<'de> ::serde::Deserialize<'de> for StartRefusedCaller {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            let value = <::serde_json::Value as ::serde::Deserialize>::deserialize(deserializer)?;
+            Ok(match value.get("kind").and_then(::serde_json::Value::as_str) {
+                Some("Person") => Self::PersonOrigin(
+                    ::serde_json::from_value::<PersonOrigin>(value.clone()).map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Turn") => Self::TurnOrigin(
+                    ::serde_json::from_value::<TurnOrigin>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
                 _ => Self::Unrecognised(value),
             })
