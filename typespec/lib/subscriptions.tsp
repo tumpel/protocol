@@ -11,7 +11,7 @@ namespace Tumpel;
 @maxLength(500)
 scalar SubscriptionPauseMessage extends string;
 
-@doc("An event type a subscription reacts to: one whose event names a session.")
+@doc("An event type a subscription reacts to: a crew session event, a refused start or send, or room becoming available.")
 enum SubscriptionEventType {
   TurnStarted: "TurnStarted",
   TurnCompleted: "TurnCompleted",
@@ -22,6 +22,8 @@ enum SubscriptionEventType {
   SessionArchived: "SessionArchived",
   SubscriptionPaused: "SubscriptionPaused",
   SubscriptionEnded: "SubscriptionEnded",
+  StartRefused: "StartRefused",
+  CapacityAvailable: "CapacityAvailable",
 }
 
 enum SubscriptionState {
@@ -58,6 +60,11 @@ model SubscriptionPausedCreditExhausted {
   turnId: EntityId;
 }
 
+@doc("10 CapacityAvailable deliveries reached the subscription without a successful start; it pauses instead of waking again.")
+model SubscriptionPausedStartsRefused {
+  kind: "StartsRefused";
+}
+
 @doc("Why a subscription is Paused.")
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
 union SubscriptionPauseReason {
@@ -65,6 +72,7 @@ union SubscriptionPauseReason {
   DeliveryFailed: SubscriptionPausedDeliveryFailed,
   CrewFailing: SubscriptionPausedCrewFailing,
   CreditExhausted: SubscriptionPausedCreditExhausted,
+  StartsRefused: SubscriptionPausedStartsRefused,
 }
 
 @doc("Why a subscription is Ended.")
@@ -155,6 +163,8 @@ model EndedSubscription {
   crew records one of the listed events. The crew is every other session that carries every crew
   tag at the moment of the event and holds no Active subscription itself. Each delivery turn holds
   the plan and the events after the cursor, one JSON line each, and works toward the goal.
+  StartRefused also reaches the calling session's subscription or one whose crew tags the refused
+  session would carry. CapacityAvailable reaches a subscription with a pending room refusal.
   """)
 @discriminated(#{ envelope: "none", discriminatorPropertyName: "state" })
 union Subscription {
