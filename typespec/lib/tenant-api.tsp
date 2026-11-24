@@ -715,10 +715,7 @@ model CancelTurnInput {
 @doc("A start refusal the Worker decided before calling the tenant to start the session.")
 model RecordStartRefusalInput {
   tenantId: EntityId;
-  refusal: StartRefusal;
-  personaId: EntityId;
-  `model`: ModelName;
-  caller: RequestCaller;
+  ...OmitProperties<StartRefusedEvent, "event" | "eventId" | "tenantId" | "createdAt" | "operation" | "crewTags">;
 
   @doc("The tags requested for the session before the tenant adds inherited crew tags.")
   @maxItems(16)
