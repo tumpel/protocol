@@ -15102,7 +15102,7 @@
           ]
         },
         "input": {
-          "$ref": "#/components/schemas/TenantApi.SendTurnInput"
+          "$ref": "#/components/schemas/TenantApi.SendTurnV33Input"
         }
       }
     },
@@ -15183,6 +15183,28 @@
         }
       },
       "description": "The turn send input for tenant protocol versions through 33."
+    },
+    "TenantApi.SendTurnWithCallerRequest": {
+      "type": "object",
+      "required": [
+        "tenantApiVersion",
+        "operation",
+        "input"
+      ],
+      "properties": {
+        "tenantApiVersion": {
+          "$ref": "#/components/schemas/TenantApiProtocol"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "sendTurnWithCaller"
+          ]
+        },
+        "input": {
+          "$ref": "#/components/schemas/TenantApi.SendTurnInput"
+        }
+      }
     },
     "TenantApi.ServeConnectorTokenInput": {
       "type": "object",
@@ -17478,6 +17500,9 @@
           "$ref": "#/components/schemas/TenantApi.SendTurnRequest"
         },
         {
+          "$ref": "#/components/schemas/TenantApi.SendTurnWithCallerRequest"
+        },
+        {
           "$ref": "#/components/schemas/TenantApi.StopSessionRequest"
         },
         {
@@ -17708,6 +17733,7 @@
           "startSession": "#/components/schemas/TenantApi.StartSessionRequest",
           "startSessionFromIssue": "#/components/schemas/TenantApi.StartSessionFromIssueRequest",
           "sendTurn": "#/components/schemas/TenantApi.SendTurnRequest",
+          "sendTurnWithCaller": "#/components/schemas/TenantApi.SendTurnWithCallerRequest",
           "stopSession": "#/components/schemas/TenantApi.StopSessionRequest",
           "archiveSession": "#/components/schemas/TenantApi.ArchiveSessionRequest",
           "setSessionTags": "#/components/schemas/TenantApi.SetSessionTagsRequest",

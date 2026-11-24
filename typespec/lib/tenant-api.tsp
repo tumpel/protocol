@@ -1382,6 +1382,12 @@ model StartSessionFromIssueRequest {
 model SendTurnRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "sendTurn";
+  input: SendTurnV33Input;
+}
+
+model SendTurnWithCallerRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "sendTurnWithCaller";
   input: SendTurnInput;
 }
 
@@ -1780,6 +1786,7 @@ union TenantRequest {
   startSession: StartSessionRequest,
   startSessionFromIssue: StartSessionFromIssueRequest,
   sendTurn: SendTurnRequest,
+  sendTurnWithCaller: SendTurnWithCallerRequest,
   stopSession: StopSessionRequest,
   archiveSession: ArchiveSessionRequest,
   setSessionTags: SetSessionTagsRequest,

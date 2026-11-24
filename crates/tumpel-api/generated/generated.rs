@@ -37065,7 +37065,7 @@ pub mod types {
     ///`TenantApiSendTurnRequest`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSendTurnRequest {
-        pub input: TenantApiSendTurnInput,
+        pub input: TenantApiSendTurnV33Input,
         pub operation: TenantApiSendTurnRequestOperation,
         #[serde(rename = "tenantApiVersion")]
         pub tenant_api_version: TenantApiProtocol,
@@ -37194,6 +37194,51 @@ pub mod types {
         pub session_id: EntityId,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
+    }
+    ///`TenantApiSendTurnWithCallerRequest`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiSendTurnWithCallerRequest {
+        pub input: TenantApiSendTurnInput,
+        pub operation: TenantApiSendTurnWithCallerRequestOperation,
+        #[serde(rename = "tenantApiVersion")]
+        pub tenant_api_version: TenantApiProtocol,
+    }
+    ///`TenantApiSendTurnWithCallerRequestOperation`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiSendTurnWithCallerRequestOperation {
+        #[serde(rename = "sendTurnWithCaller")]
+        SendTurnWithCaller,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for TenantApiSendTurnWithCallerRequestOperation {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SendTurnWithCaller => f.write_str("sendTurnWithCaller"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiSendTurnWithCallerRequestOperation {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "sendTurnWithCaller" => Ok(Self::SendTurnWithCaller),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiSendTurnWithCallerRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiSendTurnWithCallerRequestOperation {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
     }
     ///`TenantApiServeConnectorTokenInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -40536,6 +40581,7 @@ pub mod types {
         StartSessionRequest(TenantApiStartSessionRequest),
         StartSessionFromIssueRequest(TenantApiStartSessionFromIssueRequest),
         SendTurnRequest(TenantApiSendTurnRequest),
+        SendTurnWithCallerRequest(TenantApiSendTurnWithCallerRequest),
         StopSessionRequest(TenantApiStopSessionRequest),
         ArchiveSessionRequest(TenantApiArchiveSessionRequest),
         SetSessionTagsRequest(TenantApiSetSessionTagsRequest),
@@ -40873,6 +40919,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiSendTurnRequest> for TenantApiTenantRequest {
         fn from(value: TenantApiSendTurnRequest) -> Self {
             Self::SendTurnRequest(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSendTurnWithCallerRequest> for TenantApiTenantRequest {
+        fn from(value: TenantApiSendTurnWithCallerRequest) -> Self {
+            Self::SendTurnWithCallerRequest(value)
         }
     }
     impl ::std::convert::From<TenantApiStopSessionRequest> for TenantApiTenantRequest {
@@ -47625,6 +47676,10 @@ pub mod types {
                 ),
                 Some("sendTurn") => Self::SendTurnRequest(
                     ::serde_json::from_value::<TenantApiSendTurnRequest>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("sendTurnWithCaller") => Self::SendTurnWithCallerRequest(
+                    ::serde_json::from_value::<TenantApiSendTurnWithCallerRequest>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
                 Some("stopSession") => Self::StopSessionRequest(

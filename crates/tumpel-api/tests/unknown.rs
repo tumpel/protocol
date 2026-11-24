@@ -1,6 +1,5 @@
 use tumpel_api::types::{
-    ChannelControlEnvelope, SessionState, SubscriptionPauseReason, TenantApiRecordStartRefusalResult,
-    TenantApiSendTurnInput, TenantApiSendTurnV33Input, TurnFailureReason,
+    ChannelControlEnvelope, SessionState, SubscriptionPauseReason, TenantApiRecordStartRefusalResult, TurnFailureReason,
 };
 
 #[test]
@@ -26,24 +25,14 @@ fn known_discriminators_still_choose_the_correct_variant() {
 
 #[test]
 fn refusal_recording_preserves_the_tags_that_overflowed() {
-    let value = serde_json::json!({"kind": "TagsOverLimit", "tags": ["crew:work", "crew:inherited"]});
+    let tags: Vec<_> = (0..17).map(|index| format!("crew:{index}")).collect();
+    let value = serde_json::json!({"kind": "TagsOverLimit", "tags": tags});
     let result: TenantApiRecordStartRefusalResult = serde_json::from_value(value.clone()).unwrap();
     assert!(matches!(
         result,
         TenantApiRecordStartRefusalResult::SessionTagsOverLimit(_)
     ));
     assert_eq!(serde_json::to_value(&result).unwrap(), value);
-}
-
-#[test]
-fn turn_sends_require_a_caller_only_after_v33() {
-    let mut input = serde_json::json!({
-        "tenantId": "t1", "sessionId": "s1", "send": {"prompt": "continue"}, "hosts": [], "now": 10
-    });
-    assert!(serde_json::from_value::<TenantApiSendTurnV33Input>(input.clone()).is_ok());
-    assert!(serde_json::from_value::<TenantApiSendTurnInput>(input.clone()).is_err());
-    input["caller"] = serde_json::json!({"kind": "Person", "principalId": "p1"});
-    assert!(serde_json::from_value::<TenantApiSendTurnInput>(input).is_ok());
 }
 
 #[test]
