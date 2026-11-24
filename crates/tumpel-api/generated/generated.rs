@@ -23136,6 +23136,8 @@ pub mod types {
     ///Exhausted provider credit stays a turn failure with the CreditExhausted pause reason.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct StartRefusedEvent {
+        #[serde(rename = "callerSessionId", skip_serializing_if = "::std::option::Option::is_none")]
+        pub caller_session_id: ::std::option::Option<EntityId>,
         #[serde(rename = "createdAt")]
         pub created_at: i64,
         ///The crew tags the session would carry.
@@ -23144,8 +23146,6 @@ pub mod types {
         pub event: StartRefusedEventEvent,
         #[serde(rename = "eventId")]
         pub event_id: Sequence,
-        #[serde(rename = "harnessVersion")]
-        pub harness_version: ShortText,
         pub model: ModelName,
         pub operation: StartRefusedOperation,
         #[serde(rename = "personaId")]
@@ -55094,5 +55094,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 31;
+    pub const VERSION: u16 = 32;
 }

@@ -230,7 +230,7 @@ model StartRefusedEvent {
   refusal: StartRefusal;
   personaId: EntityId;
   `model`: ModelName;
-  harnessVersion: ShortText;
+  callerSessionId?: EntityId;
 
   @doc("The crew tags the session would carry.")
   @maxItems(16)
