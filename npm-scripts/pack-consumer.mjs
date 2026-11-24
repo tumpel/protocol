@@ -5,10 +5,14 @@ import { checkCredential } from "@tumpel/api/credentials";
 import openapi from "@tumpel/openapi/openapi.json" with { type: "json" };
 import { BaseLayout, HostEnrolSchema, StartedSessionSchema as StrictStartedSession } from "@tumpel/schemas";
 import {
+  ConnectionSummarySchema,
   containsUnrecognised,
-  ListSessionsResultSchema,
+  EventProblemSchema,
+  PersonaFileSchema,
+  SecretKeySchema,
   SessionSchema,
   StartedSessionSchema,
+  TranscriptPageSchema,
   TurnSchema,
 } from "@tumpel/schemas/responses";
 import { z } from "zod";
@@ -57,6 +61,7 @@ const session = {
   updatedAt: turn.updatedAt,
 };
 const known = { ...session, state: "Idle" };
+const sessions = z.array(SessionSchema);
 
 test("all three tarballs install and import with plain Node", () => {
   assert.equal(BaseLayout.Version, 1);
@@ -94,7 +99,6 @@ test("unknown states preserve the session and turn base fields", () => {
 });
 
 test("a session list keeps all rows and signals an unknown enum or state", () => {
-  const sessions = z.array(SessionSchema);
   const enumRow = { ...known, sessionId: "session-2", lastTurn: { ...failed, sessionId: "session-2" } };
   const stateRow = { ...session, sessionId: "session-3", lastTurn: { ...failed, sessionId: "session-3" } };
   const decoded = sessions.parse([
@@ -113,9 +117,43 @@ test("a session list keeps all rows and signals an unknown enum or state", () =>
 });
 
 test("free text and extra fields in a list answer give no update signal", () => {
-  const answer = { sessions: [known] };
-  assert.equal(containsUnrecognised(ListSessionsResultSchema, ListSessionsResultSchema.parse(answer)), false);
-  const withExtraField = ListSessionsResultSchema.parse({ sessions: [{ ...known, newField: "Unrecognised" }] });
+  const answer = [known];
+  assert.equal(containsUnrecognised(sessions, sessions.parse(answer)), false);
+  const withExtraField = sessions.parse([{ ...known, newField: "Unrecognised" }]);
   assert.deepEqual(withExtraField, answer);
-  assert.equal(containsUnrecognised(ListSessionsResultSchema, withExtraField), false);
+  assert.equal(containsUnrecognised(sessions, withExtraField), false);
+});
+
+test("unknown tags preserve fields shared by connection, persona file, secret key and transcript variants", () => {
+  assert.deepEqual(ConnectionSummarySchema.parse({ kind: "GitHub", state: "NewState", account: "person" }), {
+    kind: "GitHub",
+    state: "Unrecognised",
+  });
+  const file = { path: "README.md", digest: "a".repeat(64), sizeBytes: 42, createdAt: 1000, updatedAt: 2000 };
+  assert.deepEqual(PersonaFileSchema.parse({ ...file, source: "NewSource", content: "ignored" }), {
+    ...file,
+    source: "Unrecognised",
+  });
+  assert.equal(PersonaFileSchema.safeParse({ ...file, source: "Inline" }).success, false);
+  assert.deepEqual(SecretKeySchema.parse({ kind: "NewKind", name: "API_KEY", updatedAt: 2000 }), {
+    kind: "Unrecognised",
+    name: "API_KEY",
+    updatedAt: 2000,
+  });
+  const page = { sessionState: "Idle", cursor: 42, finished: false };
+  assert.deepEqual(TranscriptPageSchema.parse({ ...page, form: "NewForm" }), { ...page, form: "Unrecognised" });
+});
+
+test("an event problem with an unknown code keeps its details and signals an update", () => {
+  const problem = { title: "Could not read events", detail: "The read failed.", fix: "Open the stream again." };
+  const decoded = EventProblemSchema.parse({ ...problem, code: "NewProblem" });
+  assert.deepEqual(decoded, { ...problem, code: "Unrecognised" });
+  assert.equal(containsUnrecognised(EventProblemSchema, decoded), true);
+});
+
+test("request-only unions are absent from the response entry point", async () => {
+  const responses = await import("@tumpel/schemas/responses");
+  for (const name of ["ConfigFileWriteSchema", "BootImageSchema", "TenantRequestSchema", "UnplaceableSchema"]) {
+    assert.equal(Object.hasOwn(responses, name), false, name);
+  }
 });
