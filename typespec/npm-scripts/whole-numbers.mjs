@@ -4,7 +4,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const build = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "build");
-const declared = JSON.parse(readFileSync(join(build, "openapi", "openapi.json"), "utf8")).components.schemas;
+const { schemas: declared, parameters } = JSON.parse(
+  readFileSync(join(build, "openapi", "openapi.json"), "utf8"),
+).components;
 const schemas = Object.fromEntries(
   Object.entries(declared).map(([name, schema]) => [name.slice(name.lastIndexOf(".") + 1), schema]),
 );
@@ -19,22 +21,30 @@ const resolved = (property) => {
 };
 
 const integerFields = (schema) =>
-  Object.entries(schema.properties ?? {})
+  Object.entries(schema?.properties ?? {})
     .filter(([, property]) => resolved(property).type === "integer")
     .map(([field]) => field);
+
+const integerQueryFields = Object.create(null);
+for (const [key, parameter] of Object.entries(parameters)) {
+  if (parameter.in !== "query" || resolved(parameter.schema).type !== "integer") continue;
+  const [model, field = parameter.name] = key.split(".");
+  integerQueryFields[model] ??= [];
+  integerQueryFields[model].push(field);
+}
 
 const file = join(build, "schemas", "schemas.ts");
 const blocks = readFileSync(file, "utf8").split(/(?=^export const )/m);
 
 const marked = blocks.map((block) => {
   const name = /^export const (\w+)Schema = /.exec(block)?.[1];
-  const schema = name === undefined ? undefined : schemas[name];
-  if (!schema) return block;
-  return integerFields(schema).reduce((held, field) => {
+  const fields = new Set([...integerFields(schemas[name]), ...(integerQueryFields[name] ?? [])]);
+  for (const field of fields) {
     const whole = new RegExp(`(\\b${field}: z\\.(?:union\\(\\[z\\.)?)number\\(\\)`);
-    if (!whole.test(held)) throw new Error(`no generated z.number() to mark whole: ${name}.${field}`);
-    return held.replace(whole, "$1int()");
-  }, block);
+    if (!whole.test(block)) throw new Error(`no generated z.number() to mark whole: ${name}.${field}`);
+    block = block.replace(whole, "$1int()");
+  }
+  return block;
 });
 
 writeFileSync(file, marked.join(""));
