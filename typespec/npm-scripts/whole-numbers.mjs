@@ -40,7 +40,7 @@ const marked = blocks.map((block) => {
   const name = /^const (\w+)Schema = /.exec(block)?.[1];
   const fields = new Set([...integerFields(schemas[name]), ...(integerQueryFields[name] ?? [])]);
   for (const field of fields) {
-    const whole = new RegExp(`(\\b${field}: z\\.(?:union\\(\\[z\\.)?)number\\(\\)`);
+    const whole = new RegExp(`(\\b${field}: (?:z\\.optional\\()?z\\.(?:union\\(\\[z\\.)?)number\\(\\)`);
     if (!whole.test(block)) throw new Error(`no generated z.number() to mark whole: ${name}.${field}`);
     block = block.replace(whole, "$1int()");
   }
