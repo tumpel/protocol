@@ -556,10 +556,41 @@ fn generate_frozen(root: &Path) -> Result<(), String> {
     fs::write(&output, modules).map_err(|e| format!("writing {}: {e}.", output.display()))
 }
 
+fn unrecognised_predicates(types: &mut Vec<syn::Item>) {
+    let implementations: Vec<_> = types
+        .iter()
+        .filter_map(|item| match item {
+            syn::Item::Struct(declared) => {
+                let name = &declared.ident;
+                let fields = declared.fields.members();
+                Some(syn::parse_quote!(fields_contain_unrecognised!(#name, #(#fields),*);))
+            }
+            syn::Item::Enum(declared) => {
+                let name = &declared.ident;
+                let (units, payloads): (Vec<_>, Vec<_>) = declared
+                    .variants
+                    .iter()
+                    .filter(|variant| variant.ident != "Unrecognised")
+                    .partition(|variant| matches!(variant.fields, syn::Fields::Unit));
+                let units = units.iter().map(|variant| &variant.ident);
+                let payloads = payloads.iter().map(|variant| &variant.ident);
+                Some(syn::parse_quote!(unrecognised_union!(#name, [#(#payloads),*], [#(#units),*]);))
+            }
+            _ => None,
+        })
+        .collect();
+    types.push(syn::parse_quote!(
+        use crate::unrecognised::{fields_contain_unrecognised, unrecognised_union};
+    ));
+    types.extend(implementations);
+}
+
 fn generate_api(root: &Path) -> Result<(), String> {
     let spec = read_spec(root)?;
     let mut file = generate_file(&spec)?;
-    string_newtypes(types_module(&mut file)?)?;
+    let types = types_module(&mut file)?;
+    string_newtypes(types)?;
+    unrecognised_predicates(types);
     let output = root.join(OUTPUT);
     fs::create_dir_all(&output).map_err(|e| format!("creating {}: {e}.", output.display()))?;
     write_file(&output.join("generated.rs"), &file)?;

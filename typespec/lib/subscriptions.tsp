@@ -60,7 +60,7 @@ model SubscriptionPausedCreditExhausted {
   turnId: EntityId;
 }
 
-@doc("Ten claimed deliveries carrying StartRefused or CapacityAvailable passed without a successful start by the subscription's session.")
+@doc("Ten refused starts or sends by this subscription's crew in a row, with no successful start or send by its session in between.")
 model SubscriptionPausedStartsRefused {
   kind: "StartsRefused";
 }

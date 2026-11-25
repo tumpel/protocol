@@ -5940,6 +5940,42 @@
       },
       "description": "Who started a session: a person, a turn of another session or a trigger. What the first prompt came from is SessionOrigin."
     },
+    "SessionStartedEvent": {
+      "type": "object",
+      "required": [
+        "event",
+        "eventId",
+        "tenantId",
+        "createdAt",
+        "sessionId",
+        "caller"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": [
+            "SessionStarted"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/components/schemas/Sequence"
+        },
+        "tenantId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "createdAt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "sessionId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "caller": {
+          "$ref": "#/components/schemas/SessionStartedBy"
+        }
+      },
+      "description": "A session start succeeded, with its caller recorded for subscription progress."
+    },
     "SessionState": {
       "type": "string",
       "enum": [
@@ -12214,7 +12250,9 @@
           "items": {
             "$ref": "#/components/schemas/Session"
           },
-          "maxItems": 10000
+          "nullable": true,
+          "maxItems": 10000,
+          "description": "Null when the cursor names no session of the tenant."
         }
       }
     },
@@ -14242,81 +14280,6 @@
     "TenantApi.RecordPrebuildBuildingResult": {
       "type": "object"
     },
-    "TenantApi.RecordSendRefusalInput": {
-      "type": "object",
-      "required": [
-        "tenantId",
-        "refusal",
-        "caller",
-        "sessionId",
-        "now"
-      ],
-      "properties": {
-        "tenantId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "refusal": {
-          "$ref": "#/components/schemas/StartRefusal"
-        },
-        "caller": {
-          "$ref": "#/components/schemas/RequestCaller"
-        },
-        "sessionId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "description": "The target session whose persona, model and tags the tenant reads for the refusal."
-        },
-        "now": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "description": "A turn send refusal the Worker asks the tenant to record."
-    },
-    "TenantApi.RecordSendRefusalRequest": {
-      "type": "object",
-      "required": [
-        "tenantApiVersion",
-        "operation",
-        "input"
-      ],
-      "properties": {
-        "tenantApiVersion": {
-          "$ref": "#/components/schemas/TenantApiProtocol"
-        },
-        "operation": {
-          "type": "string",
-          "enum": [
-            "recordSendRefusal"
-          ]
-        },
-        "input": {
-          "$ref": "#/components/schemas/TenantApi.RecordSendRefusalInput"
-        }
-      }
-    },
-    "TenantApi.RecordSendRefusalResult": {
-      "type": "object",
-      "oneOf": [
-        {
-          "$ref": "#/components/schemas/TenantApi.StartRefusalRecorded"
-        },
-        {
-          "$ref": "#/components/schemas/TenantApi.SessionNotFound"
-        }
-      ],
-      "discriminator": {
-        "propertyName": "kind",
-        "mapping": {
-          "Recorded": "#/components/schemas/TenantApi.StartRefusalRecorded",
-          "NotFound": "#/components/schemas/TenantApi.SessionNotFound"
-        }
-      },
-      "description": "The tenant records the refusal using the target session or returns NotFound without appending an event."
-    },
     "TenantApi.RecordStartRefusalInput": {
       "type": "object",
       "required": [
@@ -15364,6 +15327,20 @@
             }
           ],
           "description": "Keep only the sessions this trigger started."
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "after": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/EntityId"
+            }
+          ],
+          "description": "Start after this session in creation time and session ID order."
         }
       }
     },
@@ -17518,9 +17495,6 @@
           "$ref": "#/components/schemas/TenantApi.RecordStartRefusalRequest"
         },
         {
-          "$ref": "#/components/schemas/TenantApi.RecordSendRefusalRequest"
-        },
-        {
           "$ref": "#/components/schemas/TenantApi.ListWebhookEndpointsRequest"
         },
         {
@@ -17721,7 +17695,6 @@
           "takeSteers": "#/components/schemas/TenantApi.TakeSteersRequest",
           "listEvents": "#/components/schemas/TenantApi.ListEventsRequest",
           "recordStartRefusal": "#/components/schemas/TenantApi.RecordStartRefusalRequest",
-          "recordSendRefusal": "#/components/schemas/TenantApi.RecordSendRefusalRequest",
           "listWebhookEndpoints": "#/components/schemas/TenantApi.ListWebhookEndpointsRequest",
           "createWebhookEndpoint": "#/components/schemas/TenantApi.CreateWebhookEndpointRequest",
           "getWebhookEndpoint": "#/components/schemas/TenantApi.GetWebhookEndpointRequest",
@@ -19326,6 +19299,9 @@
           "$ref": "#/components/schemas/CapacityAvailableEvent"
         },
         {
+          "$ref": "#/components/schemas/SessionStartedEvent"
+        },
+        {
           "$ref": "#/components/schemas/UsageNearLimitEvent"
         },
         {
@@ -19351,6 +19327,7 @@
           "TriggerStartRefused": "#/components/schemas/TriggerStartRefusedEvent",
           "StartRefused": "#/components/schemas/StartRefusedEvent",
           "CapacityAvailable": "#/components/schemas/CapacityAvailableEvent",
+          "SessionStarted": "#/components/schemas/SessionStartedEvent",
           "UsageNearLimit": "#/components/schemas/UsageNearLimitEvent",
           "UsageLimitReached": "#/components/schemas/UsageLimitReachedEvent"
         }
@@ -19361,6 +19338,7 @@
       "type": "string",
       "enum": [
         "TurnStarted",
+        "SessionStarted",
         "TurnCompleted",
         "TurnFailed",
         "SessionIdle",
