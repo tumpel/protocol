@@ -10,6 +10,7 @@ options:
   "@kattebak/typespec-zod-emitter":
     output-file: schemas.ts
     emit-middleware: false
+    open-decode: true
     emitter-output-dir: "{cwd}/build/schemas"
   "@typespec/json-schema":
     file-type: json

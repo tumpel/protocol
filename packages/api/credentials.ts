@@ -1,12 +1,13 @@
-import type { HarnessCatalogEntrySchema, ProblemSchema, SecretSetCreateSchema, SecretSetSchema } from "@tumpel/schemas";
+import type { decode, ProblemSchema, SecretSetCreateSchema } from "@tumpel/schemas";
 import type { z } from "zod";
 
-type CatalogEntry = Pick<z.infer<typeof HarnessCatalogEntrySchema>, "credentials" | "credentialChoice">;
+type Decoded<K extends Parameters<typeof decode>[0]> = Extract<ReturnType<typeof decode<K>>, { success: true }>["data"];
+type CatalogEntry = Pick<Decoded<"HarnessCatalogEntrySchema">, "credentials" | "credentialChoice">;
 export type AcceptedCredential = CatalogEntry["credentials"][number];
 type Provider = AcceptedCredential["provider"];
 export type SecretMember = z.infer<typeof SecretSetCreateSchema>["secrets"][number];
-export type SecretKey = z.infer<typeof SecretSetSchema>["keys"][number];
-type Credential<T extends SecretKey | SecretMember> = Exclude<T, { kind: "Variable" }>;
+export type SecretKey = Decoded<"SecretSetSchema">["keys"][number];
+type Credential<T extends SecretKey | SecretMember> = Exclude<T, { kind: "Variable" | "Unrecognised" }>;
 
 export interface DispatchVariable {
   name: string;
@@ -39,10 +40,10 @@ export type CredentialCheck<T extends SecretKey | SecretMember> =
 export type CredentialProblem = z.infer<typeof ProblemSchema>;
 
 const isCredential = <T extends SecretKey | SecretMember>(member: T): member is Credential<T> =>
-  member.kind !== "Variable";
+  member.kind !== "Variable" && member.kind !== "Unrecognised";
 
 const accepts = (accepted: AcceptedCredential, member: { provider: string; kind: string }): boolean =>
-  accepted.provider === member.provider && accepted.kind === member.kind;
+  accepted.provider !== "Unrecognised" && accepted.provider === member.provider && accepted.kind === member.kind;
 
 const pick = <T extends SecretKey | SecretMember>(
   accepted: AcceptedCredential[],

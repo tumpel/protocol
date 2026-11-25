@@ -25,7 +25,6 @@ build/.typespec: $(TYPESPEC_SOURCES) Cargo.toml | $(TYPESPEC_MODULES)
 	typespec/node_modules/.bin/tsp compile typespec
 	node typespec/npm-scripts/whole-numbers.mjs
 	node typespec/npm-scripts/enum-names.mjs
-	node typespec/npm-scripts/union-schemas.mjs
 	node typespec/npm-scripts/collection-bounds.mjs
 	node typespec/npm-scripts/channel-wire.mjs
 	node typespec/npm-scripts/tenant-api-wire.mjs

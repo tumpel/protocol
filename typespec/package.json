@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "devDependencies": {
-    "@kattebak/typespec-zod-emitter": "^2.5.0",
+    "@kattebak/typespec-zod-emitter": "^2.6.1",
     "@typespec/compiler": "^1.17.0",
     "@typespec/http": "^1.17.0",
     "@typespec/json-schema": "^1.18.0",

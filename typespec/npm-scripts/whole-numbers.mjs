@@ -34,10 +34,10 @@ for (const [key, parameter] of Object.entries(parameters)) {
 }
 
 const file = join(build, "schemas", "schemas.ts");
-const blocks = readFileSync(file, "utf8").split(/(?=^export const )/m);
+const blocks = readFileSync(file, "utf8").split(/(?=^const )/m);
 
 const marked = blocks.map((block) => {
-  const name = /^export const (\w+)Schema = /.exec(block)?.[1];
+  const name = /^const (\w+)Schema = /.exec(block)?.[1];
   const fields = new Set([...integerFields(schemas[name]), ...(integerQueryFields[name] ?? [])]);
   for (const field of fields) {
     const whole = new RegExp(`(\\b${field}: z\\.(?:union\\(\\[z\\.)?)number\\(\\)`);

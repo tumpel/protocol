@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { compile, getNamespaceFullName, NodeHost, navigateProgram } from "@typespec/compiler";
+import { compile, getDiscriminatedUnion, getNamespaceFullName, NodeHost, navigateProgram } from "@typespec/compiler";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const program = await compile(NodeHost, join(root, "main.tsp"), { noEmit: true });
@@ -33,7 +33,13 @@ navigateProgram(program, {
     if (!PASCAL.test(declared.name)) failures.add(`enum ${declared.name} is not PascalCase`);
     for (const member of declared.members.values()) {
       if (!PASCAL.test(member.name)) failures.add(`enum member ${declared.name}.${member.name} is not PascalCase`);
+      if ([member.name, member.value].includes("Unrecognised"))
+        failures.add(`enum ${declared.name}.${member.name} uses Unrecognised; choose a different name and value`);
     }
+  },
+  union: (declared) => {
+    if (ours(declared) && getDiscriminatedUnion(program, declared)[0]?.variants.has("Unrecognised"))
+      failures.add(`union ${declared.name} uses Unrecognised; choose a different tag`);
   },
   modelProperty: (property) => {
     if (!ours(property.model)) return;
