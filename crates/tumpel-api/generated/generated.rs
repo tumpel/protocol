@@ -33175,7 +33175,9 @@ pub mod types {
     ///`TenantApiListSessionsResult`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiListSessionsResult {
-        pub sessions: ::std::vec::Vec<Session>,
+        ///Null when the cursor names no session of the tenant.
+        #[serde(deserialize_with = "::std::option::Option::deserialize")]
+        pub sessions: ::std::option::Option<::std::vec::Vec<Session>>,
     }
     ///`TenantApiListSnapshotsInput`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -37458,10 +37460,15 @@ pub mod types {
     ///`TenantApiSessionFilter`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
     pub struct TenantApiSessionFilter {
+        ///Start after this session in creation time and session ID order.
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub after: ::std::option::Option<EntityId>,
         #[serde(rename = "hostId", skip_serializing_if = "::std::option::Option::is_none")]
         pub host_id: ::std::option::Option<EntityId>,
         #[serde(rename = "lastTurnBefore", skip_serializing_if = "::std::option::Option::is_none")]
         pub last_turn_before: ::std::option::Option<i64>,
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+        pub limit: ::std::option::Option<::std::num::NonZeroU32>,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub state: ::std::option::Option<SessionState>,
         ///Keep only the sessions that carry every tag named.
@@ -51825,8 +51832,10 @@ pub mod types {
     unrecognised_union!(TenantApiSessionFailedStateKind, [], [Failed]);
     fields_contain_unrecognised!(
         TenantApiSessionFilter,
+        after,
         host_id,
         last_turn_before,
+        limit,
         state,
         tags,
         trigger_id
@@ -60249,5 +60258,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 34;
+    pub const VERSION: u16 = 35;
 }
