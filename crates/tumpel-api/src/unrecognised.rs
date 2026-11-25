@@ -34,6 +34,7 @@ macro_rules! always_recognised {
 }
 
 always_recognised!(
+    (),
     bool,
     f64,
     i32,

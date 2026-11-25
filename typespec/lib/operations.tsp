@@ -557,6 +557,14 @@ model SessionListQuery {
   @doc("Keep only the sessions this trigger started.")
   @query
   triggerId?: EntityId;
+
+  @query
+  @minValue(1)
+  @maxValue(50)
+  limit?: int32;
+
+  @query
+  after?: EntityId;
 }
 
 model SessionStopQuery {
@@ -1085,7 +1093,11 @@ namespace V1 {
     @post
     startFromIssue(@body body: SessionStartFromIssue): StartedSessionFromIssue | ProblemResponse;
 
-    @doc("Lists the tenant's sessions, optionally only those in one state, on one host, with no turn since a time, carrying every tag named or started by one trigger.")
+    @doc("""
+      Lists the tenant's sessions oldest first by creation time, then by session ID. Filters can select sessions in one state, on one host, with no turn since a time, carrying every tag named or started by one trigger.
+
+      When `limit` is set, the list returns at most `limit` sessions per page. Pass the last session's ID as `after` for the next page. A page shorter than `limit` is the last page. If `after` names no session of the tenant, the list returns 400 and names `after` in the error.
+      """)
     @get
     list(...SessionListQuery): Session[] | ProblemResponse;
 

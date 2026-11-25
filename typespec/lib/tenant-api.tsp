@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 34;
+const TenantApiVersion = 36;
 
 namespace TenantApi {
 
@@ -671,6 +671,13 @@ model SessionFilter {
 
   @doc("Keep only the sessions this trigger started.")
   triggerId?: EntityId;
+
+  @minValue(1)
+  @maxValue(50)
+  limit?: int32;
+
+  @doc("Start after this session in creation time and session ID order.")
+  after?: EntityId;
 }
 
 model ListSessionsInput {
@@ -738,6 +745,29 @@ model RecordStartRefusalRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "recordStartRefusal";
   input: RecordStartRefusalInput;
+}
+
+@doc("A turn send refusal the Worker asks the tenant to record.")
+model RecordSendRefusalInput {
+  tenantId: EntityId;
+  ...PickProperties<StartRefusedEvent, "refusal" | "caller">;
+
+  @doc("The target session whose persona, model and tags the tenant reads for the refusal.")
+  sessionId: EntityId;
+  now: int64;
+}
+
+@doc("The tenant records the refusal using the target session or returns NotFound without appending an event.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union RecordSendRefusalResult {
+  Recorded: StartRefusalRecorded,
+  NotFound: SessionNotFound,
+}
+
+model RecordSendRefusalRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "recordSendRefusal";
+  input: RecordSendRefusalInput;
 }
 
 model ListEventsInput {
@@ -1798,6 +1828,7 @@ union TenantRequest {
   takeSteers: TakeSteersRequest,
   listEvents: ListEventsRequest,
   recordStartRefusal: RecordStartRefusalRequest,
+  recordSendRefusal: RecordSendRefusalRequest,
   listWebhookEndpoints: ListWebhookEndpointsRequest,
   createWebhookEndpoint: CreateWebhookEndpointRequest,
   getWebhookEndpoint: GetWebhookEndpointRequest,
@@ -2618,7 +2649,8 @@ model GetSessionResult {
 }
 
 model ListSessionsResult {
-  @maxItems(10000) sessions: Session[];
+  @doc("Null when the cursor names no session of the tenant.")
+  @maxItems(10000) sessions: Session[] | null;
 }
 
 model ListTurnsResult {
