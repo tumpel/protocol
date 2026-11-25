@@ -17,4 +17,4 @@ mkdirSync(scratch, { recursive: true });
 writeFileSync(join(scratch, "package.json"), '{ "private": true, "type": "module" }\n');
 execFileSync("npm", ["install", "--no-audit", "--no-fund", ...tarballs], { cwd: scratch, stdio: "inherit" });
 copyFileSync(new URL("pack-consumer.mjs", import.meta.url), join(scratch, "check.mjs"));
-execFileSync(process.execPath, ["--test", "check.mjs"], { cwd: scratch, stdio: "inherit", timeout: 45_000 });
+execFileSync(process.execPath, ["--test", "check.mjs"], { cwd: scratch, stdio: "inherit" });

@@ -102,21 +102,21 @@ const valueSchema = (schema) => {
 };
 
 const file = join(build, "schemas", "schemas.ts");
-const blocks = readFileSync(file, "utf8").split(/(?=^export const )/m);
+const blocks = readFileSync(file, "utf8").split(/(?=^const )/m);
 
 const fieldExpression = /^(\t)(\w+): /gm;
 
 const marked = blocks.map((block) => {
-  const name = /^export const (\w+)Schema = /.exec(block)?.[1];
+  const name = /^const (\w+)Schema = /.exec(block)?.[1];
   const schema = name === undefined ? undefined : schemas[name];
   if (!schema) return block;
   if (schema.type === "array" && schema.items?.$ref !== undefined) {
     const item = schema.items.$ref.slice(schema.items.$ref.lastIndexOf("/") + 1);
     const itemName = item.slice(item.lastIndexOf(".") + 1);
-    return `export const ${name}Schema = ${bound(`z.array(z.lazy(() => ${itemName}Schema))`, schema)};\n\n`;
+    return `const ${name}Schema = ${bound(`z.array(z.lazy(() => ${itemName}Schema))`, schema)};\n\n`;
   }
   if (schema.type === "object" && schema.properties === undefined && schema.maxProperties !== undefined) {
-    return `export const ${name}Schema = z.record(${KEY}, ${valueSchema(schema.additionalProperties ?? {})})${entriesCheck(schema.maxProperties)};\n\n`;
+    return `const ${name}Schema = z.record(${KEY}, ${valueSchema(schema.additionalProperties ?? {})})${entriesCheck(schema.maxProperties)};\n\n`;
   }
   const properties = schema.properties ?? {};
   let output = "";

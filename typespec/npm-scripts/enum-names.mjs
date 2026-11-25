@@ -32,16 +32,13 @@ for (const [qualified, schema] of Object.entries(openapi.components.schemas)) {
 writeFileSync(openapiFile, JSON.stringify(openapi, null, 2));
 
 const schemasFile = join(build, "schemas", "schemas.ts");
-const named = [...numeric].reduce(
-  (text, [name, members]) => {
-    const declared = new RegExp(`^export const ${name}Schema = openEnum\\(\\[[^\\]]*\\]\\);\\n`, "m");
-    if (!declared.test(text)) throw new Error(`no generated openEnum to name: ${name}Schema`);
-    const entries = members.map(([member, value]) => `${member}: ${value}`).join(", ");
-    const replacement = `export const ${name} = { ${entries} } as const;\n\nexport const ${name}Schema = openEnum(Object.values(${name}));\n`;
-    return text.replace(declared, () => replacement);
-  },
-  readFileSync(schemasFile, "utf8"),
-);
+const text = readFileSync(schemasFile, "utf8");
+const named = [...numeric]
+  .map(([name, members]) => {
+    if (!text.includes(`\nconst ${name}Schema = `)) throw new Error(`no generated schema to name: ${name}Schema`);
+    return `export const ${name} = { ${members.map(([member, value]) => `${member}: ${value}`).join(", ")} } as const;\n\n`;
+  })
+  .join("");
 const bounded = Object.entries(openapi.components.schemas)
   .filter(([, schema]) => schema["x-bound-names"] !== undefined)
   .map(([qualified, schema]) => {
@@ -51,8 +48,8 @@ const bounded = Object.entries(openapi.components.schemas)
   })
   .join("");
 const imported = /^import \{ z \} from "zod";\n/m;
-if (!imported.test(named)) throw new Error("schemas.ts has no zod import to place the bounded constants after");
+if (!imported.test(text)) throw new Error("schemas.ts has no zod import to place the bounded constants after");
 writeFileSync(
   schemasFile,
-  named.replace(imported, (line) => `${line}${bounded}`),
+  text.replace(imported, (line) => `${line}${named}${bounded}`),
 );

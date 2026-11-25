@@ -11,9 +11,8 @@ generate-ts: build/.typespec
 
 generate-rust: build/.rust
 
-$(TYPESPEC_MODULES): typespec/package.json typespec/package-lock.json typespec/zod-emitter.patch
+$(TYPESPEC_MODULES): typespec/package.json typespec/package-lock.json
 	npm ci --prefix typespec --prefer-offline --no-audit --no-fund
-	patch --batch --fuzz=0 -d typespec/node_modules/@kattebak/typespec-zod-emitter -p1 < typespec/zod-emitter.patch
 	@touch $@
 
 $(ROOT_MODULES): package.json package-lock.json
@@ -27,8 +26,6 @@ build/.typespec: $(TYPESPEC_SOURCES) Cargo.toml | $(TYPESPEC_MODULES)
 	node typespec/npm-scripts/whole-numbers.mjs
 	node typespec/npm-scripts/enum-names.mjs
 	node typespec/npm-scripts/collection-bounds.mjs
-	! grep -Eq 'z\.(enum|discriminatedUnion)\(' build/schemas/schemas.ts || { echo 'Schema generation emitted a closed enum or union. Use the open emitter.' >&2; exit 1; }
-	cp typespec/schemas/open-schemas.ts build/schemas/
 	node typespec/npm-scripts/channel-wire.mjs
 	node typespec/npm-scripts/tenant-api-wire.mjs
 	typespec/node_modules/.bin/openapi-typescript build/openapi/openapi.json -o build/openapi/paths.ts
