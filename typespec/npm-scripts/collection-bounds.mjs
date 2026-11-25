@@ -110,13 +110,14 @@ const marked = blocks.map((block) => {
   const name = /^const (\w+)Schema = /.exec(block)?.[1];
   const schema = name === undefined ? undefined : schemas[name];
   if (!schema) return block;
+  const rest = block.slice(block.indexOf(";\n") + 1);
   if (schema.type === "array" && schema.items?.$ref !== undefined) {
     const item = schema.items.$ref.slice(schema.items.$ref.lastIndexOf("/") + 1);
     const itemName = item.slice(item.lastIndexOf(".") + 1);
-    return `const ${name}Schema = ${bound(`z.array(z.lazy(() => ${itemName}Schema))`, schema)};\n\n`;
+    return `const ${name}Schema = ${bound(`z.array(z.lazy(() => ${itemName}Schema))`, schema)};${rest}`;
   }
   if (schema.type === "object" && schema.properties === undefined && schema.maxProperties !== undefined) {
-    return `const ${name}Schema = z.record(${KEY}, ${valueSchema(schema.additionalProperties ?? {})})${entriesCheck(schema.maxProperties)};\n\n`;
+    return `const ${name}Schema = z.record(${KEY}, ${valueSchema(schema.additionalProperties ?? {})})${entriesCheck(schema.maxProperties)};${rest}`;
   }
   const properties = schema.properties ?? {};
   let output = "";

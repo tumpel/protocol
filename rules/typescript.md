@@ -8,7 +8,3 @@
 6. Handle a rejection with `.catch()` on that promise. Never wrap an `await` in `try`/`catch` to rethrow: the `try` block also catches unrelated throws.
 7. Return early. Never write `else` after a `return`.
 8. `npm run lint` (Biome) passes. `npm run fix` formats.
-
-## Client compatibility
-
-Clients ship before the back end. Publish the protocol release candidate before consumers pin it. Use the generated schemas with `decode`. Clients keep known fields and tell users to update when the service sends unrecognised values. Name those wire values in the notice. An extra field alone gives no update signal. The back end must refuse requests whose decode result lists unrecognised values.

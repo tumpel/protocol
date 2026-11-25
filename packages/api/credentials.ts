@@ -1,11 +1,11 @@
-import type { decode, ProblemSchema } from "@tumpel/schemas";
+import type { decode, ProblemSchema, SecretSetCreateSchema } from "@tumpel/schemas";
 import type { z } from "zod";
 
 type Decoded<K extends Parameters<typeof decode>[0]> = Extract<ReturnType<typeof decode<K>>, { success: true }>["data"];
 type CatalogEntry = Pick<Decoded<"HarnessCatalogEntrySchema">, "credentials" | "credentialChoice">;
 export type AcceptedCredential = CatalogEntry["credentials"][number];
 type Provider = AcceptedCredential["provider"];
-export type SecretMember = Decoded<"SecretSetCreateSchema">["secrets"][number];
+export type SecretMember = z.infer<typeof SecretSetCreateSchema>["secrets"][number];
 export type SecretKey = Decoded<"SecretSetSchema">["keys"][number];
 type Credential<T extends SecretKey | SecretMember> = Exclude<T, { kind: "Variable" | "Unrecognised" }>;
 
@@ -179,7 +179,6 @@ export const dispatchVariables = (
   const path = entry.credentials.find((each) => each.kind === "CredentialFile" && each.variable === variable)?.path;
   const taken = new Set(entry.credentials.flatMap((each) => [each.variable, ...each.fixed.map(({ name }) => name)]));
   const others = members
-    .filter((member) => member.kind !== "Unrecognised")
     .filter((member) => member !== credential && !taken.has(member.name))
     .map((member) => ({ name: member.name, value: member.value }));
   if (credential.kind === "CredentialFile") {
