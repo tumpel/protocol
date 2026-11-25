@@ -557,6 +557,16 @@ model SessionListQuery {
   @doc("Keep only the sessions this trigger started.")
   @query
   triggerId?: EntityId;
+
+  @doc("The most sessions to return in one page.")
+  @query
+  @minValue(1)
+  @maxValue(50)
+  limit?: int32;
+
+  @doc("Start after this session ID in the order by creation time and session ID.")
+  @query
+  after?: EntityId;
 }
 
 model SessionStopQuery {

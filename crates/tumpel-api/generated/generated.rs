@@ -57783,15 +57783,19 @@ impl Client {
     ///Sends a `GET` request to `/v1/sessions`
     ///
     ///Arguments:
+    ///- `after`: Start after this session ID in the order by creation time and session ID.
     ///- `host_id`
     ///- `last_turn_before`: Keep only the sessions whose latest turn last changed state at or before this time.
+    ///- `limit`: The most sessions to return in one page.
     ///- `state`
     ///- `tag`: Keep only the sessions that carry this tag; repeat it to keep those that carry every tag named.
     ///- `trigger_id`: Keep only the sessions this trigger started.
     pub async fn sessions_list<'a>(
         &'a self,
+        after: Option<&'a types::EntityId>,
         host_id: Option<&'a types::EntityId>,
         last_turn_before: Option<&'a ::chrono::DateTime<::chrono::FixedOffset>>,
+        limit: Option<::std::num::NonZeroU32>,
         state: Option<types::SessionState>,
         tag: Option<&'a ::std::vec::Vec<types::SessionTag>>,
         trigger_id: Option<&'a types::EntityId>,
@@ -57810,8 +57814,10 @@ impl Client {
                 ::reqwest::header::ACCEPT,
                 ::reqwest::header::HeaderValue::from_static("application/json"),
             )
+            .query(&progenitor_client::QueryParam::new("after", &after))
             .query(&progenitor_client::QueryParam::new("hostId", &host_id))
             .query(&progenitor_client::QueryParam::new("lastTurnBefore", &last_turn_before))
+            .query(&progenitor_client::QueryParam::new("limit", &limit))
             .query(&progenitor_client::QueryParam::new("state", &state))
             .query(&progenitor_client::QueryParam::new("tag", &tag))
             .query(&progenitor_client::QueryParam::new("triggerId", &trigger_id))
