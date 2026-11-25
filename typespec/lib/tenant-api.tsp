@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 35;
+const TenantApiVersion = 36;
 
 namespace TenantApi {
 
@@ -745,6 +745,29 @@ model RecordStartRefusalRequest {
   tenantApiVersion: TenantApiProtocol;
   operation: "recordStartRefusal";
   input: RecordStartRefusalInput;
+}
+
+@doc("A turn send refusal the Worker asks the tenant to record.")
+model RecordSendRefusalInput {
+  tenantId: EntityId;
+  ...PickProperties<StartRefusedEvent, "refusal" | "caller">;
+
+  @doc("The target session whose persona, model and tags the tenant reads for the refusal.")
+  sessionId: EntityId;
+  now: int64;
+}
+
+@doc("The tenant records the refusal using the target session or returns NotFound without appending an event.")
+@discriminated(#{ envelope: "none", discriminatorPropertyName: "kind" })
+union RecordSendRefusalResult {
+  Recorded: StartRefusalRecorded,
+  NotFound: SessionNotFound,
+}
+
+model RecordSendRefusalRequest {
+  tenantApiVersion: TenantApiProtocol;
+  operation: "recordSendRefusal";
+  input: RecordSendRefusalInput;
 }
 
 model ListEventsInput {
@@ -1805,6 +1828,7 @@ union TenantRequest {
   takeSteers: TakeSteersRequest,
   listEvents: ListEventsRequest,
   recordStartRefusal: RecordStartRefusalRequest,
+  recordSendRefusal: RecordSendRefusalRequest,
   listWebhookEndpoints: ListWebhookEndpointsRequest,
   createWebhookEndpoint: CreateWebhookEndpointRequest,
   getWebhookEndpoint: GetWebhookEndpointRequest,
