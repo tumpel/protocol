@@ -7,4 +7,4 @@
 5. Secret values never travel over MCP. They arrive through the dashboard, an OAuth connection or the CLI's `--stdin`. A CLI command never takes a secret as a flag value.
 6. CLI commands are plain and explicit: every value comes from a flag or a file. The CLI never auto-detects local state.
 7. A host channel change stays compatible with every protocol version still in use. Every wire change but a new optional field needs `npm run channel:bump`; the channel-wire guard refuses one without it.
-8. Clients ship before the back end. The back end parses requests with the strict named `XSchema` exports, so it refuses unknown values. Clients read responses with `decode`, keep the known fields, and tell users to update when the result lists unrecognised wire values, naming those values. An extra field alone gives no update signal.
+8. The back end parses requests with the strict named `XSchema` exports, so it refuses unknown values. Clients read responses with `decode`, keep the known fields, and tell users to update when the result lists unrecognised wire values, naming those values. An extra field alone gives no update signal.
