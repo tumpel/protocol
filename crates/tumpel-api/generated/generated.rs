@@ -264,7 +264,7 @@ pub mod types {
     pub struct ArchiveInstallRecipe {
         pub archives: ::std::vec::Vec<InstallArchive>,
         pub kind: ArchiveInstallRecipeKind,
-        ///How many leading path components tar strips when it unpacks an archive.
+        ///How many leading path components the build strips when it unpacks an archive.
         #[serde(rename = "stripComponents")]
         pub strip_components: i32,
     }
@@ -3116,7 +3116,8 @@ pub mod types {
     ///A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
     ///the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
     ///connection that speaks another with UnsupportedVersion. Version 39 lacks SnapshotChunkCheck,
-    ///SnapshotChunkCheckHeld, SnapshotIndexAsk and SnapshotIndexUpload.
+    ///SnapshotChunkCheckHeld, SnapshotIndexAsk and SnapshotIndexUpload, and versions 39 and 40 lack
+    ///the harness Gemini.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(transparent)]
     pub struct ChannelProtocol(pub i32);
@@ -5273,8 +5274,10 @@ pub mod types {
     }
     ///A short-lived box that signs in to the setup's harness and stores the token in a secret set: it
     ///runs `claude setup-token` from the tenant's pinned Claude Code and stores the SubscriptionToken
-    ///member CLAUDE_CODE_OAUTH_TOKEN for Anthropic, or `codex login --device-auth` from the pinned Codex
-    ///and stores the auth.json it writes as the CredentialFile member CODEX_AUTH_JSON for OpenAi. The box gets no secret set member and no GitHub token,
+    ///member CLAUDE_CODE_OAUTH_TOKEN for Anthropic, `codex login --device-auth` from the pinned Codex
+    ///and stores the auth.json it writes as the CredentialFile member CODEX_AUTH_JSON for OpenAi, or
+    ///`gemini` from the pinned Gemini CLI with NO_BROWSER=true and stores the oauth_creds.json it writes
+    ///as the CredentialFile member GEMINI_OAUTH_CREDS_JSON for Google. The box gets no secret set member and no GitHub token,
     ///and the token never appears in any response.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ClaudeSetup {
@@ -5428,10 +5431,10 @@ pub mod types {
     pub struct ClaudeSetupCompleted {
         #[serde(rename = "completedAt")]
         pub completed_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself.
+        ///When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself; for Gemini, a year after the setup, as for Claude Code.
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///The member the setup wrote: the SubscriptionToken CLAUDE_CODE_OAUTH_TOKEN for Anthropic, or the CredentialFile CODEX_AUTH_JSON for OpenAi.
+        ///The member the setup wrote: the SubscriptionToken CLAUDE_CODE_OAUTH_TOKEN for Anthropic, the CredentialFile CODEX_AUTH_JSON for OpenAi, or the CredentialFile GEMINI_OAUTH_CREDS_JSON for Google.
         #[serde(rename = "memberName")]
         pub member_name: ClaudeSetupMember,
         pub state: ClaudeSetupCompletedState,
@@ -5575,11 +5578,12 @@ pub mod types {
             value.parse()
         }
     }
-    ///The harness a Claude setup signs in to: Claude Code with claude setup-token, or Codex with codex login --device-auth.
+    ///The harness a Claude setup signs in to: Claude Code with claude setup-token, Codex with codex login --device-auth, or Gemini CLI with its Google account sign-in.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub enum ClaudeSetupHarness {
         ClaudeCode,
         Codex,
+        Gemini,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
     }
@@ -5588,6 +5592,7 @@ pub mod types {
             match *self {
                 Self::ClaudeCode => f.write_str("ClaudeCode"),
                 Self::Codex => f.write_str("Codex"),
+                Self::Gemini => f.write_str("Gemini"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
         }
@@ -5598,6 +5603,7 @@ pub mod types {
             match value {
                 "ClaudeCode" => Ok(Self::ClaudeCode),
                 "Codex" => Ok(Self::Codex),
+                "Gemini" => Ok(Self::Gemini),
                 _ => Err("invalid value".into()),
             }
         }
@@ -5621,6 +5627,8 @@ pub mod types {
         ClaudeCodeOauthToken,
         #[serde(rename = "CODEX_AUTH_JSON")]
         CodexAuthJson,
+        #[serde(rename = "GEMINI_OAUTH_CREDS_JSON")]
+        GeminiOauthCredsJson,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
     }
@@ -5629,6 +5637,7 @@ pub mod types {
             match *self {
                 Self::ClaudeCodeOauthToken => f.write_str("CLAUDE_CODE_OAUTH_TOKEN"),
                 Self::CodexAuthJson => f.write_str("CODEX_AUTH_JSON"),
+                Self::GeminiOauthCredsJson => f.write_str("GEMINI_OAUTH_CREDS_JSON"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
         }
@@ -5639,6 +5648,7 @@ pub mod types {
             match value {
                 "CLAUDE_CODE_OAUTH_TOKEN" => Ok(Self::ClaudeCodeOauthToken),
                 "CODEX_AUTH_JSON" => Ok(Self::CodexAuthJson),
+                "GEMINI_OAUTH_CREDS_JSON" => Ok(Self::GeminiOauthCredsJson),
                 _ => Err("invalid value".into()),
             }
         }
@@ -10111,6 +10121,14 @@ pub mod types {
     ///the host. A Codex image runs `codex login --device-auth` instead and sends GuestClaudeSetupUrl
     ///with the one-time code it prints; once Codex exits signed in, the guest reads
     ///its auth.json and POSTs the whole file with the expiry of the exp claim of its access token.
+    ///A Gemini image runs `gemini` with NO_BROWSER=true after writing ~/.gemini/settings.json with
+    ///`security.auth.selectedType` oauth-personal, and sends GuestClaudeSetupUrl once it prints a
+    ///Google sign-in URL; the person's code arrives as GuestClaudeSetupCode. Interactive Gemini CLI
+    ///keeps running once signed in, so the guest counts it signed in as soon as ~/.gemini/oauth_creds.json
+    ///holds a `refresh_token`, stops it and POSTs the whole file with no expiry, which stores the
+    ///one-year expiry of a Claude Code token: the file's `expiry_date` is the access token's, which
+    ///Gemini CLI refreshes itself. When the CLI prints "Failed to authenticate with authorization code"
+    ///or a second sign-in URL, the guest stops it and sends GuestClaudeSetupFailed CodeRejected.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GuestClaudeSetupStart {
         #[serde(rename = "claudeSetupId")]
@@ -10707,6 +10725,7 @@ pub mod types {
         ShellLines,
         PromptOnStdin,
         CodexExecJson,
+        GeminiStreamJson,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
     }
@@ -10718,6 +10737,7 @@ pub mod types {
                 Self::ShellLines => f.write_str("ShellLines"),
                 Self::PromptOnStdin => f.write_str("PromptOnStdin"),
                 Self::CodexExecJson => f.write_str("CodexExecJson"),
+                Self::GeminiStreamJson => f.write_str("GeminiStreamJson"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
         }
@@ -10731,6 +10751,7 @@ pub mod types {
                 "ShellLines" => Ok(Self::ShellLines),
                 "PromptOnStdin" => Ok(Self::PromptOnStdin),
                 "CodexExecJson" => Ok(Self::CodexExecJson),
+                "GeminiStreamJson" => Ok(Self::GeminiStreamJson),
                 _ => Err("invalid value".into()),
             }
         }
@@ -11676,6 +11697,7 @@ pub mod types {
         HarnessOutOfMemory,
         Cancelled,
         BoxDiskFull,
+        CredentialRefused,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
     }
@@ -11688,6 +11710,7 @@ pub mod types {
                 Self::HarnessOutOfMemory => f.write_str("HarnessOutOfMemory"),
                 Self::Cancelled => f.write_str("Cancelled"),
                 Self::BoxDiskFull => f.write_str("BoxDiskFull"),
+                Self::CredentialRefused => f.write_str("CredentialRefused"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
         }
@@ -11702,6 +11725,7 @@ pub mod types {
                 "HarnessOutOfMemory" => Ok(Self::HarnessOutOfMemory),
                 "Cancelled" => Ok(Self::Cancelled),
                 "BoxDiskFull" => Ok(Self::BoxDiskFull),
+                "CredentialRefused" => Ok(Self::CredentialRefused),
                 _ => Err("invalid value".into()),
             }
         }
@@ -12115,6 +12139,7 @@ pub mod types {
         OpenCode,
         PiDev,
         MistralAgent,
+        Gemini,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
     }
@@ -12126,6 +12151,7 @@ pub mod types {
                 Self::OpenCode => f.write_str("OpenCode"),
                 Self::PiDev => f.write_str("PiDev"),
                 Self::MistralAgent => f.write_str("MistralAgent"),
+                Self::Gemini => f.write_str("Gemini"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
         }
@@ -12139,6 +12165,7 @@ pub mod types {
                 "OpenCode" => Ok(Self::OpenCode),
                 "PiDev" => Ok(Self::PiDev),
                 "MistralAgent" => Ok(Self::MistralAgent),
+                "Gemini" => Ok(Self::Gemini),
                 _ => Err("invalid value".into()),
             }
         }
@@ -13507,6 +13534,7 @@ pub mod types {
         OpenCode,
         PiDev,
         MistralAgent,
+        Gemini,
         Shell,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
@@ -13519,6 +13547,7 @@ pub mod types {
                 Self::OpenCode => f.write_str("OpenCode"),
                 Self::PiDev => f.write_str("PiDev"),
                 Self::MistralAgent => f.write_str("MistralAgent"),
+                Self::Gemini => f.write_str("Gemini"),
                 Self::Shell => f.write_str("Shell"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
@@ -13533,6 +13562,7 @@ pub mod types {
                 "OpenCode" => Ok(Self::OpenCode),
                 "PiDev" => Ok(Self::PiDev),
                 "MistralAgent" => Ok(Self::MistralAgent),
+                "Gemini" => Ok(Self::Gemini),
                 "Shell" => Ok(Self::Shell),
                 _ => Err("invalid value".into()),
             }
@@ -13851,7 +13881,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///The release tarball of a harness version for one architecture.
+    ///The release tarball or zip of a harness version for one architecture.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct InstallArchive {
         pub architecture: HostArchitecture,
@@ -14009,6 +14039,7 @@ pub mod types {
     pub enum InstallRecipe {
         NpmInstallRecipe(NpmInstallRecipe),
         ArchiveInstallRecipe(ArchiveInstallRecipe),
+        ZipInstallRecipe(ZipInstallRecipe),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<NpmInstallRecipe> for InstallRecipe {
@@ -14019,6 +14050,11 @@ pub mod types {
     impl ::std::convert::From<ArchiveInstallRecipe> for InstallRecipe {
         fn from(value: ArchiveInstallRecipe) -> Self {
             Self::ArchiveInstallRecipe(value)
+        }
+    }
+    impl ::std::convert::From<ZipInstallRecipe> for InstallRecipe {
+        fn from(value: ZipInstallRecipe) -> Self {
+            Self::ZipInstallRecipe(value)
         }
     }
     ///An open invitation to join the tenant in a role. `principalId` is the owner who invited. It
@@ -46406,6 +46442,51 @@ pub mod types {
         pub principal: Principal,
         pub tenant: Tenant,
     }
+    ///The pinned release zip the harness ships as, one per architecture, which may all name the same file; the build refuses an archive whose sha256 differs.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ZipInstallRecipe {
+        pub archives: ::std::vec::Vec<InstallArchive>,
+        pub kind: ZipInstallRecipeKind,
+        ///How many leading path components the build strips when it unpacks an archive.
+        #[serde(rename = "stripComponents")]
+        pub strip_components: i32,
+    }
+    ///`ZipInstallRecipeKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ZipInstallRecipeKind {
+        Zip,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for ZipInstallRecipeKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Zip => f.write_str("Zip"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ZipInstallRecipeKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Zip" => Ok(Self::Zip),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ZipInstallRecipeKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ZipInstallRecipeKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     /// Error types.
     pub mod error {
         /// Error from a `TryFrom` or `FromStr` implementation.
@@ -46955,6 +47036,9 @@ pub mod types {
                 Some("Archive") => Self::ArchiveInstallRecipe(
                     ::serde_json::from_value::<ArchiveInstallRecipe>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("Zip") => Self::ZipInstallRecipe(
+                    ::serde_json::from_value::<ZipInstallRecipe>(value.clone()).map_err(::serde::de::Error::custom)?,
                 ),
                 _ => Self::Unrecognised(value),
             })
@@ -48883,8 +48967,12 @@ pub mod types {
             RateLimited
         ]
     );
-    unrecognised_union!(ClaudeSetupHarness, [], [ClaudeCode, Codex]);
-    unrecognised_union!(ClaudeSetupMember, [], [ClaudeCodeOauthToken, CodexAuthJson]);
+    unrecognised_union!(ClaudeSetupHarness, [], [ClaudeCode, Codex, Gemini]);
+    unrecognised_union!(
+        ClaudeSetupMember,
+        [],
+        [ClaudeCodeOauthToken, CodexAuthJson, GeminiOauthCredsJson]
+    );
     fields_contain_unrecognised!(ClaudeSetupMinting, state, token_due_at);
     unrecognised_union!(ClaudeSetupMintingState, [], [Minting]);
     fields_contain_unrecognised!(ClaudeSetupStart, harness, secret_set_id);
@@ -49300,7 +49388,14 @@ pub mod types {
     unrecognised_union!(
         GuestHarnessProtocol,
         [],
-        [ClaudeStreamJson, PiRpc, ShellLines, PromptOnStdin, CodexExecJson]
+        [
+            ClaudeStreamJson,
+            PiRpc,
+            ShellLines,
+            PromptOnStdin,
+            CodexExecJson,
+            GeminiStreamJson
+        ]
     );
     fields_contain_unrecognised!(GuestHarnessWorkingDirectory, 0);
     fields_contain_unrecognised!(
@@ -49376,7 +49471,8 @@ pub mod types {
             HarnessStartFailed,
             HarnessOutOfMemory,
             Cancelled,
-            BoxDiskFull
+            BoxDiskFull,
+            CredentialRefused
         ]
     );
     unrecognised_union!(GuestTurnEndType, [], [TurnEnd]);
@@ -49404,7 +49500,7 @@ pub mod types {
     );
     fields_contain_unrecognised!(GuestTurnStartPrebuildCommitSha, 0);
     unrecognised_union!(GuestTurnStartType, [], [TurnStart]);
-    unrecognised_union!(Harness, [], [ClaudeCode, Codex, OpenCode, PiDev, MistralAgent]);
+    unrecognised_union!(Harness, [], [ClaudeCode, Codex, OpenCode, PiDev, MistralAgent, Gemini]);
     fields_contain_unrecognised!(
         HarnessCatalogEntry,
         compact_transcript,
@@ -49540,7 +49636,7 @@ pub mod types {
     unrecognised_union!(
         ImageHarness,
         [],
-        [ClaudeCode, Codex, OpenCode, PiDev, MistralAgent, Shell]
+        [ClaudeCode, Codex, OpenCode, PiDev, MistralAgent, Gemini, Shell]
     );
     fields_contain_unrecognised!(
         ImageRelease,
@@ -49578,7 +49674,11 @@ pub mod types {
     );
     fields_contain_unrecognised!(InstallArchiveBinaryPath, 0);
     fields_contain_unrecognised!(InstallArchiveUrl, 0);
-    unrecognised_union!(InstallRecipe, [NpmInstallRecipe, ArchiveInstallRecipe], []);
+    unrecognised_union!(
+        InstallRecipe,
+        [NpmInstallRecipe, ArchiveInstallRecipe, ZipInstallRecipe],
+        []
+    );
     fields_contain_unrecognised!(
         Invitation,
         created_at,
@@ -53235,6 +53335,8 @@ pub mod types {
     fields_contain_unrecognised!(WebhookUrl, 0);
     fields_contain_unrecognised!(Whoami, principal, tenant);
     fields_contain_unrecognised!(WhoamiWithEndpoint, endpoint, principal, tenant);
+    fields_contain_unrecognised!(ZipInstallRecipe, archives, kind, strip_components);
+    unrecognised_union!(ZipInstallRecipeKind, [], [Zip]);
 }
 #[derive(Clone, Debug)]
 ///Client for tumpel
@@ -60549,7 +60651,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 39;
-    pub const VERSION: u16 = 40;
+    pub const VERSION: u16 = 41;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
@@ -60565,5 +60667,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 37;
+    pub const VERSION: u16 = 38;
 }
