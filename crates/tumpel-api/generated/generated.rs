@@ -1692,6 +1692,7 @@ pub mod types {
         ClaudeSetupBoxOffer(ChannelClaudeSetupBoxOffer),
         ClaudeSetupBoxCode(ChannelClaudeSetupBoxCode),
         ClaudeSetupBoxDiscard(ChannelClaudeSetupBoxDiscard),
+        SnapshotNotStored(ChannelSnapshotNotStored),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<ChannelTurnOffer> for ChannelControlMessage {
@@ -1767,6 +1768,11 @@ pub mod types {
     impl ::std::convert::From<ChannelClaudeSetupBoxDiscard> for ChannelControlMessage {
         fn from(value: ChannelClaudeSetupBoxDiscard) -> Self {
             Self::ClaudeSetupBoxDiscard(value)
+        }
+    }
+    impl ::std::convert::From<ChannelSnapshotNotStored> for ChannelControlMessage {
+        fn from(value: ChannelSnapshotNotStored) -> Self {
+            Self::SnapshotNotStored(value)
         }
     }
     ///One connector of a turn. `url` is the upstream MCP server. `tokenUrl` is the control plane's
@@ -3116,8 +3122,8 @@ pub mod types {
     ///A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
     ///the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
     ///connection that speaks another with UnsupportedVersion. Version 39 lacks SnapshotChunkCheck,
-    ///SnapshotChunkCheckHeld, SnapshotIndexAsk and SnapshotIndexUpload, and versions 39 and 40 lack
-    ///the harness Gemini.
+    ///SnapshotChunkCheckHeld, SnapshotIndexAsk and SnapshotIndexUpload, versions 39 and 40 lack the
+    ///harness Gemini, and versions 39 to 41 lack SnapshotNotStored.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(transparent)]
     pub struct ChannelProtocol(pub i32);
@@ -3857,6 +3863,95 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for ChannelSnapshotIndexUploadType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The control plane answered SnapshotDone for `snapshotId` but did not store the snapshot. The host
+    ///keeps its previous base and does not adopt that snapshot as one. A stored snapshot gets no such
+    ///frame. A host that speaks no SnapshotNotStored logs it as unrecognised and carries on.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ChannelSnapshotNotStored {
+        pub reason: ChannelSnapshotNotStoredReason,
+        #[serde(rename = "snapshotId")]
+        pub snapshot_id: EntityId,
+        #[serde(rename = "type")]
+        pub type_: ChannelSnapshotNotStoredType,
+    }
+    ///Why the control plane did not store a snapshot the host answered SnapshotDone for.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ChannelSnapshotNotStoredReason {
+        Rejected,
+        PackMissing,
+        RequestNotPending,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for ChannelSnapshotNotStoredReason {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Rejected => f.write_str("Rejected"),
+                Self::PackMissing => f.write_str("PackMissing"),
+                Self::RequestNotPending => f.write_str("RequestNotPending"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ChannelSnapshotNotStoredReason {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Rejected" => Ok(Self::Rejected),
+                "PackMissing" => Ok(Self::PackMissing),
+                "RequestNotPending" => Ok(Self::RequestNotPending),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelSnapshotNotStoredReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelSnapshotNotStoredReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`ChannelSnapshotNotStoredType`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ChannelSnapshotNotStoredType {
+        SnapshotNotStored,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for ChannelSnapshotNotStoredType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SnapshotNotStored => f.write_str("SnapshotNotStored"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ChannelSnapshotNotStoredType {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "SnapshotNotStored" => Ok(Self::SnapshotNotStored),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelSnapshotNotStoredType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelSnapshotNotStoredType {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -46988,6 +47083,10 @@ pub mod types {
                     ::serde_json::from_value::<ChannelClaudeSetupBoxDiscard>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
+                Some("SnapshotNotStored") => Self::SnapshotNotStored(
+                    ::serde_json::from_value::<ChannelSnapshotNotStored>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 _ => Self::Unrecognised(value),
             })
         }
@@ -48962,7 +49061,8 @@ pub mod types {
             BoxDiscard,
             ClaudeSetupBoxOffer,
             ClaudeSetupBoxCode,
-            ClaudeSetupBoxDiscard
+            ClaudeSetupBoxDiscard,
+            SnapshotNotStored
         ],
         []
     );
@@ -49150,6 +49250,13 @@ pub mod types {
     unrecognised_union!(ChannelSnapshotIndexAskType, [], [SnapshotIndexAsk]);
     fields_contain_unrecognised!(ChannelSnapshotIndexUpload, snapshot_id, type_, upload_expires_at, url);
     unrecognised_union!(ChannelSnapshotIndexUploadType, [], [SnapshotIndexUpload]);
+    fields_contain_unrecognised!(ChannelSnapshotNotStored, reason, snapshot_id, type_);
+    unrecognised_union!(
+        ChannelSnapshotNotStoredReason,
+        [],
+        [Rejected, PackMissing, RequestNotPending]
+    );
+    unrecognised_union!(ChannelSnapshotNotStoredType, [], [SnapshotNotStored]);
     fields_contain_unrecognised!(
         ChannelSnapshotPackUploads,
         part,
@@ -61044,7 +61151,7 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 39;
-    pub const VERSION: u16 = 41;
+    pub const VERSION: u16 = 42;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;

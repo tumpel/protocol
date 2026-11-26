@@ -4,7 +4,7 @@ import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync,
 import { dirname, join } from "node:path";
 import { after, test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { HostFrameSchema } from "../build/schemas/schemas.ts";
+import { ControlFrameSchema, HostFrameSchema } from "../build/schemas/schemas.ts";
 import { channelWindowPaths, raiseOldest, raiseVersion } from "../typespec/npm-scripts/channel-window.mjs";
 import { baselineLockTexts, LOCK_DIR_PATH } from "../typespec/npm-scripts/channel-wire-baseline.mjs";
 import {
@@ -371,4 +371,20 @@ test("a chunk check frame takes 1 to 100 digests", () => {
       },
     }).success;
   assert.deepEqual([check(0), check(1), check(100), check(101)], [false, true, true, false]);
+});
+
+test("a snapshot not stored frame names the snapshot and why", () => {
+  const notStored = (reason) =>
+    ControlFrameSchema.safeParse({
+      type: "Frame",
+      seq: 1,
+      ack: 0,
+      message: { type: "SnapshotNotStored", snapshotId: "snp_01", reason },
+    });
+  assert.deepEqual(notStored("PackMissing").data?.message, {
+    type: "SnapshotNotStored",
+    snapshotId: "snp_01",
+    reason: "PackMissing",
+  });
+  assert.equal(notStored(undefined).success, false);
 });
