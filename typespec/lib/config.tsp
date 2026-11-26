@@ -88,6 +88,9 @@ model ConfigPersona {
 model ConfigTrigger {
   ...OmitProperties<TriggerCreate, "personaId" | "sessionId">;
   personaName: DisplayName;
+
+  @doc("Config never declares a trigger that targets a session, so a config trigger naming one is refused.")
+  sessionId?: never;
 }
 
 @@extension(HarnessPinCreate, "additionalProperties", false);

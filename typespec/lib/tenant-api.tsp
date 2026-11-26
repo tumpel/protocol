@@ -2922,7 +2922,7 @@ model TriggerDeliveryRepeated {
   sessionId: EntityId;
 }
 
-@doc("The start was refused and TriggerStartRefused appended with the refusal.")
+@doc("The start or send was refused and TriggerStartRefused appended with the refusal. The trigger stays, and so does its route.")
 model TriggerStartRefusedOk {
   kind: "Refused";
   refusal: TriggerStartRefusal;
@@ -2935,9 +2935,18 @@ model TriggerTurnSentOk {
   turnId: EntityId;
 }
 
+@doc("""
+  The session a targeted trigger sends to is gone: NotFound, Archived or Failed. The trigger is
+  deleted and TriggerStartRefused appended with the refusal, so the caller drops its route.
+  """)
+model TriggerSendGone {
+  kind: "Gone";
+  refusal: TriggerStartRefusal;
+}
+
 model TriggerFiredResult {
   @doc("NotFound when the tenant has no trigger with the id, such as a targeted trigger an earlier delivery or a delete already took; the caller drops its route.")
-  fired: SessionStartedOk | TriggerTurnSentOk | TriggerDeliveryRepeated | TriggerNotFound | TriggerStartRefusedOk;
+  fired: SessionStartedOk | TriggerTurnSentOk | TriggerDeliveryRepeated | TriggerNotFound | TriggerStartRefusedOk | TriggerSendGone;
 }
 
 model GetTurnFailureResult {

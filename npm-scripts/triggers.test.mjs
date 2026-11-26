@@ -25,7 +25,7 @@ test("a trigger may target a session and listen to check suites and reviews", ()
   }
 });
 
-test("a config trigger carries no target session", () => {
+test("a config trigger naming a target session is refused", () => {
   const configTrigger = {
     name: "agent-review",
     source: { kind: "GitHub", event: "status", conditions: [] },
@@ -33,5 +33,6 @@ test("a config trigger carries no target session", () => {
     prompt: "Review {{sha}}",
     personaName: "reviewer",
   };
-  assert.deepEqual(ConfigTriggerSchema.parse({ ...configTrigger, sessionId: "session-1" }), configTrigger);
+  assert.deepEqual(ConfigTriggerSchema.parse(configTrigger), configTrigger);
+  assert.equal(ConfigTriggerSchema.safeParse({ ...configTrigger, sessionId: "session-1" }).success, false);
 });

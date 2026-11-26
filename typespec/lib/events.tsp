@@ -49,7 +49,7 @@ enum TenantEventType {
   @doc("A subscription entered Ended.")
   SubscriptionEnded: "SubscriptionEnded",
 
-  @doc("A trigger matched a delivery and started no session.")
+  @doc("A trigger matched a delivery and started no session, or for a targeted trigger sent no turn.")
   TriggerStartRefused: "TriggerStartRefused",
 
   @doc("A session start or turn send was refused.")

@@ -18167,6 +18167,9 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.TriggerStartRefusedOk"
+            },
+            {
+              "$ref": "#/components/schemas/TenantApi.TriggerSendGone"
             }
           ],
           "description": "NotFound when the tenant has no trigger with the id, such as a targeted trigger an earlier delivery or a delete already took; the caller drops its route."
@@ -18243,6 +18246,25 @@
       },
       "description": "The tenant has no persona with the trigger's personaId."
     },
+    "TenantApi.TriggerSendGone": {
+      "type": "object",
+      "required": [
+        "kind",
+        "refusal"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Gone"
+          ]
+        },
+        "refusal": {
+          "$ref": "#/components/schemas/TriggerStartRefusal"
+        }
+      },
+      "description": "The session a targeted trigger sends to is gone: NotFound, Archived or Failed. The trigger is\ndeleted and TriggerStartRefused appended with the refusal, so the caller drops its route."
+    },
     "TenantApi.TriggerSessionMismatch": {
       "type": "object",
       "required": [
@@ -18283,7 +18305,7 @@
           "$ref": "#/components/schemas/TriggerStartRefusal"
         }
       },
-      "description": "The start was refused and TriggerStartRefused appended with the refusal."
+      "description": "The start or send was refused and TriggerStartRefused appended with the refusal. The trigger stays, and so does its route."
     },
     "TenantApi.TriggerTargeted": {
       "type": "object",

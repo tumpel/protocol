@@ -41931,6 +41931,7 @@ pub mod types {
         TriggerDeliveryRepeated(TenantApiTriggerDeliveryRepeated),
         TriggerNotFound(TenantApiTriggerNotFound),
         TriggerStartRefusedOk(TenantApiTriggerStartRefusedOk),
+        TriggerSendGone(TenantApiTriggerSendGone),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionStartedOk> for TenantApiTriggerFiredResultFired {
@@ -41956,6 +41957,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiTriggerStartRefusedOk> for TenantApiTriggerFiredResultFired {
         fn from(value: TenantApiTriggerStartRefusedOk) -> Self {
             Self::TriggerStartRefusedOk(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerSendGone> for TenantApiTriggerFiredResultFired {
+        fn from(value: TenantApiTriggerSendGone) -> Self {
+            Self::TriggerSendGone(value)
         }
     }
     ///`TenantApiTriggerLimitReached`
@@ -42162,6 +42168,49 @@ pub mod types {
             value.parse()
         }
     }
+    ///The session a targeted trigger sends to is gone: NotFound, Archived or Failed. The trigger is
+    ///deleted and TriggerStartRefused appended with the refusal, so the caller drops its route.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerSendGone {
+        pub kind: TenantApiTriggerSendGoneKind,
+        pub refusal: TriggerStartRefusal,
+    }
+    ///`TenantApiTriggerSendGoneKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerSendGoneKind {
+        Gone,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for TenantApiTriggerSendGoneKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Gone => f.write_str("Gone"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerSendGoneKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Gone" => Ok(Self::Gone),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerSendGoneKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerSendGoneKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///The trigger's personaId or model differs from its target session's.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTriggerSessionMismatch {
@@ -42206,7 +42255,7 @@ pub mod types {
             value.parse()
         }
     }
-    ///The start was refused and TriggerStartRefused appended with the refusal.
+    ///The start or send was refused and TriggerStartRefused appended with the refusal. The trigger stays, and so does its route.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTriggerStartRefusedOk {
         pub kind: TenantApiTriggerStartRefusedOkKind,
@@ -53125,7 +53174,8 @@ pub mod types {
             TriggerTurnSentOk,
             TriggerDeliveryRepeated,
             TriggerNotFound,
-            TriggerStartRefusedOk
+            TriggerStartRefusedOk,
+            TriggerSendGone
         ],
         []
     );
@@ -53138,6 +53188,8 @@ pub mod types {
     unrecognised_union!(TenantApiTriggerNotFoundKind, [], [NotFound]);
     fields_contain_unrecognised!(TenantApiTriggerPersonaNotFound, kind);
     unrecognised_union!(TenantApiTriggerPersonaNotFoundKind, [], [PersonaNotFound]);
+    fields_contain_unrecognised!(TenantApiTriggerSendGone, kind, refusal);
+    unrecognised_union!(TenantApiTriggerSendGoneKind, [], [Gone]);
     fields_contain_unrecognised!(TenantApiTriggerSessionMismatch, kind, model, persona_id);
     unrecognised_union!(TenantApiTriggerSessionMismatchKind, [], [SessionMismatch]);
     fields_contain_unrecognised!(TenantApiTriggerStartRefusedOk, kind, refusal);
