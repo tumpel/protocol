@@ -561,7 +561,7 @@ model SessionListQuery {
   @query
   @minValue(1)
   @maxValue(50)
-  limit?: int32;
+  limit: int32;
 
   @query
   after?: EntityId;
