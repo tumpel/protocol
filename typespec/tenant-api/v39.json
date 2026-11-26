@@ -1202,6 +1202,73 @@
       },
       "description": "The answer to RestoreChunks part `part`: a presigned GET for each pack that holds chunks of that\npart, valid until `downloadExpiresAt`, the DispatchGrant's expiresAt. A pack is left out when\nany chunk asked in it is no chunk of the session at that placement, and the host fails the turn\nSnapshotUnreadable."
     },
+    "Channel.SnapshotChunkCheck": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "check",
+        "digests"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotChunkCheck"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "check": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "digests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Sha256Digest"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        }
+      },
+      "description": "Check `check` of a snapshot: asks which of up to ChunkExchange.DigestsPerCheck chunk digests the\ntenant holds already, among those the box's base lacks. The host may send several checks before\ntheir answers arrive, each with its own `check`. The control plane answers SnapshotChunkCheckHeld\nfrom the `.idx` of the session's previous snapshot. A control plane that speaks no such frame\nanswers FrameRefused, and the host packs every chunk of that snapshot."
+    },
+    "Channel.SnapshotChunkCheckHeld": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "check",
+        "held"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotChunkCheckHeld"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "check": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "held": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.ChunkPlacement"
+          },
+          "maxItems": 100
+        }
+      },
+      "description": "The answer to SnapshotChunkCheck `check`: where the tenant stores each digest of that check it\nholds already. A digest left out is held nowhere the control plane knows, and the host packs and\nuploads it."
+    },
     "Channel.SnapshotChunks": {
       "type": "object",
       "required": [
@@ -1372,6 +1439,63 @@
         "RateLimited"
       ],
       "description": "Why the host could not store a snapshot."
+    },
+    "Channel.SnapshotIndexAsk": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "sizeBytes",
+        "digest"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotIndexAsk"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 16
+        },
+        "digest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        }
+      },
+      "description": "Asks to upload the snapshot's `.idx`, `sizeBytes` long with the lower-case hex SHA-256 `digest`,\nbefore SnapshotDone. The control plane answers SnapshotIndexUpload; on FrameRefused the host\nstores the snapshot without it."
+    },
+    "Channel.SnapshotIndexUpload": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "url",
+        "uploadExpiresAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotIndexUpload"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "url": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "uploadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The answer to SnapshotIndexAsk: `url` is a presigned PUT of `<storageKey>.idx` alone, valid until\n`uploadExpiresAt`, that signs the asked SHA-256 as the x-amz-checksum-sha256 header, so object\nstorage refuses bytes that do not hash to it."
     },
     "Channel.SnapshotPacks": {
       "type": "object",
@@ -2216,7 +2340,7 @@
               "$ref": "#/components/schemas/ModelName"
             }
           ],
-          "description": "The model of every session the trigger starts; it must be one the persona's harness runs. A targeted trigger names its session's model."
+          "description": "The model of every session the trigger starts; it must be one the persona's harness runs."
         },
         "prompt": {
           "allOf": [
@@ -3138,9 +3262,7 @@
         "pull_request",
         "push",
         "status",
-        "issues",
-        "check_suite",
-        "pull_request_review"
+        "issues"
       ],
       "description": "A GitHub webhook event type a trigger listens to, as GitHub names it in X-GitHub-Event."
     },
@@ -4692,7 +4814,6 @@
         "BodyTooLarge",
         "RateLimited",
         "UsageLimitReached",
-        "TriggerLimitReached",
         "AboveFreeTier"
       ]
     },
@@ -9327,7 +9448,7 @@
               "$ref": "#/components/schemas/EntityId"
             }
           ],
-          "description": "The Owner who creates the trigger, whom its sessions run as, or the turn's principal for a trigger targeting the turn's own session."
+          "description": "The Owner who creates the trigger, whom its sessions run as."
         },
         "now": {
           "type": "integer",
@@ -9373,21 +9494,6 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.TriggerPersonaNotFound"
-            },
-            {
-              "$ref": "#/components/schemas/TenantApi.SessionNotFound"
-            },
-            {
-              "$ref": "#/components/schemas/TenantApi.SessionArchivedState"
-            },
-            {
-              "$ref": "#/components/schemas/TenantApi.SessionFailedState"
-            },
-            {
-              "$ref": "#/components/schemas/TenantApi.TriggerSessionMismatch"
-            },
-            {
-              "$ref": "#/components/schemas/TenantApi.TriggerLimitReached"
             }
           ]
         }
@@ -11257,6 +11363,12 @@
               "$ref": "#/components/schemas/Channel.SnapshotChunks"
             },
             {
+              "$ref": "#/components/schemas/Channel.SnapshotChunkCheck"
+            },
+            {
+              "$ref": "#/components/schemas/Channel.SnapshotIndexAsk"
+            },
+            {
               "$ref": "#/components/schemas/Channel.SnapshotPacks"
             },
             {
@@ -11328,6 +11440,24 @@
               "allOf": [
                 {
                   "$ref": "#/components/schemas/Channel.SnapshotChunksHeld"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Channel.SnapshotChunkCheckHeld"
+                }
+              ],
+              "nullable": true
+            },
+            {
+              "type": "object",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Channel.SnapshotIndexUpload"
                 }
               ],
               "nullable": true
@@ -15320,8 +15450,7 @@
     "TenantApi.SessionDeleted": {
       "type": "object",
       "required": [
-        "kind",
-        "triggerIds"
+        "kind"
       ],
       "properties": {
         "kind": {
@@ -15329,14 +15458,6 @@
           "enum": [
             "Deleted"
           ]
-        },
-        "triggerIds": {
-          "type": "array",
-          "items": {
-            "$ref": "#/components/schemas/EntityId"
-          },
-          "maxItems": 10,
-          "description": "The targeted triggers of the session, deleted with it, whose routes the caller drops."
         }
       }
     },
@@ -18069,7 +18190,7 @@
           "format": "int64"
         }
       },
-      "description": "One delivery a trigger matched. The tenant Durable Object reads the trigger's persona, model and\nprincipalId as they are now and starts the session through the path of Sessions_start, with a\nTriggerOrigin as its startedBy, at most once per triggerId and deliveryId. A targeted trigger\ninstead sends its session the turn through the path of Turns_send and deletes itself in the\ntransaction that commits the send. It appends TriggerStartRefused when the adapter, the start or\nthe send refuses the delivery; a refused send of a session that is gone also deletes the trigger."
+      "description": "One delivery a trigger matched. The tenant Durable Object reads the trigger's persona, model and\nprincipalId as they are now and starts the session through the path of Sessions_start, with a\nTriggerOrigin as its startedBy, at most once per triggerId and deliveryId. It appends\nTriggerStartRefused when the adapter or the start refuses the delivery."
     },
     "TenantApi.TriggerFiredMatched": {
       "type": "object",
@@ -18157,9 +18278,6 @@
               "$ref": "#/components/schemas/TenantApi.SessionStartedOk"
             },
             {
-              "$ref": "#/components/schemas/TenantApi.TriggerTurnSentOk"
-            },
-            {
               "$ref": "#/components/schemas/TenantApi.TriggerDeliveryRepeated"
             },
             {
@@ -18167,40 +18285,10 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.TriggerStartRefusedOk"
-            },
-            {
-              "$ref": "#/components/schemas/TenantApi.TriggerSendGone"
             }
-          ],
-          "description": "NotFound when the tenant has no trigger with the id, such as a targeted trigger an earlier delivery or a delete already took; the caller drops its route."
-        }
-      }
-    },
-    "TenantApi.TriggerLimitReached": {
-      "type": "object",
-      "required": [
-        "kind",
-        "scope"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "LimitReached"
           ]
-        },
-        "scope": {
-          "$ref": "#/components/schemas/TenantApi.TriggerLimitScope"
         }
       }
-    },
-    "TenantApi.TriggerLimitScope": {
-      "type": "string",
-      "enum": [
-        "Session",
-        "Tenant"
-      ],
-      "description": "Which cap of targeted triggers a create reached."
     },
     "TenantApi.TriggerNameTaken": {
       "type": "object",
@@ -18246,48 +18334,6 @@
       },
       "description": "The tenant has no persona with the trigger's personaId."
     },
-    "TenantApi.TriggerSendGone": {
-      "type": "object",
-      "required": [
-        "kind",
-        "refusal"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "Gone"
-          ]
-        },
-        "refusal": {
-          "$ref": "#/components/schemas/TriggerStartRefusal"
-        }
-      },
-      "description": "The session a targeted trigger sends to is gone: NotFound, Archived or Failed. The trigger is\ndeleted and TriggerStartRefused appended with the refusal, so the caller drops its route."
-    },
-    "TenantApi.TriggerSessionMismatch": {
-      "type": "object",
-      "required": [
-        "kind",
-        "personaId",
-        "model"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "SessionMismatch"
-          ]
-        },
-        "personaId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "model": {
-          "$ref": "#/components/schemas/ModelName"
-        }
-      },
-      "description": "The trigger's personaId or model differs from its target session's."
-    },
     "TenantApi.TriggerStartRefusedOk": {
       "type": "object",
       "required": [
@@ -18305,45 +18351,7 @@
           "$ref": "#/components/schemas/TriggerStartRefusal"
         }
       },
-      "description": "The start or send was refused and TriggerStartRefused appended with the refusal. The trigger stays, and so does its route."
-    },
-    "TenantApi.TriggerTargeted": {
-      "type": "object",
-      "required": [
-        "kind"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "Targeted"
-          ]
-        }
-      },
-      "description": "The trigger targets a session, so it never changes."
-    },
-    "TenantApi.TriggerTurnSentOk": {
-      "type": "object",
-      "required": [
-        "kind",
-        "sessionId",
-        "turnId"
-      ],
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "Sent"
-          ]
-        },
-        "sessionId": {
-          "$ref": "#/components/schemas/EntityId"
-        },
-        "turnId": {
-          "$ref": "#/components/schemas/EntityId"
-        }
-      },
-      "description": "A targeted trigger sent its session the turn and deleted itself, so the caller drops its route."
+      "description": "The start was refused and TriggerStartRefused appended with the refusal."
     },
     "TenantApi.TriggerUpdatedOk": {
       "type": "object",
@@ -19296,9 +19304,6 @@
             },
             {
               "$ref": "#/components/schemas/TenantApi.TriggerPersonaNotFound"
-            },
-            {
-              "$ref": "#/components/schemas/TenantApi.TriggerTargeted"
             }
           ]
         }
@@ -19776,21 +19781,13 @@
         "source": {
           "$ref": "#/components/schemas/TriggerSource"
         },
-        "sessionId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "description": "The session the trigger sends its one turn to. Left out, the trigger starts a fresh session on\nevery matching delivery. It must name a session of the tenant that is not Archived or Failed."
-        },
         "personaId": {
           "allOf": [
             {
               "$ref": "#/components/schemas/EntityId"
             }
           ],
-          "description": "The persona of every session the trigger starts. A start after the persona is deleted is refused. A targeted trigger names its session's persona."
+          "description": "The persona of every session the trigger starts. A start after the persona is deleted is refused."
         },
         "model": {
           "allOf": [
@@ -19798,7 +19795,7 @@
               "$ref": "#/components/schemas/ModelName"
             }
           ],
-          "description": "The model of every session the trigger starts; it must be one the persona's harness runs. A targeted trigger names its session's model."
+          "description": "The model of every session the trigger starts; it must be one the persona's harness runs."
         },
         "prompt": {
           "allOf": [
@@ -19814,7 +19811,7 @@
               "$ref": "#/components/schemas/EntityId"
             }
           ],
-          "description": "The principal who created or last changed the trigger: an Owner, or the turn's principal for a trigger a session created on itself. Every session the trigger starts, or turn it sends, runs as this principal.",
+          "description": "The Owner who created or last changed the trigger. Every session the trigger starts runs as this principal.",
           "readOnly": true
         },
         "createdAt": {
@@ -19828,7 +19825,7 @@
           "readOnly": true
         }
       },
-      "description": "Starts a fresh session whenever an event of its source and type arrives on which every condition\nholds. The session runs on the persona and model the trigger names, with the prompt filled from\nthe event, on the event's repository.html_url, as the principal who last created or changed the\ntrigger. Each delivery starts at most one session. Tumpel only listens: the session reports back\nto the source because its prompt tells it to.\n\nA trigger with a sessionId targets that session instead: on the first matching delivery it sends\nthe session one turn with the filled prompt, through the path of Turns_send, and deletes itself\nin the same transaction. A targeted trigger never changes; to change one, delete it and create\nanother. Config never declares one, and config apply never changes or deletes one."
+      "description": "Starts a fresh session whenever an event of its source and type arrives on which every condition\nholds. The session runs on the persona and model the trigger names, with the prompt filled from\nthe event, on the event's repository.html_url, as the principal who last created or changed the\ntrigger. Each delivery starts at most one session. Tumpel only listens: the session reports back\nto the source because its prompt tells it to."
     },
     "TriggerCondition": {
       "type": "object",
@@ -19877,21 +19874,13 @@
         "source": {
           "$ref": "#/components/schemas/TriggerSource"
         },
-        "sessionId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/EntityId"
-            }
-          ],
-          "description": "The session the trigger sends its one turn to. Left out, the trigger starts a fresh session on\nevery matching delivery. It must name a session of the tenant that is not Archived or Failed."
-        },
         "personaId": {
           "allOf": [
             {
               "$ref": "#/components/schemas/EntityId"
             }
           ],
-          "description": "The persona of every session the trigger starts. A start after the persona is deleted is refused. A targeted trigger names its session's persona."
+          "description": "The persona of every session the trigger starts. A start after the persona is deleted is refused."
         },
         "model": {
           "allOf": [
@@ -19899,7 +19888,7 @@
               "$ref": "#/components/schemas/ModelName"
             }
           ],
-          "description": "The model of every session the trigger starts; it must be one the persona's harness runs. A targeted trigger names its session's model."
+          "description": "The model of every session the trigger starts; it must be one the persona's harness runs."
         },
         "prompt": {
           "allOf": [
@@ -19910,7 +19899,7 @@
           "description": "The first prompt, with {{field}} placeholders, each a TriggerFieldPath filled with the event's\nvalue at that path. An array fills as a comma-separated list. A placeholder the event lacks\nrefuses the start."
         }
       },
-      "description": "Starts a fresh session whenever an event of its source and type arrives on which every condition\nholds. The session runs on the persona and model the trigger names, with the prompt filled from\nthe event, on the event's repository.html_url, as the principal who last created or changed the\ntrigger. Each delivery starts at most one session. Tumpel only listens: the session reports back\nto the source because its prompt tells it to.\n\nA trigger with a sessionId targets that session instead: on the first matching delivery it sends\nthe session one turn with the filled prompt, through the path of Turns_send, and deletes itself\nin the same transaction. A targeted trigger never changes; to change one, delete it and create\nanother. Config never declares one, and config apply never changes or deletes one."
+      "description": "Starts a fresh session whenever an event of its source and type arrives on which every condition\nholds. The session runs on the persona and model the trigger names, with the prompt filled from\nthe event, on the event's repository.html_url, as the principal who last created or changed the\ntrigger. Each delivery starts at most one session. Tumpel only listens: the session reports back\nto the source because its prompt tells it to."
     },
     "TriggerDeliveryId": {
       "type": "string",
@@ -19967,7 +19956,7 @@
               "$ref": "#/components/schemas/EntityId"
             }
           ],
-          "description": "The persona of every session the trigger starts. A start after the persona is deleted is refused. A targeted trigger names its session's persona."
+          "description": "The persona of every session the trigger starts. A start after the persona is deleted is refused."
         },
         "model": {
           "allOf": [
@@ -19975,7 +19964,7 @@
               "$ref": "#/components/schemas/ModelName"
             }
           ],
-          "description": "The model of every session the trigger starts; it must be one the persona's harness runs. A targeted trigger names its session's model."
+          "description": "The model of every session the trigger starts; it must be one the persona's harness runs."
         },
         "prompt": {
           "allOf": [
@@ -20016,7 +20005,7 @@
               "$ref": "#/components/schemas/ProblemCode"
             }
           ],
-          "description": "The code Sessions_start, or Turns_send for a targeted trigger, answers for the same refusal, or TriggerFieldMissing when the prompt names a field the event lacks."
+          "description": "The code Sessions_start answers for the same refusal, or TriggerFieldMissing when the prompt names a field the event lacks."
         },
         "detail": {
           "allOf": [
@@ -20027,7 +20016,7 @@
           "description": "What failed and the fix, in plain words."
         }
       },
-      "description": "Why a trigger matched a delivery and started no session, or for a targeted trigger sent no turn."
+      "description": "Why a trigger matched a delivery and started no session."
     },
     "TriggerStartRefusedEvent": {
       "type": "object",

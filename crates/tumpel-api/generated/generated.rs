@@ -32302,6 +32302,8 @@ pub mod types {
         TurnRepositoryCloneFailed(ChannelTurnRepositoryCloneFailed),
         TurnFailed(ChannelTurnFailed),
         SnapshotChunks(ChannelSnapshotChunks),
+        SnapshotChunkCheck(ChannelSnapshotChunkCheck),
+        SnapshotIndexAsk(ChannelSnapshotIndexAsk),
         SnapshotPacks(ChannelSnapshotPacks),
         RestoreChunks(ChannelRestoreChunks),
         SnapshotDone(ChannelSnapshotDone),
@@ -32350,6 +32352,16 @@ pub mod types {
     impl ::std::convert::From<ChannelSnapshotChunks> for TenantApiHostMessageInputMessage {
         fn from(value: ChannelSnapshotChunks) -> Self {
             Self::SnapshotChunks(value)
+        }
+    }
+    impl ::std::convert::From<ChannelSnapshotChunkCheck> for TenantApiHostMessageInputMessage {
+        fn from(value: ChannelSnapshotChunkCheck) -> Self {
+            Self::SnapshotChunkCheck(value)
+        }
+    }
+    impl ::std::convert::From<ChannelSnapshotIndexAsk> for TenantApiHostMessageInputMessage {
+        fn from(value: ChannelSnapshotIndexAsk) -> Self {
+            Self::SnapshotIndexAsk(value)
         }
     }
     impl ::std::convert::From<ChannelSnapshotPacks> for TenantApiHostMessageInputMessage {
@@ -32450,21 +32462,25 @@ pub mod types {
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
         pub subtype_1: ::std::option::Option<ChannelSnapshotChunksHeld>,
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_2: ::std::option::Option<ChannelSnapshotPackUploads>,
+        pub subtype_2: ::std::option::Option<ChannelSnapshotChunkCheckHeld>,
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_3: ::std::option::Option<ChannelRestoreDownloads>,
+        pub subtype_3: ::std::option::Option<ChannelSnapshotIndexUpload>,
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_4: ::std::option::Option<ChannelBoxDiscard>,
+        pub subtype_4: ::std::option::Option<ChannelSnapshotPackUploads>,
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_5: ::std::option::Option<ChannelClaudeSetupBoxDiscard>,
+        pub subtype_5: ::std::option::Option<ChannelRestoreDownloads>,
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_6: ::std::option::Option<ChannelTurnClaimed>,
+        pub subtype_6: ::std::option::Option<ChannelBoxDiscard>,
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_7: ::std::option::Option<ChannelTurnWithdrawn>,
+        pub subtype_7: ::std::option::Option<ChannelClaudeSetupBoxDiscard>,
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_8: ::std::option::Option<TenantApiStoredTurnOffer>,
+        pub subtype_8: ::std::option::Option<ChannelTurnClaimed>,
         #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
-        pub subtype_9: ::std::option::Option<TenantApiTurnHandoff>,
+        pub subtype_9: ::std::option::Option<ChannelTurnWithdrawn>,
+        #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
+        pub subtype_10: ::std::option::Option<TenantApiStoredTurnOffer>,
+        #[serde(flatten, skip_serializing_if = "::std::option::Option::is_none")]
+        pub subtype_11: ::std::option::Option<TenantApiTurnHandoff>,
     }
     ///`TenantApiHostPrebuildStarted`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
@@ -51961,6 +51977,8 @@ pub mod types {
             TurnRepositoryCloneFailed,
             TurnFailed,
             SnapshotChunks,
+            SnapshotChunkCheck,
+            SnapshotIndexAsk,
             SnapshotPacks,
             RestoreChunks,
             SnapshotDone,
@@ -51986,7 +52004,9 @@ pub mod types {
         subtype_6,
         subtype_7,
         subtype_8,
-        subtype_9
+        subtype_9,
+        subtype_10,
+        subtype_11
     );
     fields_contain_unrecognised!(TenantApiHostPrebuildStarted, kind, started);
     unrecognised_union!(TenantApiHostPrebuildStartedKind, [], [Started]);

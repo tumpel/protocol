@@ -34,5 +34,10 @@ test("a config trigger naming a target session is refused", () => {
     personaName: "reviewer",
   };
   assert.deepEqual(ConfigTriggerSchema.parse(configTrigger), configTrigger);
-  assert.equal(ConfigTriggerSchema.safeParse({ ...configTrigger, sessionId: "session-1" }).success, false);
+  const refused = ConfigTriggerSchema.safeParse({ ...configTrigger, sessionId: "session-1" });
+  assert.equal(refused.success, false);
+  assert.deepEqual(
+    refused.error.issues.map((issue) => issue.path),
+    [["sessionId"]],
+  );
 });

@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 39;
+const TenantApiVersion = 40;
 
 namespace TenantApi {
 
@@ -1055,7 +1055,7 @@ model PrepareOfferInput {
 model HostMessageInput {
   tenantId: EntityId;
   hostId: EntityId;
-  message: Channel.TurnImageFetching | Channel.TurnClaim | Channel.TurnRepositoryReady | Channel.TurnLines | Channel.TurnComplete | Channel.TurnRepositoryCloneFailed | Channel.TurnFailed | Channel.SnapshotChunks | Channel.SnapshotPacks | Channel.RestoreChunks | Channel.SnapshotDone | Channel.SnapshotFailed | Channel.BoxGone | Channel.BoxTeardownFailed | Channel.ClaudeSetupBoxUrl | Channel.ClaudeSetupBoxFailed;
+  message: Channel.TurnImageFetching | Channel.TurnClaim | Channel.TurnRepositoryReady | Channel.TurnLines | Channel.TurnComplete | Channel.TurnRepositoryCloneFailed | Channel.TurnFailed | Channel.SnapshotChunks | Channel.SnapshotChunkCheck | Channel.SnapshotIndexAsk | Channel.SnapshotPacks | Channel.RestoreChunks | Channel.SnapshotDone | Channel.SnapshotFailed | Channel.BoxGone | Channel.BoxTeardownFailed | Channel.ClaudeSetupBoxUrl | Channel.ClaudeSetupBoxFailed;
 }
 
 model TurnDeadline {
@@ -3070,7 +3070,7 @@ model HostFrameRefused {
 }
 
 model HostMessageResult {
-  reply: HostFrameRefused | Channel.SnapshotChunksHeld | Channel.SnapshotPackUploads | Channel.RestoreDownloads | Channel.BoxDiscard | Channel.ClaudeSetupBoxDiscard | Channel.TurnClaimed | Channel.TurnWithdrawn | StoredTurnOffer | TurnHandoff | null;
+  reply: HostFrameRefused | Channel.SnapshotChunksHeld | Channel.SnapshotChunkCheckHeld | Channel.SnapshotIndexUpload | Channel.SnapshotPackUploads | Channel.RestoreDownloads | Channel.BoxDiscard | Channel.ClaudeSetupBoxDiscard | Channel.TurnClaimed | Channel.TurnWithdrawn | StoredTurnOffer | TurnHandoff | null;
 }
 
 model DeadlineReachedResult {}
