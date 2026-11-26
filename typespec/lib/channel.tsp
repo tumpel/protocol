@@ -642,6 +642,56 @@ model SnapshotChunksHeld {
 }
 
 @doc("""
+  Check `check` of a snapshot: asks which of up to ChunkExchange.DigestsPerCheck chunk digests the
+  tenant holds already, among those the box's base lacks. The host may send several checks before
+  their answers arrive, each with its own `check`. The control plane answers SnapshotChunkCheckHeld
+  from the `.idx` of the session's previous snapshot. A control plane that speaks no such frame
+  answers FrameRefused, and the host packs every chunk of that snapshot.
+  """)
+model SnapshotChunkCheck {
+  type: "SnapshotChunkCheck";
+  snapshotId: EntityId;
+  @minValue(1) check: int32;
+  @minItems(1) @maxItems(DigestsPerCheck) digests: Sha256Digest[];
+}
+
+@doc("""
+  The answer to SnapshotChunkCheck `check`: where the tenant stores each digest of that check it
+  holds already. A digest left out is held nowhere the control plane knows, and the host packs and
+  uploads it.
+  """)
+model SnapshotChunkCheckHeld {
+  type: "SnapshotChunkCheckHeld";
+  snapshotId: EntityId;
+  @minValue(1) check: int32;
+  @maxItems(DigestsPerCheck) held: ChunkPlacement[];
+}
+
+@doc("""
+  Asks to upload the snapshot's `.idx`, `sizeBytes` long with the lower-case hex SHA-256 `digest`,
+  before SnapshotDone. The control plane answers SnapshotIndexUpload; on FrameRefused the host
+  stores the snapshot without it.
+  """)
+model SnapshotIndexAsk {
+  type: "SnapshotIndexAsk";
+  snapshotId: EntityId;
+  @minValue(16) sizeBytes: int64;
+  digest: Sha256Digest;
+}
+
+@doc("""
+  The answer to SnapshotIndexAsk: `url` is a presigned PUT of `<storageKey>.idx` alone, valid until
+  `uploadExpiresAt`, that signs the asked SHA-256 as the x-amz-checksum-sha256 header, so object
+  storage refuses bytes that do not hash to it.
+  """)
+model SnapshotIndexUpload {
+  type: "SnapshotIndexUpload";
+  snapshotId: EntityId;
+  url: HttpUrl;
+  uploadExpiresAt: offsetDateTime;
+}
+
+@doc("""
   Part `part` of the chunks a snapshot packed: where each chunk lies, at most
   ChunkExchange.DigestsPerPart of them, and the size of each pack they lie in. A pack whose chunks
   run past one part is listed again in the next. `reusedPackDigests` names packs the snapshot
@@ -895,6 +945,8 @@ union HostMessage {
   TurnRepositoryCloneFailed: TurnRepositoryCloneFailed,
   TurnFailed: TurnFailed,
   SnapshotChunks: SnapshotChunks,
+  SnapshotChunkCheck: SnapshotChunkCheck,
+  SnapshotIndexAsk: SnapshotIndexAsk,
   SnapshotPacks: SnapshotPacks,
   RestoreChunks: RestoreChunks,
   SnapshotDone: SnapshotDone,
@@ -915,6 +967,8 @@ union ControlMessage {
   TurnCancel: TurnCancel,
   SnapshotRequest: SnapshotRequest,
   SnapshotChunksHeld: SnapshotChunksHeld,
+  SnapshotChunkCheckHeld: SnapshotChunkCheckHeld,
+  SnapshotIndexUpload: SnapshotIndexUpload,
   SnapshotPackUploads: SnapshotPackUploads,
   RestoreDownloads: RestoreDownloads,
   BoxTeardown: BoxTeardown,
