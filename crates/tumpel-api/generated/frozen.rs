@@ -1,1 +1,3 @@
-
+#[allow(clippy::pedantic, clippy::unwrap_used, clippy::expect_used)]
+#[path = "frozen/v39.rs"]
+pub mod v39;

@@ -1683,6 +1683,8 @@ pub mod types {
         TurnCancel(ChannelTurnCancel),
         SnapshotRequest(ChannelSnapshotRequest),
         SnapshotChunksHeld(ChannelSnapshotChunksHeld),
+        SnapshotChunkCheckHeld(ChannelSnapshotChunkCheckHeld),
+        SnapshotIndexUpload(ChannelSnapshotIndexUpload),
         SnapshotPackUploads(ChannelSnapshotPackUploads),
         RestoreDownloads(ChannelRestoreDownloads),
         BoxTeardown(ChannelBoxTeardown),
@@ -1720,6 +1722,16 @@ pub mod types {
     impl ::std::convert::From<ChannelSnapshotChunksHeld> for ChannelControlMessage {
         fn from(value: ChannelSnapshotChunksHeld) -> Self {
             Self::SnapshotChunksHeld(value)
+        }
+    }
+    impl ::std::convert::From<ChannelSnapshotChunkCheckHeld> for ChannelControlMessage {
+        fn from(value: ChannelSnapshotChunkCheckHeld) -> Self {
+            Self::SnapshotChunkCheckHeld(value)
+        }
+    }
+    impl ::std::convert::From<ChannelSnapshotIndexUpload> for ChannelControlMessage {
+        fn from(value: ChannelSnapshotIndexUpload) -> Self {
+            Self::SnapshotIndexUpload(value)
         }
     }
     impl ::std::convert::From<ChannelSnapshotPackUploads> for ChannelControlMessage {
@@ -2898,6 +2910,8 @@ pub mod types {
         TurnRepositoryCloneFailed(ChannelTurnRepositoryCloneFailed),
         TurnFailed(ChannelTurnFailed),
         SnapshotChunks(ChannelSnapshotChunks),
+        SnapshotChunkCheck(ChannelSnapshotChunkCheck),
+        SnapshotIndexAsk(ChannelSnapshotIndexAsk),
         SnapshotPacks(ChannelSnapshotPacks),
         RestoreChunks(ChannelRestoreChunks),
         SnapshotDone(ChannelSnapshotDone),
@@ -2948,6 +2962,16 @@ pub mod types {
     impl ::std::convert::From<ChannelSnapshotChunks> for ChannelHostMessage {
         fn from(value: ChannelSnapshotChunks) -> Self {
             Self::SnapshotChunks(value)
+        }
+    }
+    impl ::std::convert::From<ChannelSnapshotChunkCheck> for ChannelHostMessage {
+        fn from(value: ChannelSnapshotChunkCheck) -> Self {
+            Self::SnapshotChunkCheck(value)
+        }
+    }
+    impl ::std::convert::From<ChannelSnapshotIndexAsk> for ChannelHostMessage {
+        fn from(value: ChannelSnapshotIndexAsk) -> Self {
+            Self::SnapshotIndexAsk(value)
         }
     }
     impl ::std::convert::From<ChannelSnapshotPacks> for ChannelHostMessage {
@@ -3091,7 +3115,8 @@ pub mod types {
     }
     ///A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
     ///the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-    ///connection that speaks another with UnsupportedVersion.
+    ///connection that speaks another with UnsupportedVersion. Version 39 lacks SnapshotChunkCheck,
+    ///SnapshotChunkCheckHeld, SnapshotIndexAsk and SnapshotIndexUpload.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(transparent)]
     pub struct ChannelProtocol(pub i32);
@@ -3375,6 +3400,104 @@ pub mod types {
         pub ack: Sequence,
         pub seq: Sequence,
     }
+    ///Check `check` of a snapshot: asks which of up to ChunkExchange.DigestsPerCheck chunk digests the
+    ///tenant holds already, among those the box's base lacks. The host may send several checks before
+    ///their answers arrive, each with its own `check`. The control plane answers SnapshotChunkCheckHeld
+    ///from the `.idx` of the session's previous snapshot. A control plane that speaks no such frame
+    ///answers FrameRefused, and the host packs every chunk of that snapshot.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ChannelSnapshotChunkCheck {
+        pub check: ::std::num::NonZeroU32,
+        pub digests: ::std::vec::Vec<Sha256Digest>,
+        #[serde(rename = "snapshotId")]
+        pub snapshot_id: EntityId,
+        #[serde(rename = "type")]
+        pub type_: ChannelSnapshotChunkCheckType,
+    }
+    ///The answer to SnapshotChunkCheck `check`: where the tenant stores each digest of that check it
+    ///holds already. A digest left out is held nowhere the control plane knows, and the host packs and
+    ///uploads it.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ChannelSnapshotChunkCheckHeld {
+        pub check: ::std::num::NonZeroU32,
+        pub held: ::std::vec::Vec<ChannelChunkPlacement>,
+        #[serde(rename = "snapshotId")]
+        pub snapshot_id: EntityId,
+        #[serde(rename = "type")]
+        pub type_: ChannelSnapshotChunkCheckHeldType,
+    }
+    ///`ChannelSnapshotChunkCheckHeldType`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ChannelSnapshotChunkCheckHeldType {
+        SnapshotChunkCheckHeld,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for ChannelSnapshotChunkCheckHeldType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SnapshotChunkCheckHeld => f.write_str("SnapshotChunkCheckHeld"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ChannelSnapshotChunkCheckHeldType {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "SnapshotChunkCheckHeld" => Ok(Self::SnapshotChunkCheckHeld),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelSnapshotChunkCheckHeldType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelSnapshotChunkCheckHeldType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///`ChannelSnapshotChunkCheckType`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ChannelSnapshotChunkCheckType {
+        SnapshotChunkCheck,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for ChannelSnapshotChunkCheckType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SnapshotChunkCheck => f.write_str("SnapshotChunkCheck"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ChannelSnapshotChunkCheckType {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "SnapshotChunkCheck" => Ok(Self::SnapshotChunkCheck),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelSnapshotChunkCheckType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelSnapshotChunkCheckType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
     ///Part `part` of the chunk digests the files of a snapshot hold that the box's previous snapshot
     ///did not, at most ChunkExchange.DigestsPerPart of them. The host sends part 1 once its files are
     ///cut, and each next part once the answer to the one before arrived. The control plane answers
@@ -3635,6 +3758,104 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for ChannelSnapshotFailureReason {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///Asks to upload the snapshot's `.idx`, `sizeBytes` long with the lower-case hex SHA-256 `digest`,
+    ///before SnapshotDone. The control plane answers SnapshotIndexUpload; on FrameRefused the host
+    ///stores the snapshot without it.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ChannelSnapshotIndexAsk {
+        pub digest: Sha256Digest,
+        #[serde(rename = "sizeBytes")]
+        pub size_bytes: i64,
+        #[serde(rename = "snapshotId")]
+        pub snapshot_id: EntityId,
+        #[serde(rename = "type")]
+        pub type_: ChannelSnapshotIndexAskType,
+    }
+    ///`ChannelSnapshotIndexAskType`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ChannelSnapshotIndexAskType {
+        SnapshotIndexAsk,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for ChannelSnapshotIndexAskType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SnapshotIndexAsk => f.write_str("SnapshotIndexAsk"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ChannelSnapshotIndexAskType {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "SnapshotIndexAsk" => Ok(Self::SnapshotIndexAsk),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelSnapshotIndexAskType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelSnapshotIndexAskType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The answer to SnapshotIndexAsk: `url` is a presigned PUT of `<storageKey>.idx` alone, valid until
+    ///`uploadExpiresAt`, that signs the asked SHA-256 as the x-amz-checksum-sha256 header, so object
+    ///storage refuses bytes that do not hash to it.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct ChannelSnapshotIndexUpload {
+        #[serde(rename = "snapshotId")]
+        pub snapshot_id: EntityId,
+        #[serde(rename = "type")]
+        pub type_: ChannelSnapshotIndexUploadType,
+        #[serde(rename = "uploadExpiresAt")]
+        pub upload_expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
+        pub url: HttpUrl,
+    }
+    ///`ChannelSnapshotIndexUploadType`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum ChannelSnapshotIndexUploadType {
+        SnapshotIndexUpload,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for ChannelSnapshotIndexUploadType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SnapshotIndexUpload => f.write_str("SnapshotIndexUpload"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for ChannelSnapshotIndexUploadType {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "SnapshotIndexUpload" => Ok(Self::SnapshotIndexUpload),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for ChannelSnapshotIndexUploadType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for ChannelSnapshotIndexUploadType {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -5014,8 +5235,9 @@ pub mod types {
             value.parse()
         }
     }
-    ///The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
-    ///placements or packs one answer carries.
+    ///DigestsPerPart is the most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names,
+    ///and so the most placements or packs one answer carries. DigestsPerCheck is the most digests one
+    ///SnapshotChunkCheck asks, and so the most placements its answer carries.
     #[derive(::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(transparent)]
     pub struct ChunkExchange(i64);
@@ -5033,7 +5255,7 @@ pub mod types {
     impl ::std::convert::TryFrom<i64> for ChunkExchange {
         type Error = self::error::ConversionError;
         fn try_from(value: i64) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if ![500_i64].contains(&value) {
+            if ![500_i64, 100_i64].contains(&value) {
                 Err("invalid value".into())
             } else {
                 Ok(Self(value))
@@ -22722,10 +22944,22 @@ pub mod types {
             Self::Failure(value)
         }
     }
-    ///A snapshot as stored under its storage key: the chunks of its encoded SnapshotManifest in order,
-    ///each at its placement. A snapshot uploads only the manifest chunks that changed. A restore reads
-    ///the latest root only, reassembles the manifest and then each file from its chunks, and hands the
-    ///box the whole upper directory.
+    ///A snapshot as stored under its storage key: the chunks of its encoded manifest in order, each at
+    ///its placement. A snapshot uploads only the manifest chunks that changed. A restore reads the
+    ///latest root only, reassembles the manifest, and hands the box the whole upper directory. The
+    ///manifest's bytes name its format. Format 1 is a JSON SnapshotManifest, and the restore
+    ///reassembles each file from its chunks. Format 2 is a chunk list: the upper directory as one tar
+    ///stream, cut by FastCDC (512 KiB minimum, 1 MiB average, 8 MiB maximum) into chunks stored in
+    ///packs of about 16 MiB, and the restore concatenates its chunks in order into that tar stream.
+    ///
+    ///A chunk list and a `.idx` share one little-endian layout. A 16-byte header holds a 4-byte magic,
+    ///version u32 = 1, pack count P u32 and record count N u32. A pack table of P SHA-256 pack digests,
+    ///32 bytes each, follows in ascending order. Then come N records of 44 bytes: chunk digest 32
+    ///bytes, pack index into the table u32, offset u32 and length u32. The chunk list has magic `TPCL`
+    ///and its records in stream order, so a chunk's end in the stream is the running sum of lengths.
+    ///The `.idx`, stored under `<storageKey>.idx`, has magic `TPIX` and the same records ascending by
+    ///digest, so a SnapshotChunkCheck is answered by binary search. Either names every chunk of the
+    ///snapshot, so its packs are exactly the snapshot's packs, and either is 16 + 32P + 44N bytes long.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct SnapshotRoot {
         pub manifest: ::std::vec::Vec<ChannelChunkPlacement>,
@@ -46286,6 +46520,14 @@ pub mod types {
                     ::serde_json::from_value::<ChannelSnapshotChunksHeld>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
+                Some("SnapshotChunkCheckHeld") => Self::SnapshotChunkCheckHeld(
+                    ::serde_json::from_value::<ChannelSnapshotChunkCheckHeld>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SnapshotIndexUpload") => Self::SnapshotIndexUpload(
+                    ::serde_json::from_value::<ChannelSnapshotIndexUpload>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
                 Some("SnapshotPackUploads") => Self::SnapshotPackUploads(
                     ::serde_json::from_value::<ChannelSnapshotPackUploads>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
@@ -46372,6 +46614,14 @@ pub mod types {
                 ),
                 Some("SnapshotChunks") => Self::SnapshotChunks(
                     ::serde_json::from_value::<ChannelSnapshotChunks>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SnapshotChunkCheck") => Self::SnapshotChunkCheck(
+                    ::serde_json::from_value::<ChannelSnapshotChunkCheck>(value.clone())
+                        .map_err(::serde::de::Error::custom)?,
+                ),
+                Some("SnapshotIndexAsk") => Self::SnapshotIndexAsk(
+                    ::serde_json::from_value::<ChannelSnapshotIndexAsk>(value.clone())
                         .map_err(::serde::de::Error::custom)?,
                 ),
                 Some("SnapshotPacks") => Self::SnapshotPacks(
@@ -48268,6 +48518,8 @@ pub mod types {
             TurnCancel,
             SnapshotRequest,
             SnapshotChunksHeld,
+            SnapshotChunkCheckHeld,
+            SnapshotIndexUpload,
             SnapshotPackUploads,
             RestoreDownloads,
             BoxTeardown,
@@ -48375,6 +48627,8 @@ pub mod types {
             TurnRepositoryCloneFailed,
             TurnFailed,
             SnapshotChunks,
+            SnapshotChunkCheck,
+            SnapshotIndexAsk,
             SnapshotPacks,
             RestoreChunks,
             SnapshotDone,
@@ -48423,6 +48677,10 @@ pub mod types {
     );
     unrecognised_union!(ChannelRestoreDownloadsType, [], [RestoreDownloads]);
     fields_contain_unrecognised!(ChannelSequenced, ack, seq);
+    fields_contain_unrecognised!(ChannelSnapshotChunkCheck, check, digests, snapshot_id, type_);
+    fields_contain_unrecognised!(ChannelSnapshotChunkCheckHeld, check, held, snapshot_id, type_);
+    unrecognised_union!(ChannelSnapshotChunkCheckHeldType, [], [SnapshotChunkCheckHeld]);
+    unrecognised_union!(ChannelSnapshotChunkCheckType, [], [SnapshotChunkCheck]);
     fields_contain_unrecognised!(ChannelSnapshotChunks, digests, part, snapshot_id, type_);
     fields_contain_unrecognised!(ChannelSnapshotChunksHeld, held, part, snapshot_id, type_);
     unrecognised_union!(ChannelSnapshotChunksHeldType, [], [SnapshotChunksHeld]);
@@ -48452,6 +48710,10 @@ pub mod types {
             RateLimited
         ]
     );
+    fields_contain_unrecognised!(ChannelSnapshotIndexAsk, digest, size_bytes, snapshot_id, type_);
+    unrecognised_union!(ChannelSnapshotIndexAskType, [], [SnapshotIndexAsk]);
+    fields_contain_unrecognised!(ChannelSnapshotIndexUpload, snapshot_id, type_, upload_expires_at, url);
+    unrecognised_union!(ChannelSnapshotIndexUploadType, [], [SnapshotIndexUpload]);
     fields_contain_unrecognised!(
         ChannelSnapshotPackUploads,
         part,
@@ -60288,10 +60550,11 @@ impl types::ChannelCloseCode {
 }
 impl types::ChannelProtocol {
     pub const OLDEST: u16 = 39;
-    pub const VERSION: u16 = 39;
+    pub const VERSION: u16 = 40;
 }
 impl types::ChunkExchange {
     pub const DIGESTS_PER_PART: u16 = 500;
+    pub const DIGESTS_PER_CHECK: u16 = 100;
 }
 impl types::GuestProtocol {
     pub const OLDEST: u16 = 9;
