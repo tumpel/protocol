@@ -720,10 +720,22 @@ model SnapshotManifest {
 }
 
 @doc("""
-  A snapshot as stored under its storage key: the chunks of its encoded SnapshotManifest in order,
-  each at its placement. A snapshot uploads only the manifest chunks that changed. A restore reads
-  the latest root only, reassembles the manifest and then each file from its chunks, and hands the
-  box the whole upper directory.
+  A snapshot as stored under its storage key: the chunks of its encoded manifest in order, each at
+  its placement. A snapshot uploads only the manifest chunks that changed. A restore reads the
+  latest root only, reassembles the manifest, and hands the box the whole upper directory. The
+  manifest's bytes name its format. Format 1 is a JSON SnapshotManifest, and the restore
+  reassembles each file from its chunks. Format 2 is a chunk list: the upper directory as one tar
+  stream, cut by FastCDC (512 KiB minimum, 1 MiB average, 8 MiB maximum) into chunks stored in
+  packs of about 16 MiB, and the restore concatenates its chunks in order into that tar stream.
+
+  A chunk list and a `.idx` share one little-endian layout. A 16-byte header holds a 4-byte magic,
+  version u32 = 1, pack count P u32 and record count N u32. A pack table of P SHA-256 pack digests,
+  32 bytes each, follows in ascending order. Then come N records of 44 bytes: chunk digest 32
+  bytes, pack index into the table u32, offset u32 and length u32. The chunk list has magic `TPCL`
+  and its records in stream order, so a chunk's end in the stream is the running sum of lengths.
+  The `.idx`, stored under `<storageKey>.idx`, has magic `TPIX` and the same records ascending by
+  digest, so a SnapshotChunkCheck is answered by binary search. Either names every chunk of the
+  snapshot, so its packs are exactly the snapshot's packs, and either is 16 + 32P + 44N bytes long.
   """)
 model SnapshotRoot {
   @maxItems(1000000) manifest: Channel.ChunkPlacement[];

@@ -4,6 +4,7 @@ import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync,
 import { dirname, join } from "node:path";
 import { after, test } from "node:test";
 import { fileURLToPath } from "node:url";
+import { HostFrameSchema } from "../build/schemas/schemas.ts";
 import { channelWindowPaths, raiseOldest, raiseVersion } from "../typespec/npm-scripts/channel-window.mjs";
 import { baselineLockTexts, LOCK_DIR_PATH } from "../typespec/npm-scripts/channel-wire-baseline.mjs";
 import {
@@ -354,4 +355,20 @@ test("channel:drop with --confirm-fleet-drained raises Oldest and removes the lo
   );
   assert.equal(existsSync(join(paths.locks, "v17.json")), false);
   assert.equal(existsSync(join(paths.locks, "v18.json")), true);
+});
+
+test("a chunk check frame takes 1 to 100 digests", () => {
+  const check = (count) =>
+    HostFrameSchema.safeParse({
+      type: "Frame",
+      seq: 1,
+      ack: 0,
+      message: {
+        type: "SnapshotChunkCheck",
+        snapshotId: "snp_01",
+        check: 1,
+        digests: Array.from({ length: count }, (_, i) => i.toString(16).padStart(64, "0")),
+      },
+    }).success;
+  assert.deepEqual([check(0), check(1), check(100), check(101)], [false, true, true, false]);
 });

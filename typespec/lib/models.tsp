@@ -60,7 +60,9 @@ scalar Sha256Digest extends string;
 @doc("""
   A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
   the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-  connection that speaks another with UnsupportedVersion. Version 39 lacks the harness Gemini.
+  connection that speaks another with UnsupportedVersion. Version 39 lacks SnapshotChunkCheck,
+  SnapshotChunkCheckHeld, SnapshotIndexAsk and SnapshotIndexUpload, and versions 39 and 40 lack
+  the harness Gemini.
   """)
 @minValue(ChannelProtocolOldest)
 @maxValue(ChannelProtocolVersion)
@@ -68,17 +70,20 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 39;
-const ChannelProtocolVersion = 40;
+const ChannelProtocolVersion = 41;
 
 @doc("""
-  The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
-  placements or packs one answer carries.
+  DigestsPerPart is the most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names,
+  and so the most placements or packs one answer carries. DigestsPerCheck is the most digests one
+  SnapshotChunkCheck asks, and so the most placements its answer carries.
   """)
 enum ChunkExchange {
   DigestsPerPart: 500,
+  DigestsPerCheck: 100,
 }
 
 const DigestsPerPart = 500;
+const DigestsPerCheck = 100;
 
 @doc("""
   A guest protocol version, from Oldest, the oldest version the supervisor still speaks, to Version,

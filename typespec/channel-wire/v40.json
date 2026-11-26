@@ -545,6 +545,12 @@
           "$ref": "#/components/schemas/Channel.SnapshotChunksHeld"
         },
         {
+          "$ref": "#/components/schemas/Channel.SnapshotChunkCheckHeld"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.SnapshotIndexUpload"
+        },
+        {
           "$ref": "#/components/schemas/Channel.SnapshotPackUploads"
         },
         {
@@ -575,6 +581,8 @@
           "TurnCancel": "#/components/schemas/Channel.TurnCancel",
           "SnapshotRequest": "#/components/schemas/Channel.SnapshotRequest",
           "SnapshotChunksHeld": "#/components/schemas/Channel.SnapshotChunksHeld",
+          "SnapshotChunkCheckHeld": "#/components/schemas/Channel.SnapshotChunkCheckHeld",
+          "SnapshotIndexUpload": "#/components/schemas/Channel.SnapshotIndexUpload",
           "SnapshotPackUploads": "#/components/schemas/Channel.SnapshotPackUploads",
           "RestoreDownloads": "#/components/schemas/Channel.RestoreDownloads",
           "BoxTeardown": "#/components/schemas/Channel.BoxTeardown",
@@ -1102,6 +1110,12 @@
           "$ref": "#/components/schemas/Channel.SnapshotChunks"
         },
         {
+          "$ref": "#/components/schemas/Channel.SnapshotChunkCheck"
+        },
+        {
+          "$ref": "#/components/schemas/Channel.SnapshotIndexAsk"
+        },
+        {
           "$ref": "#/components/schemas/Channel.SnapshotPacks"
         },
         {
@@ -1143,6 +1157,8 @@
           "TurnRepositoryCloneFailed": "#/components/schemas/Channel.TurnRepositoryCloneFailed",
           "TurnFailed": "#/components/schemas/Channel.TurnFailed",
           "SnapshotChunks": "#/components/schemas/Channel.SnapshotChunks",
+          "SnapshotChunkCheck": "#/components/schemas/Channel.SnapshotChunkCheck",
+          "SnapshotIndexAsk": "#/components/schemas/Channel.SnapshotIndexAsk",
           "SnapshotPacks": "#/components/schemas/Channel.SnapshotPacks",
           "RestoreChunks": "#/components/schemas/Channel.RestoreChunks",
           "SnapshotDone": "#/components/schemas/Channel.SnapshotDone",
@@ -1370,6 +1386,73 @@
       },
       "description": "Each direction of a host's channel numbers its frames from 1 in `seq`, and the count survives\nreconnects and restarts. `ack` is the highest `seq` the sender has received from the other side\nwith no gap before it, 0 before the first one; it advances only with the sender's next frame. A\nreceiver drops a frame whose `seq` is at or below the last one it accepted, and treats a gap as\na protocol error that closes the connection. After Welcome each side resends, in order, every\nframe the other side has not acked, and the receiver drops the duplicates. The control plane\nkeeps its sent counter and its unacked frames in durable storage. The supervisor writes its\ncounters and unacked frames to disk before it sends a frame; when it starts without that state\nit does not dial, and exits with failure ChannelStateLost, and the host is enrolled again.\nChallenge, Hello, Welcome, Heartbeat and Ack belong to one connection and travel outside frames,\nwith no `seq`. Each side ignores fields it does not know.\n\nThe control plane keeps no count of host frames: Hello names the host's oldest unacked frame in\n`resendFrom`, the control plane applies the host's frames one at a time in `seq` order, stores\neach frame's effect, and only then answers Ack with its `seq`. The host acks control frames in\nevery Heartbeat as well as in its frames. The `ack` of a control frame is the connection's\ncursor, the last host `seq` whose effect is stored, never the highest `seq` received."
     },
+    "Channel.SnapshotChunkCheck": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "check",
+        "digests"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotChunkCheck"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "check": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "digests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Sha256Digest"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        }
+      },
+      "description": "Check `check` of a snapshot: asks which of up to ChunkExchange.DigestsPerCheck chunk digests the\ntenant holds already, among those the box's base lacks. The host may send several checks before\ntheir answers arrive, each with its own `check`. The control plane answers SnapshotChunkCheckHeld\nfrom the `.idx` of the session's previous snapshot. A control plane that speaks no such frame\nanswers FrameRefused, and the host packs every chunk of that snapshot."
+    },
+    "Channel.SnapshotChunkCheckHeld": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "check",
+        "held"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotChunkCheckHeld"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "check": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1
+        },
+        "held": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Channel.ChunkPlacement"
+          },
+          "maxItems": 100
+        }
+      },
+      "description": "The answer to SnapshotChunkCheck `check`: where the tenant stores each digest of that check it\nholds already. A digest left out is held nowhere the control plane knows, and the host packs and\nuploads it."
+    },
     "Channel.SnapshotChunks": {
       "type": "object",
       "required": [
@@ -1540,6 +1623,63 @@
         "RateLimited"
       ],
       "description": "Why the host could not store a snapshot."
+    },
+    "Channel.SnapshotIndexAsk": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "sizeBytes",
+        "digest"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotIndexAsk"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 16
+        },
+        "digest": {
+          "$ref": "#/components/schemas/Sha256Digest"
+        }
+      },
+      "description": "Asks to upload the snapshot's `.idx`, `sizeBytes` long with the lower-case hex SHA-256 `digest`,\nbefore SnapshotDone. The control plane answers SnapshotIndexUpload; on FrameRefused the host\nstores the snapshot without it."
+    },
+    "Channel.SnapshotIndexUpload": {
+      "type": "object",
+      "required": [
+        "type",
+        "snapshotId",
+        "url",
+        "uploadExpiresAt"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "SnapshotIndexUpload"
+          ]
+        },
+        "snapshotId": {
+          "$ref": "#/components/schemas/EntityId"
+        },
+        "url": {
+          "$ref": "#/components/schemas/HttpUrl"
+        },
+        "uploadExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "The answer to SnapshotIndexAsk: `url` is a presigned PUT of `<storageKey>.idx` alone, valid until\n`uploadExpiresAt`, that signs the asked SHA-256 as the x-amz-checksum-sha256 header, so object\nstorage refuses bytes that do not hash to it."
     },
     "Channel.SnapshotPacks": {
       "type": "object",
@@ -2252,10 +2392,9 @@
       "type": "string",
       "enum": [
         "ClaudeCode",
-        "Codex",
-        "Gemini"
+        "Codex"
       ],
-      "description": "The harness a Claude setup signs in to: Claude Code with claude setup-token, Codex with codex login --device-auth, or Gemini CLI with its Google account sign-in."
+      "description": "The harness a Claude setup signs in to: Claude Code with claude setup-token, or Codex with codex login --device-auth."
     },
     "CredentialText": {
       "type": "string",
@@ -2309,8 +2448,7 @@
         "Codex",
         "OpenCode",
         "PiDev",
-        "MistralAgent",
-        "Gemini"
+        "MistralAgent"
       ]
     },
     "HarnessVersion": {
@@ -2391,7 +2529,6 @@
         "OpenCode",
         "PiDev",
         "MistralAgent",
-        "Gemini",
         "Shell"
       ],
       "description": "The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot."
