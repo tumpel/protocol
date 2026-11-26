@@ -1933,7 +1933,7 @@
         "expiresAt": {
           "type": "string",
           "format": "date-time",
-          "description": "When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself."
+          "description": "When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself; for Gemini, a year after the setup, as for Claude Code."
         },
         "completedAt": {
           "type": "string",

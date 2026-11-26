@@ -5208,7 +5208,7 @@ pub mod types {
     pub struct ClaudeSetupCompleted {
         #[serde(rename = "completedAt")]
         pub completed_at: ::chrono::DateTime<::chrono::FixedOffset>,
-        ///When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself.
+        ///When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself; for Gemini, a year after the setup, as for Claude Code.
         #[serde(rename = "expiresAt")]
         pub expires_at: ::chrono::DateTime<::chrono::FixedOffset>,
         ///The member the setup wrote: the SubscriptionToken CLAUDE_CODE_OAUTH_TOKEN for Anthropic, the CredentialFile CODEX_AUTH_JSON for OpenAi, or the CredentialFile GEMINI_OAUTH_CREDS_JSON for Google.
@@ -9898,6 +9898,14 @@ pub mod types {
     ///the host. A Codex image runs `codex login --device-auth` instead and sends GuestClaudeSetupUrl
     ///with the one-time code it prints; once Codex exits signed in, the guest reads
     ///its auth.json and POSTs the whole file with the expiry of the exp claim of its access token.
+    ///A Gemini image runs `gemini` with NO_BROWSER=true after writing ~/.gemini/settings.json with
+    ///`security.auth.selectedType` oauth-personal, and sends GuestClaudeSetupUrl once it prints a
+    ///Google sign-in URL; the person's code arrives as GuestClaudeSetupCode. Interactive Gemini CLI
+    ///keeps running once signed in, so the guest counts it signed in as soon as ~/.gemini/oauth_creds.json
+    ///holds a `refresh_token`, stops it and POSTs the whole file with no expiry, which stores the
+    ///one-year expiry of a Claude Code token: the file's `expiry_date` is the access token's, which
+    ///Gemini CLI refreshes itself. When the CLI prints "Failed to authenticate with authorization code"
+    ///or a second sign-in URL, the guest stops it and sends GuestClaudeSetupFailed CodeRejected.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct GuestClaudeSetupStart {
         #[serde(rename = "claudeSetupId")]
@@ -11466,6 +11474,7 @@ pub mod types {
         HarnessOutOfMemory,
         Cancelled,
         BoxDiskFull,
+        CredentialRefused,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
     }
@@ -11478,6 +11487,7 @@ pub mod types {
                 Self::HarnessOutOfMemory => f.write_str("HarnessOutOfMemory"),
                 Self::Cancelled => f.write_str("Cancelled"),
                 Self::BoxDiskFull => f.write_str("BoxDiskFull"),
+                Self::CredentialRefused => f.write_str("CredentialRefused"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
         }
@@ -11492,6 +11502,7 @@ pub mod types {
                 "HarnessOutOfMemory" => Ok(Self::HarnessOutOfMemory),
                 "Cancelled" => Ok(Self::Cancelled),
                 "BoxDiskFull" => Ok(Self::BoxDiskFull),
+                "CredentialRefused" => Ok(Self::CredentialRefused),
                 _ => Err("invalid value".into()),
             }
         }
@@ -49198,7 +49209,8 @@ pub mod types {
             HarnessStartFailed,
             HarnessOutOfMemory,
             Cancelled,
-            BoxDiskFull
+            BoxDiskFull,
+            CredentialRefused
         ]
     );
     unrecognised_union!(GuestTurnEndType, [], [TurnEnd]);

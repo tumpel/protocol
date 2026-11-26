@@ -111,7 +111,7 @@ model ClaudeSetupCompleted {
   @doc("The member the setup wrote: the SubscriptionToken CLAUDE_CODE_OAUTH_TOKEN for Anthropic, the CredentialFile CODEX_AUTH_JSON for OpenAi, or the CredentialFile GEMINI_OAUTH_CREDS_JSON for Google.")
   memberName: ClaudeSetupMember;
 
-  @doc("When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself.")
+  @doc("When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself; for Gemini, a year after the setup, as for Claude Code.")
   expiresAt: offsetDateTime;
 
   completedAt: offsetDateTime;

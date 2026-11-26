@@ -280,7 +280,9 @@ enum GuestHarnessProtocol {
     with --model and the turn's model, and --resume latest from the session's second turn on,
     writes the prompt to standard input and closes it. Every line on standard output belongs to the
     turn, which ends when the process exits; the guest reads usage from the line whose `type` is
-    `result`. Exit status 41 fails the turn CredentialRefused.
+    `result`. The guest ends the turn Completed on status 0, CredentialRefused on status 41, which
+    Gemini CLI exits with when its Google sign-in needs the person again, and HarnessExited
+    otherwise.
     """)
   GeminiStreamJson: "GeminiStreamJson",
 }
@@ -488,6 +490,9 @@ enum GuestTurnEndReason {
 
   @doc("The harness failed while the box's disk was full; the detail names its size. A guest older than guest protocol 13 never sends it.")
   BoxDiskFull: "BoxDiskFull",
+
+  @doc("The harness refused the turn's credential: a GeminiStreamJson process exited with status 41. The host fails the turn CredentialRefused. Only a Gemini guest sends it.")
+  CredentialRefused: "CredentialRefused",
 }
 
 @doc("The guest could not clone the session's repository and did not start the harness. `detail` carries what git reported.")
@@ -541,6 +546,14 @@ model GuestMetric {
   the host. A Codex image runs `codex login --device-auth` instead and sends GuestClaudeSetupUrl
   with the one-time code it prints; once Codex exits signed in, the guest reads
   its auth.json and POSTs the whole file with the expiry of the exp claim of its access token.
+  A Gemini image runs `gemini` with NO_BROWSER=true after writing ~/.gemini/settings.json with
+  `security.auth.selectedType` oauth-personal, and sends GuestClaudeSetupUrl once it prints a
+  Google sign-in URL; the person's code arrives as GuestClaudeSetupCode. Interactive Gemini CLI
+  keeps running once signed in, so the guest counts it signed in as soon as ~/.gemini/oauth_creds.json
+  holds a `refresh_token`, stops it and POSTs the whole file with no expiry, which stores the
+  one-year expiry of a Claude Code token: the file's `expiry_date` is the access token's, which
+  Gemini CLI refreshes itself. When the CLI prints "Failed to authenticate with authorization code"
+  or a second sign-in URL, the guest stops it and sends GuestClaudeSetupFailed CodeRejected.
   """)
 model GuestClaudeSetupStart {
   type: "ClaudeSetupStart";
