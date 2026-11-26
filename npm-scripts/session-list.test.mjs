@@ -10,6 +10,11 @@ test("session list accepts whole page sizes from 1 through 50", () => {
   assert.equal(SessionListQuerySchema.safeParse({ limit: 51 }).success, false);
 });
 
+test("session list refuses a query without a page size", () => {
+  assert.equal(SessionListQuerySchema.safeParse({}).success, false);
+  assert.equal(SessionListQuerySchema.safeParse({ after: "session-1" }).success, false);
+});
+
 test("tenant session list accepts a cursor and whole page sizes from 1 through 50", () => {
   const tenantId = "tenant-1";
   const after = "session-1";
@@ -20,8 +25,8 @@ test("tenant session list accepts a cursor and whole page sizes from 1 through 5
   for (const limit of [0, 2.5, 51]) {
     assert.equal(ListSessionsInputSchema.safeParse({ tenantId, filter: { limit, after } }).success, false);
   }
-  const unpaged = { tenantId, filter: {} };
-  assert.deepEqual(ListSessionsInputSchema.parse(unpaged), unpaged);
+  assert.equal(ListSessionsInputSchema.safeParse({ tenantId, filter: {} }).success, false);
+  assert.equal(ListSessionsInputSchema.safeParse({ tenantId, filter: { after } }).success, false);
 });
 
 test("tenant session list accepts null when the cursor session is unknown", () => {

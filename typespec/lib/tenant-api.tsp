@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 37;
+const TenantApiVersion = 38;
 
 namespace TenantApi {
 
@@ -674,7 +674,7 @@ model SessionFilter {
 
   @minValue(1)
   @maxValue(50)
-  limit?: int32;
+  limit: int32;
 
   @doc("Start after this session in creation time and session ID order.")
   after?: EntityId;

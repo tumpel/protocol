@@ -1861,7 +1861,7 @@
           "format": "int64"
         }
       },
-      "description": "A short-lived box that signs in to the setup's harness and stores the token in a secret set: it\nruns `claude setup-token` from the tenant's pinned Claude Code and stores the SubscriptionToken\nmember CLAUDE_CODE_OAUTH_TOKEN for Anthropic, `codex login --device-auth` from the pinned Codex\nand stores the auth.json it writes as the CredentialFile member CODEX_AUTH_JSON for OpenAi, or\n`gemini` from the pinned Gemini CLI with NO_BROWSER=true and stores the oauth_creds.json it writes\nas the CredentialFile member GEMINI_OAUTH_CREDS_JSON for Google. The box gets no secret set member and no GitHub token,\nand the token never appears in any response."
+      "description": "A short-lived box that signs in to the setup's harness and stores the token in a secret set: it\nruns `claude setup-token` from the tenant's pinned Claude Code and stores the SubscriptionToken\nmember CLAUDE_CODE_OAUTH_TOKEN for Anthropic, or `codex login --device-auth` from the pinned Codex\nand stores the auth.json it writes as the CredentialFile member CODEX_AUTH_JSON for OpenAi. The box gets no secret set member and no GitHub token,\nand the token never appears in any response."
     },
     "ClaudeSetupAwaitingCode": {
       "type": "object",
@@ -1928,12 +1928,12 @@
               "$ref": "#/components/schemas/ClaudeSetupMember"
             }
           ],
-          "description": "The member the setup wrote: the SubscriptionToken CLAUDE_CODE_OAUTH_TOKEN for Anthropic, the CredentialFile CODEX_AUTH_JSON for OpenAi, or the CredentialFile GEMINI_OAUTH_CREDS_JSON for Google."
+          "description": "The member the setup wrote: the SubscriptionToken CLAUDE_CODE_OAUTH_TOKEN for Anthropic, or the CredentialFile CODEX_AUTH_JSON for OpenAi."
         },
         "expiresAt": {
           "type": "string",
           "format": "date-time",
-          "description": "When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself; for Gemini, a year after the setup, as for Claude Code."
+          "description": "When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself."
         },
         "completedAt": {
           "type": "string",
@@ -1993,17 +1993,15 @@
       "type": "string",
       "enum": [
         "ClaudeCode",
-        "Codex",
-        "Gemini"
+        "Codex"
       ],
-      "description": "The harness a Claude setup signs in to: Claude Code with claude setup-token, Codex with codex login --device-auth, or Gemini CLI with its Google account sign-in."
+      "description": "The harness a Claude setup signs in to: Claude Code with claude setup-token, or Codex with codex login --device-auth."
     },
     "ClaudeSetupMember": {
       "type": "string",
       "enum": [
         "CLAUDE_CODE_OAUTH_TOKEN",
-        "CODEX_AUTH_JSON",
-        "GEMINI_OAUTH_CREDS_JSON"
+        "CODEX_AUTH_JSON"
       ],
       "description": "The secret set member a Claude setup writes: the variable its harness reads a subscription token from."
     },
@@ -3183,8 +3181,7 @@
         "Codex",
         "OpenCode",
         "PiDev",
-        "MistralAgent",
-        "Gemini"
+        "MistralAgent"
       ]
     },
     "HarnessCredential": {
@@ -3645,7 +3642,6 @@
         "OpenCode",
         "PiDev",
         "MistralAgent",
-        "Gemini",
         "Shell"
       ],
       "description": "The harness of a guest image's GuestHarness: a catalog harness, or Shell for the test image the proof's Shell harness steps boot."
@@ -15344,6 +15340,9 @@
     },
     "TenantApi.SessionFilter": {
       "type": "object",
+      "required": [
+        "limit"
+      ],
       "properties": {
         "state": {
           "$ref": "#/components/schemas/SessionState"
