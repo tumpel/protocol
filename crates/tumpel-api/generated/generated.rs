@@ -6725,7 +6725,7 @@ pub mod types {
     ///A trigger of the file. It names its persona by the persona's name in the same file.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct ConfigTrigger {
-        ///The model of every session the trigger starts; it must be one the persona's harness runs.
+        ///The model of every session the trigger starts; it must be one the persona's harness runs. A targeted trigger names its session's model.
         pub model: ModelName,
         ///Unique in the tenant, such as agent-review.
         pub name: DisplayName,
@@ -9753,6 +9753,10 @@ pub mod types {
         Status,
         #[serde(rename = "issues")]
         Issues,
+        #[serde(rename = "check_suite")]
+        CheckSuite,
+        #[serde(rename = "pull_request_review")]
+        PullRequestReview,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
     }
@@ -9763,6 +9767,8 @@ pub mod types {
                 Self::Push => f.write_str("push"),
                 Self::Status => f.write_str("status"),
                 Self::Issues => f.write_str("issues"),
+                Self::CheckSuite => f.write_str("check_suite"),
+                Self::PullRequestReview => f.write_str("pull_request_review"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
         }
@@ -9775,6 +9781,8 @@ pub mod types {
                 "push" => Ok(Self::Push),
                 "status" => Ok(Self::Status),
                 "issues" => Ok(Self::Issues),
+                "check_suite" => Ok(Self::CheckSuite),
+                "pull_request_review" => Ok(Self::PullRequestReview),
                 _ => Err("invalid value".into()),
             }
         }
@@ -19288,6 +19296,7 @@ pub mod types {
         BodyTooLarge,
         RateLimited,
         UsageLimitReached,
+        TriggerLimitReached,
         AboveFreeTier,
         #[serde(untagged)]
         Unrecognised(::std::string::String),
@@ -19363,6 +19372,7 @@ pub mod types {
                 Self::BodyTooLarge => f.write_str("BodyTooLarge"),
                 Self::RateLimited => f.write_str("RateLimited"),
                 Self::UsageLimitReached => f.write_str("UsageLimitReached"),
+                Self::TriggerLimitReached => f.write_str("TriggerLimitReached"),
                 Self::AboveFreeTier => f.write_str("AboveFreeTier"),
                 Self::Unrecognised(ref code) => f.write_str(code),
             }
@@ -19440,6 +19450,7 @@ pub mod types {
                 "BodyTooLarge" => Ok(Self::BodyTooLarge),
                 "RateLimited" => Ok(Self::RateLimited),
                 "UsageLimitReached" => Ok(Self::UsageLimitReached),
+                "TriggerLimitReached" => Ok(Self::TriggerLimitReached),
                 "AboveFreeTier" => Ok(Self::AboveFreeTier),
                 _ => Err("invalid value".into()),
             }
@@ -29787,7 +29798,7 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiCreateTriggerInput {
         pub now: i64,
-        ///The Owner who creates the trigger, whom its sessions run as.
+        ///The Owner who creates the trigger, whom its sessions run as, or the turn's principal for a trigger targeting the turn's own session.
         #[serde(rename = "principalId")]
         pub principal_id: EntityId,
         #[serde(rename = "tenantId")]
@@ -29848,24 +29859,54 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiCreateTriggerResultCreated {
-        CreatedOk(TenantApiTriggerCreatedOk),
-        NameTaken(TenantApiTriggerNameTaken),
-        PersonaNotFound(TenantApiTriggerPersonaNotFound),
+        TriggerCreatedOk(TenantApiTriggerCreatedOk),
+        TriggerNameTaken(TenantApiTriggerNameTaken),
+        TriggerPersonaNotFound(TenantApiTriggerPersonaNotFound),
+        SessionNotFound(TenantApiSessionNotFound),
+        SessionArchivedState(TenantApiSessionArchivedState),
+        SessionFailedState(TenantApiSessionFailedState),
+        TriggerSessionMismatch(TenantApiTriggerSessionMismatch),
+        TriggerLimitReached(TenantApiTriggerLimitReached),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTriggerCreatedOk> for TenantApiCreateTriggerResultCreated {
         fn from(value: TenantApiTriggerCreatedOk) -> Self {
-            Self::CreatedOk(value)
+            Self::TriggerCreatedOk(value)
         }
     }
     impl ::std::convert::From<TenantApiTriggerNameTaken> for TenantApiCreateTriggerResultCreated {
         fn from(value: TenantApiTriggerNameTaken) -> Self {
-            Self::NameTaken(value)
+            Self::TriggerNameTaken(value)
         }
     }
     impl ::std::convert::From<TenantApiTriggerPersonaNotFound> for TenantApiCreateTriggerResultCreated {
         fn from(value: TenantApiTriggerPersonaNotFound) -> Self {
-            Self::PersonaNotFound(value)
+            Self::TriggerPersonaNotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionNotFound> for TenantApiCreateTriggerResultCreated {
+        fn from(value: TenantApiSessionNotFound) -> Self {
+            Self::SessionNotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionArchivedState> for TenantApiCreateTriggerResultCreated {
+        fn from(value: TenantApiSessionArchivedState) -> Self {
+            Self::SessionArchivedState(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiSessionFailedState> for TenantApiCreateTriggerResultCreated {
+        fn from(value: TenantApiSessionFailedState) -> Self {
+            Self::SessionFailedState(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerSessionMismatch> for TenantApiCreateTriggerResultCreated {
+        fn from(value: TenantApiTriggerSessionMismatch) -> Self {
+            Self::TriggerSessionMismatch(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerLimitReached> for TenantApiCreateTriggerResultCreated {
+        fn from(value: TenantApiTriggerLimitReached) -> Self {
+            Self::TriggerLimitReached(value)
         }
     }
     ///Creates a trigger that names its persona by name, so it may name a persona the same apply creates.
@@ -37684,6 +37725,9 @@ pub mod types {
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSessionDeleted {
         pub kind: TenantApiSessionDeletedKind,
+        ///The targeted triggers of the session, deleted with it, whose routes the caller drops.
+        #[serde(rename = "triggerIds")]
+        pub trigger_ids: ::std::vec::Vec<EntityId>,
     }
     ///`TenantApiSessionDeletedKind`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -41723,8 +41767,10 @@ pub mod types {
     }
     ///One delivery a trigger matched. The tenant Durable Object reads the trigger's persona, model and
     ///principalId as they are now and starts the session through the path of Sessions_start, with a
-    ///TriggerOrigin as its startedBy, at most once per triggerId and deliveryId. It appends
-    ///TriggerStartRefused when the adapter or the start refuses the delivery.
+    ///TriggerOrigin as its startedBy, at most once per triggerId and deliveryId. A targeted trigger
+    ///instead sends its session the turn through the path of Turns_send and deletes itself in the
+    ///transaction that commits the send. It appends TriggerStartRefused when the adapter, the start or
+    ///the send refuses the delivery; a refused send of a session that is gone also deletes the trigger.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTriggerFiredInput {
         #[serde(rename = "deliveryId")]
@@ -41889,21 +41935,29 @@ pub mod types {
     ///`TenantApiTriggerFiredResult`
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTriggerFiredResult {
+        ///NotFound when the tenant has no trigger with the id, such as a targeted trigger an earlier delivery or a delete already took; the caller drops its route.
         pub fired: TenantApiTriggerFiredResultFired,
     }
-    ///`TenantApiTriggerFiredResultFired`
+    ///NotFound when the tenant has no trigger with the id, such as a targeted trigger an earlier delivery or a delete already took; the caller drops its route.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     #[serde(untagged)]
     pub enum TenantApiTriggerFiredResultFired {
         SessionStartedOk(TenantApiSessionStartedOk),
+        TriggerTurnSentOk(TenantApiTriggerTurnSentOk),
         TriggerDeliveryRepeated(TenantApiTriggerDeliveryRepeated),
         TriggerNotFound(TenantApiTriggerNotFound),
         TriggerStartRefusedOk(TenantApiTriggerStartRefusedOk),
+        TriggerSendGone(TenantApiTriggerSendGone),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiSessionStartedOk> for TenantApiTriggerFiredResultFired {
         fn from(value: TenantApiSessionStartedOk) -> Self {
             Self::SessionStartedOk(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerTurnSentOk> for TenantApiTriggerFiredResultFired {
+        fn from(value: TenantApiTriggerTurnSentOk) -> Self {
+            Self::TriggerTurnSentOk(value)
         }
     }
     impl ::std::convert::From<TenantApiTriggerDeliveryRepeated> for TenantApiTriggerFiredResultFired {
@@ -41919,6 +41973,92 @@ pub mod types {
     impl ::std::convert::From<TenantApiTriggerStartRefusedOk> for TenantApiTriggerFiredResultFired {
         fn from(value: TenantApiTriggerStartRefusedOk) -> Self {
             Self::TriggerStartRefusedOk(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerSendGone> for TenantApiTriggerFiredResultFired {
+        fn from(value: TenantApiTriggerSendGone) -> Self {
+            Self::TriggerSendGone(value)
+        }
+    }
+    ///`TenantApiTriggerLimitReached`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerLimitReached {
+        pub kind: TenantApiTriggerLimitReachedKind,
+        pub scope: TenantApiTriggerLimitScope,
+    }
+    ///`TenantApiTriggerLimitReachedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerLimitReachedKind {
+        LimitReached,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for TenantApiTriggerLimitReachedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::LimitReached => f.write_str("LimitReached"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerLimitReachedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "LimitReached" => Ok(Self::LimitReached),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerLimitReachedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerLimitReachedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///Which cap of targeted triggers a create reached.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerLimitScope {
+        Session,
+        Tenant,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for TenantApiTriggerLimitScope {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Session => f.write_str("Session"),
+                Self::Tenant => f.write_str("Tenant"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerLimitScope {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Session" => Ok(Self::Session),
+                "Tenant" => Ok(Self::Tenant),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerLimitScope {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerLimitScope {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
         }
     }
     ///The tenant has another trigger of the name.
@@ -42044,7 +42184,94 @@ pub mod types {
             value.parse()
         }
     }
-    ///The start was refused and TriggerStartRefused appended with the refusal.
+    ///The session a targeted trigger sends to is gone: NotFound, Archived or Failed. The trigger is
+    ///deleted and TriggerStartRefused appended with the refusal, so the caller drops its route.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerSendGone {
+        pub kind: TenantApiTriggerSendGoneKind,
+        pub refusal: TriggerStartRefusal,
+    }
+    ///`TenantApiTriggerSendGoneKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerSendGoneKind {
+        Gone,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for TenantApiTriggerSendGoneKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Gone => f.write_str("Gone"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerSendGoneKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Gone" => Ok(Self::Gone),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerSendGoneKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerSendGoneKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The trigger's personaId or model differs from its target session's.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerSessionMismatch {
+        pub kind: TenantApiTriggerSessionMismatchKind,
+        pub model: ModelName,
+        #[serde(rename = "personaId")]
+        pub persona_id: EntityId,
+    }
+    ///`TenantApiTriggerSessionMismatchKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerSessionMismatchKind {
+        SessionMismatch,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for TenantApiTriggerSessionMismatchKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::SessionMismatch => f.write_str("SessionMismatch"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerSessionMismatchKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "SessionMismatch" => Ok(Self::SessionMismatch),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerSessionMismatchKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerSessionMismatchKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The start or send was refused and TriggerStartRefused appended with the refusal. The trigger stays, and so does its route.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiTriggerStartRefusedOk {
         pub kind: TenantApiTriggerStartRefusedOkKind,
@@ -42081,6 +42308,92 @@ pub mod types {
         }
     }
     impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerStartRefusedOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///The trigger targets a session, so it never changes.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerTargeted {
+        pub kind: TenantApiTriggerTargetedKind,
+    }
+    ///`TenantApiTriggerTargetedKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerTargetedKind {
+        Targeted,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for TenantApiTriggerTargetedKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Targeted => f.write_str("Targeted"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerTargetedKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Targeted" => Ok(Self::Targeted),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerTargetedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerTargetedKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    ///A targeted trigger sent its session the turn and deleted itself, so the caller drops its route.
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
+    pub struct TenantApiTriggerTurnSentOk {
+        pub kind: TenantApiTriggerTurnSentOkKind,
+        #[serde(rename = "sessionId")]
+        pub session_id: EntityId,
+        #[serde(rename = "turnId")]
+        pub turn_id: EntityId,
+    }
+    ///`TenantApiTriggerTurnSentOkKind`
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub enum TenantApiTriggerTurnSentOkKind {
+        Sent,
+        #[serde(untagged)]
+        Unrecognised(::std::string::String),
+    }
+    impl ::std::fmt::Display for TenantApiTriggerTurnSentOkKind {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Sent => f.write_str("Sent"),
+                Self::Unrecognised(ref code) => f.write_str(code),
+            }
+        }
+    }
+    impl ::std::str::FromStr for TenantApiTriggerTurnSentOkKind {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Sent" => Ok(Self::Sent),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+    impl ::std::convert::TryFrom<&str> for TenantApiTriggerTurnSentOkKind {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+    impl ::std::convert::TryFrom<::std::string::String> for TenantApiTriggerTurnSentOkKind {
         type Error = self::error::ConversionError;
         fn try_from(value: ::std::string::String) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
@@ -43823,6 +44136,7 @@ pub mod types {
         NotFound(TenantApiTriggerNotFound),
         NameTaken(TenantApiTriggerNameTaken),
         PersonaNotFound(TenantApiTriggerPersonaNotFound),
+        Targeted(TenantApiTriggerTargeted),
         Unrecognised(::serde_json::Value),
     }
     impl ::std::convert::From<TenantApiTriggerUpdatedOk> for TenantApiUpdateTriggerResultUpdated {
@@ -43843,6 +44157,11 @@ pub mod types {
     impl ::std::convert::From<TenantApiTriggerPersonaNotFound> for TenantApiUpdateTriggerResultUpdated {
         fn from(value: TenantApiTriggerPersonaNotFound) -> Self {
             Self::PersonaNotFound(value)
+        }
+    }
+    impl ::std::convert::From<TenantApiTriggerTargeted> for TenantApiUpdateTriggerResultUpdated {
+        fn from(value: TenantApiTriggerTargeted) -> Self {
+            Self::Targeted(value)
         }
     }
     ///`TenantApiUpdateTriggerWrite`
@@ -44696,24 +45015,33 @@ pub mod types {
     ///the event, on the event's repository.html_url, as the principal who last created or changed the
     ///trigger. Each delivery starts at most one session. Tumpel only listens: the session reports back
     ///to the source because its prompt tells it to.
+    ///
+    ///A trigger with a sessionId targets that session instead: on the first matching delivery it sends
+    ///the session one turn with the filled prompt, through the path of Turns_send, and deletes itself
+    ///in the same transaction. A targeted trigger never changes; to change one, delete it and create
+    ///another. Config never declares one, and config apply never changes or deletes one.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct Trigger {
         #[serde(rename = "createdAt")]
         pub created_at: i64,
-        ///The model of every session the trigger starts; it must be one the persona's harness runs.
+        ///The model of every session the trigger starts; it must be one the persona's harness runs. A targeted trigger names its session's model.
         pub model: ModelName,
         ///Unique in the tenant, such as agent-review.
         pub name: DisplayName,
-        ///The persona of every session the trigger starts. A start after the persona is deleted is refused.
+        ///The persona of every session the trigger starts. A start after the persona is deleted is refused. A targeted trigger names its session's persona.
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
-        ///The Owner who created or last changed the trigger. Every session the trigger starts runs as this principal.
+        ///The principal who created or last changed the trigger: an Owner, or the turn's principal for a trigger a session created on itself. Every session the trigger starts, or turn it sends, runs as this principal.
         #[serde(rename = "principalId")]
         pub principal_id: EntityId,
         ///The first prompt, with {{field}} placeholders, each a TriggerFieldPath filled with the event's
         ///value at that path. An array fills as a comma-separated list. A placeholder the event lacks
         ///refuses the start.
         pub prompt: Prompt,
+        ///The session the trigger sends its one turn to. Left out, the trigger starts a fresh session on
+        ///every matching delivery. It must name a session of the tenant that is not Archived or Failed.
+        #[serde(rename = "sessionId", skip_serializing_if = "::std::option::Option::is_none")]
+        pub session_id: ::std::option::Option<EntityId>,
         pub source: TriggerSource,
         #[serde(rename = "tenantId")]
         pub tenant_id: EntityId,
@@ -44809,19 +45137,28 @@ pub mod types {
     ///the event, on the event's repository.html_url, as the principal who last created or changed the
     ///trigger. Each delivery starts at most one session. Tumpel only listens: the session reports back
     ///to the source because its prompt tells it to.
+    ///
+    ///A trigger with a sessionId targets that session instead: on the first matching delivery it sends
+    ///the session one turn with the filled prompt, through the path of Turns_send, and deletes itself
+    ///in the same transaction. A targeted trigger never changes; to change one, delete it and create
+    ///another. Config never declares one, and config apply never changes or deletes one.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TriggerCreate {
-        ///The model of every session the trigger starts; it must be one the persona's harness runs.
+        ///The model of every session the trigger starts; it must be one the persona's harness runs. A targeted trigger names its session's model.
         pub model: ModelName,
         ///Unique in the tenant, such as agent-review.
         pub name: DisplayName,
-        ///The persona of every session the trigger starts. A start after the persona is deleted is refused.
+        ///The persona of every session the trigger starts. A start after the persona is deleted is refused. A targeted trigger names its session's persona.
         #[serde(rename = "personaId")]
         pub persona_id: EntityId,
         ///The first prompt, with {{field}} placeholders, each a TriggerFieldPath filled with the event's
         ///value at that path. An array fills as a comma-separated list. A placeholder the event lacks
         ///refuses the start.
         pub prompt: Prompt,
+        ///The session the trigger sends its one turn to. Left out, the trigger starts a fresh session on
+        ///every matching delivery. It must name a session of the tenant that is not Archived or Failed.
+        #[serde(rename = "sessionId", skip_serializing_if = "::std::option::Option::is_none")]
+        pub session_id: ::std::option::Option<EntityId>,
         pub source: TriggerSource,
     }
     ///The id the source gives one delivery of an event, such as GitHub's X-GitHub-Delivery. A redelivery keeps it.
@@ -45016,13 +45353,13 @@ pub mod types {
     ///Changes the trigger fields it names and leaves every other field as it is. A named source replaces the whole source, its event and conditions included.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
     pub struct TriggerPatch {
-        ///The model of every session the trigger starts; it must be one the persona's harness runs.
+        ///The model of every session the trigger starts; it must be one the persona's harness runs. A targeted trigger names its session's model.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub model: ::std::option::Option<ModelName>,
         ///Unique in the tenant, such as agent-review.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub name: ::std::option::Option<DisplayName>,
-        ///The persona of every session the trigger starts. A start after the persona is deleted is refused.
+        ///The persona of every session the trigger starts. A start after the persona is deleted is refused. A targeted trigger names its session's persona.
         #[serde(rename = "personaId", skip_serializing_if = "::std::option::Option::is_none")]
         pub persona_id: ::std::option::Option<EntityId>,
         ///The first prompt, with {{field}} placeholders, each a TriggerFieldPath filled with the event's
@@ -45073,10 +45410,10 @@ pub mod types {
             Self(value)
         }
     }
-    ///Why a trigger matched a delivery and started no session.
+    ///Why a trigger matched a delivery and started no session, or for a targeted trigger sent no turn.
     #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TriggerStartRefusal {
-        ///The code Sessions_start answers for the same refusal, or TriggerFieldMissing when the prompt names a field the event lacks.
+        ///The code Sessions_start, or Turns_send for a targeted trigger, answers for the same refusal, or TriggerFieldMissing when the prompt names a field the event lacks.
         pub code: ProblemCode,
         ///What failed and the fix, in plain words.
         pub detail: Detail,
@@ -49350,7 +49687,11 @@ pub mod types {
     fields_contain_unrecognised!(GitHubLogin, 0);
     fields_contain_unrecognised!(GitHubRepository, default_branch, html_url, name, owner, private);
     fields_contain_unrecognised!(GitHubRepositoryName, 0);
-    unrecognised_union!(GitHubTriggerEvent, [], [PullRequest, Push, Status, Issues]);
+    unrecognised_union!(
+        GitHubTriggerEvent,
+        [],
+        [PullRequest, Push, Status, Issues, CheckSuite, PullRequestReview]
+    );
     fields_contain_unrecognised!(GitHubTriggerSource, conditions, event, kind);
     unrecognised_union!(GitHubTriggerSourceKind, [], [GitHub]);
     fields_contain_unrecognised!(Goal, 0);
@@ -50275,6 +50616,7 @@ pub mod types {
             BodyTooLarge,
             RateLimited,
             UsageLimitReached,
+            TriggerLimitReached,
             AboveFreeTier
         ]
     );
@@ -51384,7 +51726,16 @@ pub mod types {
     fields_contain_unrecognised!(TenantApiCreateTriggerResult, created);
     unrecognised_union!(
         TenantApiCreateTriggerResultCreated,
-        [CreatedOk, NameTaken, PersonaNotFound],
+        [
+            TriggerCreatedOk,
+            TriggerNameTaken,
+            TriggerPersonaNotFound,
+            SessionNotFound,
+            SessionArchivedState,
+            SessionFailedState,
+            TriggerSessionMismatch,
+            TriggerLimitReached
+        ],
         []
     );
     fields_contain_unrecognised!(TenantApiCreateTriggerWrite, kind, principal_id, trigger);
@@ -52252,7 +52603,7 @@ pub mod types {
             HostOffline
         ]
     );
-    fields_contain_unrecognised!(TenantApiSessionDeleted, kind);
+    fields_contain_unrecognised!(TenantApiSessionDeleted, kind, trigger_ids);
     unrecognised_union!(TenantApiSessionDeletedKind, [], [Deleted]);
     fields_contain_unrecognised!(TenantApiSessionDueDeadline, deadline, name);
     fields_contain_unrecognised!(TenantApiSessionFailedState, kind);
@@ -52840,20 +53191,33 @@ pub mod types {
         TenantApiTriggerFiredResultFired,
         [
             SessionStartedOk,
+            TriggerTurnSentOk,
             TriggerDeliveryRepeated,
             TriggerNotFound,
-            TriggerStartRefusedOk
+            TriggerStartRefusedOk,
+            TriggerSendGone
         ],
         []
     );
+    fields_contain_unrecognised!(TenantApiTriggerLimitReached, kind, scope);
+    unrecognised_union!(TenantApiTriggerLimitReachedKind, [], [LimitReached]);
+    unrecognised_union!(TenantApiTriggerLimitScope, [], [Session, Tenant]);
     fields_contain_unrecognised!(TenantApiTriggerNameTaken, kind);
     unrecognised_union!(TenantApiTriggerNameTakenKind, [], [NameTaken]);
     fields_contain_unrecognised!(TenantApiTriggerNotFound, kind);
     unrecognised_union!(TenantApiTriggerNotFoundKind, [], [NotFound]);
     fields_contain_unrecognised!(TenantApiTriggerPersonaNotFound, kind);
     unrecognised_union!(TenantApiTriggerPersonaNotFoundKind, [], [PersonaNotFound]);
+    fields_contain_unrecognised!(TenantApiTriggerSendGone, kind, refusal);
+    unrecognised_union!(TenantApiTriggerSendGoneKind, [], [Gone]);
+    fields_contain_unrecognised!(TenantApiTriggerSessionMismatch, kind, model, persona_id);
+    unrecognised_union!(TenantApiTriggerSessionMismatchKind, [], [SessionMismatch]);
     fields_contain_unrecognised!(TenantApiTriggerStartRefusedOk, kind, refusal);
     unrecognised_union!(TenantApiTriggerStartRefusedOkKind, [], [Refused]);
+    fields_contain_unrecognised!(TenantApiTriggerTargeted, kind);
+    unrecognised_union!(TenantApiTriggerTargetedKind, [], [Targeted]);
+    fields_contain_unrecognised!(TenantApiTriggerTurnSentOk, kind, session_id, turn_id);
+    unrecognised_union!(TenantApiTriggerTurnSentOkKind, [], [Sent]);
     fields_contain_unrecognised!(TenantApiTriggerUpdatedOk, kind, trigger);
     unrecognised_union!(TenantApiTriggerUpdatedOkKind, [], [Updated]);
     fields_contain_unrecognised!(TenantApiTurnCancelledOk, kind, turn);
@@ -52999,7 +53363,7 @@ pub mod types {
     fields_contain_unrecognised!(TenantApiUpdateTriggerResult, updated);
     unrecognised_union!(
         TenantApiUpdateTriggerResultUpdated,
-        [UpdatedOk, NotFound, NameTaken, PersonaNotFound],
+        [UpdatedOk, NotFound, NameTaken, PersonaNotFound, Targeted],
         []
     );
     fields_contain_unrecognised!(TenantApiUpdateTriggerWrite, kind, principal_id, trigger, trigger_id);
@@ -53130,6 +53494,7 @@ pub mod types {
         persona_id,
         principal_id,
         prompt,
+        session_id,
         source,
         tenant_id,
         trigger_id,
@@ -53138,7 +53503,7 @@ pub mod types {
     fields_contain_unrecognised!(TriggerCondition, field, values);
     fields_contain_unrecognised!(TriggerConditionValue, 0);
     fields_contain_unrecognised!(TriggerConditionVerdict, actual, field, holds, values);
-    fields_contain_unrecognised!(TriggerCreate, model, name, persona_id, prompt, source);
+    fields_contain_unrecognised!(TriggerCreate, model, name, persona_id, prompt, session_id, source);
     fields_contain_unrecognised!(TriggerDeliveryId, 0);
     fields_contain_unrecognised!(TriggerFieldPath, 0);
     fields_contain_unrecognised!(TriggerOrigin, delivery_id, kind, trigger_id);
@@ -59731,10 +60096,15 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Creates a trigger that runs as the caller. Only an Owner creates one: a Member is refused
-    ///OwnerRequired and a call with a turn token Forbidden. Refused NotFound for an unknown persona,
-    ///ModelUnsupported for a model the persona's harness does not run, and Conflict when the tenant
-    ///has a trigger of the same name.
+    ///Creates a trigger that runs as the caller. Only an Owner creates an untargeted one: a Member is
+    ///refused OwnerRequired and a call with a turn token Forbidden. A call with a turn token may
+    ///create a trigger whose sessionId is the turn's own session, which runs as the turn's principal;
+    ///any other target is refused Forbidden. Refused NotFound for an unknown persona or target
+    ///session, ModelUnsupported for a model the persona's harness does not run, Conflict when the
+    ///tenant has a trigger of the same name, SessionArchived or SessionFailed for a target in that
+    ///state, and InvalidRequest when personaId or model differs from the target session's, with a
+    ///detail naming the session's. Refused TriggerLimitReached when the target session already has
+    ///10 targeted triggers or the tenant 50, with a detail naming which.
     ///
     ///Sends a `POST` request to `/v1/triggers`
     ///
@@ -59876,7 +60246,9 @@ impl Client {
             _ => Err(Error::UnexpectedResponse(response)),
         }
     }
-    ///Deletes a trigger; sessions it started stay. Only an Owner deletes one, and refusals are those of create.
+    ///Deletes a trigger; sessions it started stay. Only an Owner deletes an untargeted one, and
+    ///refusals are those of create. A call with a turn token may delete a trigger targeting the turn's
+    ///own session; any other trigger is refused Forbidden.
     ///
     ///Sends a `DELETE` request to `/v1/triggers/{triggerId}`
     ///
@@ -59923,7 +60295,8 @@ impl Client {
         }
     }
     ///Changes the fields the patch names and keeps the rest; the trigger then runs as the caller.
-    ///Only an Owner changes one, and refusals are those of create.
+    ///Only an Owner changes one, and refusals are those of create. A targeted trigger is refused
+    ///InvalidRequest for every caller: delete it and create another.
     ///
     ///Sends a `PATCH` request to `/v1/triggers/{triggerId}`
     ///
@@ -60687,5 +61060,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 39;
+    pub const VERSION: u16 = 40;
 }

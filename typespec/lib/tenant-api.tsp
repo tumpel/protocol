@@ -21,7 +21,7 @@ namespace Tumpel;
 scalar TenantApiProtocol extends int32;
 
 const TenantApiOldest = 1;
-const TenantApiVersion = 39;
+const TenantApiVersion = 40;
 
 namespace TenantApi {
 
@@ -890,7 +890,7 @@ model CreateTriggerInput {
   tenantId: EntityId;
   trigger: TriggerCreate;
 
-  @doc("The Owner who creates the trigger, whom its sessions run as.")
+  @doc("The Owner who creates the trigger, whom its sessions run as, or the turn's principal for a trigger targeting the turn's own session.")
   principalId: EntityId;
 
   now: int64;
@@ -943,8 +943,10 @@ model TriggerFiredRefused {
 @doc("""
   One delivery a trigger matched. The tenant Durable Object reads the trigger's persona, model and
   principalId as they are now and starts the session through the path of Sessions_start, with a
-  TriggerOrigin as its startedBy, at most once per triggerId and deliveryId. It appends
-  TriggerStartRefused when the adapter or the start refuses the delivery.
+  TriggerOrigin as its startedBy, at most once per triggerId and deliveryId. A targeted trigger
+  instead sends its session the turn through the path of Turns_send and deletes itself in the
+  transaction that commits the send. It appends TriggerStartRefused when the adapter, the start or
+  the send refuses the delivery; a refused send of a session that is gone also deletes the trigger.
   """)
 model TriggerFiredInput {
   tenantId: EntityId;
@@ -2638,6 +2640,9 @@ model PatchSessionTagsResult {
 
 model SessionDeleted {
   kind: "Deleted";
+
+  @doc("The targeted triggers of the session, deleted with it, whose routes the caller drops.")
+  @maxItems(10) triggerIds: EntityId[];
 }
 
 model DeleteSessionResult {
@@ -2863,8 +2868,29 @@ model TriggerPersonaNotFound {
   kind: "PersonaNotFound";
 }
 
+@doc("The trigger's personaId or model differs from its target session's.")
+model TriggerSessionMismatch {
+  kind: "SessionMismatch";
+  personaId: EntityId;
+  `model`: ModelName;
+}
+
+@doc("Which cap of targeted triggers a create reached.")
+enum TriggerLimitScope {
+  @doc("10 targeted triggers per target session.")
+  Session: "Session",
+
+  @doc("50 targeted triggers per tenant.")
+  Tenant: "Tenant",
+}
+
+model TriggerLimitReached {
+  kind: "LimitReached";
+  scope: TriggerLimitScope;
+}
+
 model CreateTriggerResult {
-  created: TriggerCreatedOk | TriggerNameTaken | TriggerPersonaNotFound;
+  created: TriggerCreatedOk | TriggerNameTaken | TriggerPersonaNotFound | SessionNotFound | SessionArchivedState | SessionFailedState | TriggerSessionMismatch | TriggerLimitReached;
 }
 
 model ListTriggersResult {
@@ -2876,8 +2902,13 @@ model GetTriggerResult {
   trigger: Trigger | null;
 }
 
+@doc("The trigger targets a session, so it never changes.")
+model TriggerTargeted {
+  kind: "Targeted";
+}
+
 model UpdateTriggerResult {
-  updated: TriggerUpdatedOk | TriggerNotFound | TriggerNameTaken | TriggerPersonaNotFound;
+  updated: TriggerUpdatedOk | TriggerNotFound | TriggerNameTaken | TriggerPersonaNotFound | TriggerTargeted;
 }
 
 model DeleteTriggerResult {
@@ -2891,14 +2922,31 @@ model TriggerDeliveryRepeated {
   sessionId: EntityId;
 }
 
-@doc("The start was refused and TriggerStartRefused appended with the refusal.")
+@doc("The start or send was refused and TriggerStartRefused appended with the refusal. The trigger stays, and so does its route.")
 model TriggerStartRefusedOk {
   kind: "Refused";
   refusal: TriggerStartRefusal;
 }
 
+@doc("A targeted trigger sent its session the turn and deleted itself, so the caller drops its route.")
+model TriggerTurnSentOk {
+  kind: "Sent";
+  sessionId: EntityId;
+  turnId: EntityId;
+}
+
+@doc("""
+  The session a targeted trigger sends to is gone: NotFound, Archived or Failed. The trigger is
+  deleted and TriggerStartRefused appended with the refusal, so the caller drops its route.
+  """)
+model TriggerSendGone {
+  kind: "Gone";
+  refusal: TriggerStartRefusal;
+}
+
 model TriggerFiredResult {
-  fired: SessionStartedOk | TriggerDeliveryRepeated | TriggerNotFound | TriggerStartRefusedOk;
+  @doc("NotFound when the tenant has no trigger with the id, such as a targeted trigger an earlier delivery or a delete already took; the caller drops its route.")
+  fired: SessionStartedOk | TriggerTurnSentOk | TriggerDeliveryRepeated | TriggerNotFound | TriggerStartRefusedOk | TriggerSendGone;
 }
 
 model GetTurnFailureResult {

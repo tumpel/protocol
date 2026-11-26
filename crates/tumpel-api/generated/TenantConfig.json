@@ -188,7 +188,7 @@
                 },
                 "model": {
                     "$ref": "#/$defs/ModelName",
-                    "description": "The model of every session the trigger starts; it must be one the persona's harness runs."
+                    "description": "The model of every session the trigger starts; it must be one the persona's harness runs. A targeted trigger names its session's model."
                 },
                 "prompt": {
                     "$ref": "#/$defs/Prompt",
@@ -196,6 +196,10 @@
                 },
                 "personaName": {
                     "$ref": "#/$defs/DisplayName"
+                },
+                "sessionId": {
+                    "not": {},
+                    "description": "Config never declares a trigger that targets a session, so a config trigger naming one is refused."
                 }
             },
             "required": [
@@ -458,7 +462,9 @@
                 "pull_request",
                 "push",
                 "status",
-                "issues"
+                "issues",
+                "check_suite",
+                "pull_request_review"
             ],
             "description": "A GitHub webhook event type a trigger listens to, as GitHub names it in X-GitHub-Event."
         },

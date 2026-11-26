@@ -86,8 +86,11 @@ model ConfigPersona {
 @doc("A trigger of the file. It names its persona by the persona's name in the same file.")
 @extension("additionalProperties", false)
 model ConfigTrigger {
-  ...OmitProperties<TriggerCreate, "personaId">;
+  ...OmitProperties<TriggerCreate, "personaId" | "sessionId">;
   personaName: DisplayName;
+
+  @doc("Config never declares a trigger that targets a session, so a config trigger naming one is refused.")
+  sessionId?: never;
 }
 
 @@extension(HarnessPinCreate, "additionalProperties", false);
