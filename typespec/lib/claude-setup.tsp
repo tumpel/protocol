@@ -9,12 +9,14 @@ namespace Tumpel;
 enum ClaudeSetupMember {
   ClaudeCodeOauthToken: "CLAUDE_CODE_OAUTH_TOKEN",
   CodexAuthJson: "CODEX_AUTH_JSON",
+  GeminiOauthCredsJson: "GEMINI_OAUTH_CREDS_JSON",
 }
 
-@doc("The harness a Claude setup signs in to: Claude Code with claude setup-token, or Codex with codex login --device-auth.")
+@doc("The harness a Claude setup signs in to: Claude Code with claude setup-token, Codex with codex login --device-auth, or Gemini CLI with its Google account sign-in.")
 enum ClaudeSetupHarness {
   ClaudeCode: "ClaudeCode",
   Codex: "Codex",
+  Gemini: "Gemini",
 }
 
 @doc("The one-time code Codex prints for the person to enter at the sign-in URL.")
@@ -106,7 +108,7 @@ model ClaudeSetupMinting {
 model ClaudeSetupCompleted {
   state: ClaudeSetupState.Completed;
 
-  @doc("The member the setup wrote: the SubscriptionToken CLAUDE_CODE_OAUTH_TOKEN for Anthropic, or the CredentialFile CODEX_AUTH_JSON for OpenAi.")
+  @doc("The member the setup wrote: the SubscriptionToken CLAUDE_CODE_OAUTH_TOKEN for Anthropic, the CredentialFile CODEX_AUTH_JSON for OpenAi, or the CredentialFile GEMINI_OAUTH_CREDS_JSON for Google.")
   memberName: ClaudeSetupMember;
 
   @doc("When the stored token stops working; for Codex, when the access token in the file does, which Codex refreshes itself.")
@@ -139,8 +141,10 @@ union ClaudeSetupStatus {
 @doc("""
   A short-lived box that signs in to the setup's harness and stores the token in a secret set: it
   runs `claude setup-token` from the tenant's pinned Claude Code and stores the SubscriptionToken
-  member CLAUDE_CODE_OAUTH_TOKEN for Anthropic, or `codex login --device-auth` from the pinned Codex
-  and stores the auth.json it writes as the CredentialFile member CODEX_AUTH_JSON for OpenAi. The box gets no secret set member and no GitHub token,
+  member CLAUDE_CODE_OAUTH_TOKEN for Anthropic, `codex login --device-auth` from the pinned Codex
+  and stores the auth.json it writes as the CredentialFile member CODEX_AUTH_JSON for OpenAi, or
+  `gemini` from the pinned Gemini CLI with NO_BROWSER=true and stores the oauth_creds.json it writes
+  as the CredentialFile member GEMINI_OAUTH_CREDS_JSON for Google. The box gets no secret set member and no GitHub token,
   and the token never appears in any response.
   """)
 model ClaudeSetup {

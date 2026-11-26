@@ -274,6 +274,15 @@ enum GuestHarnessProtocol {
     the process exits: Completed on status 0, HarnessExited otherwise.
     """)
   CodexExecJson: "CodexExecJson",
+
+  @doc("""
+    Gemini CLI with --output-format stream-json: one process per turn. The guest starts the command
+    with --model and the turn's model, and --resume latest from the session's second turn on,
+    writes the prompt to standard input and closes it. Every line on standard output belongs to the
+    turn, which ends when the process exits; the guest reads usage from the line whose `type` is
+    `result`. Exit status 41 fails the turn CredentialRefused.
+    """)
+  GeminiStreamJson: "GeminiStreamJson",
 }
 
 @doc("""

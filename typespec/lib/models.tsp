@@ -60,7 +60,7 @@ scalar Sha256Digest extends string;
 @doc("""
   A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
   the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
-  connection that speaks another with UnsupportedVersion.
+  connection that speaks another with UnsupportedVersion. Version 39 lacks the harness Gemini.
   """)
 @minValue(ChannelProtocolOldest)
 @maxValue(ChannelProtocolVersion)
@@ -68,7 +68,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 39;
-const ChannelProtocolVersion = 39;
+const ChannelProtocolVersion = 40;
 
 @doc("""
   The most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names, and so the most
@@ -550,6 +550,7 @@ enum Harness {
   OpenCode: "OpenCode",
   PiDev: "PiDev",
   MistralAgent: "MistralAgent",
+  Gemini: "Gemini",
 }
 
 enum ModelProvider {
@@ -1363,6 +1364,7 @@ model HarnessCatalogEntry {
 union InstallRecipe {
   Npm: NpmInstallRecipe,
   Archive: ArchiveInstallRecipe,
+  Zip: ZipInstallRecipe,
 }
 
 @doc("The single native npm package the harness ships as; the build installs `<package>-linux-<arch>` at `packageVersion`.")
@@ -1377,12 +1379,18 @@ model ArchiveInstallRecipe {
   kind: "Archive";
   @minItems(1) @maxItems(100) archives: InstallArchive[];
 
-  @doc("How many leading path components tar strips when it unpacks an archive.")
+  @doc("How many leading path components the build strips when it unpacks an archive.")
   @minValue(0)
   stripComponents: int32;
 }
 
-@doc("The release tarball of a harness version for one architecture.")
+@doc("The pinned release zip the harness ships as, one per architecture, which may all name the same file; the build refuses an archive whose sha256 differs.")
+model ZipInstallRecipe {
+  kind: "Zip";
+  ...OmitProperties<ArchiveInstallRecipe, "kind">;
+}
+
+@doc("The release tarball or zip of a harness version for one architecture.")
 model InstallArchive {
   architecture: HostArchitecture;
   @minLength(1) url: UrlText;
