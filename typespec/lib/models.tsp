@@ -61,8 +61,8 @@ scalar Sha256Digest extends string;
   A host channel protocol version, from Oldest, the oldest version whose wire lock and data types
   the repository still keeps, to Version, the one in Hello and Welcome; the control plane closes a
   connection that speaks another with UnsupportedVersion. Version 39 lacks SnapshotChunkCheck,
-  SnapshotChunkCheckHeld, SnapshotIndexAsk and SnapshotIndexUpload, and versions 39 and 40 lack
-  the harness Gemini.
+  SnapshotChunkCheckHeld, SnapshotIndexAsk and SnapshotIndexUpload, versions 39 and 40 lack the
+  harness Gemini, and versions 39 to 41 lack SnapshotNotStored.
   """)
 @minValue(ChannelProtocolOldest)
 @maxValue(ChannelProtocolVersion)
@@ -70,7 +70,7 @@ scalar Sha256Digest extends string;
 scalar ChannelProtocol extends int32;
 
 const ChannelProtocolOldest = 39;
-const ChannelProtocolVersion = 41;
+const ChannelProtocolVersion = 42;
 
 @doc("""
   DigestsPerPart is the most chunks one SnapshotChunks, SnapshotPacks or RestoreChunks part names,

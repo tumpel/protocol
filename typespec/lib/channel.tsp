@@ -766,6 +766,29 @@ model SnapshotDone {
   @minValue(0) chunkCount: int32;
 }
 
+@doc("Why the control plane did not store a snapshot the host answered SnapshotDone for.")
+enum SnapshotNotStoredReason {
+  @doc("The control plane refused the SnapshotDone.")
+  Rejected: "Rejected",
+
+  @doc("A pack the snapshot names is missing from the tenant's storage.")
+  PackMissing: "PackMissing",
+
+  @doc("The SnapshotRequest was no longer pending: answered already, failed or past its deadline.")
+  RequestNotPending: "RequestNotPending",
+}
+
+@doc("""
+  The control plane answered SnapshotDone for `snapshotId` but did not store the snapshot. The host
+  keeps its previous base and does not adopt that snapshot as one. A stored snapshot gets no such
+  frame. A host that speaks no SnapshotNotStored logs it as unrecognised and carries on.
+  """)
+model SnapshotNotStored {
+  type: "SnapshotNotStored";
+  snapshotId: EntityId;
+  reason: SnapshotNotStoredReason;
+}
+
 @doc("Why the host could not store a snapshot.")
 enum SnapshotFailureReason {
   BoxNotFound: "BoxNotFound",
@@ -976,6 +999,7 @@ union ControlMessage {
   ClaudeSetupBoxOffer: ClaudeSetupBoxOffer,
   ClaudeSetupBoxCode: ClaudeSetupBoxCode,
   ClaudeSetupBoxDiscard: ClaudeSetupBoxDiscard,
+  SnapshotNotStored: SnapshotNotStored,
 }
 
 @doc("One message from the host to the control plane, sequenced per Sequenced.")
