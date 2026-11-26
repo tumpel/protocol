@@ -86,7 +86,7 @@ model ConfigPersona {
 @doc("A trigger of the file. It names its persona by the persona's name in the same file.")
 @extension("additionalProperties", false)
 model ConfigTrigger {
-  ...OmitProperties<TriggerCreate, "personaId">;
+  ...OmitProperties<TriggerCreate, "personaId" | "sessionId">;
   personaName: DisplayName;
 }
 

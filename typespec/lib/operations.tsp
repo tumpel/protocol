@@ -169,6 +169,9 @@ enum ProblemCode {
   @doc("The tenant spent a usage limit of its tier, such as the rows it may write in an hour; detail names the limit and when its window resets. Status 429.")
   UsageLimitReached: "UsageLimitReached",
 
+  @doc("The trigger would target a session that already has 10 targeted triggers, or a tenant that has 50; detail names which. Status 409.")
+  TriggerLimitReached: "TriggerLimitReached",
+
   @doc("A Free tenant asked for the Configured preset or a limit above the Free preset; only a deployment operator raises a tenant above Free, through the deployment config. Status 403.")
   AboveFreeTier: "AboveFreeTier",
 }

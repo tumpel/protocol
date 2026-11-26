@@ -12,6 +12,8 @@ enum GitHubTriggerEvent {
   Push: "push",
   Status: "status",
   Issues: "issues",
+  CheckSuite: "check_suite",
+  PullRequestReview: "pull_request_review",
 }
 
 @doc("""
@@ -65,6 +67,11 @@ union TriggerSource {
   the event, on the event's repository.html_url, as the principal who last created or changed the
   trigger. Each delivery starts at most one session. Tumpel only listens: the session reports back
   to the source because its prompt tells it to.
+
+  A trigger with a sessionId targets that session instead: on the first matching delivery it sends
+  the session one turn with the filled prompt, through the path of Turns_send, and deletes itself
+  in the same transaction. A targeted trigger never changes; to change one, delete it and create
+  another. Config never declares one, and config apply never changes or deletes one.
   """)
 model Trigger {
   @key @visibility(Lifecycle.Read) triggerId: EntityId;
@@ -75,10 +82,17 @@ model Trigger {
 
   source: TriggerSource;
 
-  @doc("The persona of every session the trigger starts. A start after the persona is deleted is refused.")
+  @doc("""
+    The session the trigger sends its one turn to. Left out, the trigger starts a fresh session on
+    every matching delivery. It must name a session of the tenant that is not Archived or Failed.
+    """)
+  @visibility(Lifecycle.Read, Lifecycle.Create)
+  sessionId?: EntityId;
+
+  @doc("The persona of every session the trigger starts. A start after the persona is deleted is refused. A targeted trigger names its session's persona.")
   personaId: EntityId;
 
-  @doc("The model of every session the trigger starts; it must be one the persona's harness runs.")
+  @doc("The model of every session the trigger starts; it must be one the persona's harness runs. A targeted trigger names its session's model.")
   `model`: ModelName;
 
   @doc("""
@@ -88,7 +102,7 @@ model Trigger {
     """)
   prompt: Prompt;
 
-  @doc("The Owner who created or last changed the trigger. Every session the trigger starts runs as this principal.")
+  @doc("The principal who created or last changed the trigger: an Owner, or the turn's principal for a trigger a session created on itself. Every session the trigger starts, or turn it sends, runs as this principal.")
   @visibility(Lifecycle.Read)
   principalId: EntityId;
 
@@ -154,9 +168,9 @@ model TriggerTestResult {
   @maxItems(10000) missingFields: TriggerFieldPath[];
 }
 
-@doc("Why a trigger matched a delivery and started no session.")
+@doc("Why a trigger matched a delivery and started no session, or for a targeted trigger sent no turn.")
 model TriggerStartRefusal {
-  @doc("The code Sessions_start answers for the same refusal, or TriggerFieldMissing when the prompt names a field the event lacks.")
+  @doc("The code Sessions_start, or Turns_send for a targeted trigger, answers for the same refusal, or TriggerFieldMissing when the prompt names a field the event lacks.")
   code: ProblemCode;
 
   @doc("What failed and the fix, in plain words.")
@@ -167,10 +181,15 @@ namespace V1 {
   @route("/triggers")
   interface Triggers {
     @doc("""
-      Creates a trigger that runs as the caller. Only an Owner creates one: a Member is refused
-      OwnerRequired and a call with a turn token Forbidden. Refused NotFound for an unknown persona,
-      ModelUnsupported for a model the persona's harness does not run, and Conflict when the tenant
-      has a trigger of the same name.
+      Creates a trigger that runs as the caller. Only an Owner creates an untargeted one: a Member is
+      refused OwnerRequired and a call with a turn token Forbidden. A call with a turn token may
+      create a trigger whose sessionId is the turn's own session, which runs as the turn's principal;
+      any other target is refused Forbidden. Refused NotFound for an unknown persona or target
+      session, ModelUnsupported for a model the persona's harness does not run, Conflict when the
+      tenant has a trigger of the same name, SessionArchived or SessionFailed for a target in that
+      state, and InvalidRequest when personaId or model differs from the target session's, with a
+      detail naming the session's. Refused TriggerLimitReached when the target session already has
+      10 targeted triggers or the tenant 50, with a detail naming which.
       """)
     @post
     create(@body body: TriggerCreate): Trigger | ProblemResponse;
@@ -186,13 +205,18 @@ namespace V1 {
 
     @doc("""
       Changes the fields the patch names and keeps the rest; the trigger then runs as the caller.
-      Only an Owner changes one, and refusals are those of create.
+      Only an Owner changes one, and refusals are those of create. A targeted trigger is refused
+      InvalidRequest for every caller: delete it and create another.
       """)
     @route("/{triggerId}")
     @patch(#{ implicitOptionality: false })
     update(...TriggerPath, @body body: TriggerPatch): Trigger | ProblemResponse;
 
-    @doc("Deletes a trigger; sessions it started stay. Only an Owner deletes one, and refusals are those of create.")
+    @doc("""
+      Deletes a trigger; sessions it started stay. Only an Owner deletes an untargeted one, and
+      refusals are those of create. A call with a turn token may delete a trigger targeting the turn's
+      own session; any other trigger is refused Forbidden.
+      """)
     @route("/{triggerId}")
     @delete
     delete(...TriggerPath): NoContentResponse | ProblemResponse;
