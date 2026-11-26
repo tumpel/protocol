@@ -37483,7 +37483,7 @@ pub mod types {
         }
     }
     ///`TenantApiSessionFilter`
-    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, Default, PartialEq)]
+    #[derive(::serde::Deserialize, ::serde::Serialize, Clone, Debug, PartialEq)]
     pub struct TenantApiSessionFilter {
         ///Start after this session in creation time and session ID order.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
@@ -37492,8 +37492,7 @@ pub mod types {
         pub host_id: ::std::option::Option<EntityId>,
         #[serde(rename = "lastTurnBefore", skip_serializing_if = "::std::option::Option::is_none")]
         pub last_turn_before: ::std::option::Option<i64>,
-        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub limit: ::std::option::Option<::std::num::NonZeroU32>,
+        pub limit: ::std::num::NonZeroU32,
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub state: ::std::option::Option<SessionState>,
         ///Keep only the sessions that carry every tag named.
@@ -57851,7 +57850,7 @@ impl Client {
         after: Option<&'a types::EntityId>,
         host_id: Option<&'a types::EntityId>,
         last_turn_before: Option<&'a ::chrono::DateTime<::chrono::FixedOffset>>,
-        limit: Option<::std::num::NonZeroU32>,
+        limit: ::std::num::NonZeroU32,
         state: Option<types::SessionState>,
         tag: Option<&'a ::std::vec::Vec<types::SessionTag>>,
         trigger_id: Option<&'a types::EntityId>,
@@ -60303,5 +60302,5 @@ impl types::PersonaFileLimit {
 }
 impl types::TenantApiProtocol {
     pub const OLDEST: u16 = 1;
-    pub const VERSION: u16 = 36;
+    pub const VERSION: u16 = 37;
 }
